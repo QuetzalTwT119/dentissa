@@ -1,0 +1,81 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Enums\RolUsuario;
+use App\Models\ListaEspera;
+use App\Models\Servicio;
+use App\Models\SolicitudUrgencia;
+use App\Models\Tratamiento;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class AtencionOportunaTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_un_paciente_puede_enviar_una_solicitud_urgente_sin_que_se_agende_automaticamente(): void
+    {
+        $this->post(route('atencion.urgencia.store'), [
+            'nombre' => 'Ana Prueba',
+            'telefono' => '5512345678',
+            'email' => 'ana@example.test',
+            'motivo' => 'Tengo dolor intenso desde ayer por la noche.',
+            'senales_reportadas' => ['dolor', 'inflamacion'],
+        ])->assertRedirect(route('atencion.urgencia'));
+
+        $this->assertDatabaseHas('solicitudes_urgencia', [
+            'nombre' => 'Ana Prueba',
+            'estado' => 'pendiente',
+        ]);
+        $this->assertDatabaseCount('citas', 0);
+    }
+
+    public function test_un_paciente_puede_unirse_a_la_lista_de_espera_y_el_admin_la_ve(): void
+    {
+        $servicio = Servicio::create(['nombre' => 'Preventiva', 'activo' => true]);
+        $tratamiento = Tratamiento::create(['nombre' => 'Limpieza', 'duracion_estimada' => 30, 'categoria' => 'Preventiva', 'activo' => true]);
+        $servicio->tratamientos()->attach($tratamiento);
+
+        $this->post(route('atencion.lista-espera.store'), [
+            'nombre' => 'Luis Prueba',
+            'telefono' => '5587654321',
+            'id_servicio' => $servicio->id,
+            'id_tratamiento' => $tratamiento->id,
+            'fecha_preferida' => now()->addDay()->toDateString(),
+            'franja_horaria' => 'manana',
+        ])->assertRedirect(route('atencion.lista-espera'));
+
+        $solicitud = ListaEspera::firstOrFail();
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.atencion-oportuna.index'))
+            ->assertOk()
+            ->assertSee('Luis Prueba')
+            ->assertSee('Limpieza');
+
+        $this->actingAs($admin)
+            ->patch(route('admin.atencion-oportuna.espera.contactar', $solicitud))
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('lista_espera', ['id' => $solicitud->id, 'estado' => 'contactada']);
+    }
+
+    public function test_el_admin_puede_marcar_una_urgencia_como_contactada(): void
+    {
+        $urgencia = SolicitudUrgencia::create([
+            'nombre' => 'Eva Prueba',
+            'telefono' => '5511111111',
+            'motivo' => 'Tengo un golpe dental y dolor desde hace una hora.',
+        ]);
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        $this->actingAs($admin)
+            ->patch(route('admin.atencion-oportuna.urgencias.contactar', $urgencia))
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('solicitudes_urgencia', ['id' => $urgencia->id, 'estado' => 'contactada']);
+    }
+}

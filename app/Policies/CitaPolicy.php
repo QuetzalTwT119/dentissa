@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Policies;
+
+use App\Enums\RolUsuario;
+use App\Models\Cita;
+use App\Models\User;
+
+class CitaPolicy
+{
+    public function viewAny(User $user): bool
+    {
+        return true;
+    }
+
+    public function view(User $user, Cita $cita): bool
+    {
+        return $this->esPersonal($user);
+    }
+
+    public function create(User $user): bool
+    {
+        return true;
+    }
+
+    public function update(User $user, Cita $cita): bool
+    {
+        return $this->esPersonal($user);
+    }
+
+    public function cancel(User $user, Cita $cita): bool
+    {
+        return $this->esPersonal($user);
+    }
+
+    public function confirm(User $user, Cita $cita): bool
+    {
+        return $this->esPersonal($user);
+    }
+
+    public function complete(User $user, Cita $cita): bool
+    {
+        return $user->rol === RolUsuario::Admin;
+    }
+
+    private function esPersonal(User $user): bool
+    {
+        return in_array($user->rol, [RolUsuario::Asistente, RolUsuario::Admin], true);
+    }
+}

@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Enums\TipoImagen;
+use App\Http\Controllers\Controller;
+use App\Models\Caso;
+use App\Models\Imagen;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+
+class CasoController extends Controller
+{
+    public function index(): View
+    {
+        return view('admin.casos.index', [
+            'casos' => Caso::withCount('imagenes')->orderBy('orden')->get(),
+        ]);
+    }
+
+    public function create(): View
+    {
+        return view('admin.casos.create');
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $caso = Caso::create($this->validated($request));
+
+        return Redirect::route('admin.casos.edit', $caso);
+    }
+
+    public function edit(Caso $caso): View
+    {
+        return view('admin.casos.edit', [
+            'caso' => $caso->load('imagenes'),
+        ]);
+    }
+
+    public function update(Request $request, Caso $caso): RedirectResponse
+    {
+        $caso->update($this->validated($request));
+
+        return Redirect::route('admin.casos.index');
+    }
+
+    public function destroy(Caso $caso): RedirectResponse
+    {
+        $caso->delete();
+
+        return Redirect::route('admin.casos.index');
+    }
+
+    public function storeImagen(Request $request, Caso $caso): RedirectResponse
+    {
+        $request->validate([
+            'archivo' => ['required', 'image', 'max:2048'],
+        ]);
+
+        Imagen::create([
+            'titulo' => $request->file('archivo')->getClientOriginalName(),
+            'url' => $request->file('archivo')->store('casos', 'public'),
+            'tipo' => TipoImagen::Caso,
+            'referencia_id' => $caso->id,
+        ]);
+
+        return Redirect::route('admin.casos.edit', $caso);
+    }
+
+    public function destroyImagen(Caso $caso, Imagen $imagen): RedirectResponse
+    {
+        abort_unless($imagen->referencia_id === $caso->id && $imagen->tipo === TipoImagen::Caso, 404);
+
+        $imagen->delete();
+
+        return Redirect::route('admin.casos.edit', $caso);
+    }
+
+    private function validated(Request $request): array
+    {
+        return $request->validate([
+            'titulo' => ['required', 'string', 'max:150'],
+            'descripcion' => ['nullable', 'string'],
+            'activo' => ['boolean'],
+            'orden' => ['integer', 'min:0'],
+        ]);
+    }
+}
