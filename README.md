@@ -2,6 +2,33 @@
 
 Sistema de gestión para consultorio dental.
 
+## Documentación del proyecto
+
+- [Manual técnico](docs/MANUAL-TECNICO.md)
+- [Manual de usuario](docs/MANUAL-USUARIO.md)
+- [Diagramas y flujos](docs/DIAGRAMAS-FLUJOS.md)
+- [Configuración de WhatsApp](docs/CONFIGURACION-WHATSAPP.md)
+- [Migración del sistema dental](docs/MIGRACION-SISTEMA-DENTAL.md)
+
+## Inicio rápido con Docker
+
+```bash
+docker compose up -d
+```
+
+La aplicación queda disponible en <http://localhost:8000>. Para crear los
+datos demo reproducibles:
+
+```bash
+docker compose exec app php artisan db:seed
+```
+
+Para ejecutar las pruebas:
+
+```bash
+docker compose exec app php artisan test
+```
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
