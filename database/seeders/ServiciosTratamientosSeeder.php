@@ -22,7 +22,10 @@ class ServiciosTratamientosSeeder extends Seeder
             ['nombre' => 'Endodoncia', 'orden' => 6],
             ['nombre' => 'Odontopediatría', 'orden' => 7],
         ])->mapWithKeys(fn (array $datos) => [
-            $datos['nombre'] => Servicio::create($datos),
+            $datos['nombre'] => Servicio::updateOrCreate(
+                ['nombre' => $datos['nombre']],
+                [...$datos, 'activo' => true],
+            ),
         ]);
 
         $tratamientos = collect([
@@ -35,7 +38,10 @@ class ServiciosTratamientosSeeder extends Seeder
             ['nombre' => 'Extracción Simple', 'categoria' => 'Quirúrgica', 'duracion_estimada' => 45, 'precio_referencia' => 100.00],
             ['nombre' => 'Selladores de Fisuras', 'categoria' => 'Preventiva', 'duracion_estimada' => 30, 'precio_referencia' => 80.00],
         ])->mapWithKeys(fn (array $datos) => [
-            $datos['nombre'] => Tratamiento::create($datos),
+            $datos['nombre'] => Tratamiento::updateOrCreate(
+                ['nombre' => $datos['nombre']],
+                [...$datos, 'activo' => true],
+            ),
         ]);
 
         $asignaciones = [
@@ -47,10 +53,13 @@ class ServiciosTratamientosSeeder extends Seeder
         ];
 
         foreach ($asignaciones as $nombreServicio => $nombresTratamientos) {
-            $servicios[$nombreServicio]->tratamientos()->attach(
+            $servicios[$nombreServicio]->tratamientos()->syncWithoutDetaching(
                 collect($nombresTratamientos)
-                    ->map(fn (string $nombre) => $tratamientos[$nombre]->id)
-                    ->all()
+                    ->values()
+                    ->mapWithKeys(fn (string $nombre, int $indice) => [
+                        $tratamientos[$nombre]->id => ['orden' => $indice + 1],
+                    ])
+                    ->all(),
             );
         }
     }
