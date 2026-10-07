@@ -122,6 +122,7 @@ class NotificacionService
 
         Notificacion::create([
             'id_paciente' => $paciente->id,
+            'id_cita' => $cita->id,
             'tipo' => $tipoUsado,
             'canal' => $canal,
             'titulo' => $titulo,

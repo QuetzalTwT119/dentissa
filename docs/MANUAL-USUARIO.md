@@ -26,6 +26,8 @@ Desde `/citas`, el personal puede:
 - crear una cita seleccionando paciente, servicio, tratamiento, fecha y hora;
 - confirmar una cita agendada;
 - reagendar una cita a otro horario disponible;
+- iniciar la atención de una cita confirmada;
+- marcar una cita confirmada como **No asistió**;
 - completar una cita;
 - cancelarla indicando un motivo opcional;
 - filtrar por fecha y estado.
@@ -33,11 +35,20 @@ Desde `/citas`, el personal puede:
 Estados principales:
 
 ```text
-Agendada → Confirmada → Completada
+Agendada → Confirmada → En curso → Completada
     │
     ├→ Reagendada → Agendada
+    ├→ No asistió
     └→ Cancelada
 ```
+
+Una cita no se puede completar directamente desde **Agendada** o
+**Confirmada**. Primero se debe pulsar **Iniciar** cuando comienza la
+atención. Las acciones disponibles dependen del estado actual de la cita.
+
+Al agendar o reagendar, el sistema vuelve a comprobar que el servicio y el
+tratamiento estén activos, que el tratamiento pertenezca al servicio y que la
+fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 
 ## 4. Asistente de agenda
 
@@ -62,6 +73,10 @@ servicios de emergencia; este formulario no sustituye atención médica.
 En `/lista-de-espera`, una persona registra preferencias de servicio,
 tratamiento, fecha y franja horaria. Esto no confirma una cita. El personal
 revisa la solicitud y la marca como **Contactada** cuando realiza el contacto.
+
+Desde `/admin/atencion-oportuna`, las solicitudes contactadas o cerradas se
+pueden consultar en **Historial de seguimiento** y filtrar por estado y rango
+de fechas. Marcar una solicitud como contactada no crea una cita automática.
 
 ## 6. Pacientes e historial clínico
 

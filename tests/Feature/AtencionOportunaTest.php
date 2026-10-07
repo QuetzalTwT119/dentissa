@@ -61,6 +61,12 @@ class AtencionOportunaTest extends TestCase
             ->assertRedirect();
 
         $this->assertDatabaseHas('lista_espera', ['id' => $solicitud->id, 'estado' => 'contactada']);
+
+        $this->actingAs($admin)
+            ->get(route('admin.atencion-oportuna.index', ['historial_estado' => 'contactada']))
+            ->assertOk()
+            ->assertSee('Historial de seguimiento')
+            ->assertSee('Luis Prueba');
     }
 
     public function test_el_admin_puede_marcar_una_urgencia_como_contactada(): void

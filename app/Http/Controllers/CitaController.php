@@ -6,7 +6,7 @@ use App\Enums\EstadoCita;
 use App\Models\Cita;
 use App\Models\Paciente;
 use App\Models\Servicio;
-use App\Models\Tratamiento;
+use App\Services\CitaReglasService;
 use App\Services\DisponibilidadService;
 use App\Services\NotificacionService;
 use Illuminate\Contracts\View\View;
@@ -55,7 +55,7 @@ class CitaController extends Controller
         ]);
     }
 
-    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones): RedirectResponse
+    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas): RedirectResponse
     {
         Gate::authorize('create', Cita::class);
 
@@ -69,8 +69,9 @@ class CitaController extends Controller
         ]);
 
         $idPaciente = $validated['id_paciente'];
-        $tratamiento = Tratamiento::findOrFail($validated['id_tratamiento']);
+        [, $tratamiento] = $reglas->validarCatalogo($validated['id_servicio'], $validated['id_tratamiento']);
         $fechaHora = Carbon::parse("{$validated['fecha']} {$validated['hora']}");
+        $reglas->validarFechaFutura($fechaHora);
 
         $cita = DB::transaction(function () use ($disponibilidad, $fechaHora, $tratamiento, $idPaciente, $validated) {
             if (! $disponibilidad->estaDisponible($fechaHora, $tratamiento)) {
@@ -105,9 +106,13 @@ class CitaController extends Controller
         ]);
     }
 
-    public function update(Request $request, Cita $cita, DisponibilidadService $disponibilidad, NotificacionService $notificaciones): RedirectResponse
+    public function update(Request $request, Cita $cita, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas): RedirectResponse
     {
         Gate::authorize('update', $cita);
+
+        if (! in_array($cita->estado, [EstadoCita::Agendada, EstadoCita::Confirmada], true)) {
+            return back()->withErrors(['estado' => 'Solo se pueden reagendar citas agendadas o confirmadas.']);
+        }
 
         $validated = $request->validate([
             'fecha' => ['required', 'date'],
@@ -115,6 +120,7 @@ class CitaController extends Controller
         ]);
 
         $fechaHora = Carbon::parse("{$validated['fecha']} {$validated['hora']}");
+        $reglas->validarFechaFutura($fechaHora);
 
         $reagendada = DB::transaction(function () use ($disponibilidad, $fechaHora, $cita) {
             if (! $disponibilidad->estaDisponible($fechaHora, $cita->tratamiento ?? $cita->duracion_estimada, $cita->id)) {
@@ -143,6 +149,10 @@ class CitaController extends Controller
     public function cancel(Request $request, Cita $cita, NotificacionService $notificaciones): RedirectResponse
     {
         Gate::authorize('cancel', $cita);
+
+        if (! in_array($cita->estado, [EstadoCita::Agendada, EstadoCita::Confirmada], true)) {
+            return back()->withErrors(['estado' => 'Solo se pueden cancelar citas agendadas o confirmadas.']);
+        }
 
         $validated = $request->validate([
             'motivo_cancelacion' => ['nullable', 'string'],
@@ -179,9 +189,39 @@ class CitaController extends Controller
         return Redirect::route('citas.index');
     }
 
+    public function start(Cita $cita): RedirectResponse
+    {
+        Gate::authorize('start', $cita);
+
+        if ($cita->estado !== EstadoCita::Confirmada) {
+            return back()->withErrors(['estado' => 'Solo se pueden iniciar citas confirmadas.']);
+        }
+
+        $cita->update(['estado' => EstadoCita::EnCurso]);
+
+        return Redirect::route('citas.index');
+    }
+
+    public function noShow(Cita $cita): RedirectResponse
+    {
+        Gate::authorize('noShow', $cita);
+
+        if ($cita->estado !== EstadoCita::Confirmada) {
+            return back()->withErrors(['estado' => 'Solo se pueden marcar como no asistidas las citas confirmadas.']);
+        }
+
+        $cita->update(['estado' => EstadoCita::NoAsistio]);
+
+        return Redirect::route('citas.index');
+    }
+
     public function complete(Cita $cita): RedirectResponse
     {
         Gate::authorize('complete', $cita);
+
+        if ($cita->estado !== EstadoCita::EnCurso) {
+            return back()->withErrors(['estado' => 'Solo se pueden completar citas en curso.']);
+        }
 
         $cita->update(['estado' => EstadoCita::Completada]);
 

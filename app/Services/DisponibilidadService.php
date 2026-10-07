@@ -54,6 +54,10 @@ class DisponibilidadService
      */
     public function estaDisponible(CarbonImmutable|Carbon $fechaHora, Tratamiento|int $tratamiento, ?int $excludeCitaId = null): bool
     {
+        if (! $fechaHora->isFuture()) {
+            return false;
+        }
+
         $horario = HorarioAtencion::paraFecha($fechaHora->format('Y-m-d'));
 
         if (! $horario || ! $horario->abierto) {

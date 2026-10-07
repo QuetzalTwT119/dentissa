@@ -6,6 +6,7 @@ use App\Models\Tratamiento;
 use App\Services\DisponibilidadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class DisponibilidadController extends Controller
 {
@@ -17,7 +18,16 @@ class DisponibilidadController extends Controller
             'exclude_cita_id' => ['nullable', 'exists:citas,id'],
         ]);
 
-        $tratamiento = Tratamiento::findOrFail($validated['tratamiento_id']);
+        $tratamiento = Tratamiento::query()
+            ->whereKey($validated['tratamiento_id'])
+            ->where('activo', true)
+            ->first();
+
+        if (! $tratamiento) {
+            throw ValidationException::withMessages([
+                'tratamiento_id' => 'El tratamiento seleccionado no existe o está inactivo.',
+            ]);
+        }
 
         $horarios = $disponibilidad->horariosDisponibles(
             $validated['fecha'],

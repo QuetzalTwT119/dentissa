@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cita;
 use App\Models\Paciente;
 use App\Models\Servicio;
-use App\Models\Tratamiento;
+use App\Services\CitaReglasService;
 use App\Services\DisponibilidadService;
 use App\Services\NotificacionService;
 use Illuminate\Contracts\View\View;
@@ -29,7 +29,7 @@ class CitaPublicaController extends Controller
         ]);
     }
 
-    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones): RedirectResponse
+    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas): RedirectResponse
     {
         $validated = $request->validate([
             'id_servicio' => ['required', 'exists:servicios,id'],
@@ -43,8 +43,9 @@ class CitaPublicaController extends Controller
             'motivo' => ['nullable', 'string'],
         ]);
 
-        $tratamiento = Tratamiento::findOrFail($validated['id_tratamiento']);
+        [, $tratamiento] = $reglas->validarCatalogo($validated['id_servicio'], $validated['id_tratamiento']);
         $fechaHora = Carbon::parse("{$validated['fecha']} {$validated['hora']}");
+        $reglas->validarFechaFutura($fechaHora);
 
         // La notificación (WhatsApp/correo) se dispara DESPUÉS de que la
         // transacción confirma — nunca dentro de ella, para no mantener el

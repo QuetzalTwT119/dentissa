@@ -15,14 +15,24 @@ mantener el entorno de desarrollo.
 - Blade y Alpine.js para las vistas interactivas.
 - Tailwind CSS y Vite para los estilos y assets.
 - SQLite para desarrollo local.
-- Docker Compose para ejecutar la aplicación.
+- Docker Compose para ejecutar la aplicación, compatible con Docker Desktop o
+  Docker Engine dentro de WSL.
 - Git y GitHub para control de versiones.
 - PHPUnit/Pest mediante `php artisan test`.
 
-No se requiere Docker Desktop: el proyecto se ejecuta con Docker Engine dentro
-de WSL.
+En Windows el equipo puede usar Docker Desktop con la integración de WSL2
+activada. También es válido ejecutar Docker Engine directamente dentro de WSL;
+los comandos de `docker compose` son los mismos.
 
 ## 3. Arranque del proyecto
+
+Desde PowerShell o Windows Terminal:
+
+```powershell
+Set-Location C:\laragon\www\dentissa
+docker compose up -d
+docker compose ps
+```
 
 Desde WSL:
 
@@ -76,9 +86,9 @@ Ejecutar la suite completa:
 docker compose exec app php artisan test
 ```
 
-La última validación registrada fue de **33 pruebas aprobadas y 103
-aserciones**. Las pruebas usan SQLite en memoria y no deben modificar la base
-SQLite real del desarrollo.
+Las pruebas usan SQLite en memoria y no deben modificar la base SQLite real del
+desarrollo. La suite incluye reglas de catálogo, fechas futuras, ciclo de vida
+de citas, agendamiento público y atención oportuna.
 
 Ejecutar una prueba específica:
 
@@ -114,3 +124,19 @@ docker compose exec app php artisan test --filter=CitaPublicaTest
 tratamiento, el margen entre citas, la capacidad simultánea y las citas ya
 registradas. Antes de guardar una cita vuelve a validar el horario dentro de
 una transacción para evitar reservas duplicadas.
+
+`CitaReglasService` centraliza las validaciones compartidas por los flujos
+interno, público y asistente: catálogo activo, relación servicio-tratamiento y
+fecha/hora futura. Esto evita que un formulario aplique reglas distintas a
+otro.
+
+## 10. Atención oportuna e historial
+
+Las solicitudes urgentes y de lista de espera se conservan en la base de
+datos. El panel administrativo muestra por separado los pendientes y el
+historial de seguimiento, con filtros de estado y fechas. La transición a
+**Contactada** o **Cerrada** no elimina datos.
+
+Las notificaciones de cita guardan también `id_cita`, lo que permite enlazar
+un aviso con la cita que lo originó sin depender únicamente del texto del
+mensaje.
