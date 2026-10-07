@@ -31,18 +31,23 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+ARG INSTALL_DEV=true
+
 COPY composer.json composer.lock ./
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --prefer-dist \
-    --no-progress \
-    --no-scripts
+RUN if [ "$INSTALL_DEV" = "true" ]; then \
+        composer install --no-interaction --prefer-dist --no-progress --no-scripts; \
+    else \
+        composer install --no-dev --no-interaction --prefer-dist --no-progress --no-scripts; \
+    fi
 
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
 
-RUN composer dump-autoload --optimize --no-dev \
+RUN if [ "$INSTALL_DEV" = "true" ]; then \
+        composer dump-autoload --optimize; \
+    else \
+        composer dump-autoload --optimize --no-dev; \
+    fi \
     && php artisan package:discover --ansi \
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
     && php artisan storage:link \

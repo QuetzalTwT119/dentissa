@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        INSTALL_DEV: "true"
     env_file:
       - .env
     environment:
@@ -15,5 +17,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - ./.env:/var/www/html/.env:ro
       - ./database/database.sqlite:/var/www/html/database/database.sqlite
       - ./storage:/var/www/html/storage
