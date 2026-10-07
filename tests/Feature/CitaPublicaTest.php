@@ -64,6 +64,7 @@ class CitaPublicaTest extends TestCase
         );
         $this->assertDatabaseHas('notificaciones', [
             'id_paciente' => $paciente->id,
+            'id_cita' => $cita->id,
             'canal' => 'cita_agendada',
         ]);
     }

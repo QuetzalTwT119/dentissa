@@ -115,7 +115,26 @@ $noFinalizable = ['completada', 'cancelada', 'no_asistio'];
                                             </form>
                                         @endif
 
-                                        @if ($esAdmin && in_array($cita->estado->value, ['agendada', 'confirmada', 'en_curso']))
+                                        @if ($esPersonal && $cita->estado->value === 'confirmada')
+                                            <form method="POST" action="{{ route('citas.start', $cita) }}">
+                                                @csrf
+                                                @method('patch')
+                                                <button type="submit" title="Iniciar" aria-label="Iniciar cita"
+                                                        class="rounded px-2 py-1 text-xs font-medium text-brand-700 transition hover:bg-brand-50 hover:text-brand-900">
+                                                    Iniciar
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ route('citas.no-show', $cita) }}">
+                                                @csrf
+                                                @method('patch')
+                                                <button type="submit" title="No asistió" aria-label="Marcar como no asistió"
+                                                        class="rounded px-2 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 hover:text-red-900">
+                                                    No asistió
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                        @if ($esPersonal && $cita->estado->value === 'en_curso')
                                             <form method="POST" action="{{ route('citas.complete', $cita) }}">
                                                 @csrf
                                                 @method('patch')

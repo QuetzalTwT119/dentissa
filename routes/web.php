@@ -100,6 +100,8 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
     Route::put('/citas/{cita}', [CitaController::class, 'update'])->name('citas.update');
     Route::patch('/citas/{cita}/cancelar', [CitaController::class, 'cancel'])->name('citas.cancel');
     Route::patch('/citas/{cita}/confirmar', [CitaController::class, 'confirm'])->name('citas.confirm');
+    Route::patch('/citas/{cita}/iniciar', [CitaController::class, 'start'])->name('citas.start');
+    Route::patch('/citas/{cita}/no-asistio', [CitaController::class, 'noShow'])->name('citas.no-show');
     Route::patch('/citas/{cita}/completar', [CitaController::class, 'complete'])->name('citas.complete');
 
     Route::get('/historial/imagenes/{imagen}', [HistorialImagenController::class, 'show'])->name('historial.imagenes.show');

@@ -37,11 +37,17 @@ sequenceDiagram
     D-->>V: Devuelve horarios
     P->>V: Envía sus datos
     V->>C: POST /agendar-cita
+    C->>C: Valida servicio, tratamiento y relación activa
+    C->>C: Valida fecha/hora futura
     C->>D: Revalida el horario dentro de una transacción
-    C->>DB: Crea o reutiliza paciente y crea cita
+    C->>DB: Crea o reutiliza paciente y crea cita como Agendada
     C->>N: Registra la notificación después del commit
     C-->>P: Confirmación de cita agendada
 ```
+
+Si la combinación de catálogo no está activa, el tratamiento no pertenece al
+servicio elegido, la fecha ya pasó o el horario fue ocupado, el formulario
+devuelve errores y no crea la cita.
 
 ## 3. Gestión de estados de una cita
 
@@ -51,12 +57,19 @@ stateDiagram-v2
     Agendada --> Confirmada: confirmar
     Agendada --> Cancelada: cancelar
     Agendada --> Agendada: reagendar
-    Confirmada --> Completada: completar
+    Confirmada --> EnCurso: iniciar atención
+    Confirmada --> NoAsistio: marcar inasistencia
     Confirmada --> Cancelada: cancelar
     Confirmada --> Agendada: reagendar
+    EnCurso --> Completada: completar
     Completada --> [*]
+    NoAsistio --> [*]
     Cancelada --> [*]
 ```
+
+La aplicación no permite completar directamente una cita **Agendada** o
+**Confirmada**: primero debe pasar a **En curso**. Las acciones de iniciar,
+marcar inasistencia y completar requieren autorización del personal.
 
 ## 4. Atención oportuna
 
@@ -71,9 +84,15 @@ flowchart TD
     EP --> ContactarE[Personal revisa y contacta]
     ContactarU --> UC[Estado contactada]
     ContactarE --> EC[Estado contactada]
+    UC --> UH[Historial de urgencias]
+    EC --> EH[Historial de lista de espera]
     UP -.->|No crea cita automáticamente| Fin[Seguimiento humano]
     EP -.->|No confirma cita| Fin
 ```
+
+Los registros contactados o cerrados dejan de estar pendientes, pero se
+conservan en el historial de **Atención oportuna**, filtrable por estado y
+fechas.
 
 ## 5. Historial clínico
 
@@ -92,7 +111,7 @@ flowchart LR
 
 - El asistente de agenda actualmente es un asistente guiado: propone horarios
   y requiere confirmación humana.
-- Las listas de atención muestran pendientes; los registros contactados se
-  conservan, pero todavía no existe una vista histórica dedicada.
+- Las listas de atención separan pendientes de historial; el historial puede
+  filtrarse por estado y rango de fechas.
 - Las imágenes y assets visuales se incorporarán posteriormente con recursos
   preparados fuera de este flujo de desarrollo.

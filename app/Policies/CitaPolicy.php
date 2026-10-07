@@ -40,7 +40,17 @@ class CitaPolicy
 
     public function complete(User $user, Cita $cita): bool
     {
-        return $user->rol === RolUsuario::Admin;
+        return $this->esPersonal($user);
+    }
+
+    public function start(User $user, Cita $cita): bool
+    {
+        return $this->esPersonal($user);
+    }
+
+    public function noShow(User $user, Cita $cita): bool
+    {
+        return $this->esPersonal($user);
     }
 
     private function esPersonal(User $user): bool

@@ -5,12 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Cita;
 use App\Models\Paciente;
 use App\Models\Servicio;
-use App\Models\Tratamiento;
+use App\Services\CitaReglasService;
 use App\Services\DisponibilidadService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\ValidationException;
 
 class AsistenteAgendaController extends Controller
 {
@@ -21,7 +20,7 @@ class AsistenteAgendaController extends Controller
         return view('asistente-agenda.create', $this->datosFormulario());
     }
 
-    public function proponer(Request $request, DisponibilidadService $disponibilidad): View
+    public function proponer(Request $request, DisponibilidadService $disponibilidad, CitaReglasService $reglas): View
     {
         Gate::authorize('create', Cita::class);
 
@@ -33,13 +32,7 @@ class AsistenteAgendaController extends Controller
             'motivo' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $tratamiento = Tratamiento::findOrFail($validated['id_tratamiento']);
-
-        if (! $tratamiento->servicios()->whereKey($validated['id_servicio'])->exists()) {
-            throw ValidationException::withMessages([
-                'id_tratamiento' => 'El tratamiento seleccionado no pertenece a ese servicio.',
-            ]);
-        }
+        [, $tratamiento] = $reglas->validarCatalogo($validated['id_servicio'], $validated['id_tratamiento']);
 
         return view('asistente-agenda.create', [
             ...$this->datosFormulario(),

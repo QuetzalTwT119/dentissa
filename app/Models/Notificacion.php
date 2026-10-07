@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['id_usuario', 'id_paciente', 'tipo', 'canal', 'titulo', 'mensaje', 'leido', 'fecha_envio', 'fecha_lectura', 'id_externo_meta'])]
+#[Fillable(['id_usuario', 'id_paciente', 'id_cita', 'tipo', 'canal', 'titulo', 'mensaje', 'leido', 'fecha_envio', 'fecha_lectura', 'id_externo_meta'])]
 class Notificacion extends Model
 {
     use HasFactory;
@@ -40,5 +40,10 @@ class Notificacion extends Model
     public function paciente(): BelongsTo
     {
         return $this->belongsTo(Paciente::class, 'id_paciente');
+    }
+
+    public function cita(): BelongsTo
+    {
+        return $this->belongsTo(Cita::class, 'id_cita');
     }
 }
