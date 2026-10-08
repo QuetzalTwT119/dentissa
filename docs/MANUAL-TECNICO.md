@@ -318,7 +318,11 @@ snapshots MySQL `1aa73015` y storage `4523421b`; `check --read-data` leyó 3/3
 snapshots y 6/6 paquetes sin errores. La restauración aislada
 `dentissa_restore_20261008_144206_48c2bb` recuperó 2 usuarios, igual que la
 base activa. Los 3 archivos de `storage/app` restaurados coincidieron por
-SHA-256; eran archivos `.gitignore` y no había adjuntos reales para probar.
+SHA-256; eran archivos `.gitignore`. Luego se respaldó/restauró una fixture
+sintética no vacía de 102 bytes en `storage/app/private/historial` con el
+snapshot `feb06237` de `run-20261008-145853-717`; su SHA-256 coincidió y tanto
+la fixture como la restauración temporal se retiraron. No se usaron adjuntos ni
+datos clínicos reales.
 
 Windows identificó E: como USB, pero sigue conectado al mismo entorno físico;
 no se ha confirmado una ubicación remota. No hay programación ni retención

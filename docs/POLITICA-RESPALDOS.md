@@ -81,8 +81,11 @@ recuperó en una carpeta temporal y se importó en
 `dentissa_restore_20261008_144206_48c2bb`; se encontraron 2 usuarios tanto en
 la base activa como en la recuperada. Los 3 archivos restaurados de `storage/app`
 coincidieron por SHA-256 con sus originales. Eran únicamente archivos
-`.gitignore` de directorio: esta práctica no valida todavía un adjunto cargado
-por un usuario.
+`.gitignore` de directorio, por lo que se hizo una segunda prueba con una
+fixture sintética no vacía de 102 bytes bajo `storage/app/private/historial`.
+El snapshot `feb06237`, de la ejecución `run-20261008-145853-717`, se restauró
+y la fixture coincidió por SHA-256; después se retiraron el archivo de prueba y
+la carpeta temporal. No se usaron datos clínicos.
 
 La recuperación SQL deja temporalmente un dump descifrado en la carpeta de
 prueba; protegerlo y retirarlo cuando termine la inspección. El script conserva
@@ -112,8 +115,8 @@ La evidencia anterior de ZIP valida una práctica distinta. El flujo integrado
 con Restic valida MySQL y la estructura actual de `storage/app` en datos demo,
 pero no una solución lista para producción: los ZIP originales siguen sin
 cifrar, no hay respaldos automáticos ni retención, la unidad USB no está fuera
-de la ubicación física del equipo y aún falta probar un adjunto no vacío. La
-contraseña no se guarda en Git ni en este documento.
+de la ubicación física del equipo. La contraseña no se guarda en Git ni en este
+documento.
 
 ## Requisitos antes de usar datos reales
 

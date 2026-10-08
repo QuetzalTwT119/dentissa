@@ -104,8 +104,8 @@ en la unidad E:, que Windows identificó como USB, separada de los discos de
 arranque y sistema. También se probó Restic con datos demo: snapshots cifrados
 de MySQL y `storage/app`, verificación íntegra, recuperación de MySQL en schema
 aislado y hashes idénticos en los archivos de storage presentes. El directorio
-solo tenía archivos `.gitignore`, no adjuntos; por ello aún falta una prueba con
-un archivo de prueba no vacío. Esto no cierra el control de respaldos para
-producción: no se ha confirmado ubicación física remota, retención ni
-automatización. Los ZIP originales siguen sin cifrar. No usar datos reales
-hasta resolver esos puntos.
+solo tenía archivos `.gitignore`; se agregó una fixture sintética no vacía y su
+restauración también coincidió por SHA-256. Esto no cierra el control de
+respaldos para producción: no se ha confirmado ubicación física remota,
+retención ni automatización. Los ZIP originales siguen sin cifrar. No usar
+datos reales hasta resolver esos puntos.
