@@ -108,12 +108,12 @@ docker compose exec app php artisan test
 Las pruebas usan SQLite en memoria y no deben modificar la base SQLite real del
 desarrollo. La suite incluye reglas de catálogo, fechas futuras, ciclo de vida
 de citas, agendamiento público, atención oportuna, permisos, historial clínico
-y auditoría. La última ejecución aprobada en Docker fue de **51 pruebas y 207
+y auditoría. La última ejecución aprobada en Docker fue de **55 pruebas y 213
 aserciones** en SQLite y MySQL. La suite valida el límite de capacidad de citas
-de forma secuencial. No demuestra el comportamiento de dos reservas simultáneas: antes
-de producción, esa garantía debe verificarse con el motor de base de datos que
-se vaya a utilizar; SQLite no ofrece una prueba representativa de los bloqueos
-`lockForUpdate`.
+de forma secuencial. No demuestra el comportamiento de dos reservas
+simultáneas: antes de producción, esa garantía debe verificarse con el motor de
+base de datos que se vaya a utilizar; SQLite no ofrece una prueba
+representativa de los bloqueos `lockForUpdate`.
 
 La suite puede correrse también contra el schema MySQL desechable del entorno
 Docker. El contenedor utiliza MySQL 8.4 para la aplicación y conserva SQLite
@@ -125,7 +125,7 @@ docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DAT
 
 La inicialización de un volumen MySQL nuevo crea `dentissa_test` separado de
 `dentissa`; `RefreshDatabase` puede reconstruir el schema de pruebas sin tocar
-los datos demo de la aplicación. La última ejecución pasó con 51 pruebas y 207
+los datos demo de la aplicación. La última ejecución pasó con 55 pruebas y 213
 aserciones en cada motor. La prueba de capacidad sigue siendo secuencial y aún
 no constituye una prueba de dos reservas realmente concurrentes.
 
@@ -192,6 +192,11 @@ mensaje.
 `logs_auditoria`. Se auditan las altas y transiciones de citas, los cambios del
 historial clínico, los adjuntos clínicos, los datos oficiales del paciente y el
 seguimiento de atención oportuna.
+
+Los adjuntos del historial se sirven mediante una ruta autenticada que permite
+su lectura solo al rol `admin` y rechaza registros de imagen que no pertenezcan
+al historial clínico. Las pruebas `HistorialImagenAccessTest` cubren el acceso
+del administrador, el rechazo al asistente y a visitantes, y el tipo de imagen.
 
 Cada entrada conserva usuario (cuando existe), acción, tabla, registro, fecha,
 IP y agente de usuario. Para proteger la privacidad, los cambios de historial
