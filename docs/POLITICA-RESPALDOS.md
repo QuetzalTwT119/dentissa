@@ -5,10 +5,13 @@
 Esta política separa las copias de desarrollo de la protección necesaria para
 operar con pacientes reales.
 
-El proyecto mantiene dos formatos que no son intercambiables:
+El proyecto mantiene respaldos de desarrollo en varios formatos que no son
+intercambiables:
 
 - `backup.ps1` / `restore.ps1`: SQLite y `storage/app`.
 - `backup-mysql.ps1` / `restore-mysql.ps1`: dump SQL de la base MySQL activa.
+- `backup-restic.ps1` / `restore-restic-mysql.ps1`: snapshots cifrados con Restic
+  para MySQL y `storage/app`; la recuperación MySQL se hace en un schema aislado.
 
 El respaldo MySQL no incluye `storage/app` ni `.env`, y todavía no cifra el ZIP.
 Sirve para desarrollo y para practicar una recuperación aislada, no como
@@ -48,6 +51,46 @@ pérdida o daño de ese equipo.
 Esta rutina es manual; el proyecto todavía no programa respaldos ni elimina
 copias antiguas automáticamente.
 
+## Flujo cifrado integrado con Restic (datos demo)
+
+El script `scripts/backup-restic.ps1` crea dos snapshots Restic con una misma
+etiqueta `run-*`: el dump MySQL se transmite directamente a Restic sin dejar un
+ZIP SQL en el equipo, y `storage/app` se guarda como segundo snapshot. Ambos
+quedan cifrados con la contraseña del repositorio. Requiere Docker Compose,
+Restic instalado, el servicio MySQL saludable y Windows PowerShell 5.1 o
+PowerShell 7.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\backup-restic.ps1 `
+  -Repository 'E:\DentissaBackups\restic-repo' `
+  -ResticExe 'C:\ruta\a\restic.exe'
+```
+
+El script imprime la etiqueta de ejecución. Verifica que existan los dos
+componentes y la integridad del repositorio con:
+
+```powershell
+& $resticExe --repo 'E:\DentissaBackups\restic-repo' snapshots --tag 'run-ETIQUETA'
+& $resticExe --repo 'E:\DentissaBackups\restic-repo' check --read-data
+```
+
+La copia se probó el 08/10/2026 con la etiqueta
+`run-20261008-142619-971`: snapshots `1aa73015` (MySQL) y `4523421b`
+(`storage/app`). `check --read-data` informó que no había errores. El dump se
+recuperó en una carpeta temporal y se importó en
+`dentissa_restore_20261008_144206_48c2bb`; se encontraron 2 usuarios tanto en
+la base activa como en la recuperada. Los 3 archivos restaurados de `storage/app`
+coincidieron por SHA-256 con sus originales. Eran únicamente archivos
+`.gitignore` de directorio: esta práctica no valida todavía un adjunto cargado
+por un usuario.
+
+La recuperación SQL deja temporalmente un dump descifrado en la carpeta de
+prueba; protegerlo y retirarlo cuando termine la inspección. El script conserva
+el schema aislado para inspección y no altera la base activa. Esta práctica usa
+datos demo y una unidad USB `E:` conectada al mismo equipo; no acredita copia
+remota ni recuperación de adjuntos reales. No hay programación automática ni
+retención configurada.
+
 ## Evidencia de práctica cifrada con Restic
 
 El 08/10/2026 se probó Restic 0.19.1 con datos demo en la unidad `E:`. El
@@ -65,11 +108,12 @@ ubicación física del equipo. Desconectarlo después de verificar la copia ayud
 a reducir exposición a fallas o ransomware del equipo, pero no protege contra
 robo, incendio o pérdida del mismo lugar.
 
-Esta evidencia valida una práctica con cifrado y restauración, no una solución
-lista para producción: los ZIP originales siguen sin cifrar, no hay respaldos
-automáticos ni retención, y la prueba no acredita la recuperación integral de
-MySQL más `storage/app` desde una ubicación remota. La contraseña no se guarda
-en Git ni en este documento.
+La evidencia anterior de ZIP valida una práctica distinta. El flujo integrado
+con Restic valida MySQL y la estructura actual de `storage/app` en datos demo,
+pero no una solución lista para producción: los ZIP originales siguen sin
+cifrar, no hay respaldos automáticos ni retención, la unidad USB no está fuera
+de la ubicación física del equipo y aún falta probar un adjunto no vacío. La
+contraseña no se guarda en Git ni en este documento.
 
 ## Requisitos antes de usar datos reales
 
@@ -91,11 +135,12 @@ clínica real:
 6. Definir quién puede solicitar la restauración y cómo se documenta el
    incidente.
 
-No usar pacientes reales hasta que el equipo haya elegido un destino externo,
-cifrado y retención; incluya en el respaldo la base MySQL y `storage/app`, proteja
-las claves necesarias y pruebe la recuperación completa desde ese destino. Los
-scripts presentes no cifran ni rotan las copias; esas capacidades quedan
-pendientes de configurar.
+No usar pacientes reales hasta que el equipo haya elegido un destino externo
+fuera de la ubicación física del equipo, aprobado retención y acceso, protegido
+las claves necesarias, y probado la recuperación de MySQL y de un adjunto real
+de prueba desde ese destino. Los scripts de ZIP no cifran ni rotan las copias;
+Restic cifra el repositorio, pero todavía no tiene retención ni ejecución
+automática configuradas.
 
 ## Restauración
 

@@ -263,12 +263,65 @@ el equipo debe seguir la [política de respaldos](POLITICA-RESPALDOS.md), elegir
 almacenamiento externo con acceso restringido y cifrado, y ensayar la
 restauración allí.
 
-Como práctica con datos demo, se instaló Restic 0.19.1 desde la fuente `winget`
-y se validó un repositorio cifrado en `E:\DentissaBackups\restic-repo`. El
-snapshot `52a3dfcd` contiene dos ZIP de práctica; `check --read-data` no encontró
-errores y la restauración temporal coincidió con los originales por SHA-256.
-Windows identificó E: como unidad `USB`, distinta de los discos de arranque y
-sistema; no se ha confirmado que se mantenga en una ubicación física remota.
-Los ZIP originales permanecen sin cifrar, por lo que esta prueba no cambia la
-advertencia anterior ni habilita el uso de datos reales. La contraseña se debe
-custodiar fuera del repositorio y nunca incluirse en Git.
+### Respaldo integrado con Restic
+
+Con datos demo, el script `backup-restic.ps1` guarda MySQL como entrada
+estándar directamente en Restic y `storage/app` como otro snapshot; ambos
+comparten una etiqueta `run-*`. Así se evita crear un dump SQL temporal sin
+cifrar durante la copia. El repositorio Restic cifra sus datos; su contraseña
+se solicita al ejecutar y no debe guardarse en Git, `.env` del proyecto ni en
+la misma unidad respaldada.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\backup-restic.ps1 `
+  -Repository 'E:\DentissaBackups\restic-repo' `
+  -ResticExe 'C:\ruta\a\restic.exe'
+```
+
+El script informa `run-*` al terminar. Confirma que esa ejecución contiene dos
+snapshots y verifica la integridad del repositorio. En una terminal nueva,
+asigna a `$resticExe` la misma ruta de `restic.exe` que pasaste al script:
+
+```powershell
+$resticExe = 'C:\ruta\a\restic.exe'
+& $resticExe --repo 'E:\DentissaBackups\restic-repo' snapshots --tag 'run-ETIQUETA'
+& $resticExe --repo 'E:\DentissaBackups\restic-repo' check --read-data
+```
+
+Para una prueba de recuperación, usa los IDs de esa etiqueta y destinos
+temporales que no existan:
+
+```powershell
+$mysqlRestore = Join-Path $env:TEMP 'Dentissa-Restic-MySQL-QA'
+$storageRestore = Join-Path $env:TEMP 'Dentissa-Restic-Storage-QA'
+& $resticExe --repo 'E:\DentissaBackups\restic-repo' restore ID_MYSQL --target $mysqlRestore
+& $resticExe --repo 'E:\DentissaBackups\restic-repo' restore ID_STORAGE --target $storageRestore
+```
+
+El SQL restaurado queda descifrado temporalmente. Valídalo e impórtalo en una
+base aislada, nunca en la base activa:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\restore-restic-mysql.ps1 `
+  -SqlDump "$mysqlRestore\database\dentissa.sql"
+```
+
+El script valida el encabezado del dump y rechaza sentencias que intenten
+seleccionar, crear o borrar una base; crea un schema nuevo `dentissa_restore_*`,
+importa allí y compara el conteo de usuarios con la base activa. Conserva el
+schema para inspección y elimina un schema incompleto si la operación falla.
+Tras inspeccionar, protege y retira el dump temporal y sigue la política del
+equipo para los schemas de QA.
+
+Evidencia del 08/10/2026: la ejecución `run-20261008-142619-971` creó los
+snapshots MySQL `1aa73015` y storage `4523421b`; `check --read-data` leyó 3/3
+snapshots y 6/6 paquetes sin errores. La restauración aislada
+`dentissa_restore_20261008_144206_48c2bb` recuperó 2 usuarios, igual que la
+base activa. Los 3 archivos de `storage/app` restaurados coincidieron por
+SHA-256; eran archivos `.gitignore` y no había adjuntos reales para probar.
+
+Windows identificó E: como USB, pero sigue conectado al mismo entorno físico;
+no se ha confirmado una ubicación remota. No hay programación ni retención
+automáticas. Los ZIP originales continúan sin cifrar. Esta práctica con datos
+demo no habilita el uso de datos clínicos reales. La evidencia ampliada está en
+la [política de respaldos](POLITICA-RESPALDOS.md) y la [matriz QA](MATRIZ-QA-MVP.md).

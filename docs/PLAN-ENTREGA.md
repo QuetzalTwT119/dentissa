@@ -17,7 +17,9 @@ nuevas.
 - Entorno Docker documentado para Docker Desktop y WSL2; la aplicación local usa
   MySQL 8.4 y la suite puede correrse en SQLite o en un schema MySQL aislado.
 - Suite automatizada actual: **55 pruebas, 213 aserciones** en SQLite y MySQL.
-- Scripts locales de respaldo y restauración para SQLite y archivos subidos.
+- Scripts locales de respaldo y restauración para SQLite, MySQL y archivos
+  subidos; Restic cifra snapshots de MySQL + `storage/app` y se probó su
+  recuperación aislada con datos demo.
 - Autorización interna de citas y auditoría de operaciones sensibles cubiertas
   por pruebas.
 - La reconstrucción de la imagen debe hacerse después de cambios que se copian
@@ -99,8 +101,11 @@ desde un checkout limpio ya fue validada con Docker Desktop, incluyendo clave,
 migraciones, seeders, HTTP y la suite automatizada. Los scripts de
 respaldo/restauración se ensayaron con una copia temporal y se creó un respaldo
 en la unidad E:, que Windows identificó como USB, separada de los discos de
-arranque y sistema. También se probó Restic con datos demo: snapshot cifrado,
-verificación íntegra y restauración con hashes idénticos. Esto no cierra el
-control de respaldos para producción porque los ZIP originales siguen sin
-cifrar, no se ha confirmado una ubicación física remota y no hay retención ni
-automatización configuradas. No usar datos reales hasta resolver esos puntos.
+arranque y sistema. También se probó Restic con datos demo: snapshots cifrados
+de MySQL y `storage/app`, verificación íntegra, recuperación de MySQL en schema
+aislado y hashes idénticos en los archivos de storage presentes. El directorio
+solo tenía archivos `.gitignore`, no adjuntos; por ello aún falta una prueba con
+un archivo de prueba no vacío. Esto no cierra el control de respaldos para
+producción: no se ha confirmado ubicación física remota, retención ni
+automatización. Los ZIP originales siguen sin cifrar. No usar datos reales
+hasta resolver esos puntos.
