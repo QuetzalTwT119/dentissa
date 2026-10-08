@@ -223,6 +223,10 @@ class CitaController extends Controller
             return back()->withErrors(['estado' => 'Solo se pueden marcar como no asistidas las citas confirmadas.']);
         }
 
+        if ($cita->fecha_hora->isFuture()) {
+            return back()->withErrors(['estado' => 'No se puede marcar una cita como no asistida antes de su fecha y hora programadas.']);
+        }
+
         $datosAnteriores = $this->datosAuditoria($cita);
         $cita->update(['estado' => EstadoCita::NoAsistio]);
         $auditoria->registrar('cita.no_asistio', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);

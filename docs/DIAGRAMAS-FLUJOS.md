@@ -58,7 +58,7 @@ stateDiagram-v2
     Agendada --> Cancelada: cancelar
     Agendada --> Agendada: reagendar
     Confirmada --> EnCurso: iniciar atención
-    Confirmada --> NoAsistio: marcar inasistencia
+    Confirmada --> NoAsistio: marcar inasistencia (desde hora programada)
     Confirmada --> Cancelada: cancelar
     Confirmada --> Agendada: reagendar
     EnCurso --> Completada: completar
@@ -70,6 +70,8 @@ stateDiagram-v2
 La aplicación no permite completar directamente una cita **Agendada** o
 **Confirmada**: primero debe pasar a **En curso**. Las acciones de iniciar,
 marcar inasistencia y completar requieren autorización del personal.
+La inasistencia se rechaza si la fecha y hora programadas aún están en el
+futuro.
 
 ## 4. Atención oportuna
 

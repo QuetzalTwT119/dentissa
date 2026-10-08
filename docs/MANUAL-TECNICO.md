@@ -108,9 +108,9 @@ docker compose exec app php artisan test
 Las pruebas usan SQLite en memoria y no deben modificar la base SQLite real del
 desarrollo. La suite incluye reglas de catálogo, fechas futuras, ciclo de vida
 de citas, agendamiento público, atención oportuna, permisos, historial clínico
-y auditoría. La última ejecución aprobada en Docker fue de **49 pruebas y 185
-aserciones**. La suite valida el límite de capacidad de citas de forma
-secuencial. No demuestra el comportamiento de dos reservas simultáneas: antes
+y auditoría. La última ejecución aprobada en Docker fue de **51 pruebas y 207
+aserciones** en SQLite y MySQL. La suite valida el límite de capacidad de citas
+de forma secuencial. No demuestra el comportamiento de dos reservas simultáneas: antes
 de producción, esa garantía debe verificarse con el motor de base de datos que
 se vaya a utilizar; SQLite no ofrece una prueba representativa de los bloqueos
 `lockForUpdate`.
@@ -125,7 +125,7 @@ docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DAT
 
 La inicialización de un volumen MySQL nuevo crea `dentissa_test` separado de
 `dentissa`; `RefreshDatabase` puede reconstruir el schema de pruebas sin tocar
-los datos demo de la aplicación. La última ejecución pasó con 49 pruebas y 185
+los datos demo de la aplicación. La última ejecución pasó con 51 pruebas y 207
 aserciones en cada motor. La prueba de capacidad sigue siendo secuencial y aún
 no constituye una prueba de dos reservas realmente concurrentes.
 
@@ -169,6 +169,11 @@ una transacción para evitar reservas duplicadas.
 interno, público y asistente: catálogo activo, relación servicio-tratamiento y
 fecha/hora futura. Esto evita que un formulario aplique reglas distintas a
 otro.
+
+La acción `citas.no-show` solo permite marcar una cita confirmada como
+**No asistió** cuando llega su `fecha_hora` programada o después. La validación
+se realiza en el servidor, por lo que también protege solicitudes directas que
+no provienen de la interfaz.
 
 ## 10. Atención oportuna e historial
 

@@ -53,6 +53,8 @@ Navegador / formulario público / panel interno
   fecha futura.
 - `DisponibilidadService` calcula duración, margen, horario de atención,
   capacidad simultánea y solapamientos.
+- La acción de inasistencia exige que la hora programada de la cita haya llegado;
+  así se evita cerrar prematuramente una cita futura.
 - La creación y reagenda revalidan la disponibilidad dentro de una transacción
   y usan `lockForUpdate` sobre las citas del día. La prueba QA-24 valida el
   límite de capacidad de forma secuencial; no representa dos solicitudes
@@ -73,7 +75,7 @@ Navegador / formulario público / panel interno
 | Seguridad de rutas | Buena como primera barrera; hay middleware de autenticación/rol y políticas. |
 | Datos demo | Reproducibles mediante seeders idempotentes (`updateOrCreate`/equivalentes). |
 | Historial clínico | Flujo CRUD, PDF y protección administrativa cubiertos por pruebas. |
-| Calidad actual | 49 pruebas aprobadas y 185 aserciones en el último ciclo Docker. |
+| Calidad actual | 51 pruebas aprobadas y 207 aserciones en SQLite y MySQL en el último ciclo Docker. |
 | Documentación | Manuales, diagramas, plan de entrega y matriz QA enlazados desde el README. |
 
 ## 4. Riesgos y decisiones pendientes

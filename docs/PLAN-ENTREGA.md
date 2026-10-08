@@ -16,7 +16,7 @@ nuevas.
 - Datos demo reproducibles mediante seeders.
 - Entorno Docker documentado para Docker Desktop y WSL2; la aplicación local usa
   MySQL 8.4 y la suite puede correrse en SQLite o en un schema MySQL aislado.
-- Suite automatizada actual: **49 pruebas, 185 aserciones** en cada motor.
+- Suite automatizada actual: **51 pruebas, 207 aserciones** en SQLite y MySQL.
 - Scripts locales de respaldo y restauración para SQLite y archivos subidos.
 - Autorización interna de citas y auditoría de operaciones sensibles cubiertas
   por pruebas.

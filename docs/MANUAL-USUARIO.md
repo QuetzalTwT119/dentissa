@@ -27,7 +27,7 @@ Desde `/citas`, el personal puede:
 - confirmar una cita agendada;
 - reagendar una cita a otro horario disponible;
 - iniciar la atención de una cita confirmada;
-- marcar una cita confirmada como **No asistió**;
+- marcar una cita confirmada como **No asistió**, solo desde la hora programada;
 - completar una cita;
 - cancelarla indicando un motivo opcional;
 - filtrar por fecha y estado.
@@ -45,6 +45,7 @@ Agendada → Confirmada → En curso → Completada
 Una cita no se puede completar directamente desde **Agendada** o
 **Confirmada**. Primero se debe pulsar **Iniciar** cuando comienza la
 atención. Las acciones disponibles dependen del estado actual de la cita.
+La inasistencia no se puede registrar antes de la fecha y hora programadas.
 
 Al agendar o reagendar, el sistema vuelve a comprobar que el servicio y el
 tratamiento estén activos, que el tratamiento pertenezca al servicio y que la

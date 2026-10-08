@@ -341,11 +341,43 @@ class CitaReglasTest extends TestCase
             'estado' => EstadoCita::Confirmada,
         ]);
 
-        $this->actingAs($admin)
-            ->patch(route('citas.no-show', $cita))
-            ->assertRedirect(route('citas.index'));
+        Carbon::setTestNow($cita->fecha_hora);
+
+        try {
+            $this->actingAs($admin)
+                ->patch(route('citas.no-show', $cita))
+                ->assertRedirect(route('citas.index'));
+        } finally {
+            Carbon::setTestNow();
+        }
 
         $this->assertDatabaseHas('citas', ['id' => $cita->id, 'estado' => EstadoCita::NoAsistio->value]);
+    }
+
+    public function test_no_se_puede_marcar_una_cita_futura_como_no_asistio(): void
+    {
+        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $paciente = $this->crearPaciente();
+        [$servicio, $tratamiento] = $this->crearCatalogo();
+        $cita = Cita::create([
+            'id_paciente' => $paciente->id,
+            'id_servicio' => $servicio->id,
+            'id_tratamiento' => $tratamiento->id,
+            'fecha_hora' => $this->fechaFutura()->setTime(10, 0),
+            'duracion_estimada' => 30,
+            'estado' => EstadoCita::Confirmada,
+        ]);
+
+        $this->actingAs($asistente)
+            ->patch(route('citas.no-show', $cita))
+            ->assertSessionHasErrors('estado');
+
+        $this->assertSame(EstadoCita::Confirmada, $cita->fresh()->estado);
+        $this->assertDatabaseMissing('logs_auditoria', [
+            'accion' => 'cita.no_asistio',
+            'tabla' => 'citas',
+            'registro_id' => $cita->id,
+        ]);
     }
 
     public function test_las_transiciones_invalidas_no_cambian_el_estado_de_la_cita(): void
