@@ -262,3 +262,11 @@ locales; no cubre fallas o pérdida del mismo equipo. Antes de usar datos reales
 el equipo debe seguir la [política de respaldos](POLITICA-RESPALDOS.md), elegir
 almacenamiento externo con acceso restringido y cifrado, y ensayar la
 restauración allí.
+
+Como práctica con datos demo, se instaló Restic 0.19.1 desde la fuente `winget`
+y se validó un repositorio cifrado en `E:\DentissaBackups\restic-repo`. El
+snapshot `52a3dfcd` contiene dos ZIP de práctica; `check --read-data` no encontró
+errores y la restauración temporal coincidió con los originales por SHA-256.
+Los ZIP originales permanecen sin cifrar, por lo que esta prueba no cambia la
+advertencia anterior ni habilita el uso de datos reales. La contraseña se debe
+custodiar fuera del repositorio y nunca incluirse en Git.

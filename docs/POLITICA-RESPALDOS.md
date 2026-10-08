@@ -48,6 +48,23 @@ pérdida o daño de ese equipo.
 Esta rutina es manual; el proyecto todavía no programa respaldos ni elimina
 copias antiguas automáticamente.
 
+## Evidencia de práctica cifrada con Restic
+
+El 08/10/2026 se probó Restic 0.19.1 con datos demo en la unidad `E:`. El
+repositorio local `E:\DentissaBackups\restic-repo` se inicializó con una
+contraseña que no se registra en el proyecto y se guardaron dos ZIP de
+práctica. El snapshot `52a3dfcd` pasó `restic check --read-data`
+(`no errors were found`). Se restauró
+a una carpeta temporal y los SHA-256 de ambos archivos coincidieron con los
+originales; después se eliminó la carpeta temporal.
+
+Esta evidencia valida una práctica local de cifrado y restauración, no una
+solución lista para producción: los ZIP originales siguen sin cifrar, el
+repositorio está en la unidad `E:` sin confirmar que sea un destino fuera del
+equipo, no incluye respaldos automáticos ni retención, y esta prueba no acredita
+la recuperación integral de MySQL más `storage/app` desde una ubicación externa.
+La contraseña no se guarda en Git ni en este documento.
+
 ## Requisitos antes de usar datos reales
 
 El equipo debe confirmar y documentar estos puntos antes de cargar información
