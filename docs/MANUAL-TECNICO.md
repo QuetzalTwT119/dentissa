@@ -267,6 +267,8 @@ Como práctica con datos demo, se instaló Restic 0.19.1 desde la fuente `winget
 y se validó un repositorio cifrado en `E:\DentissaBackups\restic-repo`. El
 snapshot `52a3dfcd` contiene dos ZIP de práctica; `check --read-data` no encontró
 errores y la restauración temporal coincidió con los originales por SHA-256.
+Windows identificó E: como unidad `USB`, distinta de los discos de arranque y
+sistema; no se ha confirmado que se mantenga en una ubicación física remota.
 Los ZIP originales permanecen sin cifrar, por lo que esta prueba no cambia la
 advertencia anterior ni habilita el uso de datos reales. La contraseña se debe
 custodiar fuera del repositorio y nunca incluirse en Git.

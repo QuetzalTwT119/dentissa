@@ -58,12 +58,18 @@ práctica. El snapshot `52a3dfcd` pasó `restic check --read-data`
 a una carpeta temporal y los SHA-256 de ambos archivos coincidieron con los
 originales; después se eliminó la carpeta temporal.
 
-Esta evidencia valida una práctica local de cifrado y restauración, no una
-solución lista para producción: los ZIP originales siguen sin cifrar, el
-repositorio está en la unidad `E:` sin confirmar que sea un destino fuera del
-equipo, no incluye respaldos automáticos ni retención, y esta prueba no acredita
-la recuperación integral de MySQL más `storage/app` desde una ubicación externa.
-La contraseña no se guarda en Git ni en este documento.
+La unidad `E:` se verificó el 08/10/2026 con `Get-Partition -DriveLetter E |
+Get-Disk`: Windows la identifica como `USB`, separada de los discos de arranque
+y sistema. Esto confirma un medio USB distinto, pero no una copia fuera de la
+ubicación física del equipo. Desconectarlo después de verificar la copia ayuda
+a reducir exposición a fallas o ransomware del equipo, pero no protege contra
+robo, incendio o pérdida del mismo lugar.
+
+Esta evidencia valida una práctica con cifrado y restauración, no una solución
+lista para producción: los ZIP originales siguen sin cifrar, no hay respaldos
+automáticos ni retención, y la prueba no acredita la recuperación integral de
+MySQL más `storage/app` desde una ubicación remota. La contraseña no se guarda
+en Git ni en este documento.
 
 ## Requisitos antes de usar datos reales
 

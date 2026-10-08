@@ -98,8 +98,9 @@ La **matriz QA del MVP** ya está completada como fuente de verdad. La instalaci
 desde un checkout limpio ya fue validada con Docker Desktop, incluyendo clave,
 migraciones, seeders, HTTP y la suite automatizada. Los scripts de
 respaldo/restauración se ensayaron con una copia temporal y se creó un respaldo
-en la unidad E:. También se probó Restic con datos demo: snapshot cifrado,
+en la unidad E:, que Windows identificó como USB, separada de los discos de
+arranque y sistema. También se probó Restic con datos demo: snapshot cifrado,
 verificación íntegra y restauración con hashes idénticos. Esto no cierra el
 control de respaldos para producción porque los ZIP originales siguen sin
-cifrar, no se ha confirmado una ubicación fuera del equipo y no hay retención ni
+cifrar, no se ha confirmado una ubicación física remota y no hay retención ni
 automatización configuradas. No usar datos reales hasta resolver esos puntos.
