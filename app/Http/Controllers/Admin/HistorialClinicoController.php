@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\HistorialClinico;
 use App\Models\Imagen;
 use App\Models\Paciente;
+use App\Services\AuditoriaService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -35,14 +36,16 @@ class HistorialClinicoController extends Controller
         ]);
     }
 
-    public function store(Request $request, Paciente $paciente): RedirectResponse
+    public function store(Request $request, Paciente $paciente, AuditoriaService $auditoria): RedirectResponse
     {
         $validated = $this->validated($request, $paciente);
 
-        $paciente->historialClinico()->create([
+        $historial = $paciente->historialClinico()->create([
             ...$validated,
             'id_doctor' => $request->user()->id,
         ]);
+
+        $auditoria->registrar('historial.creado', $historial, datosNuevos: $this->datosAuditoria($historial), request: $request);
 
         return Redirect::route('admin.pacientes.historial.index', $paciente);
     }
@@ -58,25 +61,31 @@ class HistorialClinicoController extends Controller
         ]);
     }
 
-    public function update(Request $request, Paciente $paciente, HistorialClinico $historial): RedirectResponse
+    public function update(Request $request, Paciente $paciente, HistorialClinico $historial, AuditoriaService $auditoria): RedirectResponse
     {
         $this->verificarPertenece($paciente, $historial);
+
+        $datosAnteriores = $this->datosAuditoria($historial);
 
         $historial->update($this->validated($request, $paciente));
+        $auditoria->registrar('historial.actualizado', $historial, $datosAnteriores, $this->datosAuditoria($historial), $request);
 
         return Redirect::route('admin.pacientes.historial.index', $paciente);
     }
 
-    public function destroy(Paciente $paciente, HistorialClinico $historial): RedirectResponse
+    public function destroy(Request $request, Paciente $paciente, HistorialClinico $historial, AuditoriaService $auditoria): RedirectResponse
     {
         $this->verificarPertenece($paciente, $historial);
 
+        $datosAnteriores = $this->datosAuditoria($historial);
+
         $historial->delete();
+        $auditoria->registrar('historial.eliminado', $historial, $datosAnteriores, request: $request);
 
         return Redirect::route('admin.pacientes.historial.index', $paciente);
     }
 
-    public function storeImagen(Request $request, Paciente $paciente, HistorialClinico $historial): RedirectResponse
+    public function storeImagen(Request $request, Paciente $paciente, HistorialClinico $historial, AuditoriaService $auditoria): RedirectResponse
     {
         $this->verificarPertenece($paciente, $historial);
 
@@ -86,22 +95,32 @@ class HistorialClinicoController extends Controller
 
         $ruta = $request->file('archivo')->store('historial', 'local');
 
-        Imagen::create([
+        $imagen = Imagen::create([
             'titulo' => $request->file('archivo')->getClientOriginalName(),
             'url' => $ruta,
             'tipo' => TipoImagen::HistorialClinico,
             'referencia_id' => $historial->id,
         ]);
 
+        $auditoria->registrar('historial.imagen_agregada', $imagen, datosNuevos: [
+            'id_historial' => $historial->id,
+            'tipo' => TipoImagen::HistorialClinico->value,
+        ], request: $request);
+
         return Redirect::route('admin.pacientes.historial.edit', [$paciente, $historial]);
     }
 
-    public function destroyImagen(Paciente $paciente, HistorialClinico $historial, Imagen $imagen): RedirectResponse
+    public function destroyImagen(Request $request, Paciente $paciente, HistorialClinico $historial, Imagen $imagen, AuditoriaService $auditoria): RedirectResponse
     {
         $this->verificarPertenece($paciente, $historial);
         abort_unless($imagen->referencia_id === $historial->id && $imagen->tipo === TipoImagen::HistorialClinico, 404);
 
+        $datosAnteriores = [
+            'id_historial' => $historial->id,
+            'tipo' => TipoImagen::HistorialClinico->value,
+        ];
         $imagen->delete();
+        $auditoria->registrar('historial.imagen_eliminada', $imagen, $datosAnteriores, request: $request);
 
         return Redirect::route('admin.pacientes.historial.edit', [$paciente, $historial]);
     }
@@ -124,6 +143,17 @@ class HistorialClinicoController extends Controller
     private function verificarPertenece(Paciente $paciente, HistorialClinico $historial): void
     {
         abort_unless($historial->id_paciente === $paciente->id, 404);
+    }
+
+    /** @return array<string, int|string|null> */
+    private function datosAuditoria(HistorialClinico $historial): array
+    {
+        return [
+            'id_paciente' => $historial->id_paciente,
+            'id_cita' => $historial->id_cita,
+            'fecha_consulta' => $historial->fecha_consulta?->toDateString(),
+            'tipo_consulta' => $historial->tipo_consulta?->value,
+        ];
     }
 
     private function validated(Request $request, Paciente $paciente): array

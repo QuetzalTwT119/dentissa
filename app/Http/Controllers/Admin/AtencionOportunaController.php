@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ListaEspera;
 use App\Models\SolicitudUrgencia;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,24 +40,34 @@ class AtencionOportunaController extends Controller
         ]);
     }
 
-    public function contactarUrgencia(Request $request, SolicitudUrgencia $urgencia): RedirectResponse
+    public function contactarUrgencia(Request $request, SolicitudUrgencia $urgencia, AuditoriaService $auditoria): RedirectResponse
     {
+        $estadoAnterior = $urgencia->estado;
         $urgencia->update([
             'estado' => 'contactada',
             'contactado_por' => $request->user()->id,
             'fecha_contacto' => now(),
         ]);
 
+        $auditoria->registrar('urgencia.contactada', $urgencia, ['estado' => $estadoAnterior], [
+            'estado' => $urgencia->estado,
+        ], $request);
+
         return back()->with('success', 'La solicitud de urgencia quedó marcada como contactada.');
     }
 
-    public function contactarEspera(Request $request, ListaEspera $espera): RedirectResponse
+    public function contactarEspera(Request $request, ListaEspera $espera, AuditoriaService $auditoria): RedirectResponse
     {
+        $estadoAnterior = $espera->estado;
         $espera->update([
             'estado' => 'contactada',
             'contactado_por' => $request->user()->id,
             'fecha_contacto' => now(),
         ]);
+
+        $auditoria->registrar('lista_espera.contactada', $espera, ['estado' => $estadoAnterior], [
+            'estado' => $espera->estado,
+        ], $request);
 
         return back()->with('success', 'La persona quedó marcada como contactada.');
     }

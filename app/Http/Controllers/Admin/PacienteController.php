@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Paciente;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,7 +51,7 @@ class PacienteController extends Controller
         ]);
     }
 
-    public function update(Request $request, Paciente $paciente): RedirectResponse
+    public function update(Request $request, Paciente $paciente, AuditoriaService $auditoria): RedirectResponse
     {
         $request->merge([
             'curp' => $request->filled('curp') ? strtoupper($request->string('curp')) : null,
@@ -80,12 +81,21 @@ class PacienteController extends Controller
             ],
         ]);
 
+        $camposModificados = collect(['curp', 'rfc', 'ine_clave', 'tutor_id'])
+            ->filter(fn (string $campo) => $paciente->getAttribute($campo) !== ($validated[$campo] ?? null))
+            ->values()
+            ->all();
+
         $paciente->update([
             'curp' => $validated['curp'] ?? null,
             'rfc' => $validated['rfc'] ?? null,
             'ine_clave' => $validated['ine_clave'] ?? null,
             'tutor_id' => $validated['tutor_id'] ?? null,
         ]);
+
+        $auditoria->registrar('paciente.datos_oficiales_actualizados', $paciente, datosNuevos: [
+            'campos_modificados' => $camposModificados,
+        ], request: $request);
 
         return Redirect::route('admin.pacientes.index');
     }

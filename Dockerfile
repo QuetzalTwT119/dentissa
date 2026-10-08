@@ -24,7 +24,7 @@ RUN apt-get update \
         libzip-dev \
         libsqlite3-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j"$(nproc)" bcmath gd intl mbstring pdo_sqlite xml zip \
+    && docker-php-ext-install -j"$(nproc)" bcmath gd intl mbstring pdo_mysql pdo_sqlite xml zip \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -55,4 +55,4 @@ RUN if [ "$INSTALL_DEV" = "true" ]; then \
 
 EXPOSE 8000
 
-CMD ["sh", "-lc", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
+CMD ["sh", "-lc", "mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000 --no-reload"]

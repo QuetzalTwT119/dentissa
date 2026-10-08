@@ -6,6 +6,7 @@ use App\Enums\EstadoCita;
 use App\Models\Cita;
 use App\Models\Paciente;
 use App\Models\Servicio;
+use App\Services\AuditoriaService;
 use App\Services\CitaReglasService;
 use App\Services\DisponibilidadService;
 use App\Services\NotificacionService;
@@ -55,7 +56,7 @@ class CitaController extends Controller
         ]);
     }
 
-    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas): RedirectResponse
+    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('create', Cita::class);
 
@@ -92,6 +93,7 @@ class CitaController extends Controller
             return back()->withErrors(['hora' => 'Ese horario ya no está disponible. Por favor elige otro.']);
         }
 
+        $auditoria->registrar('cita.creada', $cita, datosNuevos: $this->datosAuditoria($cita, 'interna'), request: $request);
         $notificaciones->citaAgendada($cita->load(['paciente', 'tratamiento']));
 
         return Redirect::route('citas.index');
@@ -106,13 +108,15 @@ class CitaController extends Controller
         ]);
     }
 
-    public function update(Request $request, Cita $cita, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas): RedirectResponse
+    public function update(Request $request, Cita $cita, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('update', $cita);
 
         if (! in_array($cita->estado, [EstadoCita::Agendada, EstadoCita::Confirmada], true)) {
             return back()->withErrors(['estado' => 'Solo se pueden reagendar citas agendadas o confirmadas.']);
         }
+
+        $datosAnteriores = $this->datosAuditoria($cita);
 
         $validated = $request->validate([
             'fecha' => ['required', 'date'],
@@ -141,18 +145,21 @@ class CitaController extends Controller
             return back()->withErrors(['hora' => 'Ese horario ya no está disponible. Por favor elige otro.']);
         }
 
+        $auditoria->registrar('cita.reagendada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
         $notificaciones->citaReagendada($cita->load('paciente'));
 
         return Redirect::route('citas.index');
     }
 
-    public function cancel(Request $request, Cita $cita, NotificacionService $notificaciones): RedirectResponse
+    public function cancel(Request $request, Cita $cita, NotificacionService $notificaciones, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('cancel', $cita);
 
         if (! in_array($cita->estado, [EstadoCita::Agendada, EstadoCita::Confirmada], true)) {
             return back()->withErrors(['estado' => 'Solo se pueden cancelar citas agendadas o confirmadas.']);
         }
+
+        $datosAnteriores = $this->datosAuditoria($cita);
 
         $validated = $request->validate([
             'motivo_cancelacion' => ['nullable', 'string'],
@@ -165,12 +172,13 @@ class CitaController extends Controller
             'motivo_cancelacion' => $validated['motivo_cancelacion'] ?? null,
         ]);
 
+        $auditoria->registrar('cita.cancelada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
         $notificaciones->citaCancelada($cita->load('paciente'));
 
         return Redirect::route('citas.index');
     }
 
-    public function confirm(Request $request, Cita $cita, NotificacionService $notificaciones): RedirectResponse
+    public function confirm(Request $request, Cita $cita, NotificacionService $notificaciones, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('confirm', $cita);
 
@@ -178,18 +186,21 @@ class CitaController extends Controller
             return back()->withErrors(['estado' => 'Solo se pueden confirmar citas en estado agendada.']);
         }
 
+        $datosAnteriores = $this->datosAuditoria($cita);
+
         $cita->update([
             'estado' => EstadoCita::Confirmada,
             'confirmada_por' => $request->user()->id,
             'fecha_confirmacion' => now(),
         ]);
 
+        $auditoria->registrar('cita.confirmada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
         $notificaciones->citaConfirmada($cita->load('paciente'));
 
         return Redirect::route('citas.index');
     }
 
-    public function start(Cita $cita): RedirectResponse
+    public function start(Request $request, Cita $cita, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('start', $cita);
 
@@ -197,12 +208,14 @@ class CitaController extends Controller
             return back()->withErrors(['estado' => 'Solo se pueden iniciar citas confirmadas.']);
         }
 
+        $datosAnteriores = $this->datosAuditoria($cita);
         $cita->update(['estado' => EstadoCita::EnCurso]);
+        $auditoria->registrar('cita.iniciada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
 
         return Redirect::route('citas.index');
     }
 
-    public function noShow(Cita $cita): RedirectResponse
+    public function noShow(Request $request, Cita $cita, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('noShow', $cita);
 
@@ -210,12 +223,14 @@ class CitaController extends Controller
             return back()->withErrors(['estado' => 'Solo se pueden marcar como no asistidas las citas confirmadas.']);
         }
 
+        $datosAnteriores = $this->datosAuditoria($cita);
         $cita->update(['estado' => EstadoCita::NoAsistio]);
+        $auditoria->registrar('cita.no_asistio', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
 
         return Redirect::route('citas.index');
     }
 
-    public function complete(Cita $cita): RedirectResponse
+    public function complete(Request $request, Cita $cita, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('complete', $cita);
 
@@ -223,8 +238,27 @@ class CitaController extends Controller
             return back()->withErrors(['estado' => 'Solo se pueden completar citas en curso.']);
         }
 
+        $datosAnteriores = $this->datosAuditoria($cita);
         $cita->update(['estado' => EstadoCita::Completada]);
+        $auditoria->registrar('cita.completada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
 
         return Redirect::route('citas.index');
+    }
+
+    /** @return array<string, string> */
+    private function datosAuditoria(Cita $cita, ?string $canal = null): array
+    {
+        $datos = [
+            // El modelo recién creado aún no trae los defaults aplicados por
+            // la base de datos; una cita nueva nace en estado agendada.
+            'estado' => $cita->estado?->value ?? EstadoCita::Agendada->value,
+            'fecha_hora' => $cita->fecha_hora->toIso8601String(),
+        ];
+
+        if ($canal !== null) {
+            $datos['canal'] = $canal;
+        }
+
+        return $datos;
     }
 }

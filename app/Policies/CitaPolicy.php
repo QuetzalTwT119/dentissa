@@ -20,7 +20,9 @@ class CitaPolicy
 
     public function create(User $user): bool
     {
-        return true;
+        // La creación interna es una capacidad del personal. La agenda
+        // pública usa CitaPublicaController y no depende de esta policy.
+        return $this->esPersonal($user);
     }
 
     public function update(User $user, Cita $cita): bool

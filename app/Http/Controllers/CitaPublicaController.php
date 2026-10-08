@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\EstadoCita;
 use App\Models\Cita;
 use App\Models\Paciente;
 use App\Models\Servicio;
+use App\Services\AuditoriaService;
 use App\Services\CitaReglasService;
 use App\Services\DisponibilidadService;
 use App\Services\NotificacionService;
@@ -29,7 +31,7 @@ class CitaPublicaController extends Controller
         ]);
     }
 
-    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas): RedirectResponse
+    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas, AuditoriaService $auditoria): RedirectResponse
     {
         $validated = $request->validate([
             'id_servicio' => ['required', 'exists:servicios,id'],
@@ -78,6 +80,11 @@ class CitaPublicaController extends Controller
             return back()->withErrors(['hora' => 'Ese horario ya no está disponible. Por favor elige otro.']);
         }
 
+        $auditoria->registrar('cita.creada', $cita, datosNuevos: [
+            'estado' => $cita->estado?->value ?? EstadoCita::Agendada->value,
+            'fecha_hora' => $cita->fecha_hora->toIso8601String(),
+            'canal' => 'publico',
+        ], request: $request);
         $notificaciones->citaAgendada($cita->load(['paciente', 'tratamiento']));
 
         return Redirect::route('citas.publica.create')

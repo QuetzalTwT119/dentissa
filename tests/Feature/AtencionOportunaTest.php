@@ -61,6 +61,12 @@ class AtencionOportunaTest extends TestCase
             ->assertRedirect();
 
         $this->assertDatabaseHas('lista_espera', ['id' => $solicitud->id, 'estado' => 'contactada']);
+        $this->assertDatabaseHas('logs_auditoria', [
+            'id_usuario' => $admin->id,
+            'accion' => 'lista_espera.contactada',
+            'tabla' => 'lista_espera',
+            'registro_id' => $solicitud->id,
+        ]);
 
         $this->actingAs($admin)
             ->get(route('admin.atencion-oportuna.index', ['historial_estado' => 'contactada']))
@@ -83,5 +89,11 @@ class AtencionOportunaTest extends TestCase
             ->assertRedirect();
 
         $this->assertDatabaseHas('solicitudes_urgencia', ['id' => $urgencia->id, 'estado' => 'contactada']);
+        $this->assertDatabaseHas('logs_auditoria', [
+            'id_usuario' => $admin->id,
+            'accion' => 'urgencia.contactada',
+            'tabla' => 'solicitudes_urgencia',
+            'registro_id' => $urgencia->id,
+        ]);
     }
 }

@@ -49,8 +49,10 @@ class DisponibilidadService
      * Revalida en el servidor que un horario puntual siga disponible antes de guardar.
      *
      * Debe llamarse dentro de un DB::transaction() junto con el create()/update() de la
-     * cita: aplica un lockForUpdate() sobre las citas del día para que dos reservas
-     * concurrentes por el mismo horario no pasen ambas la validación antes de escribir.
+     * cita. El lockForUpdate() bloquea las citas del día que ya existen; no garantiza
+     * por sí solo la exclusión de reservas simultáneas cuando todavía no hay filas
+     * coincidentes. Esa garantía depende del motor, los índices y el aislamiento de
+     * transacciones y debe verificarse con la base de datos elegida para producción.
      */
     public function estaDisponible(CarbonImmutable|Carbon $fechaHora, Tratamiento|int $tratamiento, ?int $excludeCitaId = null): bool
     {

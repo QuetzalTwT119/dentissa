@@ -1,0 +1,116 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Preparar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, fileinfo, intl, pdo_mysql, pdo_sqlite, sqlite3
+          coverage: none
+          tools: composer:v2
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Instalar dependencias PHP
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Instalar y compilar frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Preparar aplicación de pruebas
+        run: |
+          cp .env.example .env
+          touch database/database.sqlite
+          php artisan key:generate --force
+          php artisan migrate --force
+
+      - name: Ejecutar pruebas
+        run: php artisan test
+
+      - name: Verificar espacios y conflictos de formato
+        run: git diff --check
+
+  test-mysql:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: dentissa_test
+          MYSQL_USER: dentissa
+          MYSQL_PASSWORD: dentissa_test
+          MYSQL_ROOT_PASSWORD: root_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_test --silent"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Preparar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, fileinfo, intl, pdo_mysql
+          coverage: none
+          tools: composer:v2
+
+      - name: Instalar dependencias PHP
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Compilar frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Preparar aplicación
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+
+      - name: Ejecutar suite contra MySQL
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USERNAME: dentissa
+          DB_PASSWORD: dentissa_test
+          DENTISSA_TEST_DB_CONNECTION: mysql
+          DENTISSA_TEST_DB_DATABASE: dentissa_test
+        run: php artisan test
+
+      - name: Verificar espacios y conflictos de formato
+        run: git diff --check

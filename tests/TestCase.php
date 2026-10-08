@@ -10,9 +10,18 @@ abstract class TestCase extends BaseTestCase
 {
     public function createApplication()
     {
+        $testConnection = getenv('DENTISSA_TEST_DB_CONNECTION') ?: 'sqlite';
+        $testDatabase = getenv('DENTISSA_TEST_DB_DATABASE') ?: 'dentissa_test';
+
+        if (! in_array($testConnection, ['sqlite', 'mysql'], true)) {
+            throw new \InvalidArgumentException('DENTISSA_TEST_DB_CONNECTION debe ser sqlite o mysql.');
+        }
+
         putenv('APP_ENV=testing');
-        putenv('DB_CONNECTION=sqlite');
-        putenv('DB_DATABASE=:memory:');
+        putenv("DB_CONNECTION={$testConnection}");
+        if ($testConnection === 'sqlite') {
+            putenv('DB_DATABASE=:memory:');
+        }
         putenv('CACHE_STORE=array');
         putenv('SESSION_DRIVER=array');
         putenv('QUEUE_CONNECTION=sync');
@@ -21,8 +30,13 @@ abstract class TestCase extends BaseTestCase
         $app = parent::createApplication();
 
         $app['config']->set('app.env', 'testing');
-        $app['config']->set('database.default', 'sqlite');
-        $app['config']->set('database.connections.sqlite.database', ':memory:');
+        $app['config']->set('database.default', $testConnection);
+        if ($testConnection === 'sqlite') {
+            $app['config']->set('database.connections.sqlite.database', ':memory:');
+        } else {
+            // La suite puede ejecutarse contra un schema desechable independiente.
+            $app['config']->set('database.connections.mysql.database', $testDatabase);
+        }
         $app['config']->set('cache.default', 'array');
         $app['config']->set('session.driver', 'array');
 

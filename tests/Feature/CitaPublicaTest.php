@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\EstadoCita;
 use App\Models\Cita;
+use App\Models\LogAuditoria;
 use App\Models\Paciente;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
@@ -67,5 +68,13 @@ class CitaPublicaTest extends TestCase
             'id_cita' => $cita->id,
             'canal' => 'cita_agendada',
         ]);
+
+        $auditoria = LogAuditoria::where('tabla', 'citas')
+            ->where('registro_id', $cita->id)
+            ->where('accion', 'cita.creada')
+            ->firstOrFail();
+
+        $this->assertNull($auditoria->id_usuario);
+        $this->assertSame('publico', $auditoria->datos_nuevos['canal']);
     }
 }
