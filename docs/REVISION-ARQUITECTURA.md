@@ -57,10 +57,12 @@ Navegador / formulario público / panel interno
   así se evita cerrar prematuramente una cita futura.
 - Los adjuntos del historial clínico se entregan desde almacenamiento privado,
   solo a administradores autenticados; la ruta rechaza otros tipos de imagen.
-- La creación y reagenda revalidan la disponibilidad dentro de una transacción
-  y usan `lockForUpdate` sobre las citas del día. La prueba QA-24 valida el
-  límite de capacidad de forma secuencial; no representa dos solicitudes
-  ejecutándose al mismo tiempo.
+- La creación y reagenda revalidan la disponibilidad dentro de una transacción.
+  `DisponibilidadService` bloquea primero la fila de configuración del día de
+  semana y después las citas existentes; así hay un registro común que serializa
+  las reservas incluso cuando aún no existen citas. Este bloqueo es deliberadamente
+  grueso: serializa brevemente reservas de distintas fechas del mismo día de semana.
+  QA-24 sigue siendo secuencial; QA-34 debe comprobar la contención real en MySQL.
 - `NotificacionService` intenta WhatsApp, usa correo como respaldo y registra
   la notificación sin derribar la operación de agenda.
 - Las rutas administrativas están protegidas por autenticación y rol de
@@ -73,7 +75,7 @@ Navegador / formulario público / panel interno
 | Separación de responsabilidades | Buena para el tamaño actual; los controladores delegan reglas de dominio. |
 | Reglas de agenda | Buena; existe validación común para los canales público, interno y asistente. |
 | Capacidad en flujo secuencial | Verificada: QA-24 rechaza una cita que excedería el límite configurado. |
-| Concurrencia real | Pendiente de verificar con dos reservas simultáneas. SQLite no valida de forma representativa `lockForUpdate`; la suite MySQL actual también prueba el límite de forma secuencial y no demuestra ausencia de carreras. |
+| Concurrencia real | Protección implementada con bloqueo de la fila de horario; pendiente prueba con dos reservas simultáneas en MySQL. SQLite no valida de forma representativa `lockForUpdate`. |
 | Seguridad de rutas | Buena como primera barrera; hay middleware de autenticación/rol y políticas. QA-33 prueba el rechazo de asistentes en 12 páginas y una modificación administrativa, y el redirect de visitantes. |
 | Datos demo | Reproducibles mediante seeders idempotentes (`updateOrCreate`/equivalentes). |
 | Historial clínico | Flujo CRUD, PDF y protección administrativa cubiertos por pruebas. |
@@ -112,11 +114,11 @@ Navegador / formulario público / panel interno
 4. **Notificaciones resilientes.** Mover WhatsApp/correo a una cola con
    reintentos e idempotencia cuando se habilite el envío real. Mantener el
    registro de resultado y un mecanismo de revisión de fallos.
-5. **Concurrencia de reservas.** La prueba secuencial de capacidad está
-   completada (QA-24). Antes de producción, probar dos solicitudes realmente
-   concurrentes usando Railway/MySQL; las suites SQLite y MySQL actuales
-   verifican el límite de forma secuencial, no garantizan que los bloqueos
-   funcionen ante carreras en producción.
+5. **Concurrencia de reservas.** Se añadió un bloqueo transaccional sobre la fila
+   de horario semanal para que exista un mutex incluso antes de la primera cita.
+   QA-24 valida el límite secuencial; QA-34 debe probar dos solicitudes realmente
+   concurrentes en MySQL. No declarar la protección verificada para producción
+   hasta completar ese caso.
 
 ### P2 — siguiente etapa, no bloquear la entrega
 

@@ -110,11 +110,14 @@ desarrollo. La suite incluye reglas de catálogo, fechas futuras, ciclo de vida
 de citas, agendamiento público, atención oportuna, permisos, historial clínico
 y auditoría. El 12/10/2026 la suite completa pasó con **58 pruebas y 228
 aserciones** tanto en SQLite en memoria (Windows PHP 8.3.33) como en MySQL 8.4
-en Docker (`dentissa_test`). La suite valida el límite de capacidad de citas de
-forma secuencial. No demuestra el comportamiento de dos reservas
-simultáneas: antes de producción, esa garantía debe verificarse con el motor de
-base de datos que se vaya a utilizar; SQLite no ofrece una prueba
-representativa de los bloqueos `lockForUpdate`.
+en Docker (`dentissa_test`). La creación y reagenda bloquean, dentro de su
+transacción, la fila de configuración del día de semana antes de revisar las
+citas existentes. Esto proporciona un registro común de exclusión aun cuando
+todavía no haya citas; la consecuencia es serializar brevemente las reservas
+que caigan en cualquier fecha del mismo día de semana. La prueba QA-24 valida
+el límite secuencial; QA-34, pendiente, debe comprobar dos reservas realmente
+simultáneas en MySQL. SQLite no ofrece una prueba representativa de
+`lockForUpdate`.
 
 La suite puede correrse también contra el schema MySQL desechable del entorno
 Docker. El contenedor utiliza MySQL 8.4 para la aplicación y conserva SQLite
@@ -127,8 +130,19 @@ docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DAT
 La inicialización de un volumen MySQL nuevo crea `dentissa_test` separado de
 `dentissa`; `RefreshDatabase` puede reconstruir el schema de pruebas sin tocar
 los datos demo de la aplicación. La ejecución MySQL del 12/10/2026 pasó con 58
-pruebas y 228 aserciones. La prueba de capacidad sigue siendo secuencial y aún
-no constituye una prueba de dos reservas realmente concurrentes.
+pruebas y 228 aserciones. El paso de la suite MySQL confirma compatibilidad del
+cambio con ese motor, pero sigue siendo secuencial y no sustituye QA-34.
+
+La prueba concurrente se ejecuta por separado porque requiere dos procesos PHP
+y MySQL real:
+
+```bash
+docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DATABASE=dentissa_test app php artisan test --compact --filter=ConcurrenciaCitasMySQLTest
+```
+
+El caso crea fixtures en el schema desechable, libera dos procesos al mismo
+tiempo y espera que exactamente uno guarde la cita. Con SQLite se marca como
+omitido; no usar la base `dentissa` para esta prueba.
 
 Ejecutar una prueba específica:
 
