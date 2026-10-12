@@ -77,7 +77,7 @@ Navegador / formulario público / panel interno
 | Seguridad de rutas | Buena como primera barrera; hay middleware de autenticación/rol y políticas. QA-33 prueba el rechazo de asistentes en 12 páginas y una modificación administrativa, y el redirect de visitantes. |
 | Datos demo | Reproducibles mediante seeders idempotentes (`updateOrCreate`/equivalentes). |
 | Historial clínico | Flujo CRUD, PDF y protección administrativa cubiertos por pruebas. |
-| Calidad actual | 58 pruebas/228 aserciones aprobadas en la ejecución local SQLite del 12/10/2026; Docker/MySQL tiene 55/213 del 08/10/2026 y requiere repetir las tres pruebas nuevas de permisos. |
+| Calidad actual | 58 pruebas/228 aserciones aprobadas en SQLite y MySQL 8.4 con Docker (12/10/2026). |
 | Documentación | Manuales, diagramas, plan de entrega y matriz QA enlazados desde el README. |
 
 ## 4. Riesgos y decisiones pendientes
