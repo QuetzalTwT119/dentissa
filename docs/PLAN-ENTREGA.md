@@ -16,7 +16,9 @@ nuevas.
 - Datos demo reproducibles mediante seeders.
 - Entorno Docker documentado para Docker Desktop y WSL2; la aplicación local usa
   MySQL 8.4 y la suite puede correrse en SQLite o en un schema MySQL aislado.
-- Suite automatizada actual: **55 pruebas, 213 aserciones** en SQLite y MySQL.
+- Suite automatizada: **58 pruebas, 228 aserciones** en la ejecución local con
+  SQLite (12/10); la última ejecución MySQL registrada fue 55/213 (08/10), antes
+  de agregar tres pruebas de permisos que falta repetir con ese motor.
 - Scripts locales de respaldo y restauración para SQLite, MySQL y archivos
   subidos; Restic cifra snapshots de MySQL + `storage/app` y se probó su
   recuperación aislada con datos demo.
@@ -109,3 +111,8 @@ restauración también coincidió por SHA-256. Esto no cierra el control de
 respaldos para producción: no se ha confirmado ubicación física remota,
 retención ni automatización. Los ZIP originales siguen sin cifrar. No usar
 datos reales hasta resolver esos puntos.
+
+El 12/10 se amplió la cobertura de permisos: el middleware administrativo se
+probó contra 12 páginas y una modificación; también se comprobó el acceso
+anónimo. La suite local quedó en 58/228 sobre SQLite. Repetir las tres pruebas
+nuevas en MySQL es el siguiente control técnico antes de pasar a despliegue.

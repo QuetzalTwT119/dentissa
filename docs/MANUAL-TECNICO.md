@@ -108,9 +108,11 @@ docker compose exec app php artisan test
 Las pruebas usan SQLite en memoria y no deben modificar la base SQLite real del
 desarrollo. La suite incluye reglas de catálogo, fechas futuras, ciclo de vida
 de citas, agendamiento público, atención oportuna, permisos, historial clínico
-y auditoría. La última ejecución aprobada en Docker fue de **55 pruebas y 213
-aserciones** en SQLite y MySQL. La suite valida el límite de capacidad de citas
-de forma secuencial. No demuestra el comportamiento de dos reservas
+y auditoría. El 12/10/2026 la ejecución local con Windows PHP 8.3.33 pasó con
+**58 pruebas y 228 aserciones** en SQLite en memoria. La última ejecución en
+Docker (08/10/2026) pasó con 55 pruebas y 213 aserciones en cada motor; las 3
+pruebas de permisos nuevas aún deben repetirse en MySQL. La suite valida el
+límite de capacidad de citas de forma secuencial. No demuestra el comportamiento de dos reservas
 simultáneas: antes de producción, esa garantía debe verificarse con el motor de
 base de datos que se vaya a utilizar; SQLite no ofrece una prueba
 representativa de los bloqueos `lockForUpdate`.
@@ -125,8 +127,9 @@ docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DAT
 
 La inicialización de un volumen MySQL nuevo crea `dentissa_test` separado de
 `dentissa`; `RefreshDatabase` puede reconstruir el schema de pruebas sin tocar
-los datos demo de la aplicación. La última ejecución pasó con 55 pruebas y 213
-aserciones en cada motor. La prueba de capacidad sigue siendo secuencial y aún
+los datos demo de la aplicación. La última ejecución MySQL disponible pasó con
+55 pruebas y 213 aserciones (08/10/2026); falta repetir las 3 pruebas nuevas de
+permisos en este motor. La prueba de capacidad sigue siendo secuencial y aún
 no constituye una prueba de dos reservas realmente concurrentes.
 
 Ejecutar una prueba específica:
@@ -203,7 +206,18 @@ IP y agente de usuario. Para proteger la privacidad, los cambios de historial
 guardan metadatos —por ejemplo paciente, cita, fecha y tipo de consulta—, pero
 no copian diagnóstico, medicamentos ni notas clínicas.
 
-## 12. Respaldo y restauración
+## 12. Autorización por rol
+
+Las rutas autenticadas de agenda usan `auth`; las rutas bajo `/admin` añaden el
+middleware `role:admin`. `CitaPolicy` permite las operaciones internas de cita
+al personal con rol `admin` o `asistente`, mientras que los adjuntos del
+historial clínico están reservados a `admin`. La prueba
+`PermisosPorRolTest` verifica que el asistente reciba 403 en 12 páginas
+administrativas y al intentar modificar horarios, y que un visitante sea
+redirigido al login. Se ejecutó con SQLite en memoria; repetirla en MySQL queda
+pendiente.
+
+## 13. Respaldo y restauración
 
 Hay dos pares de scripts independientes. `backup.ps1` y `restore.ps1` trabajan
 con SQLite y `storage/app`; no respaldan ni restauran MySQL. Para MySQL se usan

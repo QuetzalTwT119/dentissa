@@ -74,10 +74,10 @@ Navegador / formulario público / panel interno
 | Reglas de agenda | Buena; existe validación común para los canales público, interno y asistente. |
 | Capacidad en flujo secuencial | Verificada: QA-24 rechaza una cita que excedería el límite configurado. |
 | Concurrencia real | Pendiente de verificar con dos reservas simultáneas. SQLite no valida de forma representativa `lockForUpdate`; la suite MySQL actual también prueba el límite de forma secuencial y no demuestra ausencia de carreras. |
-| Seguridad de rutas | Buena como primera barrera; hay middleware de autenticación/rol y políticas. |
+| Seguridad de rutas | Buena como primera barrera; hay middleware de autenticación/rol y políticas. QA-33 prueba el rechazo de asistentes en 12 páginas y una modificación administrativa, y el redirect de visitantes. |
 | Datos demo | Reproducibles mediante seeders idempotentes (`updateOrCreate`/equivalentes). |
 | Historial clínico | Flujo CRUD, PDF y protección administrativa cubiertos por pruebas. |
-| Calidad actual | 55 pruebas aprobadas y 213 aserciones en SQLite y MySQL en el último ciclo Docker. |
+| Calidad actual | 58 pruebas/228 aserciones aprobadas en la ejecución local SQLite del 12/10/2026; Docker/MySQL tiene 55/213 del 08/10/2026 y requiere repetir las tres pruebas nuevas de permisos. |
 | Documentación | Manuales, diagramas, plan de entrega y matriz QA enlazados desde el README. |
 
 ## 4. Riesgos y decisiones pendientes
