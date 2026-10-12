@@ -152,6 +152,11 @@ Ejecutar una prueba específica:
 docker compose exec app php artisan test --filter=CitaPublicaTest
 ```
 
+GitHub Actions ejecuta la suite al subir commits a cualquier rama y al abrir o
+actualizar un pull request hacia `master`. El job SQLite valida la suite
+general; `test-mysql` usa MySQL 8.4 y ejecuta también QA-34. Revisa ambos jobs
+en la pestaña **Actions** antes de integrar un pull request.
+
 ## 7. Flujo Git recomendado
 
 1. Actualizar `master`.
