@@ -8,7 +8,6 @@ use App\Models\Tratamiento;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Tests\TestCase;
 
@@ -61,6 +60,19 @@ class ConcurrenciaCitasMySQLTest extends TestCase
         mkdir($barrier);
 
         try {
+            $mysqlConfig = config('database.connections.mysql');
+            $workerEnvironment = array_merge(getenv(), [
+                'APP_ENV' => 'testing',
+                'DB_CONNECTION' => 'mysql',
+                'DB_DATABASE' => getenv('DENTISSA_TEST_DB_DATABASE') ?: 'dentissa_test',
+                'DB_HOST' => (string) $mysqlConfig['host'],
+                'DB_PORT' => (string) $mysqlConfig['port'],
+                'DB_USERNAME' => (string) $mysqlConfig['username'],
+                'DB_PASSWORD' => (string) $mysqlConfig['password'],
+                'DB_SOCKET' => (string) ($mysqlConfig['unix_socket'] ?? ''),
+                'DB_URL' => '',
+            ]);
+
             $processes = $pacientes->map(fn (Paciente $paciente, int $index) => new Process([
                 PHP_BINARY,
                 base_path('tests/Support/concurrent-booking-worker.php'),
@@ -70,8 +82,8 @@ class ConcurrenciaCitasMySQLTest extends TestCase
                 $fechaHora->format('Y-m-d H:i:s'),
                 $barrier,
                 (string) ($index + 1),
-                getenv('DENTISSA_TEST_DB_DATABASE') ?: 'dentissa_test',
-            ], base_path(), timeout: 20));
+                $workerEnvironment['DB_DATABASE'],
+            ], base_path(), $workerEnvironment, timeout: 20));
 
             foreach ($processes as $process) {
                 $process->start();
@@ -102,7 +114,13 @@ class ConcurrenciaCitasMySQLTest extends TestCase
                 }
             }
 
-            (new Filesystem)->remove($barrier);
+            foreach (glob($barrier.DIRECTORY_SEPARATOR.'*') ?: [] as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+
+            rmdir($barrier);
         }
     }
 }

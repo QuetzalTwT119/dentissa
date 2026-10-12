@@ -10,9 +10,15 @@ use Illuminate\Support\Facades\DB;
 [$script, $patientId, $serviceId, $treatmentId, $dateTime, $barrier, $workerId, $testDatabase] = $argv;
 $basePath = dirname(__DIR__, 2);
 
-putenv('APP_ENV=testing');
-putenv('DB_CONNECTION=mysql');
-putenv("DB_DATABASE={$testDatabase}");
+foreach ([
+    'APP_ENV' => 'testing',
+    'DB_CONNECTION' => 'mysql',
+    'DB_DATABASE' => $testDatabase,
+] as $key => $value) {
+    putenv("{$key}={$value}");
+    $_ENV[$key] = $value;
+    $_SERVER[$key] = $value;
+}
 
 require $basePath.'/vendor/autoload.php';
 $app = require $basePath.'/bootstrap/app.php';
