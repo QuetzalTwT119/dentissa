@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Paciente;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Support\Facades\DB;
@@ -49,12 +50,17 @@ class ConcurrenciaCitasMySQLTest extends TestCase
         ]);
         $servicio->tratamientos()->attach($tratamiento);
 
-        $pacientes = collect([1, 2])->map(fn (int $numero) => Paciente::create([
-            'nombre' => "Paciente QA {$numero}",
-            'apellido' => 'Concurrencia',
-            'telefono' => '5555555555',
-            'email' => "concurrencia-{$numero}-".uniqid().'@example.test',
-        ]));
+        $pacientes = collect([1, 2])->map(function (int $numero) {
+            $usuario = User::factory()->create();
+
+            return Paciente::create([
+                'id_usuario' => $usuario->id,
+                'nombre' => "Paciente QA {$numero}",
+                'apellido' => 'Concurrencia',
+                'telefono' => '5555555555',
+                'email' => "concurrencia-{$numero}-".uniqid().'@example.test',
+            ]);
+        });
 
         $barrier = sys_get_temp_dir().DIRECTORY_SEPARATOR.'dentissa-concurrency-'.bin2hex(random_bytes(8));
         mkdir($barrier);
