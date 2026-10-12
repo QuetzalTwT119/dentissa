@@ -115,9 +115,9 @@ transacción, la fila de configuración del día de semana antes de revisar las
 citas existentes. Esto proporciona un registro común de exclusión aun cuando
 todavía no haya citas; la consecuencia es serializar brevemente las reservas
 que caigan en cualquier fecha del mismo día de semana. La prueba QA-24 valida
-el límite secuencial; QA-34, pendiente, debe comprobar dos reservas realmente
-simultáneas en MySQL. SQLite no ofrece una prueba representativa de
-`lockForUpdate`.
+el límite secuencial; QA-34 comprobó con dos procesos PHP concurrentes en MySQL
+8.4 que solo uno reserva el último cupo (1 prueba/5 aserciones, 12/10/2026).
+SQLite no ofrece una prueba representativa de `lockForUpdate`.
 
 La suite puede correrse también contra el schema MySQL desechable del entorno
 Docker. El contenedor utiliza MySQL 8.4 para la aplicación y conserva SQLite
@@ -130,19 +130,21 @@ docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DAT
 La inicialización de un volumen MySQL nuevo crea `dentissa_test` separado de
 `dentissa`; `RefreshDatabase` puede reconstruir el schema de pruebas sin tocar
 los datos demo de la aplicación. La ejecución MySQL del 12/10/2026 pasó con 58
-pruebas y 228 aserciones. El paso de la suite MySQL confirma compatibilidad del
-cambio con ese motor, pero sigue siendo secuencial y no sustituye QA-34.
+pruebas y 228 aserciones. Esa ejecución fue anterior al test concurrente; tras
+los cambios de concurrencia, la prueba QA-34 pasó por separado. Se recomienda
+volver a correr la suite completa MySQL como comprobación de regresión.
 
 La prueba concurrente se ejecuta por separado porque requiere dos procesos PHP
 y MySQL real:
 
 ```bash
-docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DATABASE=dentissa_test app php artisan test --compact --filter=ConcurrenciaCitasMySQLTest
+docker compose run --build --rm --no-deps -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DATABASE=dentissa_test app php artisan test --compact --filter=ConcurrenciaCitasMySQLTest
 ```
 
 El caso crea fixtures en el schema desechable, libera dos procesos al mismo
-tiempo y espera que exactamente uno guarde la cita. Con SQLite se marca como
-omitido; no usar la base `dentissa` para esta prueba.
+tiempo y espera que exactamente uno guarde la cita. El 12/10/2026 aprobó con
+1 prueba/5 aserciones en MySQL 8.4. Con SQLite se marca como omitido; no usar la
+base `dentissa` para esta prueba.
 
 Ejecutar una prueba específica:
 
