@@ -108,9 +108,11 @@ docker compose exec app php artisan test
 Las pruebas usan SQLite en memoria y no deben modificar la base SQLite real del
 desarrollo. La suite incluye reglas de catálogo, fechas futuras, ciclo de vida
 de citas, agendamiento público, atención oportuna, permisos, historial clínico
-y auditoría. El 12/10/2026 la suite completa pasó con **58 pruebas y 228
-aserciones** tanto en SQLite en memoria (Windows PHP 8.3.33) como en MySQL 8.4
-en Docker (`dentissa_test`). La creación y reagenda bloquean, dentro de su
+y auditoría. El 12/10/2026, después del cambio de concurrencia, la suite
+completa pasó con **59 pruebas y 233 aserciones** en MySQL 8.4 en Docker
+(`dentissa_test`). En SQLite en memoria (Windows PHP 8.3.33), el resultado fue
+58 aprobadas y 1 omitida (la prueba de concurrencia requiere MySQL), con 228
+aserciones. La creación y reagenda bloquean, dentro de su
 transacción, la fila de configuración del día de semana antes de revisar las
 citas existentes. Esto proporciona un registro común de exclusión aun cuando
 todavía no haya citas; la consecuencia es serializar brevemente las reservas
@@ -129,10 +131,8 @@ docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DAT
 
 La inicialización de un volumen MySQL nuevo crea `dentissa_test` separado de
 `dentissa`; `RefreshDatabase` puede reconstruir el schema de pruebas sin tocar
-los datos demo de la aplicación. La ejecución MySQL del 12/10/2026 pasó con 58
-pruebas y 228 aserciones. Esa ejecución fue anterior al test concurrente; tras
-los cambios de concurrencia, la prueba QA-34 pasó por separado. Se recomienda
-volver a correr la suite completa MySQL como comprobación de regresión.
+los datos demo de la aplicación. El 12/10/2026, la suite completa después del
+cambio de concurrencia pasó en MySQL 8.4 con 59 pruebas y 233 aserciones.
 
 La prueba concurrente se ejecuta por separado porque requiere dos procesos PHP
 y MySQL real:

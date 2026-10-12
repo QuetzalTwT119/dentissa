@@ -76,11 +76,11 @@ Navegador / formulario público / panel interno
 | Separación de responsabilidades | Buena para el tamaño actual; los controladores delegan reglas de dominio. |
 | Reglas de agenda | Buena; existe validación común para los canales público, interno y asistente. |
 | Capacidad en flujo secuencial | Verificada: QA-24 rechaza una cita que excedería el límite configurado. |
-| Concurrencia real | Protección implementada y verificada con dos procesos de reserva concurrentes en MySQL 8.4 (QA-34). SQLite no valida de forma representativa `lockForUpdate`. Falta repetir la suite completa MySQL tras el cambio. |
+| Concurrencia real | Protección implementada y verificada con dos procesos de reserva concurrentes en MySQL 8.4 (QA-34). SQLite no valida de forma representativa `lockForUpdate`. La suite completa de regresión MySQL también pasó: 59 pruebas/233 aserciones. |
 | Seguridad de rutas | Buena como primera barrera; hay middleware de autenticación/rol y políticas. QA-33 prueba el rechazo de asistentes en 12 páginas y una modificación administrativa, y el redirect de visitantes. |
 | Datos demo | Reproducibles mediante seeders idempotentes (`updateOrCreate`/equivalentes). |
 | Historial clínico | Flujo CRUD, PDF y protección administrativa cubiertos por pruebas. |
-| Calidad actual | 58 pruebas/228 aserciones aprobadas en SQLite y MySQL 8.4 con Docker (12/10/2026). |
+| Calidad actual | MySQL 8.4: 59 pruebas/233 aserciones aprobadas; SQLite: 58 aprobadas/1 omitida y 228 aserciones (QA-34 requiere MySQL), 12/10/2026. |
 | Documentación | Manuales, diagramas, plan de entrega y matriz QA enlazados desde el README. |
 
 ## 4. Riesgos y decisiones pendientes
@@ -118,8 +118,8 @@ Navegador / formulario público / panel interno
 5. ~~**Concurrencia de reservas.**~~ **Completado para el flujo actual:** el
    bloqueo transaccional sobre la fila de horario semanal proporciona exclusión
    incluso antes de la primera cita. QA-34 verificó con MySQL 8.4 que, ante dos
-   procesos simultáneos y capacidad 1, solo una cita se guarda. Repetir la suite
-   completa MySQL como regresión tras el cambio.
+   procesos simultáneos y capacidad 1, solo una cita se guarda. La suite completa
+   de regresión también pasó en MySQL 8.4: 59 pruebas/233 aserciones (12/10/2026).
 
 ### P2 — siguiente etapa, no bloquear la entrega
 
