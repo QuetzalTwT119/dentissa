@@ -3,7 +3,7 @@
 Usar esta matriz durante las pruebas del equipo. Cada caso debe registrar la
 fecha, la persona que lo ejecutó y una captura o referencia de evidencia.
 
-Estados sugeridos: `Pendiente`, `Aprobado`, `Falló`, `Bloqueado`, `Diferido`.
+Estados sugeridos: `Pendiente`, `Aprobado`, `Aprobado con observación`, `Falló`, `Bloqueado`, `Diferido`.
 
 | ID | Flujo | Resultado esperado | Prioridad | Estado | Evidencia / incidencia | Responsable |
 |---|---|---|---|---|---|---|
@@ -16,7 +16,7 @@ Estados sugeridos: `Pendiente`, `Aprobado`, `Falló`, `Bloqueado`, `Diferido`.
 | QA-07 | Confirmar, iniciar y completar una cita | Solo aparecen las acciones válidas por estado | Bloqueante | Aprobado | `CitaReglasTest`: confirmar, iniciar y completar | Codex · 07/10/2026 |
 | QA-08 | Cancelar y marcar no asistencia | El estado y motivo se conservan; la inasistencia solo se registra desde la hora programada | Importante | Aprobado | `CitaReglasTest`: cancelación con motivo, bloqueo antes de la hora y registro al llegar la hora | Codex · 08/10/2026 |
 | QA-09 | Reagendar una cita | Se valida disponibilidad y se actualiza fecha/hora | Bloqueante | Aprobado | `CitaReglasTest`: reagendamiento válido | Codex · 07/10/2026 |
-| QA-10 | Usar asistente de agenda | Responde preguntas aprobadas, reutiliza el flujo de horarios y dirige urgencias/lista de espera sin crear citas automáticamente | Importante | Aprobado | `AsistenteAgendaTest`: 4 pruebas/15 aserciones aprobadas en SQLite en memoria (13/10/2026); cubre propuesta respetando duración y disponibilidad, respuesta de preguntas frecuentes activas, flujo web de agenda y enlaces de atención oportuna. La interfaz web muestra el campo de consulta y deshabilita «Enviar» vacío. La prueba manual de enviar un mensaje en navegador queda pendiente de autorización en el momento; no se transmitió ninguna consulta desde la UI | Codex · 13/10/2026 |
+| QA-10 | Usar asistente de agenda | Responde preguntas aprobadas, reutiliza el flujo de horarios y dirige urgencias/lista de espera sin crear citas automáticamente | Aprobado con observación | La prueba automatizada `AsistenteAgendaTest` valida que una pregunta frecuente activa responda el texto aprobado y cubre el flujo web de agenda y los enlaces de atención oportuna. Prueba manual en `localhost:8000/agendar-cita` (13/10/2026): enviado «¿Cuánto cuesta una limpieza dental?»; el asistente mostró el fallback seguro «No encontré una respuesta aprobada…». No se creó cita. Resultado funcional y seguro, pero no se comprobó en la interfaz una respuesta aprobada porque la instancia no encontró una FAQ coincidente; revisar el contenido activo en Catálogo/Preguntas frecuentes y repetir la prueba queda pendiente. | Usuario + Codex · 13/10/2026 |
 | QA-11 | Enviar solicitud urgente | No crea una cita automática y muestra aviso médico | Bloqueante | Aprobado | `AtencionOportunaTest`: solicitud sin cita automática | Codex · 07/10/2026 |
 | QA-12 | Contactar solicitud urgente | Desaparece de pendientes y aparece en historial | Importante | Aprobado | `AtencionOportunaTest`: admin puede marcarla como contactada | Codex · 07/10/2026 |
 | QA-13 | Unirse a lista de espera | La solicitud conserva preferencias y no confirma cita | Bloqueante | Aprobado | `AtencionOportunaTest`: alta y visualización administrativa | Codex · 07/10/2026 |
