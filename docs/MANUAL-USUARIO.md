@@ -57,7 +57,24 @@ En `/asistente-agenda`, el personal selecciona los datos de la cita. El
 asistente consulta disponibilidad y propone horarios. No guarda nada hasta
 pulsar **Confirmar y agendar**.
 
-## 5. Atención oportuna
+## 5. Asistente para pacientes y preguntas frecuentes
+
+El asistente flotante responde con preguntas frecuentes activas y sus respuestas
+aprobadas. Si no reconoce la duda con suficiente seguridad, pide reformularla o
+contactar al consultorio; no inventa precios ni orientación clínica.
+
+El personal administrador gestiona las FAQs desde **Contenido → Preguntas
+frecuentes**. En cada registro puede escribir una pregunta principal, su respuesta
+aprobada y, opcionalmente, varias formas alternativas de preguntar (una por
+línea). Las alternativas deben expresar la misma duda, no añadir información a
+la respuesta. Para que una FAQ responda en el chat debe estar activa y visible.
+
+Antes de publicar cambios, se recomienda probar la pregunta principal, al menos
+una variante, una frase con un error pequeño de escritura y una duda ambigua. Si
+el asistente no puede identificarla con seguridad, debe mostrar el mensaje de
+respaldo y no seleccionar una respuesta al azar.
+
+## 6. Atención oportuna
 
 ### Solicitud urgente
 
@@ -79,7 +96,7 @@ Desde `/admin/atencion-oportuna`, las solicitudes contactadas o cerradas se
 pueden consultar en **Historial de seguimiento** y filtrar por estado y rango
 de fechas. Marcar una solicitud como contactada no crea una cita automática.
 
-## 6. Pacientes e historial clínico
+## 7. Pacientes e historial clínico
 
 Desde `/admin/pacientes`:
 
@@ -93,7 +110,7 @@ Desde `/admin/pacientes`:
 Durante las pruebas se deben usar datos ficticios. No se deben subir imágenes,
 documentos ni datos médicos reales al entorno de desarrollo.
 
-## 7. Diferencia entre pendientes e historial
+## 8. Diferencia entre pendientes e historial
 
 Cuando una solicitud urgente o de lista de espera se marca como contactada,
 deja de aparecer en la lista de pendientes. No se elimina: conserva su estado,

@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Services\AsistentePacienteService;
 use App\Services\AgendaTelegramService;
+use App\Services\AsistentePacienteService;
 use App\Services\AtencionOportunaService;
 use App\Services\TelegramService;
 use Illuminate\Console\Command;
@@ -66,11 +66,12 @@ class ProcesarMensajesTelegram extends Command
         if (str_starts_with($texto, '/start')) {
             $respuesta = 'Hola. Soy el asistente de Dentissa. Puedo responder dudas con la información aprobada del consultorio y orientarte para agendar una cita.';
         } else {
+            $agendaEnCurso = $agenda->tieneConsultaEnCurso($chatId);
             $consulta = $asistente->responder($texto);
-            $orientacion = $agenda->tieneConsultaEnCurso($chatId) ? null : $atencion->responder($texto);
+            $orientacion = $agendaEnCurso ? null : $atencion->responder($texto);
             $respuesta = $orientacion
                 ? $orientacion['respuesta']."\n\n".$orientacion['accion']['url']
-                : ((! $agenda->tieneConsultaEnCurso($chatId) && $consulta['encontrada'])
+                : ((! $agendaEnCurso && ($consulta['encontrada'] || ($consulta['ambigua'] ?? false)))
                     ? $consulta['respuesta']
                     : ($agenda->responder($chatId, $texto) ?? $consulta['respuesta']));
         }

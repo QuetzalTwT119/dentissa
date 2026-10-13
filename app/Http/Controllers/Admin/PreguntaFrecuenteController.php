@@ -59,6 +59,7 @@ class PreguntaFrecuenteController extends Controller
         $validated = $request->validate([
             'pregunta' => ['required', 'string', 'max:200'],
             'respuesta' => ['required', 'string'],
+            'variantes' => ['nullable', 'string', 'max:4000'],
             'orden' => ['nullable', 'integer', 'min:0'],
             'activa' => ['boolean'],
         ]);

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['pregunta', 'respuesta', 'activa', 'orden'])]
+#[Fillable(['pregunta', 'respuesta', 'variantes', 'activa', 'orden'])]
 class PreguntaFrecuente extends Model
 {
     use HasFactory;

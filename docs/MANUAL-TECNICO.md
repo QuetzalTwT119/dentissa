@@ -201,7 +201,22 @@ La acción `citas.no-show` solo permite marcar una cita confirmada como
 se realiza en el servidor, por lo que también protege solicitudes directas que
 no provienen de la interfaz.
 
-## 10. Atención oportuna e historial
+## 10. Respuestas del asistente de pacientes
+
+`AsistentePacienteService` solo consulta FAQs activas. Las frases alternativas
+se guardan en `preguntas_frecuentes.variantes`, separadas por líneas, para cubrir
+sinónimos y formulaciones frecuentes sin duplicar respuestas. La comparación
+normaliza mayúsculas, acentos y puntuación; tolera errores tipográficos leves
+con distancia de edición, pero requiere al menos dos palabras coincidentes y un
+puntaje mínimo. Si dos FAQs tienen puntajes cercanos o el resultado es débil,
+devuelve un mensaje de respaldo en lugar de escoger una respuesta dudosa.
+
+El asistente no genera texto clínico ni completa información faltante. Las
+variantes deben mantener la misma intención que la pregunta principal. Para
+aplicar el nuevo campo en una instalación existente, ejecutar `php artisan
+migrate` dentro del contenedor; no se requieren cambios de configuración.
+
+## 11. Atención oportuna e historial
 
 Las solicitudes urgentes y de lista de espera se conservan en la base de
 datos. El panel administrativo muestra por separado los pendientes y el
@@ -212,7 +227,7 @@ Las notificaciones de cita guardan también `id_cita`, lo que permite enlazar
 un aviso con la cita que lo originó sin depender únicamente del texto del
 mensaje.
 
-## 11. Auditoría de operaciones sensibles
+## 12. Auditoría de operaciones sensibles
 
 `AuditoriaService` centraliza el registro de acciones relevantes en
 `logs_auditoria`. Se auditan las altas y transiciones de citas, los cambios del
@@ -236,7 +251,7 @@ revierte también el cambio de negocio y la aplicación muestra una respuesta
 tarde. Las notificaciones externas se envían después de confirmar la
 transacción; un fallo al enviar un aviso no deshace una cita válida.
 
-## 12. Autorización por rol
+## 13. Autorización por rol
 
 Las rutas autenticadas de agenda usan `auth`; las rutas bajo `/admin` añaden el
 middleware `role:admin`. `CitaPolicy` permite las operaciones internas de cita
@@ -247,7 +262,7 @@ administrativas y al intentar modificar horarios, y que un visitante sea
 redirigido al login. Las 3 pruebas (15 aserciones) y la suite completa pasaron
 en SQLite en memoria y en MySQL 8.4 con el schema aislado `dentissa_test`.
 
-## 13. Respaldos y recuperación
+## 14. Respaldos y recuperación
 
 La automatización de respaldos y restauración se ha diferido y no forma parte
 de esta versión del proyecto. Antes de utilizar datos clínicos reales, el equipo

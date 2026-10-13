@@ -74,6 +74,7 @@ class AsistenteAgendaTest extends TestCase
         PreguntaFrecuente::create([
             'pregunta' => '¿Cuánto cuesta una limpieza dental?',
             'respuesta' => 'El costo de la limpieza se confirma antes de la cita.',
+            'variantes' => '¿Cuál es el costo de una limpieza?',
             'activa' => true,
         ]);
 

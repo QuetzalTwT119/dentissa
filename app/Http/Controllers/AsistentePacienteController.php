@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\AsistentePacienteService;
 use App\Services\AgendaTelegramService;
+use App\Services\AsistentePacienteService;
 use App\Services\AtencionOportunaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,12 +20,14 @@ class AsistentePacienteController extends Controller
         // La agenda usa el mismo flujo que Telegram, pero con una conversación
         // separada por sesión web. Así no se mezclan pacientes ni canales.
         $conversacion = 'web:'.$validated['conversacion_id'];
+        $agendaEnCurso = $agenda->tieneConsultaEnCurso($conversacion);
         $consulta = $asistente->responder($validated['consulta']);
-        $orientacion = $agenda->tieneConsultaEnCurso($conversacion) ? null : $atencion->responder($validated['consulta']);
+        $orientacion = $agendaEnCurso ? null : $atencion->responder($validated['consulta']);
 
-        $respuesta = $orientacion['respuesta'] ?? ((! $agenda->tieneConsultaEnCurso($conversacion) && $consulta['encontrada'])
-            ? $consulta['respuesta']
-            : ($agenda->responder($conversacion, $validated['consulta']) ?? $consulta['respuesta']));
+        $respuesta = $orientacion['respuesta']
+            ?? ((! $agendaEnCurso && ($consulta['encontrada'] || ($consulta['ambigua'] ?? false)))
+                ? $consulta['respuesta']
+                : ($agenda->responder($conversacion, $validated['consulta']) ?? $consulta['respuesta']));
 
         return response()->json([
             'encontrada' => $consulta['encontrada'],
