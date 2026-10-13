@@ -31,5 +31,6 @@
                 @endif
             </div>
         </main>
+        <x-asistente-chat />
     </body>
 </html>

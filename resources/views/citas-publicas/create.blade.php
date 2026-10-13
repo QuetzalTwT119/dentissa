@@ -272,62 +272,7 @@
                 </div>
             </div>
 
-            <div class="mx-auto mt-6 max-w-lg px-6 sm:px-0"
-                 x-data="{
-                    consulta: '',
-                    conversacionId: localStorage.getItem('dentissa_asistente_conversacion') ?? crypto.randomUUID(),
-                    mensajes: [{ autor: 'bot', texto: 'Hola, soy Dentissa Asistente. Puedo responder preguntas aprobadas o ayudarte a buscar horarios. Escribe, por ejemplo: Quiero una cita.' }],
-                    cargando: false,
-                    init() { localStorage.setItem('dentissa_asistente_conversacion', this.conversacionId); },
-                    async preguntar() {
-                        if (this.consulta.trim().length < 3) return;
-                        const texto = this.consulta.trim();
-                        this.mensajes.push({ autor: 'persona', texto });
-                        this.consulta = '';
-                        this.cargando = true;
-                        try {
-                            const respuesta = await fetch('{{ route('asistente-paciente.responder') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                                },
-                                body: JSON.stringify({ consulta: texto, conversacion_id: this.conversacionId }),
-                            });
-                            const datos = await respuesta.json();
-                            this.mensajes.push({ autor: 'bot', texto: datos.respuesta ?? 'No fue posible responder en este momento.', accion: datos.accion ?? null });
-                        } catch (error) {
-                            this.mensajes.push({ autor: 'bot', texto: 'No fue posible responder en este momento. Intenta nuevamente o comunícate con el consultorio.' });
-                        } finally {
-                            this.cargando = false;
-                            this.$nextTick(() => this.$refs.historial.scrollTop = this.$refs.historial.scrollHeight);
-                        }
-                    },
-                 }">
-                <div class="rounded-xl bg-white p-6 shadow-sm">
-                    <h2 class="text-lg font-semibold text-gray-900">Dentissa Asistente</h2>
-                    <p class="mt-1 text-sm text-gray-600">El mismo asistente de Telegram, ahora también en esta página.</p>
-                    <div x-ref="historial" class="mt-4 max-h-72 space-y-3 overflow-y-auto rounded-lg bg-gray-50 p-3">
-                        <template x-for="(mensaje, indice) in mensajes" :key="indice">
-                            <div class="flex" :class="mensaje.autor === 'persona' ? 'justify-end' : 'justify-start'">
-                                <p class="max-w-[88%] whitespace-pre-line rounded-lg px-3 py-2 text-sm" :class="mensaje.autor === 'persona' ? 'bg-brand-500 text-white' : 'bg-white text-gray-800 shadow-sm'" x-text="mensaje.texto"></p>
-                                <a x-show="mensaje.accion" :href="mensaje.accion?.url" class="mt-2 inline-block rounded-md bg-brand-500 px-3 py-2 text-xs font-semibold text-white hover:bg-brand-600" x-text="mensaje.accion?.etiqueta"></a>
-                            </div>
-                        </template>
-                        <p x-show="cargando" class="text-sm text-gray-500">Dentissa Asistente está respondiendo…</p>
-                    </div>
-                    <form class="mt-4 space-y-3" @submit.prevent="preguntar()">
-                        <label for="consulta-asistente" class="sr-only">Escribe tu pregunta</label>
-                        <input id="consulta-asistente" type="text" x-model="consulta" placeholder="Ej. Quiero una cita o ¿Cuánto cuesta una limpieza?"
-                               class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
-                        <button type="submit" :disabled="cargando || consulta.trim().length < 3"
-                                class="rounded-md bg-brand-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-600 disabled:opacity-50">
-                            Enviar
-                        </button>
-                    </form>
-                </div>
-            </div>
         @endif
+        <x-asistente-chat />
     </body>
 </html>
