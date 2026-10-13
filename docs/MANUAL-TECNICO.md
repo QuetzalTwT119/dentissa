@@ -112,9 +112,9 @@ y auditoría. El 12/10/2026, después del cambio de concurrencia, la suite
 completa pasó con **59 pruebas y 233 aserciones** en MySQL 8.4 en Docker
 (`dentissa_test`). En SQLite en memoria (Windows PHP 8.3.33), el resultado fue
 58 aprobadas y 1 omitida (la prueba de concurrencia requiere MySQL), con 228
-aserciones. Tras añadir la garantía de auditoría atómica, SQLite pasó con 62
-pruebas, 245 aserciones y 1 omitida el 13/10/2026; el job MySQL debe confirmarse
-en CI para esta revisión. La creación y reagenda bloquean, dentro de su
+aserciones. Tras añadir la garantía de auditoría atómica, el 13/10/2026 la suite
+pasó en GitHub Actions con **62 pruebas y 245 aserciones** en SQLite (1 omitida)
+y **63 pruebas y 250 aserciones** en MySQL 8.4. La creación y reagenda bloquean, dentro de su
 transacción, la fila de configuración del día de semana antes de revisar las
 citas existentes. Esto proporciona un registro común de exclusión aun cuando
 todavía no haya citas; la consecuencia es serializar brevemente las reservas
@@ -133,10 +133,9 @@ docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DAT
 
 La inicialización de un volumen MySQL nuevo crea `dentissa_test` separado de
 `dentissa`; `RefreshDatabase` puede reconstruir el schema de pruebas sin tocar
-los datos demo de la aplicación. El 12/10/2026, la suite completa después del
-cambio de concurrencia pasó en MySQL 8.4 con 59 pruebas y 233 aserciones. La
-suite contra MySQL queda pendiente para los cambios de auditoría atómica del
-13/10/2026 y debe validarse mediante CI.
+los datos demo de la aplicación. El 13/10/2026, la suite completa contra MySQL
+8.4 pasó en GitHub Actions con 63 pruebas y 250 aserciones, incluyendo los
+casos de rollback ante una falla de auditoría.
 
 La prueba concurrente se ejecuta por separado porque requiere dos procesos PHP
 y MySQL real:
