@@ -16,8 +16,9 @@ nuevas.
 - Datos demo reproducibles mediante seeders.
 - Entorno Docker documentado para Docker Desktop y WSL2; la aplicación local usa
   MySQL 8.4 y la suite puede correrse en SQLite o en un schema MySQL aislado.
-- Suite automatizada: **59 pruebas, 233 aserciones** aprobadas en MySQL 8.4;
-  SQLite aprobó 58 y omitió una prueba que requiere MySQL (228 aserciones).
+- Suite automatizada (13/10/2026): **63 pruebas y 250 aserciones** aprobadas en
+  MySQL 8.4; SQLite aprobó 62 y omitió una prueba que requiere MySQL
+  (245 aserciones). GitHub Actions #9 pasó ambos jobs.
 - El trabajo de respaldo y restauración está diferido y no forma parte de esta
   integración.
 - Autorización interna de citas y auditoría de operaciones sensibles cubiertas
@@ -106,6 +107,11 @@ de protección y recuperación.
 
 El 12/10 se amplió la cobertura de permisos: el middleware administrativo se
 probó contra 12 páginas y una modificación; también se comprobó el acceso
-anónimo. La suite completa en MySQL 8.4 pasó con 59 pruebas y 233 aserciones;
-SQLite aprobó 58 pruebas y omitió una, con 228 aserciones. El siguiente control
-técnico es completar el recorrido manual del sistema.
+anónimo. El 13/10 se aseguró que los cambios sensibles y su bitácora sean
+atómicos; ante una falla, el cambio se revierte. GitHub Actions #9 pasó con 63
+pruebas/250 aserciones en MySQL y 62 pruebas aprobadas, 1 omitida y 245
+aserciones en SQLite. La mejora de exigir una transacción dentro del servicio
+de auditoría queda anotada como posterior al MVP. El siguiente paso es completar
+el recorrido manual de aceptación: agenda pública, flujo de asistente, estados
+de cita, historial clínico y permisos por rol, registrando el resultado en la
+matriz QA.
