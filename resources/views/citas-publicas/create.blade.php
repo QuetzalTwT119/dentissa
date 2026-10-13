@@ -27,7 +27,7 @@
             <div class="min-h-screen bg-brand-50 pb-16"
                  x-data="{
                     paso: {{ $errors->any() ? 4 : 0 }},
-                    pasos: ['Tipo de atención', 'Fecha', 'Hora', 'Confirmar', 'Tus datos'],
+                    pasos: ['Tipo de atención', 'Fecha', 'Hora', 'Resumen', 'Datos'],
                     servicios: @js($servicios),
                     idServicio: @js(old('id_servicio', '')),
                     idTratamiento: @js(old('id_tratamiento', '')),
@@ -158,8 +158,8 @@
                     <template x-if="paso === 3">
                         <div>
                             <div class="bg-brand-500 px-6 py-8 text-center text-white">
-                                <h1 class="text-2xl font-semibold sm:text-3xl">Confirmación de datos de la cita</h1>
-                                <p class="mt-2 text-sm text-brand-50">Revisa que todo esté correcto</p>
+                                <h1 class="text-2xl font-semibold sm:text-3xl">Resumen de la cita</h1>
+                                <p class="mt-2 text-sm text-brand-50">Revisa el tratamiento, la fecha y la hora antes de continuar</p>
                                 <div class="mt-4 flex items-center justify-center gap-2">
                                     <template x-for="(p, i) in pasos" :key="i">
                                         <span class="h-2 w-2 rounded-full transition" :class="i === paso ? 'bg-white' : 'bg-white/40'"></span>
@@ -178,7 +178,7 @@
 
                                 <div class="flex gap-3 pt-2">
                                     <button type="button" @click="anterior()" class="w-full rounded-md border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50">Atrás</button>
-                                    <button type="button" @click="siguiente()" class="w-full rounded-md bg-brand-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-600">Confirmar</button>
+                                    <button type="button" @click="siguiente()" class="w-full rounded-md bg-brand-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-600">Continuar a mis datos</button>
                                 </div>
                             </div>
                         </div>
@@ -202,40 +202,59 @@
                                 <input type="hidden" name="fecha" :value="fecha">
                                 <input type="hidden" name="hora" :value="hora">
 
+                                <p class="text-sm text-gray-600">Los campos marcados con * son obligatorios.</p>
+
                                 <div>
-                                    <input type="text" name="nombre" placeholder="Nombre" value="{{ old('nombre') }}"
+                                    <label for="nombre" class="mb-1 block text-sm font-medium text-gray-700">Nombre *</label>
+                                    <input id="nombre" type="text" name="nombre" autocomplete="given-name" maxlength="100" required
+                                           placeholder="Ej. Ana" value="{{ old('nombre') }}"
+                                           aria-invalid="{{ $errors->has('nombre') ? 'true' : 'false' }}"
+                                           @if ($errors->has('nombre')) aria-describedby="nombre-error" @endif
                                            class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                                     @error('nombre')
-                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                        <p id="nombre-error" role="alert" class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <input type="text" name="apellido" placeholder="Apellido" value="{{ old('apellido') }}"
+                                    <label for="apellido" class="mb-1 block text-sm font-medium text-gray-700">Apellido *</label>
+                                    <input id="apellido" type="text" name="apellido" autocomplete="family-name" maxlength="100" required
+                                           placeholder="Ej. Pérez" value="{{ old('apellido') }}"
+                                           aria-invalid="{{ $errors->has('apellido') ? 'true' : 'false' }}"
+                                           @if ($errors->has('apellido')) aria-describedby="apellido-error" @endif
                                            class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                                     @error('apellido')
-                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                        <p id="apellido-error" role="alert" class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <input type="tel" name="telefono" placeholder="Teléfono" value="{{ old('telefono') }}"
+                                    <label for="telefono" class="mb-1 block text-sm font-medium text-gray-700">Teléfono *</label>
+                                    <input id="telefono" type="tel" name="telefono" autocomplete="tel" maxlength="20" required
+                                           placeholder="Ej. 5512345678" value="{{ old('telefono') }}"
+                                           aria-invalid="{{ $errors->has('telefono') ? 'true' : 'false' }}"
+                                           @if ($errors->has('telefono')) aria-describedby="telefono-error" @endif
                                            class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                                     @error('telefono')
-                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                        <p id="telefono-error" role="alert" class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <input type="email" name="email" placeholder="Correo" value="{{ old('email') }}"
+                                    <label for="email" class="mb-1 block text-sm font-medium text-gray-700">Correo electrónico *</label>
+                                    <input id="email" type="email" name="email" autocomplete="email" maxlength="100" required
+                                           placeholder="Ej. ana@correo.com" value="{{ old('email') }}"
+                                           aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
+                                           @if ($errors->has('email')) aria-describedby="email-error" @endif
                                            class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                                     @error('email')
-                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                        <p id="email-error" role="alert" class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <textarea name="motivo" placeholder="Motivo de la visita (opcional)" rows="2"
+                                    <label for="motivo" class="mb-1 block text-sm font-medium text-gray-700">Motivo de la visita (opcional)</label>
+                                    <textarea id="motivo" name="motivo" placeholder="Cuéntanos brevemente qué necesitas" rows="2"
                                               class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ old('motivo') }}</textarea>
                                 </div>
 
