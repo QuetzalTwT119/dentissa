@@ -112,7 +112,9 @@ y auditoría. El 12/10/2026, después del cambio de concurrencia, la suite
 completa pasó con **59 pruebas y 233 aserciones** en MySQL 8.4 en Docker
 (`dentissa_test`). En SQLite en memoria (Windows PHP 8.3.33), el resultado fue
 58 aprobadas y 1 omitida (la prueba de concurrencia requiere MySQL), con 228
-aserciones. La creación y reagenda bloquean, dentro de su
+aserciones. Tras añadir la garantía de auditoría atómica, SQLite pasó con 62
+pruebas, 245 aserciones y 1 omitida el 13/10/2026; el job MySQL debe confirmarse
+en CI para esta revisión. La creación y reagenda bloquean, dentro de su
 transacción, la fila de configuración del día de semana antes de revisar las
 citas existentes. Esto proporciona un registro común de exclusión aun cuando
 todavía no haya citas; la consecuencia es serializar brevemente las reservas
@@ -132,7 +134,9 @@ docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DAT
 La inicialización de un volumen MySQL nuevo crea `dentissa_test` separado de
 `dentissa`; `RefreshDatabase` puede reconstruir el schema de pruebas sin tocar
 los datos demo de la aplicación. El 12/10/2026, la suite completa después del
-cambio de concurrencia pasó en MySQL 8.4 con 59 pruebas y 233 aserciones.
+cambio de concurrencia pasó en MySQL 8.4 con 59 pruebas y 233 aserciones. La
+suite contra MySQL queda pendiente para los cambios de auditoría atómica del
+13/10/2026 y debe validarse mediante CI.
 
 La prueba concurrente se ejecuta por separado porque requiere dos procesos PHP
 y MySQL real:
@@ -225,6 +229,13 @@ Cada entrada conserva usuario (cuando existe), acción, tabla, registro, fecha,
 IP y agente de usuario. Para proteger la privacidad, los cambios de historial
 guardan metadatos —por ejemplo paciente, cita, fecha y tipo de consulta—, pero
 no copian diagnóstico, medicamentos ni notas clínicas.
+
+Las escrituras de negocio y su entrada de auditoría se ejecutan en una misma
+transacción de base de datos. Si la bitácora no puede guardarse, la excepción
+revierte también el cambio de negocio y la aplicación muestra una respuesta
+503 indicando que no se guardaron los cambios y que se intente de nuevo más
+tarde. Las notificaciones externas se envían después de confirmar la
+transacción; un fallo al enviar un aviso no deshace una cita válida.
 
 ## 12. Autorización por rol
 

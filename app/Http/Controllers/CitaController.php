@@ -74,12 +74,12 @@ class CitaController extends Controller
         $fechaHora = Carbon::parse("{$validated['fecha']} {$validated['hora']}");
         $reglas->validarFechaFutura($fechaHora);
 
-        $cita = DB::transaction(function () use ($disponibilidad, $fechaHora, $tratamiento, $idPaciente, $validated) {
+        $cita = DB::transaction(function () use ($disponibilidad, $fechaHora, $tratamiento, $idPaciente, $validated, $auditoria, $request) {
             if (! $disponibilidad->estaDisponible($fechaHora, $tratamiento)) {
                 return null;
             }
 
-            return Cita::create([
+            $cita = Cita::create([
                 'id_paciente' => $idPaciente,
                 'id_servicio' => $validated['id_servicio'],
                 'id_tratamiento' => $tratamiento->id,
@@ -87,13 +87,16 @@ class CitaController extends Controller
                 'duracion_estimada' => $tratamiento->duracion_estimada,
                 'motivo' => $validated['motivo'] ?? null,
             ]);
+
+            $auditoria->registrar('cita.creada', $cita, datosNuevos: $this->datosAuditoria($cita, 'interna'), request: $request);
+
+            return $cita;
         });
 
         if (! $cita) {
             return back()->withErrors(['hora' => 'Ese horario ya no está disponible. Por favor elige otro.']);
         }
 
-        $auditoria->registrar('cita.creada', $cita, datosNuevos: $this->datosAuditoria($cita, 'interna'), request: $request);
         $notificaciones->citaAgendada($cita->load(['paciente', 'tratamiento']));
 
         return Redirect::route('citas.index');
@@ -126,7 +129,7 @@ class CitaController extends Controller
         $fechaHora = Carbon::parse("{$validated['fecha']} {$validated['hora']}");
         $reglas->validarFechaFutura($fechaHora);
 
-        $reagendada = DB::transaction(function () use ($disponibilidad, $fechaHora, $cita) {
+        $reagendada = DB::transaction(function () use ($disponibilidad, $fechaHora, $cita, $datosAnteriores, $auditoria, $request) {
             if (! $disponibilidad->estaDisponible($fechaHora, $cita->tratamiento ?? $cita->duracion_estimada, $cita->id)) {
                 return false;
             }
@@ -138,6 +141,8 @@ class CitaController extends Controller
                 'fecha_confirmacion' => null,
             ]);
 
+            $auditoria->registrar('cita.reagendada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+
             return true;
         });
 
@@ -145,7 +150,6 @@ class CitaController extends Controller
             return back()->withErrors(['hora' => 'Ese horario ya no está disponible. Por favor elige otro.']);
         }
 
-        $auditoria->registrar('cita.reagendada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
         $notificaciones->citaReagendada($cita->load('paciente'));
 
         return Redirect::route('citas.index');
@@ -165,14 +169,16 @@ class CitaController extends Controller
             'motivo_cancelacion' => ['nullable', 'string'],
         ]);
 
-        $cita->update([
-            'estado' => EstadoCita::Cancelada,
-            'cancelada_por' => $request->user()->id,
-            'fecha_cancelacion' => now(),
-            'motivo_cancelacion' => $validated['motivo_cancelacion'] ?? null,
-        ]);
+        DB::transaction(function () use ($cita, $request, $validated, $datosAnteriores, $auditoria) {
+            $cita->update([
+                'estado' => EstadoCita::Cancelada,
+                'cancelada_por' => $request->user()->id,
+                'fecha_cancelacion' => now(),
+                'motivo_cancelacion' => $validated['motivo_cancelacion'] ?? null,
+            ]);
 
-        $auditoria->registrar('cita.cancelada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+            $auditoria->registrar('cita.cancelada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+        });
         $notificaciones->citaCancelada($cita->load('paciente'));
 
         return Redirect::route('citas.index');
@@ -188,13 +194,15 @@ class CitaController extends Controller
 
         $datosAnteriores = $this->datosAuditoria($cita);
 
-        $cita->update([
-            'estado' => EstadoCita::Confirmada,
-            'confirmada_por' => $request->user()->id,
-            'fecha_confirmacion' => now(),
-        ]);
+        DB::transaction(function () use ($cita, $request, $datosAnteriores, $auditoria) {
+            $cita->update([
+                'estado' => EstadoCita::Confirmada,
+                'confirmada_por' => $request->user()->id,
+                'fecha_confirmacion' => now(),
+            ]);
 
-        $auditoria->registrar('cita.confirmada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+            $auditoria->registrar('cita.confirmada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+        });
         $notificaciones->citaConfirmada($cita->load('paciente'));
 
         return Redirect::route('citas.index');
@@ -208,9 +216,11 @@ class CitaController extends Controller
             return back()->withErrors(['estado' => 'Solo se pueden iniciar citas confirmadas.']);
         }
 
-        $datosAnteriores = $this->datosAuditoria($cita);
-        $cita->update(['estado' => EstadoCita::EnCurso]);
-        $auditoria->registrar('cita.iniciada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+        DB::transaction(function () use ($cita, $request, $auditoria) {
+            $datosAnteriores = $this->datosAuditoria($cita);
+            $cita->update(['estado' => EstadoCita::EnCurso]);
+            $auditoria->registrar('cita.iniciada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+        });
 
         return Redirect::route('citas.index');
     }
@@ -227,9 +237,11 @@ class CitaController extends Controller
             return back()->withErrors(['estado' => 'No se puede marcar una cita como no asistida antes de su fecha y hora programadas.']);
         }
 
-        $datosAnteriores = $this->datosAuditoria($cita);
-        $cita->update(['estado' => EstadoCita::NoAsistio]);
-        $auditoria->registrar('cita.no_asistio', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+        DB::transaction(function () use ($cita, $request, $auditoria) {
+            $datosAnteriores = $this->datosAuditoria($cita);
+            $cita->update(['estado' => EstadoCita::NoAsistio]);
+            $auditoria->registrar('cita.no_asistio', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+        });
 
         return Redirect::route('citas.index');
     }
@@ -242,9 +254,11 @@ class CitaController extends Controller
             return back()->withErrors(['estado' => 'Solo se pueden completar citas en curso.']);
         }
 
-        $datosAnteriores = $this->datosAuditoria($cita);
-        $cita->update(['estado' => EstadoCita::Completada]);
-        $auditoria->registrar('cita.completada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+        DB::transaction(function () use ($cita, $request, $auditoria) {
+            $datosAnteriores = $this->datosAuditoria($cita);
+            $cita->update(['estado' => EstadoCita::Completada]);
+            $auditoria->registrar('cita.completada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+        });
 
         return Redirect::route('citas.index');
     }

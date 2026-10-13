@@ -52,7 +52,7 @@ class CitaPublicaController extends Controller
         // La notificación (WhatsApp/correo) se dispara DESPUÉS de que la
         // transacción confirma — nunca dentro de ella, para no mantener el
         // lock de disponibilidad abierto mientras se espera a una API externa.
-        $cita = DB::transaction(function () use ($disponibilidad, $fechaHora, $tratamiento, $validated) {
+        $cita = DB::transaction(function () use ($disponibilidad, $fechaHora, $tratamiento, $validated, $auditoria, $request) {
             if (! $disponibilidad->estaDisponible($fechaHora, $tratamiento)) {
                 return null;
             }
@@ -66,7 +66,7 @@ class CitaPublicaController extends Controller
                 ],
             );
 
-            return Cita::create([
+            $cita = Cita::create([
                 'id_paciente' => $paciente->id,
                 'id_servicio' => $validated['id_servicio'],
                 'id_tratamiento' => $tratamiento->id,
@@ -74,17 +74,20 @@ class CitaPublicaController extends Controller
                 'duracion_estimada' => $tratamiento->duracion_estimada,
                 'motivo' => $validated['motivo'] ?? null,
             ]);
+
+            $auditoria->registrar('cita.creada', $cita, datosNuevos: [
+                'estado' => $cita->estado?->value ?? EstadoCita::Agendada->value,
+                'fecha_hora' => $cita->fecha_hora->toIso8601String(),
+                'canal' => 'publico',
+            ], request: $request);
+
+            return $cita;
         });
 
         if (! $cita) {
             return back()->withErrors(['hora' => 'Ese horario ya no está disponible. Por favor elige otro.']);
         }
 
-        $auditoria->registrar('cita.creada', $cita, datosNuevos: [
-            'estado' => $cita->estado?->value ?? EstadoCita::Agendada->value,
-            'fecha_hora' => $cita->fecha_hora->toIso8601String(),
-            'canal' => 'publico',
-        ], request: $request);
         $notificaciones->citaAgendada($cita->load(['paciente', 'tratamiento']));
 
         return Redirect::route('citas.publica.create')

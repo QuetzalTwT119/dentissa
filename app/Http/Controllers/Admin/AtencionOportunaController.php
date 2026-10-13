@@ -9,6 +9,7 @@ use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class AtencionOportunaController extends Controller
@@ -42,32 +43,36 @@ class AtencionOportunaController extends Controller
 
     public function contactarUrgencia(Request $request, SolicitudUrgencia $urgencia, AuditoriaService $auditoria): RedirectResponse
     {
-        $estadoAnterior = $urgencia->estado;
-        $urgencia->update([
-            'estado' => 'contactada',
-            'contactado_por' => $request->user()->id,
-            'fecha_contacto' => now(),
-        ]);
+        DB::transaction(function () use ($request, $urgencia, $auditoria) {
+            $estadoAnterior = $urgencia->estado;
+            $urgencia->update([
+                'estado' => 'contactada',
+                'contactado_por' => $request->user()->id,
+                'fecha_contacto' => now(),
+            ]);
 
-        $auditoria->registrar('urgencia.contactada', $urgencia, ['estado' => $estadoAnterior], [
-            'estado' => $urgencia->estado,
-        ], $request);
+            $auditoria->registrar('urgencia.contactada', $urgencia, ['estado' => $estadoAnterior], [
+                'estado' => $urgencia->estado,
+            ], $request);
+        });
 
         return back()->with('success', 'La solicitud de urgencia quedó marcada como contactada.');
     }
 
     public function contactarEspera(Request $request, ListaEspera $espera, AuditoriaService $auditoria): RedirectResponse
     {
-        $estadoAnterior = $espera->estado;
-        $espera->update([
-            'estado' => 'contactada',
-            'contactado_por' => $request->user()->id,
-            'fecha_contacto' => now(),
-        ]);
+        DB::transaction(function () use ($request, $espera, $auditoria) {
+            $estadoAnterior = $espera->estado;
+            $espera->update([
+                'estado' => 'contactada',
+                'contactado_por' => $request->user()->id,
+                'fecha_contacto' => now(),
+            ]);
 
-        $auditoria->registrar('lista_espera.contactada', $espera, ['estado' => $estadoAnterior], [
-            'estado' => $espera->estado,
-        ], $request);
+            $auditoria->registrar('lista_espera.contactada', $espera, ['estado' => $estadoAnterior], [
+                'estado' => $espera->estado,
+            ], $request);
+        });
 
         return back()->with('success', 'La persona quedó marcada como contactada.');
     }

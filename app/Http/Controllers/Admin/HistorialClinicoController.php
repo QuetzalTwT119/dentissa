@@ -13,7 +13,10 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class HistorialClinicoController extends Controller
 {
@@ -40,12 +43,14 @@ class HistorialClinicoController extends Controller
     {
         $validated = $this->validated($request, $paciente);
 
-        $historial = $paciente->historialClinico()->create([
-            ...$validated,
-            'id_doctor' => $request->user()->id,
-        ]);
+        DB::transaction(function () use ($paciente, $validated, $request, $auditoria) {
+            $historial = $paciente->historialClinico()->create([
+                ...$validated,
+                'id_doctor' => $request->user()->id,
+            ]);
 
-        $auditoria->registrar('historial.creado', $historial, datosNuevos: $this->datosAuditoria($historial), request: $request);
+            $auditoria->registrar('historial.creado', $historial, datosNuevos: $this->datosAuditoria($historial), request: $request);
+        });
 
         return Redirect::route('admin.pacientes.historial.index', $paciente);
     }
@@ -67,8 +72,12 @@ class HistorialClinicoController extends Controller
 
         $datosAnteriores = $this->datosAuditoria($historial);
 
-        $historial->update($this->validated($request, $paciente));
-        $auditoria->registrar('historial.actualizado', $historial, $datosAnteriores, $this->datosAuditoria($historial), $request);
+        $datosActualizados = $this->validated($request, $paciente);
+
+        DB::transaction(function () use ($historial, $datosActualizados, $datosAnteriores, $auditoria, $request) {
+            $historial->update($datosActualizados);
+            $auditoria->registrar('historial.actualizado', $historial, $datosAnteriores, $this->datosAuditoria($historial), $request);
+        });
 
         return Redirect::route('admin.pacientes.historial.index', $paciente);
     }
@@ -79,8 +88,10 @@ class HistorialClinicoController extends Controller
 
         $datosAnteriores = $this->datosAuditoria($historial);
 
-        $historial->delete();
-        $auditoria->registrar('historial.eliminado', $historial, $datosAnteriores, request: $request);
+        DB::transaction(function () use ($historial, $datosAnteriores, $auditoria, $request) {
+            $historial->delete();
+            $auditoria->registrar('historial.eliminado', $historial, $datosAnteriores, request: $request);
+        });
 
         return Redirect::route('admin.pacientes.historial.index', $paciente);
     }
@@ -95,17 +106,25 @@ class HistorialClinicoController extends Controller
 
         $ruta = $request->file('archivo')->store('historial', 'local');
 
-        $imagen = Imagen::create([
-            'titulo' => $request->file('archivo')->getClientOriginalName(),
-            'url' => $ruta,
-            'tipo' => TipoImagen::HistorialClinico,
-            'referencia_id' => $historial->id,
-        ]);
+        try {
+            DB::transaction(function () use ($request, $historial, $ruta, $auditoria) {
+                $imagen = Imagen::create([
+                    'titulo' => $request->file('archivo')->getClientOriginalName(),
+                    'url' => $ruta,
+                    'tipo' => TipoImagen::HistorialClinico,
+                    'referencia_id' => $historial->id,
+                ]);
 
-        $auditoria->registrar('historial.imagen_agregada', $imagen, datosNuevos: [
-            'id_historial' => $historial->id,
-            'tipo' => TipoImagen::HistorialClinico->value,
-        ], request: $request);
+                $auditoria->registrar('historial.imagen_agregada', $imagen, datosNuevos: [
+                    'id_historial' => $historial->id,
+                    'tipo' => TipoImagen::HistorialClinico->value,
+                ], request: $request);
+            });
+        } catch (Throwable $exception) {
+            Storage::disk('local')->delete($ruta);
+
+            throw $exception;
+        }
 
         return Redirect::route('admin.pacientes.historial.edit', [$paciente, $historial]);
     }
@@ -119,8 +138,10 @@ class HistorialClinicoController extends Controller
             'id_historial' => $historial->id,
             'tipo' => TipoImagen::HistorialClinico->value,
         ];
-        $imagen->delete();
-        $auditoria->registrar('historial.imagen_eliminada', $imagen, $datosAnteriores, request: $request);
+        DB::transaction(function () use ($imagen, $datosAnteriores, $auditoria, $request) {
+            $imagen->delete();
+            $auditoria->registrar('historial.imagen_eliminada', $imagen, $datosAnteriores, request: $request);
+        });
 
         return Redirect::route('admin.pacientes.historial.edit', [$paciente, $historial]);
     }

@@ -8,6 +8,7 @@ use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 
@@ -86,16 +87,18 @@ class PacienteController extends Controller
             ->values()
             ->all();
 
-        $paciente->update([
-            'curp' => $validated['curp'] ?? null,
-            'rfc' => $validated['rfc'] ?? null,
-            'ine_clave' => $validated['ine_clave'] ?? null,
-            'tutor_id' => $validated['tutor_id'] ?? null,
-        ]);
+        DB::transaction(function () use ($paciente, $validated, $camposModificados, $auditoria, $request) {
+            $paciente->update([
+                'curp' => $validated['curp'] ?? null,
+                'rfc' => $validated['rfc'] ?? null,
+                'ine_clave' => $validated['ine_clave'] ?? null,
+                'tutor_id' => $validated['tutor_id'] ?? null,
+            ]);
 
-        $auditoria->registrar('paciente.datos_oficiales_actualizados', $paciente, datosNuevos: [
-            'campos_modificados' => $camposModificados,
-        ], request: $request);
+            $auditoria->registrar('paciente.datos_oficiales_actualizados', $paciente, datosNuevos: [
+                'campos_modificados' => $camposModificados,
+            ], request: $request);
+        });
 
         return Redirect::route('admin.pacientes.index');
     }

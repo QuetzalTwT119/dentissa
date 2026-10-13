@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\AuditoriaNoDisponible;
 use App\Models\LogAuditoria;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -39,14 +40,17 @@ class AuditoriaService
                 'user_agent' => $request?->userAgent(),
             ]);
         } catch (Throwable $e) {
-            // La auditoría no debe tumbar una cita ya guardada, pero el fallo
-            // sí debe quedar visible para poder corregir la infraestructura.
             Log::error('No se pudo escribir la auditoría de Dentissa', [
                 'accion' => $accion,
                 'tabla' => $modelo->getTable(),
                 'registro_id' => $modelo->getKey(),
                 'error' => $e->getMessage(),
             ]);
+
+            // Los llamadores deben invocar este método dentro de la misma
+            // transacción que modifica el registro de negocio. Al propagar
+            // el error, Laravel revierte ambos cambios.
+            throw AuditoriaNoDisponible::porError($e);
         }
     }
 }
