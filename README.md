@@ -5,7 +5,6 @@ Sistema de gestión para consultorio dental.
 ## Documentación del proyecto
 
 - [Manual técnico](docs/MANUAL-TECNICO.md)
-- [Política de respaldos](docs/POLITICA-RESPALDOS.md)
 - [Manual de usuario](docs/MANUAL-USUARIO.md)
 - [Diagramas y flujos](docs/DIAGRAMAS-FLUJOS.md)
 - [Plan de entrega](docs/PLAN-ENTREGA.md)
@@ -59,32 +58,9 @@ suite contra MySQL, el servicio crea un schema independiente llamado
 docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DATABASE=dentissa_test app php artisan test
 ```
 
-Los respaldos SQLite existentes (`backup.ps1` y `restore.ps1`) son distintos
-de los respaldos MySQL (`backup-mysql.ps1` y `restore-mysql.ps1`). Para MySQL,
-usa Windows PowerShell 5.1 o PowerShell 7 y Docker Compose con el servicio
-`mysql` saludable:
-
-```powershell
-./scripts/backup-mysql.ps1 -Destination 'E:\DentissaBackups'
-./scripts/restore-mysql.ps1 -Backup 'E:\DentissaBackups\dentissa-mysql-AAAAmmdd-HHmmss.zip'
-```
-
-El respaldo MySQL contiene el dump de la base, pero no incluye `storage/app` ni
-está cifrado. La restauración crea una base aislada `dentissa_restore_*`; no
-sobrescribe la base activa. No uses estos ZIP sin cifrar con información
-clínica real ni los subas a GitHub; restaura solo ZIPs propios y confiables.
-Consulta la
-[política de respaldos](docs/POLITICA-RESPALDOS.md) antes de almacenar datos
-importantes. Los scripts `backup.ps1` y `restore.ps1` siguen disponibles para
-copias SQLite e incluyen `storage/app`.
-
-Si Windows bloquea la ejecución de scripts, no cambies la política permanente.
-Desde la raíz del proyecto puedes ejecutar el respaldo con una excepción para
-ese proceso solamente:
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\backup-mysql.ps1 -Destination 'E:\DentissaBackups'
-```
+La implementación de respaldo y restauración está diferida y no forma parte
+de esta versión. No uses datos clínicos reales hasta que el equipo apruebe y
+pruebe un procedimiento de protección y recuperación.
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 

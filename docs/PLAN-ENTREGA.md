@@ -16,11 +16,10 @@ nuevas.
 - Datos demo reproducibles mediante seeders.
 - Entorno Docker documentado para Docker Desktop y WSL2; la aplicación local usa
   MySQL 8.4 y la suite puede correrse en SQLite o en un schema MySQL aislado.
-- Suite automatizada: **58 pruebas, 228 aserciones** aprobadas en SQLite y MySQL
-  8.4 con Docker (12/10/2026).
-- Scripts locales de respaldo y restauración para SQLite, MySQL y archivos
-  subidos; Restic cifra snapshots de MySQL + `storage/app` y se probó su
-  recuperación aislada con datos demo.
+- Suite automatizada: **59 pruebas, 233 aserciones** aprobadas en MySQL 8.4;
+  SQLite aprobó 58 y omitió una prueba que requiere MySQL (228 aserciones).
+- El trabajo de respaldo y restauración está diferido y no forma parte de esta
+  integración.
 - Autorización interna de citas y auditoría de operaciones sensibles cubiertas
   por pruebas.
 - La reconstrucción de la imagen debe hacerse después de cambios que se copian
@@ -97,22 +96,16 @@ nuevas.
 
 ## Seguimiento inmediato
 
-La **matriz QA del MVP** ya está completada como fuente de verdad. La instalación
-desde un checkout limpio ya fue validada con Docker Desktop, incluyendo clave,
-migraciones, seeders, HTTP y la suite automatizada. Los scripts de
-respaldo/restauración se ensayaron con una copia temporal y se creó un respaldo
-en la unidad E:, que Windows identificó como USB, separada de los discos de
-arranque y sistema. También se probó Restic con datos demo: snapshots cifrados
-de MySQL y `storage/app`, verificación íntegra, recuperación de MySQL en schema
-aislado y hashes idénticos en los archivos de storage presentes. El directorio
-solo tenía archivos `.gitignore`; se agregó una fixture sintética no vacía y su
-restauración también coincidió por SHA-256. Esto no cierra el control de
-respaldos para producción: no se ha confirmado ubicación física remota,
-retención ni automatización. Los ZIP originales siguen sin cifrar. No usar
-datos reales hasta resolver esos puntos.
+La **matriz QA del MVP** es la fuente de verdad. La instalación desde un
+checkout limpio ya fue validada con Docker Desktop, incluyendo clave,
+migraciones, seeders, HTTP y la suite automatizada. El respaldo y la restauración
+se probaron de forma exploratoria, pero se difieren fuera de esta integración;
+los casos QA-23, QA-27, QA-31 y QA-32 quedan marcados como diferidos. No usar
+datos clínicos reales hasta que el equipo implemente y valide un procedimiento
+de protección y recuperación.
 
 El 12/10 se amplió la cobertura de permisos: el middleware administrativo se
 probó contra 12 páginas y una modificación; también se comprobó el acceso
-anónimo. Las 58 pruebas y 228 aserciones pasaron tanto en SQLite como en MySQL
-8.4 sobre Docker. El siguiente control técnico es probar la instalación desde
-cero en Docker Desktop y completar el recorrido manual del sistema.
+anónimo. La suite completa en MySQL 8.4 pasó con 59 pruebas y 233 aserciones;
+SQLite aprobó 58 pruebas y omitió una, con 228 aserciones. El siguiente control
+técnico es completar el recorrido manual del sistema.

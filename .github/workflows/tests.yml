@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Obtener código
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Preparar PHP
         uses: shivammathur/setup-php@v2
@@ -50,7 +52,19 @@ jobs:
         run: php artisan test
 
       - name: Verificar espacios y conflictos de formato
-        run: git diff --check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            base_sha="$PR_BASE_SHA"
+          elif [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            base_sha="$BEFORE_SHA"
+          else
+            base_sha="$(git merge-base origin/master HEAD)"
+          fi
+          git diff --check "$base_sha...HEAD" -- . ':!output/pdf/*.pdf'
 
   test-mysql:
     runs-on: ubuntu-latest
@@ -74,6 +88,8 @@ jobs:
     steps:
       - name: Obtener código
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Preparar PHP
         uses: shivammathur/setup-php@v2
@@ -113,4 +129,16 @@ jobs:
         run: php artisan test
 
       - name: Verificar espacios y conflictos de formato
-        run: git diff --check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            base_sha="$PR_BASE_SHA"
+          elif [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            base_sha="$BEFORE_SHA"
+          else
+            base_sha="$(git merge-base origin/master HEAD)"
+          fi
+          git diff --check "$base_sha...HEAD" -- . ':!output/pdf/*.pdf'

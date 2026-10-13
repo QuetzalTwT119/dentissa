@@ -1,7 +1,7 @@
 # Revisión de arquitectura y calidad — Dentissa
 
-**Fecha de revisión:** 7 de octubre de 2026  
-**Alcance:** MVP de agenda, atención oportuna, pacientes e historial clínico  
+**Fecha de revisión:** 13 de octubre de 2026
+**Alcance:** MVP de agenda, atención oportuna, pacientes e historial clínico
 **Responsable de revisión:** QA y arquitectura de software
 
 ## 1. Dictamen ejecutivo
@@ -89,9 +89,9 @@ Navegador / formulario público / panel interno
 
 1. **Base de datos y respaldo.** MySQL 8.4 local ya pasa migraciones y suite
    automatizada, y Railway es el destino elegido por el equipo. Antes de uso
-   real se debe probar Railway, implementar respaldo/restauración de MySQL y
-   configurar el destino externo cifrado y la retención propuestos en
-   `POLITICA-RESPALDOS.md`.
+   real se debe probar Railway e implementar un procedimiento de
+   respaldo/restauración, cifrado y retención; esa etapa está diferida y fuera
+   de esta integración.
 2. **Datos sensibles.** El historial clínico y los PDFs contienen información
    personal. Definir quién puede leerlos, dónde se almacenan, cuánto tiempo se
    conservan y cómo se protegen los respaldos. No usar pacientes reales en
@@ -140,8 +140,9 @@ Navegador / formulario público / panel interno
    **Completado:** la creación interna ahora exige rol de personal y cuenta con
    cobertura de prueba.
 2. ~~Agregar CI para que ningún PR pueda mezclar código sin pasar la suite.~~
-   **Completado en código:** `.github/workflows/tests.yml` valida PHP, frontend,
-   migraciones, pruebas y `git diff --check` en cada push a `master` y cada PR.
+   **Completado:** `.github/workflows/tests.yml` valida PHP, frontend,
+   migraciones y pruebas en pushes y PRs; el chequeo de formato compara los
+   cambios reales de la rama contra su base.
 3. ~~Completar auditoría de las operaciones críticas.~~ **Completado para el
    MVP:** las operaciones críticas ya usan `AuditoriaService`; falta definir la
    política de retención/consulta de logs para producción.
