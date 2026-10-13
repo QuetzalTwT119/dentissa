@@ -56,11 +56,17 @@ class PreguntaFrecuenteController extends Controller
 
     private function validated(Request $request): array
     {
-        return $request->validate([
+        $validated = $request->validate([
             'pregunta' => ['required', 'string', 'max:200'],
             'respuesta' => ['required', 'string'],
             'orden' => ['nullable', 'integer', 'min:0'],
             'activa' => ['boolean'],
         ]);
+
+        // Un checkbox desmarcado no se envía en el formulario; normalizarlo
+        // aquí evita conservar/publicar por accidente una pregunta inactiva.
+        $validated['activa'] = $request->boolean('activa');
+
+        return $validated;
     }
 }
