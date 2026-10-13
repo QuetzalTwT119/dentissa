@@ -15,6 +15,9 @@ services:
       DB_DATABASE: ${MYSQL_DATABASE:-dentissa}
       DB_USERNAME: ${MYSQL_USER:-dentissa}
       DB_PASSWORD: ${MYSQL_PASSWORD:-dentissa_local}
+      DENTISSA_ASISTENTE_IA_HABILITADA: ${DENTISSA_ASISTENTE_IA_HABILITADA:-false}
+      DENTISSA_OLLAMA_BASE_URL: ${DENTISSA_OLLAMA_BASE_URL:-http://ollama:11434}
+      DENTISSA_OLLAMA_MODELO: ${DENTISSA_OLLAMA_MODELO:-granite3.3:2b}
       SESSION_CONNECTION: mysql
       SESSION_DRIVER: file
       CACHE_STORE: file
@@ -48,5 +51,14 @@ services:
       retries: 20
       start_period: 20s
 
+  # Prototipo opcional: no se inicia con `docker compose up` normal.
+  # Solo se activa al usar `--profile ia` y mantiene el modelo en un volumen local.
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["ia"]
+    volumes:
+      - ollama_data:/root/.ollama
+
 volumes:
   mysql_data:
+  ollama_data:

@@ -3,7 +3,7 @@
             abierto: false,
             consulta: '',
             conversacionId: localStorage.getItem('dentissa_asistente_conversacion') ?? crypto.randomUUID(),
-            mensajes: [{ autor: 'bot', texto: 'Hola, soy Dentissa Asistente. Puedo responder preguntas aprobadas o ayudarte a buscar horarios. Escribe, por ejemplo: Quiero una cita.' }],
+            mensajes: [{ autor: 'bot', texto: 'Hola, soy Dentissa Asistente. Puedo orientarte con información del consultorio o ayudarte a buscar horarios. No doy diagnósticos. ¿Qué necesitas saber?' }],
             cargando: false,
             init() { localStorage.setItem('dentissa_asistente_conversacion', this.conversacionId); },
             async preguntar() {

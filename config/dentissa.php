@@ -40,6 +40,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Prototipo local de IA para el asistente público
+    |--------------------------------------------------------------------------
+    |
+    | Ollama se ejecuta en la red privada de Docker. Se mantiene apagado por
+    | defecto; sin fuentes activas o si el modelo falla, el chat usa su fallback.
+    |
+    */
+
+    'asistente_ia' => [
+        'habilitada' => (bool) env('DENTISSA_ASISTENTE_IA_HABILITADA', false),
+        'ollama_url' => env('DENTISSA_OLLAMA_BASE_URL', 'http://ollama:11434'),
+        'ollama_modelo' => env('DENTISSA_OLLAMA_MODELO', 'granite3.3:2b'),
+        'timeout_segundos' => (int) env('DENTISSA_OLLAMA_TIMEOUT', 25),
+        'max_fuentes' => (int) env('DENTISSA_ASISTENTE_IA_MAX_FUENTES', 30),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Datos de contacto (sitio público)
     |--------------------------------------------------------------------------
     |

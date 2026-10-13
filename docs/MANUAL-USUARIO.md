@@ -60,19 +60,24 @@ pulsar **Confirmar y agendar**.
 ## 5. Asistente para pacientes y preguntas frecuentes
 
 El asistente flotante responde con preguntas frecuentes activas y sus respuestas
-aprobadas. Si no reconoce la duda con suficiente seguridad, pide reformularla o
-contactar al consultorio; no inventa precios ni orientación clínica.
+aprobadas. En desarrollo se puede habilitar un modelo de IA local para entender
+otras formas de preguntar y redactar una respuesta basada solo en esas fuentes.
+Si no encuentra respaldo suficiente, pide reformular la duda o contactar al
+consultorio; no debe inventar precios, diagnósticos ni orientación clínica.
 
 El personal administrador gestiona las FAQs desde **Contenido → Preguntas
-frecuentes**. En cada registro puede escribir una pregunta principal, su respuesta
-aprobada y, opcionalmente, varias formas alternativas de preguntar (una por
-línea). Las alternativas deben expresar la misma duda, no añadir información a
-la respuesta. Para que una FAQ responda en el chat debe estar activa y visible.
+frecuentes**. En cada registro debe escribir información verificada y aprobada;
+no hace falta anticipar todas las palabras que podría usar un paciente. Las
+formas alternativas son opcionales. Para que una FAQ pueda usarse como fuente
+debe estar activa y visible. El prototipo también consulta los servicios y
+tratamientos activos del catálogo, sin que el personal tenga que volver a
+capturarlos en preguntas frecuentes.
 
-Antes de publicar cambios, se recomienda probar la pregunta principal, al menos
-una variante, una frase con un error pequeño de escritura y una duda ambigua. Si
-el asistente no puede identificarla con seguridad, debe mostrar el mensaje de
-respaldo y no seleccionar una respuesta al azar.
+Antes de publicar cambios, probar preguntas directas, paráfrasis, errores leves,
+temas sin información disponible y consultas clínicas. La IA local solo está
+disponible cuando el equipo de desarrollo la habilita en Docker; su activación no
+significa que el modelo esté disponible en el sitio desplegado. Si no puede
+apoyarse en una respuesta activa, debe mostrar el mensaje de respaldo.
 
 ## 6. Atención oportuna
 

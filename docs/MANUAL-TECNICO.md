@@ -203,18 +203,42 @@ no provienen de la interfaz.
 
 ## 10. Respuestas del asistente de pacientes
 
-`AsistentePacienteService` solo consulta FAQs activas. Las frases alternativas
-se guardan en `preguntas_frecuentes.variantes`, separadas por líneas, para cubrir
-sinónimos y formulaciones frecuentes sin duplicar respuestas. La comparación
-normaliza mayúsculas, acentos y puntuación; tolera errores tipográficos leves
-con distancia de edición, pero requiere al menos dos palabras coincidentes y un
-puntaje mínimo. Si dos FAQs tienen puntajes cercanos o el resultado es débil,
-devuelve un mensaje de respaldo en lugar de escoger una respuesta dudosa.
+`AsistentePacienteService` responde primero con coincidencias seguras sobre FAQs
+activas. Normaliza mayúsculas, acentos y puntuación, tolera errores tipográficos
+leves y usa el fallback ante resultados débiles o ambiguos. Las variantes por
+línea siguen disponibles para formulaciones probadas, pero no son requisito para
+cada forma de preguntar.
 
-El asistente no genera texto clínico ni completa información faltante. Las
-variantes deben mantener la misma intención que la pregunta principal. Para
-aplicar el nuevo campo en una instalación existente, ejecutar `php artisan
-migrate` dentro del contenedor; no se requieren cambios de configuración.
+Como prototipo local opcional, `AsistenteIaLocalService` puede entender otras
+formas de preguntar y redactar una respuesta usando FAQs activas y el catálogo
+activo de servicios/tratamientos como fuentes. Por eso, nombres ya publicados
+en el catálogo no requieren duplicarse como preguntas frecuentes. El modelo
+debe devolver IDs exactos de esas fuentes; una respuesta sin referencia válida
+se descarta. El chat web intenta esta opción solo después de las FAQs y de los
+flujos controlados de agenda/atención oportuna. Telegram permanece en el flujo
+actual. Si Ollama no está disponible, no hay fuentes activas o la respuesta no
+está respaldada, se conserva el fallback. La consulta del paciente no se escribe
+en los logs.
+
+La integración usa Ollama local con el modelo `granite3.3:2b` (1.5 GB de
+descarga aproximada, licencia Apache 2.0 y soporte declarado para español). No
+se arranca por defecto: la variable `DENTISSA_ASISTENTE_IA_HABILITADA` vale
+`false`, y el servicio Docker pertenece al perfil `ia`. Para probarlo en el
+entorno local:
+
+1. En el `.env` local, establecer `DENTISSA_ASISTENTE_IA_HABILITADA=true`.
+2. Ejecutar `docker compose --profile ia up -d --build app mysql ollama`.
+3. Descargar el modelo con `docker compose exec ollama ollama pull granite3.3:2b`.
+4. Confirmar que aparece con `docker compose exec ollama ollama list`.
+5. Probar el chat con contenido aprobado. Las FAQs ficticias de QA no son
+   información real y deben desactivarse o reemplazarse antes de publicar.
+
+El modelo se guarda en el volumen Docker `ollama_data`, no en Git. Esta
+integración es un prototipo de desarrollo: un modelo ejecutándose en la PC no
+queda disponible automáticamente para una aplicación desplegada en Railway. La
+aplicación en producción debe mantener la IA apagada hasta decidir y validar un
+alojamiento privado adecuado. No configurar una URL pública de inferencia sin
+revisar antes privacidad, consentimiento y retención de datos.
 
 ## 11. Atención oportuna e historial
 
