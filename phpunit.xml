@@ -27,6 +27,7 @@
         <env name="DB_DATABASE" value=":memory:" force="true"/>
         <env name="DENTISSA_TEST_DB_CONNECTION" value="sqlite" force="false"/>
         <env name="DB_URL" value="" force="true"/>
+        <env name="DENTISSA_ASISTENTE_IA_HABILITADA" value="false" force="true"/>
         <env name="MAIL_MAILER" value="array" force="true"/>
         <env name="QUEUE_CONNECTION" value="sync" force="true"/>
         <env name="SESSION_DRIVER" value="array" force="true"/>

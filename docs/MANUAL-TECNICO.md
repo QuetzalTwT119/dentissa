@@ -245,6 +245,12 @@ aplicación en producción debe mantener la IA apagada hasta decidir y validar u
 alojamiento privado adecuado. No configurar una URL pública de inferencia sin
 revisar antes privacidad, consentimiento y retención de datos.
 
+Las pruebas automatizadas fuerzan la IA apagada en `phpunit.xml` y en
+`tests/TestCase.php`, incluso si el `.env` local la tiene encendida. Las pruebas
+de `AsistenteIaLocalTest` la habilitan explícitamente y simulan las respuestas
+HTTP de Ollama. Así la suite no depende de que el modelo esté descargado o
+disponible y no envía consultas de prueba a un servicio real.
+
 ## 11. Atención oportuna e historial
 
 Las solicitudes urgentes y de lista de espera se conservan en la base de

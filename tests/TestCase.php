@@ -39,6 +39,9 @@ abstract class TestCase extends BaseTestCase
         }
         $app['config']->set('cache.default', 'array');
         $app['config']->set('session.driver', 'array');
+        // La IA se activa solo en pruebas que la simulan explícitamente.
+        // Nunca dependemos del Ollama configurado en el .env del desarrollador.
+        $app['config']->set('dentissa.asistente_ia.habilitada', false);
 
         return $app;
     }

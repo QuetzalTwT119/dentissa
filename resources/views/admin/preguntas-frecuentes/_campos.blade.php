@@ -5,13 +5,13 @@ $valor = fn (string $campo, $default = '') => old($campo, $pregunta?->{$campo} ?
 
 <div>
     <x-input-label for="pregunta" value="Pregunta" />
-    <x-text-input id="pregunta" name="pregunta" class="mt-1 block w-full" :value="$valor('pregunta')" required autofocus />
+    <x-text-input id="pregunta" name="pregunta" class="mt-1 block w-full" :value="$valor('pregunta')" maxlength="200" required autofocus />
     <x-input-error :messages="$errors->get('pregunta')" class="mt-2" />
 </div>
 
 <div>
     <x-input-label for="respuesta" value="Respuesta" />
-    <textarea id="respuesta" name="respuesta" rows="4"
+    <textarea id="respuesta" name="respuesta" rows="4" required
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ $valor('respuesta') }}</textarea>
     <x-input-error :messages="$errors->get('respuesta')" class="mt-2" />
 </div>
