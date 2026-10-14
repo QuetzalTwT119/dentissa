@@ -63,6 +63,13 @@ class AsistenteIaLocalService
                 && $this->textoHablaDePrecio($fuente['respuesta']))->values();
         }
 
+        // Evita gastar una consulta al modelo si ninguna fuente comparte un
+        // concepto reconocible con la duda. Las variantes siguen ampliando
+        // este conjunto para sinónimos o formas frecuentes de preguntar.
+        $fuentesCandidatas = $fuentesCandidatas
+            ->filter(fn (array $fuente) => $this->comparteTerminoDistintivo($consulta, $fuente['pregunta'].' '.$fuente['contenido']))
+            ->values();
+
         $fuentes = $fuentesCandidatas
             ->take(max(1, (int) config('dentissa.asistente_ia.max_fuentes', 30)))
             ->values();
@@ -121,6 +128,12 @@ class AsistenteIaLocalService
                 return null;
             }
 
+            // La elección semántica del modelo requiere al menos un término
+            // distintivo compartido con la fuente para evitar respuestas ajenas.
+            if (! $this->comparteTerminoDistintivo($consulta, $fuente['pregunta'].' '.$fuente['contenido'])) {
+                return null;
+            }
+
             return [
                 'encontrada' => true,
                 'respuesta' => $fuente['respuesta'],
@@ -153,6 +166,38 @@ class AsistenteIaLocalService
     private function textoHablaDePrecio(string $texto): bool
     {
         return preg_match('/\b(precio|precios|costo|costos|cuesta|cotizacion|cotizar|gratis|sin costo)\b/u', Str::ascii(Str::lower($texto))) === 1;
+    }
+
+    private function comparteTerminoDistintivo(string $consulta, string $fuente): bool
+    {
+        $ignorar = [
+            'como', 'cual', 'cuales', 'cuando', 'cuanto', 'donde', 'esta', 'este', 'informacion',
+            'dentissa', 'dental', 'dentales', 'clinica', 'atencion', 'servicio', 'servicios',
+            'tratamiento', 'tratamientos', 'disponible', 'disponibles', 'catalogo', 'pregunta', 'respuesta',
+        ];
+        $extraer = static fn (string $texto): array => collect(preg_split('/[^a-z0-9]+/u', Str::ascii(Str::lower($texto))) ?: [])
+            ->filter(fn (string $palabra) => strlen($palabra) >= 4 && ! in_array($palabra, $ignorar, true))
+            ->unique()
+            ->values()
+            ->all();
+
+        $palabrasConsulta = $extraer($consulta);
+        $palabrasFuente = $extraer($fuente);
+
+        foreach ($palabrasConsulta as $palabraConsulta) {
+            foreach ($palabrasFuente as $palabraFuente) {
+                $distanciaMaxima = max(strlen($palabraConsulta), strlen($palabraFuente)) >= 9 ? 2 : 1;
+
+                if ($palabraConsulta === $palabraFuente
+                    || (min(strlen($palabraConsulta), strlen($palabraFuente)) >= 5
+                        && abs(strlen($palabraConsulta) - strlen($palabraFuente)) <= $distanciaMaxima
+                        && levenshtein($palabraConsulta, $palabraFuente) <= $distanciaMaxima)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private function endpointEsLocal(): bool

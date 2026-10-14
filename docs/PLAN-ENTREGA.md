@@ -16,11 +16,11 @@ nuevas.
 - Datos demo reproducibles mediante seeders.
 - Entorno Docker documentado para Docker Desktop y WSL2; la aplicación local usa
   MySQL 8.4 y la suite puede correrse en SQLite o en un schema MySQL aislado.
-- Última suite MySQL completa registrada (13/10/2026): **84 pruebas y 338
-  aserciones** aprobadas en el schema aislado `dentissa_test`. Después del
-  ajuste de espera de la IA local, `AsistenteIaLocalTest` pasó 10 pruebas y 26
-  aserciones (14/10/2026). GitHub Actions #9 había aprobado ambos jobs con
-  la cobertura anterior de 63 pruebas/250 aserciones en MySQL.
+- Última suite MySQL completa registrada (14/10/2026): **87 pruebas y 346
+  aserciones** aprobadas en el schema aislado `dentissa_test`, después de
+  añadir la protección que evita ofrecer fuentes aprobadas pero ajenas a la
+  pregunta. GitHub Actions #9 había aprobado ambos jobs con la cobertura
+  anterior de 63 pruebas/250 aserciones en MySQL.
 - El trabajo de respaldo y restauración está diferido y no forma parte de esta
   integración.
 - Autorización interna de citas y auditoría de operaciones sensibles cubiertas

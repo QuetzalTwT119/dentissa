@@ -221,6 +221,16 @@ sobre medicamentos no se envían al modelo. Si Ollama no está disponible, no ha
 elegible o la consulta no tiene respaldo, se conserva el fallback. La consulta
 del paciente no se escribe en los logs.
 
+Antes de llamar a Ollama, el servicio filtra fuentes que no compartan con la
+consulta al menos un término distintivo, ignorando palabras genéricas y
+tolerando errores tipográficos leves. También valida esa relación al recibir
+el ID seleccionado; una fuente fuera del conjunto elegible se rechaza. Este
+control evita, por ejemplo, que una pregunta sobre el color favorito de la
+doctora se responda con una fuente de odontopediatría. Como el filtro no
+comprende todos los sinónimos, puede ser conservador y devolver el fallback
+cuando la pregunta y la fuente usan palabras distintas; el paciente puede
+reformular su duda. No sustituye una evaluación más amplia antes de producción.
+
 La integración usa Ollama local con el modelo `granite3.3:2b` (1.5 GB de
 descarga aproximada, licencia Apache 2.0 y soporte declarado para español). No
 se arranca por defecto: la variable `DENTISSA_ASISTENTE_IA_HABILITADA` vale

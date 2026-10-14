@@ -49,7 +49,7 @@ class AsistenteIaLocalTest extends TestCase
             ]),
         ]);
 
-        $resultado = app(AsistenteIaLocalService::class)->responder('¿Cómo llego a la clínica?');
+        $resultado = app(AsistenteIaLocalService::class)->responder('¿Dónde queda el consultorio?');
 
         $this->assertSame([
             'encontrada' => true,
@@ -85,7 +85,7 @@ class AsistenteIaLocalTest extends TestCase
             ]),
         ]);
 
-        $resultado = app(AsistenteIaLocalService::class)->responder('¿A qué hora abren?');
+        $resultado = app(AsistenteIaLocalService::class)->responder('¿Dónde queda el consultorio?');
 
         $this->assertNull($resultado);
     }
@@ -105,7 +105,7 @@ class AsistenteIaLocalTest extends TestCase
             'ollama:11434/api/chat' => Http::response([], 503),
         ]);
 
-        $resultado = app(AsistenteIaLocalService::class)->responder('¿Cómo llego a la clínica?');
+        $resultado = app(AsistenteIaLocalService::class)->responder('¿Dónde queda el consultorio?');
 
         $this->assertNull($resultado);
     }
@@ -141,12 +141,32 @@ class AsistenteIaLocalTest extends TestCase
             ]),
         ]);
 
-        $resultado = app(AsistenteIaLocalService::class)->responder('¿Qué tipo de servicios ofrecen?');
+        $resultado = app(AsistenteIaLocalService::class)->responder('¿Ofrecen Odontología preventiva?');
 
         $this->assertSame('Catálogo: Odontología preventiva', $resultado['pregunta'] ?? null);
         $this->assertSame('Servicio disponible: Odontología preventiva. Tratamientos asociados disponibles: Limpieza de rutina', $resultado['respuesta'] ?? null);
         Http::assertSent(fn (Request $request) => str_contains($request['messages'][1]['content'], 'Limpieza de rutina')
             && ! str_contains($request['messages'][1]['content'], 'Tratamiento retirado'));
+    }
+
+    public function test_descarta_una_fuente_valida_que_no_tiene_relacion_con_la_consulta(): void
+    {
+        $fuente = PreguntaFrecuente::create([
+            'pregunta' => '¿Cuál es la dirección del consultorio?',
+            'respuesta' => 'El consultorio está en Avenida Ejemplo 123.',
+            'activa' => true,
+        ]);
+        config([
+            'dentissa.asistente_ia.habilitada' => true,
+            'dentissa.asistente_ia.ollama_url' => 'http://ollama:11434',
+        ]);
+
+        Http::preventStrayRequests();
+
+        $resultado = app(AsistenteIaLocalService::class)->responder('¿Cuál es el color favorito de la doctora?');
+
+        $this->assertNull($resultado);
+        Http::assertNothingSent();
     }
 
     public function test_no_puede_inventar_precios_ni_usar_una_faq_ajena(): void
@@ -214,7 +234,7 @@ class AsistenteIaLocalTest extends TestCase
         ]);
 
         $this->postJson(route('asistente-paciente.responder'), [
-            'consulta' => '¿Cómo puedo llegar hasta ustedes?',
+            'consulta' => '¿Dónde queda el consultorio?',
             'conversacion_id' => '00000000-0000-4000-8000-000000000021',
         ])->assertOk()
             ->assertJsonPath('encontrada', true)
