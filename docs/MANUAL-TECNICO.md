@@ -105,23 +105,21 @@ Ejecutar la suite completa:
 docker compose exec app php artisan test
 ```
 
-Las pruebas usan SQLite en memoria y no deben modificar la base SQLite real del
-desarrollo. La suite incluye reglas de catálogo, fechas futuras, ciclo de vida
-de citas, agendamiento público, atención oportuna, permisos, historial clínico
-y auditoría. El 12/10/2026, después del cambio de concurrencia, la suite
-completa pasó con **59 pruebas y 233 aserciones** en MySQL 8.4 en Docker
-(`dentissa_test`). En SQLite en memoria (Windows PHP 8.3.33), el resultado fue
-58 aprobadas y 1 omitida (la prueba de concurrencia requiere MySQL), con 228
-aserciones. Tras añadir la garantía de auditoría atómica, el 13/10/2026 la suite
-pasó en GitHub Actions con **62 pruebas y 245 aserciones** en SQLite (1 omitida)
-y **63 pruebas y 250 aserciones** en MySQL 8.4. La creación y reagenda bloquean, dentro de su
-transacción, la fila de configuración del día de semana antes de revisar las
-citas existentes. Esto proporciona un registro común de exclusión aun cuando
-todavía no haya citas; la consecuencia es serializar brevemente las reservas
-que caigan en cualquier fecha del mismo día de semana. La prueba QA-24 valida
-el límite secuencial; QA-34 comprobó con dos procesos PHP concurrentes en MySQL
-8.4 que solo uno reserva el último cupo (1 prueba/5 aserciones, 12/10/2026).
-SQLite no ofrece una prueba representativa de `lockForUpdate`.
+Las pruebas usan SQLite en memoria o el schema aislado `dentissa_test`; no
+deben modificar la base normal `dentissa`. La suite cubre reglas de catálogo,
+fechas futuras, ciclo de vida y concurrencia de citas, agenda pública,
+atención oportuna, permisos, historial clínico, auditoría y asistente. La
+última ejecución local completa contra MySQL 8.4, el 14/10/2026, pasó con
+**87 pruebas y 346 aserciones**. La prueba de concurrencia se omite en SQLite
+porque ese motor no valida de forma representativa `lockForUpdate`.
+
+La creación y reagenda bloquean, dentro de su transacción, la fila de
+configuración del día de semana antes de revisar las citas existentes. Esto
+proporciona un registro común de exclusión aun cuando todavía no haya citas;
+la consecuencia es serializar brevemente reservas que caigan en cualquier
+fecha del mismo día de semana. QA-24 valida el límite secuencial; QA-34
+comprobó con dos procesos PHP concurrentes en MySQL 8.4 que solo una reserva
+obtiene el último cupo (1 prueba/5 aserciones, 12/10/2026).
 
 La suite puede correrse también contra el schema MySQL desechable del entorno
 Docker. El contenedor utiliza MySQL 8.4 para la aplicación y conserva SQLite
@@ -133,9 +131,9 @@ docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DAT
 
 La inicialización de un volumen MySQL nuevo crea `dentissa_test` separado de
 `dentissa`; `RefreshDatabase` puede reconstruir el schema de pruebas sin tocar
-los datos demo de la aplicación. El 13/10/2026, la suite completa contra MySQL
-8.4 pasó en GitHub Actions con 63 pruebas y 250 aserciones, incluyendo los
-casos de rollback ante una falla de auditoría.
+los datos demo de la aplicación. GitHub Actions también ejecuta suites para
+SQLite y MySQL en cambios enviados y pull requests; consulta **Actions** en
+GitHub para revisar el resultado del commit actual.
 
 La prueba concurrente se ejecuta por separado porque requiere dos procesos PHP
 y MySQL real:

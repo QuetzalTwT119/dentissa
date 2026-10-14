@@ -1,123 +1,89 @@
 # Dentissa
 
-Sistema de gestión para consultorio dental.
+Sistema web de gestión para un consultorio dental, desarrollado con Laravel.
+Este repositorio corresponde al proyecto Dentissa; la información que aparece
+en los datos de demostración no es información oficial de una clínica.
 
-## Documentación del proyecto
+## Requisitos
 
-- [Manual técnico](docs/MANUAL-TECNICO.md)
-- [Manual de usuario](docs/MANUAL-USUARIO.md)
-- [Diagramas y flujos](docs/DIAGRAMAS-FLUJOS.md)
-- [Plan de entrega](docs/PLAN-ENTREGA.md)
-- [Matriz QA del MVP](docs/MATRIZ-QA-MVP.md)
-- [Revisión de arquitectura](docs/REVISION-ARQUITECTURA.md)
-- [Configuración de WhatsApp](docs/CONFIGURACION-WHATSAPP.md)
-- [Preparación de despliegue en Railway](docs/DESPLIEGUE-RAILWAY.md)
-- [Migración del sistema dental](docs/MIGRACION-SISTEMA-DENTAL.md)
+- Windows con Docker Desktop y backend WSL 2 habilitado, o Docker Engine y
+  Docker Compose dentro de WSL/Linux.
+- Git para clonar el repositorio.
+- Puertos locales `8000` (aplicación) y `3307` (MySQL) disponibles.
 
-## Inicio rápido con Docker
+No es necesario instalar PHP, Composer, Node.js ni MySQL en Windows: se ejecutan
+dentro de los contenedores Docker.
 
-Primera instalación (PowerShell):
+## Instalación inicial
+
+En PowerShell, desde la carpeta del proyecto:
 
 ```powershell
 Copy-Item .env.example .env
 docker compose build app
 docker compose run --rm app php artisan key:generate --force
-```
-
-Después, en cada arranque:
-
-```bash
 docker compose up -d
-```
-
-Docker Compose inicia MySQL en un volumen persistente y la aplicación ejecuta
-las migraciones al arrancar. La aplicación queda disponible en
-<http://localhost:8000>. Para revisar el estado de las migraciones y crear los
-datos demo reproducibles:
-
-```bash
-docker compose exec app php artisan migrate:status
+docker compose ps
 docker compose exec app php artisan db:seed
 ```
 
-El servicio MySQL solo se publica en el equipo local, en el puerto `3307` (por
-ejemplo, para conectarse con una herramienta de base de datos); entre los
-contenedores se usa `mysql:3306`. Las credenciales de desarrollo se definen en
-`compose.yaml` y se pueden sustituir con variables `MYSQL_*` en `.env`.
+En la salida de `docker compose ps`, espera a que MySQL indique `healthy` y la
+aplicación `Up`. Abre <http://localhost:8000>. La aplicación ejecuta las
+migraciones al iniciar. El comando `db:seed` crea los datos demo repetibles;
+no uses datos clínicos reales.
 
-Para ejecutar las pruebas:
+Para arrancar más adelante:
 
-```bash
-docker compose exec app php artisan test
+```powershell
+docker compose up -d
+docker compose ps
 ```
 
-Ese comando usa SQLite en memoria para aislar la suite. Para correr la misma
-suite contra MySQL, el servicio crea un schema independiente llamado
-`dentissa_test` en la primera inicialización del volumen:
+Para detener los contenedores sin borrar los datos:
 
-```bash
-docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DATABASE=dentissa_test app php artisan test
+```powershell
+docker compose down
 ```
 
-La implementación de respaldo y restauración está diferida y no forma parte
-de esta versión. No uses datos clínicos reales hasta que el equipo apruebe y
-pruebe un procedimiento de protección y recuperación.
+No agregues `-v` a `docker compose down`: esa opción elimina el volumen donde
+MySQL conserva la base local.
 
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Pruebas
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Suite general aislada en SQLite:
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```powershell
+docker compose exec app php artisan test --compact
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Suite completa en el schema de pruebas MySQL (`dentissa_test`), separado de la
+base de desarrollo:
 
-## Contributing
+```powershell
+docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DATABASE=dentissa_test app php artisan test --compact
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Última ejecución local registrada (14/10/2026): **87 pruebas y 346 aserciones
+aprobadas** en MySQL 8.4. GitHub Actions también valida cambios enviados y pull
+requests; revisa sus dos jobs en la pestaña **Actions** antes de integrar.
 
-## Code of Conduct
+## Documentación
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- [Manual técnico](docs/MANUAL-TECNICO.md)
+- [Manual de usuario](docs/MANUAL-USUARIO.md)
+- [Matriz QA del MVP](docs/MATRIZ-QA-MVP.md)
+- [Plan de entrega](docs/PLAN-ENTREGA.md)
+- [Revisión de arquitectura](docs/REVISION-ARQUITECTURA.md)
+- [Preparación de despliegue en Railway](docs/DESPLIEGUE-RAILWAY.md)
+- [Diagramas y flujos](docs/DIAGRAMAS-FLUJOS.md)
+- [Configuración de WhatsApp](docs/CONFIGURACION-WHATSAPP.md)
+- [Migración del sistema dental](docs/MIGRACION-SISTEMA-DENTAL.md)
 
-## Security Vulnerabilities
+## Seguridad y estado del proyecto
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Cada integrante debe mantener sus secretos en su `.env` local. No subas `.env`,
+tokens, contraseñas ni datos personales o clínicos a GitHub. El respaldo y la
+restauración están diferidos; por ahora usa exclusivamente datos ficticios.
+Railway está documentado como preparación, pero el proyecto aún no está
+desplegado. Consulta [el plan de entrega](docs/PLAN-ENTREGA.md) para el estado
+actual del MVP.
