@@ -52,7 +52,7 @@ return [
         'habilitada' => (bool) env('DENTISSA_ASISTENTE_IA_HABILITADA', false),
         'ollama_url' => env('DENTISSA_OLLAMA_BASE_URL', 'http://ollama:11434'),
         'ollama_modelo' => env('DENTISSA_OLLAMA_MODELO', 'granite3.3:2b'),
-        'timeout_segundos' => (int) env('DENTISSA_OLLAMA_TIMEOUT', 25),
+        'timeout_segundos' => (int) env('DENTISSA_OLLAMA_TIMEOUT', 60),
         'max_fuentes' => (int) env('DENTISSA_ASISTENTE_IA_MAX_FUENTES', 30),
     ],
 

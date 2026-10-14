@@ -233,6 +233,11 @@ entorno local:
 5. Probar el chat con contenido aprobado. Las FAQs ficticias de QA no son
    información real y deben desactivarse o reemplazarse antes de publicar.
 
+La primera consulta puede tardar más porque Ollama debe cargar el modelo en
+memoria. `DENTISSA_OLLAMA_TIMEOUT` permite ajustar el límite de espera; el
+valor predeterminado es 60 segundos para cubrir ese arranque en equipos de
+desarrollo. Si se supera el límite, el chat usa la respuesta de respaldo.
+
 El modelo se guarda en el volumen Docker `ollama_data`, no en Git. Esta
 integración es un prototipo de desarrollo: un modelo ejecutándose en la PC no
 queda disponible automáticamente para una aplicación desplegada en Railway. La
