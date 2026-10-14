@@ -25,7 +25,7 @@ class AsistenteIaLocalTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_ia_redacta_solo_si_devuelve_una_fuente_aprobada_en_su_contexto(): void
+    public function test_ia_solo_selecciona_una_fuente_y_no_puede_redactar_hechos(): void
     {
         $fuente = PreguntaFrecuente::create([
             'pregunta' => '¿Cuál es la dirección del consultorio?',
@@ -42,9 +42,8 @@ class AsistenteIaLocalTest extends TestCase
             'ollama:11434/api/chat' => Http::response([
                 'message' => [
                     'content' => json_encode([
-                        'encontrada' => true,
-                        'respuesta' => 'Estamos en Avenida Ejemplo 123.',
-                        'fuentes' => ['faq:'.$fuente->id],
+                        'fuente_id' => 'faq:'.$fuente->id,
+                        'respuesta' => 'El modelo no debe poder inyectar este dato falso.',
                     ], JSON_UNESCAPED_UNICODE),
                 ],
             ]),
@@ -54,17 +53,17 @@ class AsistenteIaLocalTest extends TestCase
 
         $this->assertSame([
             'encontrada' => true,
-            'respuesta' => 'Estamos en Avenida Ejemplo 123.',
+            'respuesta' => 'El consultorio está en Avenida Ejemplo 123.',
             'pregunta' => '¿Cuál es la dirección del consultorio?',
         ], $resultado);
         Http::assertSent(fn (Request $request) => $request->url() === 'http://ollama:11434/api/chat'
             && $request['model'] === 'granite3.3:2b'
             && $request['format'] === 'json'
-            && str_contains($request['messages'][0]['content'], 'No diagnostiques')
+            && str_contains($request['messages'][0]['content'], 'No redactes ni modifiques respuestas')
             && str_contains($request['messages'][1]['content'], 'Avenida Ejemplo 123'));
     }
 
-    public function test_descarta_una_respuesta_ia_sin_referencia_a_fuentes_aprobadas(): void
+    public function test_descarta_una_fuente_ia_que_no_existe(): void
     {
         PreguntaFrecuente::create([
             'pregunta' => '¿Cuál es la dirección del consultorio?',
@@ -80,9 +79,7 @@ class AsistenteIaLocalTest extends TestCase
             'ollama:11434/api/chat' => Http::response([
                 'message' => [
                     'content' => json_encode([
-                        'encontrada' => true,
-                        'respuesta' => 'La clínica abre a las 9.',
-                        'fuentes' => ['faq:99999'],
+                        'fuente_id' => 'faq:99999',
                     ]),
                 ],
             ]),
@@ -138,9 +135,7 @@ class AsistenteIaLocalTest extends TestCase
             'ollama:11434/api/chat' => Http::response([
                 'message' => [
                     'content' => json_encode([
-                        'encontrada' => true,
-                        'respuesta' => 'Está disponible Odontología preventiva, incluida la limpieza de rutina.',
-                        'fuentes' => ['catalogo:servicio:'.$servicio->id],
+                        'fuente_id' => 'catalogo:servicio:'.$servicio->id,
                     ], JSON_UNESCAPED_UNICODE),
                 ],
             ]),
@@ -149,8 +144,51 @@ class AsistenteIaLocalTest extends TestCase
         $resultado = app(AsistenteIaLocalService::class)->responder('¿Qué tipo de servicios ofrecen?');
 
         $this->assertSame('Catálogo: Odontología preventiva', $resultado['pregunta'] ?? null);
+        $this->assertSame('Servicio disponible: Odontología preventiva. Tratamientos asociados disponibles: Limpieza de rutina', $resultado['respuesta'] ?? null);
         Http::assertSent(fn (Request $request) => str_contains($request['messages'][1]['content'], 'Limpieza de rutina')
             && ! str_contains($request['messages'][1]['content'], 'Tratamiento retirado'));
+    }
+
+    public function test_no_puede_inventar_precios_ni_usar_una_faq_ajena(): void
+    {
+        PreguntaFrecuente::create([
+            'pregunta' => '¿Esta información es oficial de Dentissa?',
+            'respuesta' => 'No. Es una respuesta temporal de QA.',
+            'activa' => true,
+        ]);
+        config([
+            'dentissa.asistente_ia.habilitada' => true,
+            'dentissa.asistente_ia.ollama_url' => 'http://ollama:11434',
+        ]);
+        Http::preventStrayRequests();
+
+        $resultado = app(AsistenteIaLocalService::class)->responder('¿Cuánto cuesta un implante dental?');
+
+        $this->assertNull($resultado);
+        Http::assertNothingSent();
+    }
+
+    public function test_no_envia_peticiones_de_medicamentos_a_ollama(): void
+    {
+        PreguntaFrecuente::create([
+            'pregunta' => '¿Cuál es la dirección del consultorio?',
+            'respuesta' => 'El consultorio está en Avenida Ejemplo 123.',
+            'activa' => true,
+        ]);
+        config([
+            'dentissa.asistente_ia.habilitada' => true,
+            'dentissa.asistente_ia.ollama_url' => 'http://ollama:11434',
+        ]);
+        Http::preventStrayRequests();
+
+        foreach ([
+            '¿Qué antibiótico debo tomar para el dolor de muela?',
+            'Me duele una muela, ¿qué puedo hacer?',
+        ] as $consulta) {
+            $this->assertNull(app(AsistenteIaLocalService::class)->responder($consulta));
+        }
+
+        Http::assertNothingSent();
     }
 
     public function test_chat_web_usa_ia_solo_despues_de_faq_y_flujos_controlados(): void
@@ -169,9 +207,7 @@ class AsistenteIaLocalTest extends TestCase
             'ollama:11434/api/chat' => Http::response([
                 'message' => [
                     'content' => json_encode([
-                        'encontrada' => true,
-                        'respuesta' => 'Estamos en Avenida Ejemplo 123.',
-                        'fuentes' => ['faq:'.$fuente->id],
+                        'fuente_id' => 'faq:'.$fuente->id,
                     ], JSON_UNESCAPED_UNICODE),
                 ],
             ]),
@@ -183,7 +219,7 @@ class AsistenteIaLocalTest extends TestCase
         ])->assertOk()
             ->assertJsonPath('encontrada', true)
             ->assertJsonPath('pregunta', '¿Cuál es la dirección del consultorio?')
-            ->assertJsonPath('respuesta', 'Estamos en Avenida Ejemplo 123.');
+            ->assertJsonPath('respuesta', 'El consultorio está en Avenida Ejemplo 123.');
     }
 
     public function test_chat_no_consulta_ia_para_iniciar_una_agenda(): void

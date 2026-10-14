@@ -60,10 +60,11 @@ pulsar **Confirmar y agendar**.
 ## 5. Asistente para pacientes y preguntas frecuentes
 
 El asistente flotante responde con preguntas frecuentes activas y sus respuestas
-aprobadas. En desarrollo se puede habilitar un modelo de IA local para entender
-otras formas de preguntar y redactar una respuesta basada solo en esas fuentes.
-Si no encuentra respaldo suficiente, pide reformular la duda o contactar al
-consultorio; no debe inventar precios, diagnósticos ni orientación clínica.
+aprobadas. En desarrollo se puede habilitar un modelo de IA local para reconocer
+otras formas de preguntar y elegir una FAQ o un servicio del catálogo. La
+aplicación muestra el texto aprobado original; el modelo no redacta la respuesta.
+Para precios sin una FAQ que hable de ellos, síntomas, medicamentos y
+diagnósticos, el chat pide reformular la duda o contactar al consultorio.
 
 El personal administrador gestiona las FAQs desde **Contenido → Preguntas
 frecuentes**. En cada registro debe escribir información verificada y aprobada;

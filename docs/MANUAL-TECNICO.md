@@ -210,15 +210,16 @@ línea siguen disponibles para formulaciones probadas, pero no son requisito par
 cada forma de preguntar.
 
 Como prototipo local opcional, `AsistenteIaLocalService` puede entender otras
-formas de preguntar y redactar una respuesta usando FAQs activas y el catálogo
-activo de servicios/tratamientos como fuentes. Por eso, nombres ya publicados
-en el catálogo no requieren duplicarse como preguntas frecuentes. El modelo
-debe devolver IDs exactos de esas fuentes; una respuesta sin referencia válida
-se descarta. El chat web intenta esta opción solo después de las FAQs y de los
-flujos controlados de agenda/atención oportuna. Telegram permanece en el flujo
-actual. Si Ollama no está disponible, no hay fuentes activas o la respuesta no
-está respaldada, se conserva el fallback. La consulta del paciente no se escribe
-en los logs.
+formas de preguntar usando FAQs activas y el catálogo activo de
+servicios/tratamientos como fuentes. Por eso, nombres ya publicados en el
+catálogo no requieren duplicarse como preguntas frecuentes. El modelo solo
+devuelve el ID de una fuente exacta; Laravel responde con el contenido original
+de esa FAQ o catálogo. El texto generado por el modelo nunca se presenta al
+paciente. Para preguntas de precio, solo se consideran FAQs que mencionan
+explícitamente el precio; las consultas sobre síntomas, diagnóstico o consejo
+sobre medicamentos no se envían al modelo. Si Ollama no está disponible, no hay fuente
+elegible o la consulta no tiene respaldo, se conserva el fallback. La consulta
+del paciente no se escribe en los logs.
 
 La integración usa Ollama local con el modelo `granite3.3:2b` (1.5 GB de
 descarga aproximada, licencia Apache 2.0 y soporte declarado para español). No
