@@ -16,7 +16,7 @@ nuevas.
 - Datos demo reproducibles mediante seeders.
 - Entorno Docker documentado para Docker Desktop y WSL2; la aplicación local usa
   MySQL 8.4 y la suite puede correrse en SQLite o en un schema MySQL aislado.
-- Última suite MySQL completa registrada (14/10/2026): **87 pruebas y 346
+- Última suite MySQL completa registrada (14/10/2026): **90 pruebas y 351
   aserciones** aprobadas en el schema aislado `dentissa_test`, después de
   añadir la protección que evita ofrecer fuentes aprobadas pero ajenas a la
   pregunta. GitHub Actions #9 había aprobado ambos jobs con la cobertura
@@ -110,10 +110,10 @@ de protección y recuperación.
 El 12/10 se amplió la cobertura de permisos: el middleware administrativo se
 probó contra 12 páginas y una modificación; también se comprobó el acceso
 anónimo. El 13/10 se aseguró que los cambios sensibles y su bitácora sean
-atómicos; ante una falla, el cambio se revierte. GitHub Actions #9 pasó con 63
-pruebas/250 aserciones en MySQL y 62 pruebas aprobadas, 1 omitida y 245
-aserciones en SQLite. La mejora de exigir una transacción dentro del servicio
-de auditoría queda anotada como posterior al MVP. El siguiente paso es completar
+atómicos; ante una falla, el cambio se revierte. El 14/10 se endureció el
+servicio para rechazar auditorías fuera de una transacción activa o desde una
+conexión distinta. La suite MySQL aislada aprobó 90 pruebas/351 aserciones; la
+suite SQLite no se volvió a ejecutar en esta revisión. El siguiente paso es completar
 el recorrido manual de aceptación: agenda pública, flujo de asistente, estados
 de cita, historial clínico y permisos por rol, registrando el resultado en la
 matriz QA.

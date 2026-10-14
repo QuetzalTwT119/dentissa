@@ -6,6 +6,7 @@ use App\Exceptions\AuditoriaNoDisponible;
 use App\Models\LogAuditoria;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use LogicException;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -26,10 +27,25 @@ class AuditoriaService
         ?Request $request = null,
     ): void {
         try {
+            $conexionNegocio = $modelo->getConnection();
+            $conexionAuditoria = (new LogAuditoria())->getConnection();
+
+            if ($conexionNegocio !== $conexionAuditoria) {
+                throw new LogicException(
+                    'El modelo y la auditoría deben usar la misma conexión de base de datos.'
+                );
+            }
+
+            if ($conexionNegocio->transactionLevel() < 1) {
+                throw new LogicException(
+                    'AuditoriaService::registrar requiere una transacción activa.'
+                );
+            }
+
             $request ??= app()->bound('request') ? app(Request::class) : null;
             $usuario = $request?->user();
 
-            LogAuditoria::create([
+            (new LogAuditoria())->newQuery()->create([
                 'id_usuario' => $usuario?->id,
                 'accion' => $accion,
                 'tabla' => $modelo->getTable(),

@@ -14,11 +14,36 @@ use App\Models\User;
 use App\Services\AuditoriaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AuditoriaAtomicaTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_la_auditoria_se_guarda_en_la_transaccion_del_modelo(): void
+    {
+        $paciente = Paciente::create([
+            'nombre' => 'Paciente',
+            'apellido' => 'QA',
+            'telefono' => '5555555555',
+            'email' => 'paciente-auditoria-transaccion@example.test',
+        ]);
+
+        DB::transaction(function () use ($paciente): void {
+            app(AuditoriaService::class)->registrar(
+                'paciente.prueba',
+                $paciente,
+                datosNuevos: ['origen' => 'prueba QA'],
+            );
+        });
+
+        $this->assertDatabaseHas('logs_auditoria', [
+            'accion' => 'paciente.prueba',
+            'tabla' => 'pacientes',
+            'registro_id' => $paciente->id,
+        ]);
+    }
 
     public function test_la_reserva_publica_se_revierte_si_falla_la_auditoria(): void
     {

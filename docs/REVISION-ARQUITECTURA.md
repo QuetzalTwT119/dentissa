@@ -76,11 +76,11 @@ Navegador / formulario público / panel interno
 | Separación de responsabilidades | Buena para el tamaño actual; los controladores delegan reglas de dominio. |
 | Reglas de agenda | Buena; existe validación común para los canales público, interno y asistente. |
 | Capacidad en flujo secuencial | Verificada: QA-24 rechaza una cita que excedería el límite configurado. |
-| Concurrencia real | Protección implementada y verificada con dos procesos de reserva concurrentes en MySQL 8.4 (QA-34). SQLite no valida de forma representativa `lockForUpdate`. La suite completa MySQL pasó: 63 pruebas/250 aserciones (13/10/2026). |
+| Concurrencia real | Protección implementada y verificada con dos procesos de reserva concurrentes en MySQL 8.4 (QA-34). SQLite no valida de forma representativa `lockForUpdate`. La suite completa MySQL pasó: 90 pruebas/351 aserciones (14/10/2026). |
 | Seguridad de rutas | Buena como primera barrera; hay middleware de autenticación/rol y políticas. QA-33 prueba el rechazo de asistentes en 12 páginas y una modificación administrativa, y el redirect de visitantes. |
 | Datos demo | Reproducibles mediante seeders idempotentes (`updateOrCreate`/equivalentes). |
 | Historial clínico | Flujo CRUD, PDF y protección administrativa cubiertos por pruebas. |
-| Calidad actual | MySQL 8.4: 63 pruebas/250 aserciones aprobadas; SQLite: 62 aprobadas/1 omitida y 245 aserciones (QA-34 requiere MySQL), 13/10/2026. |
+| Calidad actual | MySQL 8.4: 90 pruebas/351 aserciones aprobadas (14/10/2026); SQLite no se volvió a ejecutar en esta revisión. |
 | Documentación | Manuales, diagramas, plan de entrega y matriz QA enlazados desde el README. |
 
 ## 4. Riesgos y decisiones pendientes
@@ -125,7 +125,7 @@ Navegador / formulario público / panel interno
    bloqueo transaccional sobre la fila de horario semanal proporciona exclusión
    incluso antes de la primera cita. QA-34 verificó con MySQL 8.4 que, ante dos
    procesos simultáneos y capacidad 1, solo una cita se guarda. La suite completa
-   de regresión también pasó en MySQL 8.4: 63 pruebas/250 aserciones (13/10/2026).
+   de regresión también pasó en MySQL 8.4: 90 pruebas/351 aserciones (14/10/2026).
 
 ### P2 — siguiente etapa, no bloquear la entrega
 
@@ -137,10 +137,10 @@ Navegador / formulario público / panel interno
    reportes y futuras integraciones.
 5. Observabilidad operativa: errores centralizados, métricas de tiempos de
    respuesta y alertas.
-6. Endurecer la API de auditoría para que `AuditoriaService` rechace llamadas
-   fuera de una transacción activa. Las operaciones actuales ya la usan
-   correctamente; la comprobación evitaría regresiones si se agrega una acción
-   auditada en el futuro.
+6. ~~Endurecer la API de auditoría.~~ **Completado:** `AuditoriaService` ahora
+   rechaza llamadas fuera de una transacción activa y conexiones distintas entre
+   el modelo de negocio y la bitácora. QA cubre el rechazo fuera de transacción,
+   una escritura válida y los rollbacks ante fallos.
 
 ## 5. Plan técnico recomendado
 

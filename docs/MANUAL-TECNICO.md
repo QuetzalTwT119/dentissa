@@ -288,8 +288,11 @@ IP y agente de usuario. Para proteger la privacidad, los cambios de historial
 guardan metadatos —por ejemplo paciente, cita, fecha y tipo de consulta—, pero
 no copian diagnóstico, medicamentos ni notas clínicas.
 
-Las escrituras de negocio y su entrada de auditoría se ejecutan en una misma
-transacción de base de datos. Si la bitácora no puede guardarse, la excepción
+`AuditoriaService` exige una transacción activa y que el modelo de negocio y la
+bitácora usen la misma conexión. Esto evita que una llamada futura escriba una
+auditoría que no pueda revertirse junto con el cambio. Las escrituras de negocio
+y su entrada de auditoría se ejecutan en una misma transacción de base de datos.
+Si la bitácora no puede guardarse, la excepción
 revierte también el cambio de negocio y la aplicación muestra una respuesta
 503 indicando que no se guardaron los cambios y que se intente de nuevo más
 tarde. Las notificaciones externas se envían después de confirmar la
