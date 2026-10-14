@@ -16,9 +16,11 @@ nuevas.
 - Datos demo reproducibles mediante seeders.
 - Entorno Docker documentado para Docker Desktop y WSL2; la aplicación local usa
   MySQL 8.4 y la suite puede correrse en SQLite o en un schema MySQL aislado.
-- Suite automatizada (13/10/2026): **63 pruebas y 250 aserciones** aprobadas en
-  MySQL 8.4; SQLite aprobó 62 y omitió una prueba que requiere MySQL
-  (245 aserciones). GitHub Actions #9 pasó ambos jobs.
+- Última suite MySQL completa registrada (13/10/2026): **84 pruebas y 338
+  aserciones** aprobadas en el schema aislado `dentissa_test`. Después del
+  ajuste de espera de la IA local, `AsistenteIaLocalTest` pasó 10 pruebas y 26
+  aserciones (14/10/2026). GitHub Actions #9 había aprobado ambos jobs con
+  la cobertura anterior de 63 pruebas/250 aserciones en MySQL.
 - El trabajo de respaldo y restauración está diferido y no forma parte de esta
   integración.
 - Autorización interna de citas y auditoría de operaciones sensibles cubiertas
@@ -115,3 +117,10 @@ de auditoría queda anotada como posterior al MVP. El siguiente paso es completa
 el recorrido manual de aceptación: agenda pública, flujo de asistente, estados
 de cita, historial clínico y permisos por rol, registrando el resultado en la
 matriz QA.
+
+El 14/10 se verificó el prototipo de IA local en Docker con una respuesta real
+del catálogo. El widget público también mostró una FAQ ficticia aprobada ante
+dos errores leves de escritura. El modelo tardó 44.8 segundos en responder
+desde frío: la latencia y la sustitución de contenido ficticio por información
+validada siguen pendientes antes de cualquier publicación. La IA local todavía
+no está configurada para el despliegue en Railway.
