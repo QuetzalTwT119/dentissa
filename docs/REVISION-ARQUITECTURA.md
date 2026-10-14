@@ -91,7 +91,11 @@ Navegador / formulario público / panel interno
    automatizada, y Railway es el destino elegido por el equipo. Antes de uso
    real se debe probar Railway e implementar un procedimiento de
    respaldo/restauración, cifrado y retención; esa etapa está diferida y fuera
-   de esta integración.
+   de esta integración. La preparación debe considerar además que el `Dockerfile`
+   raíz actual está configurado para desarrollo, que los archivos subidos usan
+   discos locales y que Railway tiene límites/costos según el plan. Ver
+   `docs/DESPLIEGUE-RAILWAY.md`; no desplegar datos reales hasta cerrar esos
+   puntos.
 2. **Datos sensibles.** El historial clínico y los PDFs contienen información
    personal. Definir quién puede leerlos, dónde se almacenan, cuánto tiempo se
    conservan y cómo se protegen los respaldos. No usar pacientes reales en

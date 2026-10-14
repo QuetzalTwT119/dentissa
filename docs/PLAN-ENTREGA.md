@@ -124,3 +124,9 @@ dos errores leves de escritura. El modelo tardó 44.8 segundos en responder
 desde frío: la latencia y la sustitución de contenido ficticio por información
 validada siguen pendientes antes de cualquier publicación. La IA local todavía
 no está configurada para el despliegue en Railway.
+
+El 14/10 se añadió `docs/DESPLIEGUE-RAILWAY.md`: confirma que Railway/MySQL es
+una decisión de despliegue pendiente de preparación, no un entorno ya publicado.
+Antes de desplegar faltan aprobación de presupuesto, proceso web de producción,
+almacenamiento persistente para archivos y respaldo/restauración. No usar datos
+clínicos reales; el respaldo sigue diferido.

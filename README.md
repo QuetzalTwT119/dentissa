@@ -11,6 +11,7 @@ Sistema de gestión para consultorio dental.
 - [Matriz QA del MVP](docs/MATRIZ-QA-MVP.md)
 - [Revisión de arquitectura](docs/REVISION-ARQUITECTURA.md)
 - [Configuración de WhatsApp](docs/CONFIGURACION-WHATSAPP.md)
+- [Preparación de despliegue en Railway](docs/DESPLIEGUE-RAILWAY.md)
 - [Migración del sistema dental](docs/MIGRACION-SISTEMA-DENTAL.md)
 
 ## Inicio rápido con Docker
