@@ -47,6 +47,7 @@ $esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
                             <x-dropdown-link :href="route('admin.pacientes.index')">Pacientes</x-dropdown-link>
                             <x-dropdown-link :href="route('admin.usuarios.index')">Usuarios</x-dropdown-link>
                             <x-dropdown-link :href="route('admin.reportes.index')">Reportes</x-dropdown-link>
+                            <x-dropdown-link :href="route('admin.auditoria.index')">Auditoría</x-dropdown-link>
                         </x-nav-dropdown>
 
                         <x-nav-dropdown :active="request()->routeIs('admin.servicios.*') || request()->routeIs('admin.tratamientos.*')">
@@ -152,6 +153,9 @@ $esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reportes.index')" :active="request()->routeIs('admin.reportes.*')">
                     Reportes
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.auditoria.index')" :active="request()->routeIs('admin.auditoria.*')">
+                    Auditoría
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.testimonios.index')" :active="request()->routeIs('admin.testimonios.*')">
                     Testimonios
