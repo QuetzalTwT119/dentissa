@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CasoController;
+use App\Http\Controllers\Admin\AuditoriaController;
 use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
 use App\Http\Controllers\Admin\HistorialClinicoController;
 use App\Http\Controllers\Admin\HorarioController;
@@ -112,6 +113,7 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
     Route::get('atencion-oportuna', [\App\Http\Controllers\Admin\AtencionOportunaController::class, 'index'])->name('atencion-oportuna.index');
     Route::patch('atencion-oportuna/urgencias/{urgencia}/contactar', [\App\Http\Controllers\Admin\AtencionOportunaController::class, 'contactarUrgencia'])->name('atencion-oportuna.urgencias.contactar');
     Route::patch('atencion-oportuna/espera/{espera}/contactar', [\App\Http\Controllers\Admin\AtencionOportunaController::class, 'contactarEspera'])->name('atencion-oportuna.espera.contactar');
