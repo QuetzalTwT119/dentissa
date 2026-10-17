@@ -14,6 +14,13 @@
     </head>
     <body class="font-sans antialiased">
         @php($imagenesServicios = config('dentissa.imagenes.servicios', []))
+        @php($serviciosPublicos = $servicios->isNotEmpty()
+            ? $servicios
+            : collect($imagenesServicios)->map(fn ($imagen, $nombre) => (object) [
+                'nombre' => $nombre,
+                'imagen' => null,
+                'descripcion' => 'Atención profesional adaptada a las necesidades de tu sonrisa.',
+            ]))
         <div class="min-h-screen bg-brand-50">
             <header class="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-6 lg:flex-row lg:items-center lg:justify-between">
                 <div class="flex items-center gap-3">
@@ -95,34 +102,32 @@
 
             <x-asistente-chat />
 
-            @if ($servicios->isNotEmpty())
-                <section id="servicios" class="bg-white py-16">
-                    <div class="mx-auto max-w-6xl px-6">
-                        <h2 class="text-center text-2xl font-semibold text-brand-600">Nuestros servicios</h2>
-                        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            @foreach ($servicios as $servicio)
-                                <div class="overflow-hidden rounded-lg border border-brand-100 bg-white">
-                                    @if ($servicio->imagen)
-                                        <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-48 w-full object-cover" loading="lazy">
-                                    @elseif ($imagenPredeterminada = ($imagenesServicios[$servicio->nombre] ?? null))
-                                        <img src="{{ asset($imagenPredeterminada) }}" alt="{{ $servicio->nombre }}" class="h-48 w-full object-cover" loading="lazy">
-                                    @else
-                                        <div class="flex h-48 w-full items-center justify-center bg-brand-100 text-sm text-brand-400">
-                                            Imagen próximamente
-                                        </div>
-                                    @endif
-                                    <div class="p-6">
-                                        <h3 class="font-semibold text-gray-900">{{ $servicio->nombre }}</h3>
-                                        @if ($servicio->descripcion)
-                                            <p class="mt-2 text-sm text-gray-600">{{ $servicio->descripcion }}</p>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+            <section id="servicios" class="bg-white py-16">
+                <div class="mx-auto max-w-6xl px-6">
+                    <h2 class="text-center text-2xl font-semibold text-brand-600">Nuestros servicios</h2>
+                    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        @foreach ($serviciosPublicos as $servicio)
+                            <div class="overflow-hidden rounded-lg border border-brand-100 bg-white">
+                                @if ($servicio->imagen)
+                                    <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-48 w-full object-cover" loading="lazy">
+                                @elseif ($imagenPredeterminada = ($imagenesServicios[$servicio->nombre] ?? null))
+                                    <img src="{{ asset($imagenPredeterminada) }}" alt="{{ $servicio->nombre }}" class="h-48 w-full object-cover" loading="lazy">
+                                @else
+                                    <div class="flex h-48 w-full items-center justify-center bg-brand-100 text-sm text-brand-400">
+                                        Imagen próximamente
                     </div>
-                </section>
-            @endif
+                                @endif
+                                <div class="p-6">
+                                    <h3 class="font-semibold text-gray-900">{{ $servicio->nombre }}</h3>
+                                    @if ($servicio->descripcion)
+                                        <p class="mt-2 text-sm text-gray-600">{{ $servicio->descripcion }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
 
             @if ($ofertas->isNotEmpty())
                 <section id="ofertas" class="overflow-hidden py-16">
