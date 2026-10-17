@@ -2,7 +2,7 @@
 $esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
 @endphp
 
-<nav x-data="{ open: false }" class="border-b border-brand-100 bg-white/95 shadow-[0_8px_24px_rgba(197,53,105,0.06)] backdrop-blur">
+<nav x-data="{ open: false }" class="relative z-50 border-b border-brand-100 bg-white/95 shadow-[0_8px_24px_rgba(197,53,105,0.06)] backdrop-blur">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex min-h-20 justify-between gap-4">
             <div class="flex">
