@@ -8,7 +8,7 @@
         <title>Melissa López N. — Odontología Integral</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600|alex-brush:400&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=alex-brush:400&display=block" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -32,7 +32,7 @@
                 </div>
 
                 <nav class="flex flex-col items-start gap-2 text-sm font-medium text-gray-600 lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-5 lg:gap-y-2">
-                    <a href="#servicios" class="hover:text-brand-600">Servicios</a>
+                    <a href="#servicios" class="transition hover:text-brand-600">Servicios</a>
                     @if ($ofertas->isNotEmpty())
                         <a href="#ofertas" class="hover:text-brand-600">Ofertas</a>
                     @endif
@@ -48,15 +48,15 @@
                     @if ($faqs->isNotEmpty())
                         <a href="#faq" class="hover:text-brand-600">Preguntas frecuentes</a>
                     @endif
-                    <a href="#contacto" class="hover:text-brand-600">Contacto</a>
+                    <a href="#contacto" class="transition hover:text-brand-600">Contacto</a>
 
                     @auth
-                        <a href="{{ route('dashboard') }}" class="rounded-md bg-brand-500 px-4 py-2 text-white shadow-sm transition hover:bg-brand-600">
+                        <a href="{{ route('dashboard') }}" class="rounded-xl bg-brand-500 px-4 py-2 text-white shadow-sm transition hover:bg-brand-600">
                             Ir a mi panel
                         </a>
                     @else
                         @if ($canLogin)
-                            <a href="{{ route('login') }}" class="hover:text-brand-600">Iniciar sesión</a>
+                            <a href="{{ route('login') }}" class="rounded-xl border border-brand-200 px-4 py-2 text-brand-700 transition hover:bg-brand-50">Iniciar sesión</a>
                         @endif
                     @endauth
                 </nav>
