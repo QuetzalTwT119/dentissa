@@ -17,8 +17,12 @@ $esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
                 </div>
 
                 <div class="hidden items-center gap-1 sm:ms-6 sm:flex">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                        Inicio
+                    </x-nav-link>
+
                     <x-nav-link :href="route('citas.index')" :active="request()->routeIs('citas.*')">
-                        Citas
+                        Agenda
                     </x-nav-link>
 
                     <x-nav-link :href="route('asistente-agenda.create')" :active="request()->routeIs('asistente-agenda.*')">
@@ -35,15 +39,15 @@ $esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
                     @endunless
 
                     @if ($esAdmin)
-                        <x-nav-link :href="route('admin.pacientes.index')" :active="request()->routeIs('admin.pacientes.*')">
-                            Pacientes
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.usuarios.index')" :active="request()->routeIs('admin.usuarios.*')">
-                            Usuarios
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.reportes.index')" :active="request()->routeIs('admin.reportes.*')">
-                            Reportes
-                        </x-nav-link>
+                        <span class="mx-1 h-7 w-px bg-brand-100"></span>
+
+                        <x-nav-dropdown :active="request()->routeIs('admin.pacientes.*') || request()->routeIs('admin.usuarios.*') || request()->routeIs('admin.reportes.*')">
+                            <x-slot name="label">Gestión</x-slot>
+
+                            <x-dropdown-link :href="route('admin.pacientes.index')">Pacientes</x-dropdown-link>
+                            <x-dropdown-link :href="route('admin.usuarios.index')">Usuarios</x-dropdown-link>
+                            <x-dropdown-link :href="route('admin.reportes.index')">Reportes</x-dropdown-link>
+                        </x-nav-dropdown>
 
                         <x-nav-dropdown :active="request()->routeIs('admin.servicios.*') || request()->routeIs('admin.tratamientos.*')">
                             <x-slot name="label">Catálogo</x-slot>

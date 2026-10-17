@@ -23,6 +23,7 @@ class DashboardVisualTest extends TestCase
             ->assertSee('Agendar cita')
             ->assertSee('Urgencias y espera')
             ->assertSee('Pacientes')
+            ->assertSee('Gestión')
             ->assertSee('logo-rosa-transparente.png');
     }
 }
