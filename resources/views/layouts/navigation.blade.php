@@ -2,17 +2,18 @@
 $esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
 @endphp
 
-<nav x-data="{ open: false }" class="border-b-2 border-brand-100 bg-white">
+<nav x-data="{ open: false }" class="border-b border-brand-100 bg-white/95 shadow-sm shadow-brand-100/40 backdrop-blur">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 justify-between">
             <div class="flex">
                 <div class="flex shrink-0 items-center">
-                    <a href="/">
-                        <x-application-logo class="block h-10 w-10 fill-current text-brand-primary" />
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2" aria-label="Ir al panel principal">
+                        <img src="/images/brand/logo-rosa-transparente.png" alt="Melissa López N. Odontología integral" class="h-10 w-auto object-contain">
+                        <span class="hidden border-l border-brand-100 pl-2 text-xs font-semibold text-brand-700 lg:inline">Administración</span>
                     </a>
                 </div>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-6 sm:-my-px sm:ms-7 sm:flex">
                     <x-nav-link :href="route('citas.index')" :active="request()->routeIs('citas.*')">
                         Citas
                     </x-nav-link>
@@ -72,7 +73,7 @@ $esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
                 <div class="relative ms-3">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button type="button" class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
+                            <button type="button" class="inline-flex items-center rounded-full border border-brand-100 bg-brand-50 px-3 py-2 text-sm font-medium leading-4 text-slate-600 transition duration-150 ease-in-out hover:border-brand-200 hover:text-brand-700 focus:outline-none">
                                 {{ auth()->user()->nombre }} {{ auth()->user()->apellido }}
 
                                 <svg class="-me-0.5 ms-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
