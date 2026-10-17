@@ -12,7 +12,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                // Tipografía del sistema: aparece igual desde el primer instante,
+                // incluso con una conexión lenta o sin Internet.
+                sans: [...defaultTheme.fontFamily.sans],
                 cursive: ['"Alex Brush"', 'cursive'],
             },
             colors: {
