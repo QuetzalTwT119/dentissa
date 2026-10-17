@@ -22,7 +22,7 @@ $classes = $active
             x-transition:leave="transition ease-in duration-75"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
-            class="absolute z-50 mt-2 w-52 rounded-2xl shadow-xl shadow-slate-900/10 ltr:origin-top-left rtl:origin-top-right start-0"
+            class="absolute z-[60] mt-2 w-52 rounded-2xl shadow-xl shadow-slate-900/10 ltr:origin-top-left rtl:origin-top-right start-0"
             style="display: none;"
             @click="open = false">
         <div class="rounded-2xl border border-brand-100 bg-white py-1.5">
