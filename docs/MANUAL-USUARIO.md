@@ -6,6 +6,14 @@ Abre <http://localhost:8000>. El personal de la clínica inicia sesión desde
 `/login`. Los pacientes pueden agendar desde el formulario público sin crear
 una cuenta.
 
+### Instalar Dentissa
+
+Desde el navegador compatible, abre el menú y selecciona **Instalar aplicación**
+o **Agregar a pantalla de inicio**. La aplicación se abrirá como una ventana
+independiente. Se necesita Internet para consultar información actualizada o
+enviar formularios; si no hay conexión, Dentissa muestra una pantalla para
+reintentar.
+
 ## 2. Agendamiento público
 
 1. Abre `/agendar-cita`.

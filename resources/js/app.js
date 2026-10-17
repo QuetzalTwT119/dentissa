@@ -2,6 +2,14 @@ import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
+if ('serviceWorker' in navigator && window.isSecureContext) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+            // El sitio continúa funcionando aunque el navegador no admita instalación PWA.
+        });
+    });
+}
+
 window.cargarHorariosDisponibles = async function (tratamientoId, fecha, excludeCitaId) {
     if (!tratamientoId || !fecha) {
         return [];

@@ -19,6 +19,7 @@ mantener el entorno de desarrollo.
   Docker Engine dentro de WSL.
 - Git y GitHub para control de versiones.
 - PHPUnit/Pest mediante `php artisan test`.
+- Manifest web y Service Worker para instalación PWA en navegadores compatibles.
 
 En Windows el equipo puede usar Docker Desktop con la integración de WSL2
 activada. También es válido ejecutar Docker Engine directamente dentro de WSL;
@@ -77,6 +78,13 @@ La base SQLite y `storage/` están montados como volúmenes para conservar los
 datos entre recreaciones del contenedor. El código de la aplicación se copia
 dentro de la imagen, por eso se debe reconstruir después de cambiar archivos
 de código que no estén montados como volumen.
+
+## 6. PWA
+
+La aplicación expone `manifest.webmanifest` y `sw.js`. El Service Worker guarda
+los recursos visuales y muestra `offline.html` si no hay conexión al navegar.
+Solo se registra bajo HTTPS o en un entorno seguro; Railway cumple este
+requisito. Los iconos de instalación se encuentran en `public/images/brand/`.
 
 ## 6. Pruebas automatizadas
 
