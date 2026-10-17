@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="agenda-publica">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,10 +26,10 @@
                 </div>
             </div>
         @else
-            <div class="min-h-screen bg-brand-50 pb-16"
+            <div class="min-h-screen bg-brand-50 pb-24 sm:pb-0"
                  x-data="{
                     paso: {{ $errors->any() ? 4 : 0 }},
-                    pasos: ['Tipo de atención', 'Fecha', 'Hora', 'Confirmar', 'Tus datos'],
+                    pasos: ['Tipo de atención', 'Fecha', 'Hora', 'Resumen', 'Datos'],
                     servicios: @js($servicios),
                     idServicio: @js(old('id_servicio', '')),
                     idTratamiento: @js(old('id_tratamiento', '')),
@@ -54,23 +54,14 @@
                     },
                  }"
             >
-                <div class="mx-auto max-w-lg px-6 pt-6 sm:px-0">
-                    <div class="grid gap-3 sm:grid-cols-2">
-                        <a href="{{ route('atencion.urgencia') }}" class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-900 transition hover:bg-red-100">
-                            <strong class="block">¿Dolor intenso o urgencia?</strong>
-                            <span class="mt-1 block">Pide que el consultorio te contacte.</span>
-                        </a>
-                        <a href="{{ route('atencion.lista-espera') }}" class="rounded-lg border border-brand-200 bg-white p-4 text-sm text-brand-900 transition hover:bg-brand-50">
-                            <strong class="block">¿No encuentras horario?</strong>
-                            <span class="mt-1 block">Únete a la lista de espera.</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="mx-auto max-w-lg overflow-hidden bg-white shadow-lg sm:mt-10 sm:rounded-xl">
+                <x-asistente-chat />
+
+                <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 pt-2 sm:px-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.8fr)] lg:gap-8">
+                <div class="w-full overflow-hidden bg-white shadow-lg sm:rounded-xl">
                     <template x-if="paso === 0">
                         <div>
                             <div class="bg-brand-500 px-6 py-8 text-center text-white">
-                                <h1 class="text-2xl font-semibold sm:text-3xl">Seleccione su tipo de atención</h1>
+                                <h1 class="text-2xl font-semibold sm:text-3xl" x-text="servicioSeleccionado ? 'Elige un tratamiento' : '¿Qué tipo de atención necesitas?'">¿Qué tipo de atención necesitas?</h1>
                                 <div class="mt-4 flex items-center justify-center gap-2">
                                     <template x-for="(p, i) in pasos" :key="i">
                                         <span class="h-2 w-2 rounded-full transition" :class="i === paso ? 'bg-white' : 'bg-white/40'"></span>
@@ -78,17 +69,32 @@
                                 </div>
                             </div>
                             <div class="space-y-3 p-6">
-                                <template x-for="servicio in servicios" :key="servicio.id">
-                                    <button type="button"
-                                            @click="idServicio = servicio.id; idTratamiento = ''"
-                                            class="block w-full rounded-lg border px-4 py-3 text-left font-medium transition"
-                                            :class="Number(idServicio) === servicio.id ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-700 hover:border-brand-200'"
-                                            x-text="servicio.nombre"></button>
+                                <a href="{{ url('/') }}" class="mb-1 inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 transition hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500" aria-label="Volver al inicio">
+                                    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5 12 3l9 7.5M5.25 9v11.25h13.5V9M9.75 20.25v-6h4.5v6" />
+                                    </svg>
+                                    Inicio
+                                </a>
+                                <template x-if="!servicioSeleccionado">
+                                    <div class="space-y-3">
+                                        <template x-for="servicio in servicios" :key="servicio.id">
+                                            <button type="button"
+                                                    @click="idServicio = servicio.id; idTratamiento = ''"
+                                                    class="block w-full rounded-lg border px-4 py-3 text-left font-medium text-gray-700 transition hover:border-brand-200">
+                                                <span x-text="servicio.nombre"></span>
+                                            </button>
+                                        </template>
+                                    </div>
                                 </template>
 
                                 <template x-if="servicioSeleccionado">
-                                    <div class="pt-2">
-                                        <p class="mb-2 text-sm font-medium text-gray-600">Tratamiento</p>
+                                    <div>
+                                        <button type="button"
+                                                @click="idServicio = ''; idTratamiento = ''"
+                                                class="mb-5 block w-full rounded-lg bg-brand-50 px-4 py-3 text-left font-semibold text-gray-900 transition hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-400"
+                                                x-text="servicioSeleccionado.nombre">
+                                        </button>
+                                        <p class="mb-2 text-sm font-medium text-gray-600">Selecciona un tratamiento</p>
                                         <div class="space-y-2">
                                             <template x-for="tratamiento in servicioSeleccionado.tratamientos" :key="tratamiento.id">
                                                 <button type="button"
@@ -138,7 +144,7 @@
                     <template x-if="paso === 2">
                         <div>
                             <div class="bg-brand-500 px-6 py-8 text-center text-white">
-                                <h1 class="text-2xl font-semibold sm:text-3xl">Seleccione una hora</h1>
+                                <h1 class="text-2xl font-semibold sm:text-3xl">Elige una hora</h1>
                                 <p class="mt-2 text-sm text-brand-50">Horarios disponibles ese día</p>
                                 <div class="mt-4 flex items-center justify-center gap-2">
                                     <template x-for="(p, i) in pasos" :key="i">
@@ -160,8 +166,8 @@
                     <template x-if="paso === 3">
                         <div>
                             <div class="bg-brand-500 px-6 py-8 text-center text-white">
-                                <h1 class="text-2xl font-semibold sm:text-3xl">Confirmación de datos de la cita</h1>
-                                <p class="mt-2 text-sm text-brand-50">Revisa que todo esté correcto</p>
+                                <h1 class="text-2xl font-semibold sm:text-3xl">Resumen de la cita</h1>
+                                <p class="mt-2 text-sm text-brand-50">Revisa el tratamiento, la fecha y la hora antes de continuar</p>
                                 <div class="mt-4 flex items-center justify-center gap-2">
                                     <template x-for="(p, i) in pasos" :key="i">
                                         <span class="h-2 w-2 rounded-full transition" :class="i === paso ? 'bg-white' : 'bg-white/40'"></span>
@@ -180,7 +186,7 @@
 
                                 <div class="flex gap-3 pt-2">
                                     <button type="button" @click="anterior()" class="w-full rounded-md border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50">Atrás</button>
-                                    <button type="button" @click="siguiente()" class="w-full rounded-md bg-brand-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-600">Confirmar</button>
+                                    <button type="button" @click="siguiente()" class="w-full rounded-md bg-brand-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-600">Continuar a mis datos</button>
                                 </div>
                             </div>
                         </div>
@@ -204,40 +210,59 @@
                                 <input type="hidden" name="fecha" :value="fecha">
                                 <input type="hidden" name="hora" :value="hora">
 
+                                <p class="text-sm text-gray-600">Los campos marcados con * son obligatorios.</p>
+
                                 <div>
-                                    <input type="text" name="nombre" placeholder="Nombre" value="{{ old('nombre') }}"
+                                    <label for="nombre" class="mb-1 block text-sm font-medium text-gray-700">Nombre *</label>
+                                    <input id="nombre" type="text" name="nombre" autocomplete="given-name" maxlength="100" required
+                                           placeholder="Ej. Ana" value="{{ old('nombre') }}"
+                                           aria-invalid="{{ $errors->has('nombre') ? 'true' : 'false' }}"
+                                           @if ($errors->has('nombre')) aria-describedby="nombre-error" @endif
                                            class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                                     @error('nombre')
-                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                        <p id="nombre-error" role="alert" class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <input type="text" name="apellido" placeholder="Apellido" value="{{ old('apellido') }}"
+                                    <label for="apellido" class="mb-1 block text-sm font-medium text-gray-700">Apellido *</label>
+                                    <input id="apellido" type="text" name="apellido" autocomplete="family-name" maxlength="100" required
+                                           placeholder="Ej. Pérez" value="{{ old('apellido') }}"
+                                           aria-invalid="{{ $errors->has('apellido') ? 'true' : 'false' }}"
+                                           @if ($errors->has('apellido')) aria-describedby="apellido-error" @endif
                                            class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                                     @error('apellido')
-                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                        <p id="apellido-error" role="alert" class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <input type="tel" name="telefono" placeholder="Teléfono" value="{{ old('telefono') }}"
+                                    <label for="telefono" class="mb-1 block text-sm font-medium text-gray-700">Teléfono *</label>
+                                    <input id="telefono" type="tel" name="telefono" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="Ingresa exactamente 10 dígitos numéricos." required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                                           placeholder="Ej. 5512345678" value="{{ old('telefono') }}"
+                                           aria-invalid="{{ $errors->has('telefono') ? 'true' : 'false' }}"
+                                           @if ($errors->has('telefono')) aria-describedby="telefono-error" @endif
                                            class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                                     @error('telefono')
-                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                        <p id="telefono-error" role="alert" class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <input type="email" name="email" placeholder="Correo" value="{{ old('email') }}"
+                                    <label for="email" class="mb-1 block text-sm font-medium text-gray-700">Correo electrónico *</label>
+                                    <input id="email" type="email" name="email" autocomplete="email" maxlength="100" required
+                                           placeholder="Ej. ana@correo.com" value="{{ old('email') }}"
+                                           aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
+                                           @if ($errors->has('email')) aria-describedby="email-error" @endif
                                            class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                                     @error('email')
-                                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                        <p id="email-error" role="alert" class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div>
-                                    <textarea name="motivo" placeholder="Motivo de la visita (opcional)" rows="2"
+                                    <label for="motivo" class="mb-1 block text-sm font-medium text-gray-700">Motivo de la visita (opcional)</label>
+                                    <textarea id="motivo" name="motivo" placeholder="Cuéntanos brevemente qué necesitas" rows="2"
                                               class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ old('motivo') }}</textarea>
                                 </div>
 
@@ -253,64 +278,65 @@
                         </div>
                     </template>
                 </div>
-            </div>
 
-            <div class="mx-auto mt-6 max-w-lg px-6 sm:px-0"
-                 x-data="{
-                    consulta: '',
-                    conversacionId: localStorage.getItem('dentissa_asistente_conversacion') ?? crypto.randomUUID(),
-                    mensajes: [{ autor: 'bot', texto: 'Hola, soy Dentissa Asistente. Puedo responder preguntas aprobadas o ayudarte a buscar horarios. Escribe, por ejemplo: Quiero una cita.' }],
-                    cargando: false,
-                    init() { localStorage.setItem('dentissa_asistente_conversacion', this.conversacionId); },
-                    async preguntar() {
-                        if (this.consulta.trim().length < 3) return;
-                        const texto = this.consulta.trim();
-                        this.mensajes.push({ autor: 'persona', texto });
-                        this.consulta = '';
-                        this.cargando = true;
-                        try {
-                            const respuesta = await fetch('{{ route('asistente-paciente.responder') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                                },
-                                body: JSON.stringify({ consulta: texto, conversacion_id: this.conversacionId }),
-                            });
-                            const datos = await respuesta.json();
-                            this.mensajes.push({ autor: 'bot', texto: datos.respuesta ?? 'No fue posible responder en este momento.', accion: datos.accion ?? null });
-                        } catch (error) {
-                            this.mensajes.push({ autor: 'bot', texto: 'No fue posible responder en este momento. Intenta nuevamente o comunícate con el consultorio.' });
-                        } finally {
-                            this.cargando = false;
-                            this.$nextTick(() => this.$refs.historial.scrollTop = this.$refs.historial.scrollHeight);
-                        }
-                    },
-                 }">
-                <div class="rounded-xl bg-white p-6 shadow-sm">
-                    <h2 class="text-lg font-semibold text-gray-900">Dentissa Asistente</h2>
-                    <p class="mt-1 text-sm text-gray-600">El mismo asistente de Telegram, ahora también en esta página.</p>
-                    <div x-ref="historial" class="mt-4 max-h-72 space-y-3 overflow-y-auto rounded-lg bg-gray-50 p-3">
-                        <template x-for="(mensaje, indice) in mensajes" :key="indice">
-                            <div class="flex" :class="mensaje.autor === 'persona' ? 'justify-end' : 'justify-start'">
-                                <p class="max-w-[88%] whitespace-pre-line rounded-lg px-3 py-2 text-sm" :class="mensaje.autor === 'persona' ? 'bg-brand-500 text-white' : 'bg-white text-gray-800 shadow-sm'" x-text="mensaje.texto"></p>
-                                <a x-show="mensaje.accion" :href="mensaje.accion?.url" class="mt-2 inline-block rounded-md bg-brand-500 px-3 py-2 text-xs font-semibold text-white hover:bg-brand-600" x-text="mensaje.accion?.etiqueta"></a>
-                            </div>
-                        </template>
-                        <p x-show="cargando" class="text-sm text-gray-500">Dentissa Asistente está respondiendo…</p>
+                <aside data-asistente-zona-reservada class="w-full rounded-2xl border border-brand-100 bg-white p-6 shadow-sm sm:p-7 lg:sticky lg:top-8">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">Agenda en línea</p>
+                    <h2 class="mt-2 text-2xl font-semibold text-gray-900">Tu cita, paso a paso</h2>
+                    <p class="mt-2 text-sm leading-6 text-gray-600">Elige lo que necesitas y revisa la disponibilidad antes de confirmar.</p>
+
+                    <div class="mt-6" role="progressbar" aria-label="Progreso de la cita" aria-valuemin="1" :aria-valuemax="pasos.length" :aria-valuenow="paso + 1">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-xs font-medium text-gray-500">Paso actual</span>
+                            <span class="text-xs font-semibold text-brand-700" x-text="`Paso ${paso + 1} de ${pasos.length}`"></span>
+                        </div>
+                        <p class="mt-1 text-base font-semibold text-gray-900" x-text="pasos[paso]"></p>
+                        <div class="mt-3 flex gap-1.5" aria-hidden="true">
+                            <template x-for="(etapa, indice) in pasos" :key="etapa">
+                                <span class="h-1.5 flex-1 rounded-full transition-colors"
+                                      :class="indice <= paso ? 'bg-brand-500' : 'bg-gray-200'"></span>
+                            </template>
+                        </div>
                     </div>
-                    <form class="mt-4 space-y-3" @submit.prevent="preguntar()">
-                        <label for="consulta-asistente" class="sr-only">Escribe tu pregunta</label>
-                        <input id="consulta-asistente" type="text" x-model="consulta" placeholder="Ej. Quiero una cita o ¿Cuánto cuesta una limpieza?"
-                               class="block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
-                        <button type="submit" :disabled="cargando || consulta.trim().length < 3"
-                                class="rounded-md bg-brand-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-600 disabled:opacity-50">
-                            Enviar
-                        </button>
-                    </form>
+
+                    <div class="mt-5 rounded-xl bg-brand-50 p-4" aria-live="polite">
+                        <p class="text-xs font-semibold uppercase tracking-wide text-brand-700">Tu selección</p>
+                        <dl class="mt-3 space-y-2 text-sm">
+                            <div class="flex justify-between gap-3">
+                                <dt class="text-gray-500">Servicio</dt>
+                                <dd class="text-right font-medium text-gray-800" x-text="servicioSeleccionado?.nombre ?? 'Pendiente'"></dd>
+                            </div>
+                            <div class="flex justify-between gap-3">
+                                <dt class="text-gray-500">Tratamiento</dt>
+                                <dd class="text-right font-medium text-gray-800" x-text="tratamientoSeleccionado?.nombre ?? 'Pendiente'"></dd>
+                            </div>
+                            <div class="flex justify-between gap-3">
+                                <dt class="text-gray-500">Fecha</dt>
+                                <dd class="text-right font-medium text-gray-800" x-text="fecha || 'Pendiente'"></dd>
+                            </div>
+                            <div class="flex justify-between gap-3">
+                                <dt class="text-gray-500">Hora</dt>
+                                <dd class="text-right font-medium text-gray-800" x-text="hora || 'Pendiente'"></dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <p class="mt-5 border-t border-gray-100 pt-4 text-xs leading-5 text-gray-500">La cita se solicita al completar tus datos y pulsar “Agendar cita”.</p>
+
+                    <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                        <a data-asistente-zona-reservada href="{{ route('atencion.urgencia') }}" class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900 transition hover:bg-red-100">
+                            <strong class="block">¿Dolor intenso o urgencia?</strong>
+                            <span class="mt-1 block text-xs leading-5">Pide que el consultorio te contacte.</span>
+                        </a>
+                        <a data-asistente-zona-reservada href="{{ route('atencion.lista-espera') }}" class="rounded-xl border border-brand-200 bg-white p-4 text-sm text-brand-900 transition hover:bg-brand-50">
+                            <strong class="block">¿No encuentras horario?</strong>
+                            <span class="mt-1 block text-xs leading-5">Únete a la lista de espera.</span>
+                        </a>
+                    </div>
+                </aside>
                 </div>
             </div>
+
         @endif
     </body>
 </html>
+
