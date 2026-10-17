@@ -38,9 +38,11 @@ class CitaPublicaController extends Controller
             'hora' => ['required', 'date_format:H:i'],
             'nombre' => ['required', 'string', 'max:100'],
             'apellido' => ['required', 'string', 'max:100'],
-            'telefono' => ['required', 'string', 'max:20'],
+            'telefono' => ['required', 'string', 'size:10', 'regex:/^[0-9]{10}$/'],
             'email' => ['required', 'email', 'max:100'],
             'motivo' => ['nullable', 'string'],
+        ], [
+            'telefono.regex' => 'Ingresa exactamente 10 dígitos numéricos de México.',
         ]);
 
         [, $tratamiento] = $reglas->validarCatalogo($validated['id_servicio'], $validated['id_tratamiento']);
