@@ -2,8 +2,8 @@
 
 @php
 $classes = $active
-            ? 'inline-flex items-center px-1 pt-1 border-b-2 border-brand-500 text-sm font-semibold leading-5 text-brand-700 focus:outline-none transition duration-150 ease-in-out'
-            : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-slate-500 hover:text-brand-700 hover:border-brand-200 focus:outline-none focus:text-brand-700 focus:border-brand-300 transition duration-150 ease-in-out';
+            ? 'inline-flex items-center rounded-xl bg-brand-50 px-3 py-2 text-sm font-semibold leading-5 text-brand-700 shadow-sm ring-1 ring-brand-100 focus:outline-none transition duration-150 ease-in-out'
+            : 'inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium leading-5 text-slate-500 hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:bg-brand-50 focus:text-brand-700 transition duration-150 ease-in-out';
 @endphp
 
 <div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
@@ -22,10 +22,10 @@ $classes = $active
             x-transition:leave="transition ease-in duration-75"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
-            class="absolute z-50 mt-2 w-48 rounded-md shadow-lg ltr:origin-top-left rtl:origin-top-right start-0"
+            class="absolute z-50 mt-2 w-52 rounded-2xl shadow-xl shadow-slate-900/10 ltr:origin-top-left rtl:origin-top-right start-0"
             style="display: none;"
             @click="open = false">
-        <div class="rounded-md ring-1 ring-black ring-opacity-5 py-1 bg-white">
+        <div class="rounded-2xl border border-brand-100 bg-white py-1.5">
             {{ $slot }}
         </div>
     </div>

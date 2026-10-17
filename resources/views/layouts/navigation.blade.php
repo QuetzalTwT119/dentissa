@@ -2,18 +2,21 @@
 $esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
 @endphp
 
-<nav x-data="{ open: false }" class="border-b border-brand-100 bg-white/95 shadow-sm shadow-brand-100/40 backdrop-blur">
+<nav x-data="{ open: false }" class="border-b border-brand-100 bg-white/95 shadow-[0_8px_24px_rgba(197,53,105,0.06)] backdrop-blur">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 justify-between">
+        <div class="flex min-h-20 justify-between gap-4">
             <div class="flex">
                 <div class="flex shrink-0 items-center">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2" aria-label="Ir al panel principal">
-                        <img src="/images/brand/logo-rosa-transparente.png" alt="Melissa López N. Odontología integral" class="h-10 w-auto object-contain">
-                        <span class="hidden border-l border-brand-100 pl-2 text-xs font-semibold text-brand-700 lg:inline">Administración</span>
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 rounded-2xl px-1 py-2 transition hover:bg-brand-50" aria-label="Ir al panel principal">
+                        <img src="/images/brand/logo-rosa-transparente.png" alt="Melissa López N. Odontología integral" class="h-11 w-11 rounded-full object-contain">
+                        <span class="hidden leading-tight lg:block">
+                            <span class="block text-sm font-bold text-brand-700">Dentissa</span>
+                            <span class="block text-[11px] font-medium uppercase tracking-[0.14em] text-slate-400">Administración</span>
+                        </span>
                     </a>
                 </div>
 
-                <div class="hidden space-x-6 sm:-my-px sm:ms-7 sm:flex">
+                <div class="hidden items-center gap-1 sm:ms-6 sm:flex">
                     <x-nav-link :href="route('citas.index')" :active="request()->routeIs('citas.*')">
                         Citas
                     </x-nav-link>
@@ -69,7 +72,7 @@ $esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
                 </div>
             </div>
 
-            <div class="hidden sm:ms-6 sm:flex sm:items-center">
+            <div class="hidden shrink-0 sm:ms-4 sm:flex sm:items-center">
                 <div class="relative ms-3">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
