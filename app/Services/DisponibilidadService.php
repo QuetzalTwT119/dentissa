@@ -49,8 +49,9 @@ class DisponibilidadService
      * Revalida en el servidor que un horario puntual siga disponible antes de guardar.
      *
      * Debe llamarse dentro de un DB::transaction() junto con el create()/update() de la
-     * cita: aplica un lockForUpdate() sobre las citas del día para que dos reservas
-     * concurrentes por el mismo horario no pasen ambas la validación antes de escribir.
+     * cita. Primero bloquea la fila de configuración del día de la semana, que existe
+     * aunque aún no haya citas; así las reservas de ese día se revisan una por una.
+     * Después bloquea y consulta las citas del día para contar los solapamientos.
      */
     public function estaDisponible(CarbonImmutable|Carbon $fechaHora, Tratamiento|int $tratamiento, ?int $excludeCitaId = null): bool
     {
@@ -58,7 +59,7 @@ class DisponibilidadService
             return false;
         }
 
-        $horario = HorarioAtencion::paraFecha($fechaHora->format('Y-m-d'));
+        $horario = HorarioAtencion::paraFecha($fechaHora->format('Y-m-d'), lock: true);
 
         if (! $horario || ! $horario->abierto) {
             return false;
@@ -119,3 +120,4 @@ class DisponibilidadService
         return config('dentissa.asistente_agenda.margen_minutos');
     }
 }
+

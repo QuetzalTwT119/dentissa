@@ -7,6 +7,7 @@ use App\Models\Cita;
 use App\Models\Paciente;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
+use App\Services\DisponibilidadService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -115,6 +116,31 @@ class CitaPublicaTest extends TestCase
 
         $this->assertDatabaseCount('pacientes', 0);
         $this->assertDatabaseCount('citas', 0);
+    }
+
+
+    public function test_los_horarios_se_calculan_con_la_hora_local_de_la_clinica(): void
+    {
+        $this->assertSame('America/Mexico_City', config('app.timezone'));
+
+        Carbon::setTestNow(Carbon::parse('2026-10-17 10:00:00', 'America/Mexico_City'));
+
+        try {
+            $tratamiento = Tratamiento::create([
+                'nombre' => 'Limpieza Dental',
+                'duracion_estimada' => 60,
+                'categoria' => 'Preventiva',
+                'activo' => true,
+            ]);
+
+            $horarios = app(DisponibilidadService::class)
+                ->horariosDisponibles('2026-10-17', $tratamiento);
+
+            $this->assertContains('10:30', $horarios);
+            $this->assertContains('13:00', $horarios);
+        } finally {
+            Carbon::setTestNow();
+        }
     }
 
 }
