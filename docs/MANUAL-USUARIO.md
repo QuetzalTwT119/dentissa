@@ -17,12 +17,10 @@ reintentar.
 ## 2. Agendamiento público
 
 1. Abre `/agendar-cita`.
-2. Selecciona un servicio.
-3. Selecciona el tratamiento que pertenece a ese servicio.
-4. Elige una fecha futura.
-5. Selecciona un horario disponible.
-6. Escribe nombre, apellido, teléfono y correo.
-7. Pulsa **Agendar cita**.
+2. Selecciona un servicio; las opciones se reemplazan por los tratamientos de ese servicio. Puedes tocar el servicio seleccionado para quitarlo y elegir otro.
+3. Selecciona un tratamiento, elige una fecha y un horario disponible, y revisa el resumen de la cita.
+4. Escribe nombre, apellido, un teléfono mexicano de exactamente 10 dígitos y correo.
+5. Pulsa **Agendar cita** para enviar la solicitud.
 
 El sistema crea o reutiliza el paciente por correo y crea la cita en estado
 **Agendada**. La pantalla muestra un mensaje de confirmación.
