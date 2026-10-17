@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Railway termina HTTPS en su proxy y reenvía la petición a PHP.
+        // Confiar en el encabezado X-Forwarded-Proto permite generar URLs HTTPS.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
             'no-cache' => \App\Http\Middleware\NoCachearRespuesta::class,
