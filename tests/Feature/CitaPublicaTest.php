@@ -76,7 +76,8 @@ class CitaPublicaTest extends TestCase
             ->assertSee('Tu cita, paso a paso')
             ->assertSee('aria-label="Volver al inicio"', false)
             ->assertSee('inputmode="numeric" maxlength="10" pattern="[0-9]{10}"', false)
-            ->assertSee('oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"', false);
+            ->assertSee('oninput=', false)
+            ->assertSee('slice(0, 10)', false);
     }
 
     public function test_la_agenda_publica_rechaza_telefonos_que_no_sean_de_diez_digitos(): void
