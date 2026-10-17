@@ -75,4 +75,20 @@ return [
         'plantilla_idioma' => env('DENTISSA_WHATSAPP_IDIOMA', 'es_MX'),
     ],
 
+    /* Recursos visuales estáticos aprobados para el sitio público. */
+    'imagenes' => [
+        'hero' => 'images/dentissa/hero-inicio.jpg',
+        'urgencias' => 'images/dentissa/urgencias-dentales.jpg',
+        'lista_espera' => 'images/dentissa/lista-espera.jpg',
+        'servicios' => [
+            'Odontología General' => 'images/dentissa/odontologia-general.jpg',
+            'Odontología Estética' => 'images/dentissa/odontologia-estetica.jpg',
+            'Ortodoncia' => 'images/dentissa/ortodoncia.jpg',
+            'Implantología' => 'images/dentissa/implantologia.jpg',
+            'Periodoncia' => 'images/dentissa/periodoncia.jpg',
+            'Endodoncia' => 'images/dentissa/endodoncia.jpg',
+            'Odontopediatría' => 'images/dentissa/odontopediatria.jpg',
+        ],
+    ],
+
 ];

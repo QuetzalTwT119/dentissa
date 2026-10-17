@@ -10,6 +10,7 @@
         <main class="mx-auto max-w-xl px-6 py-12">
             <a href="{{ route('citas.publica.create') }}" class="text-sm font-medium text-brand-700 hover:underline">← Volver a agendar</a>
             <div class="mt-5 rounded-xl bg-white p-6 shadow-sm sm:p-8" x-data="{ servicios: @js($servicios), servicio: @js(old('id_servicio', '')), get tratamientos() { return this.servicios.find(item => item.id === Number(this.servicio))?.tratamientos ?? []; } }">
+                <img src="{{ asset(config('dentissa.imagenes.lista_espera')) }}" alt="Paciente consultando la disponibilidad de citas dentales" class="mb-6 aspect-[16/9] w-full rounded-lg object-cover" fetchpriority="high">
                 <h1 class="text-2xl font-semibold text-gray-900">Lista de espera</h1>
                 <p class="mt-2 text-sm text-gray-700">Déjanos tus preferencias. El consultorio te contactará solo si se libera un horario compatible; no es una cita confirmada.</p>
                 @if (session('success'))

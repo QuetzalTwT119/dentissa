@@ -13,10 +13,11 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
+        @php($imagenesServicios = config('dentissa.imagenes.servicios', []))
         <div class="min-h-screen bg-brand-50">
             <header class="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-6 lg:flex-row lg:items-center lg:justify-between">
                 <div class="flex items-center gap-3">
-                    <img src="/images/brand/icono-blanco.jpg" alt="Melissa López N." class="h-12 w-12">
+                    <img src="/images/brand/logo-rosa-transparente.png" alt="Melissa López N." class="h-12 w-12 object-contain">
                     <div class="leading-tight">
                         <p class="font-cursive text-2xl text-brand-600">Melissa López N.</p>
                         <p class="text-xs font-medium uppercase tracking-[0.2em] text-brand-400">Odontología integral</p>
@@ -54,20 +55,26 @@
                 </nav>
             </header>
 
-            <main class="mx-auto max-w-4xl px-6 pb-16 pt-12 text-center sm:pt-20">
-                <img src="/images/brand/icono-rosa.jpg" alt="" class="mx-auto h-28 w-28 rounded-full shadow-lg shadow-brand-200">
+            <main class="mx-auto max-w-6xl px-6 pb-16 pt-12 sm:pt-20">
+                <div class="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+                    <div class="text-center lg:text-left">
+                        <img src="/images/brand/icono-rosa.jpg" alt="" class="mx-auto h-20 w-20 rounded-full shadow-lg shadow-brand-200 lg:mx-0">
 
-                <h1 class="mt-8 font-cursive text-5xl text-brand-600 sm:text-6xl">Melissa López N.</h1>
-                <p class="mt-2 text-sm font-semibold uppercase tracking-[0.3em] text-brand-400">Odontología integral</p>
+                        <h1 class="mt-6 font-cursive text-5xl text-brand-600 sm:text-6xl">Melissa López N.</h1>
+                        <p class="mt-2 text-sm font-semibold uppercase tracking-[0.3em] text-brand-400">Odontología integral</p>
 
-                <p class="mx-auto mt-6 max-w-xl text-base text-gray-600">
-                    Cuidamos tu sonrisa con atención personalizada. Agenda tu cita en línea en unos minutos, sin necesidad de crear una cuenta.
-                </p>
+                        <p class="mx-auto mt-6 max-w-xl text-base text-gray-600 lg:mx-0">
+                            Cuidamos tu sonrisa con atención personalizada. Agenda tu cita en línea en unos minutos, sin necesidad de crear una cuenta.
+                        </p>
 
-                <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
-                    <a href="{{ route('citas.publica.create') }}" class="rounded-md bg-brand-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-600">
-                        Agendar una cita
-                    </a>
+                        <div class="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
+                            <a href="{{ route('citas.publica.create') }}" class="rounded-md bg-brand-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-600">
+                                Agendar una cita
+                            </a>
+                        </div>
+                    </div>
+
+                    <img src="{{ asset(config('dentissa.imagenes.hero')) }}" alt="Dentista conversando con una paciente en un consultorio" fetchpriority="high" class="aspect-[16/9] w-full rounded-2xl object-cover shadow-xl shadow-brand-200">
                 </div>
 
                 <div class="mt-16 grid gap-6 text-left sm:grid-cols-3">
@@ -96,10 +103,12 @@
                             @foreach ($servicios as $servicio)
                                 <div class="overflow-hidden rounded-lg border border-brand-100 bg-white">
                                     @if ($servicio->imagen)
-                                        <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-40 w-full object-cover">
+                                        <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-48 w-full object-cover" loading="lazy">
+                                    @elseif ($imagenPredeterminada = ($imagenesServicios[$servicio->nombre] ?? null))
+                                        <img src="{{ asset($imagenPredeterminada) }}" alt="{{ $servicio->nombre }}" class="h-48 w-full object-cover" loading="lazy">
                                     @else
-                                        <div class="flex h-40 w-full items-center justify-center bg-brand-100 text-sm text-brand-400">
-                                            Sin imagen
+                                        <div class="flex h-48 w-full items-center justify-center bg-brand-100 text-sm text-brand-400">
+                                            Imagen próximamente
                                         </div>
                                     @endif
                                     <div class="p-6">

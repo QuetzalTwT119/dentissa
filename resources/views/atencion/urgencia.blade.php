@@ -10,6 +10,7 @@
         <main class="mx-auto max-w-xl px-6 py-12">
             <a href="{{ route('citas.publica.create') }}" class="text-sm font-medium text-brand-700 hover:underline">← Volver a agendar</a>
             <div class="mt-5 rounded-xl bg-white p-6 shadow-sm sm:p-8">
+                <img src="{{ asset(config('dentissa.imagenes.urgencias')) }}" alt="Paciente recibiendo orientación dental urgente" class="mb-6 aspect-[16/9] w-full rounded-lg object-cover" fetchpriority="high">
                 <h1 class="text-2xl font-semibold text-red-900">Solicitar atención urgente</h1>
                 <p class="mt-3 text-sm text-gray-700">Describe brevemente lo que ocurre. Un integrante del consultorio revisará la solicitud y te contactará; este formulario no proporciona diagnóstico ni sustituye atención médica.</p>
                 <div class="mt-4 rounded-md bg-red-50 p-4 text-sm text-red-900">
