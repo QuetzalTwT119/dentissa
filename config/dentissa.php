@@ -70,6 +70,7 @@ return [
 
     'contacto' => [
         'telefono' => env('DENTISSA_TELEFONO', '+52 55 0000 0000'),
+        'whatsapp' => env('DENTISSA_WHATSAPP', '5215500000000'),
         'correo' => env('DENTISSA_CORREO', 'hola@dentissa.demo'),
         'direccion' => env('DENTISSA_DIRECCION', 'Consultorio de demostración · Ciudad de México'),
         'horario_texto' => env('DENTISSA_HORARIO_TEXTO', 'Lunes a viernes · 9:00 a 18:00'),

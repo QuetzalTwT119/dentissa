@@ -7,6 +7,8 @@
 
         <title>Melissa López N. — Odontología Integral</title>
 
+        @include('partials.pwa-meta')
+
         @php($heroImagePath = config('dentissa.imagenes.hero'))
         @php($heroImage = asset($heroImagePath).'?v='.filemtime(public_path($heroImagePath)))
         <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>

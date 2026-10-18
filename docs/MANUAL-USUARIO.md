@@ -45,6 +45,10 @@ Los nombres, teléfonos, correos y precios del catálogo demo son de prueba. No
 son datos ni tarifas de una clínica real. Al terminar la exposición, el equipo
 debe apagar o eliminar el servicio de Railway desde el panel.
 
+
+
+La página principal presenta los servicios y explica el proceso de agenda. En el bloque de contacto, los datos de demostración muestran el aviso **Información ficticia · No contactar** y no se convierten en enlaces. No los uses para contactar al consultorio.
+
 ## 2. Agendamiento público
 
 1. Abre `/agendar-cita`.
