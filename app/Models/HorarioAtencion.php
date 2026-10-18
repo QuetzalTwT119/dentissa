@@ -25,3 +25,4 @@ class HorarioAtencion extends Model
             ->first();
     }
 }
+

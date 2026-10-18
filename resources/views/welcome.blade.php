@@ -18,6 +18,13 @@
     </head>
     <body class="font-sans antialiased">
         @php($imagenesServicios = config('dentissa.imagenes.servicios', []))
+        @php($serviciosPublicos = $servicios->isNotEmpty()
+            ? $servicios
+            : collect($imagenesServicios)->map(fn ($imagen, $nombre) => (object) [
+                'nombre' => $nombre,
+                'imagen' => null,
+                'descripcion' => 'Atención profesional adaptada a las necesidades de tu sonrisa.',
+            ]))
         <div class="min-h-screen bg-brand-50">
             <header class="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
                 <div class="flex items-center gap-3">
@@ -119,7 +126,7 @@
 
             <x-asistente-chat />
 
-            @if ($servicios->isNotEmpty())
+            @if ($serviciosPublicos->isNotEmpty())
                 <section id="servicios" class="bg-white py-16">
                     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div class="mx-auto max-w-2xl text-center">
@@ -129,12 +136,12 @@
                         </div>
                         <div class="mt-10">
                             <div class="mb-5 flex items-center justify-between gap-4 text-sm text-slate-500">
-                                <p>{{ $servicios->count() }} servicios disponibles</p>
+                                <p>{{ $serviciosPublicos->count() }} servicios disponibles</p>
                             </div>
                             <div class="servicios-marquee-mask overflow-hidden" role="region" aria-label="Servicios dentales disponibles">
                                 <div class="servicios-marquee-track flex w-max">
                                     <div role="list" aria-label="Servicios dentales" class="flex shrink-0 gap-4 pr-4 sm:gap-5 sm:pr-5 lg:gap-6 lg:pr-6">
-                                        @foreach ($servicios as $servicio)
+                                        @foreach ($serviciosPublicos as $servicio)
                                 <article role="listitem" class="w-[84vw] max-w-[360px] shrink-0 overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition duration-200 hover:shadow-xl hover:shadow-brand-100/70 sm:w-[min(44vw,360px)] lg:w-[min(28vw,360px)]">
                                     @if ($servicio->imagen)
                                         <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-48 w-full object-cover" loading="lazy">
@@ -155,7 +162,7 @@
                                         @endforeach
                                     </div>
                                     <div aria-hidden="true" class="flex shrink-0 gap-4 pr-4 sm:gap-5 sm:pr-5 lg:gap-6 lg:pr-6">
-                                        @foreach ($servicios as $servicio)
+                                        @foreach ($serviciosPublicos as $servicio)
                                             <article class="w-[84vw] max-w-[360px] shrink-0 overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm sm:w-[min(44vw,360px)] lg:w-[min(28vw,360px)]">
                                                 @if ($servicio->imagen)
                                                     <img src="/storage/{{ $servicio->imagen }}" alt="" class="h-48 w-full object-cover" loading="lazy">

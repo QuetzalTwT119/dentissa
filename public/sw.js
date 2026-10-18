@@ -3,7 +3,8 @@ const APP_SHELL = [
     '/',
     '/offline.html',
     '/manifest.webmanifest',
-    '/images/brand/icono-rosa.jpg',
+    '/images/brand/pwa-icon-192.png',
+    '/images/brand/pwa-icon-512.png',
 ];
 
 self.addEventListener('install', (event) => {

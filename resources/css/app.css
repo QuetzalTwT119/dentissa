@@ -148,3 +148,43 @@ html::-webkit-scrollbar {
         animation: none;
     }
 }
+
+
+[x-cloak] {
+    display: none !important;
+}
+
+html.agenda-publica {
+    scrollbar-color: #e5a1b8 #fff1f5;
+    scrollbar-width: thin;
+}
+
+html.agenda-publica::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+html.agenda-publica::-webkit-scrollbar-track {
+    background: #fff1f5;
+}
+
+html.agenda-publica::-webkit-scrollbar-thumb {
+    border: 2px solid #fff1f5;
+    border-radius: 999px;
+    background: #e5a1b8;
+}
+
+html.agenda-publica::-webkit-scrollbar-thumb:hover {
+    background: #d8668a;
+}
+
+@media (min-width: 640px) {
+    html.agenda-publica {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    html.agenda-publica::-webkit-scrollbar {
+        display: none;
+    }
+}

@@ -194,4 +194,52 @@ class CitaPublicaTest extends TestCase
         $this->assertDatabaseCount('pacientes', 0);
         $this->assertDatabaseCount('citas', 0);
     }
+
+    public function test_el_formulario_publico_muestra_el_progreso_y_limita_el_telefono_a_mexico(): void
+    {
+        $this->get(route('citas.publica.create'))
+            ->assertOk()
+            ->assertSee('Tu cita, paso a paso')
+            ->assertSee('aria-label="Volver al inicio"', false)
+            ->assertSee('inputmode="numeric" maxlength="10" pattern="[0-9]{10}"', false)
+            ->assertSee('oninput=', false)
+            ->assertSee('slice(0, 10)', false);
+    }
+
+    public function test_la_agenda_publica_rechaza_telefonos_que_no_sean_de_diez_digitos(): void
+    {
+        $servicio = Servicio::create([
+            'nombre' => 'Odontología General',
+            'orden' => 1,
+            'activo' => true,
+        ]);
+        $tratamiento = Tratamiento::create([
+            'nombre' => 'Limpieza Dental',
+            'duracion_estimada' => 60,
+            'categoria' => 'Preventiva',
+            'activo' => true,
+        ]);
+        $servicio->tratamientos()->attach($tratamiento);
+
+        $fecha = Carbon::tomorrow();
+        while ($fecha->isSunday()) {
+            $fecha->addDay();
+        }
+
+        foreach (['123456789', '12345678901', '521234567890', '+5555555555', 'abc1234567'] as $telefono) {
+            $this->post(route('citas.publica.store'), [
+                'id_servicio' => $servicio->id,
+                'id_tratamiento' => $tratamiento->id,
+                'fecha' => $fecha->toDateString(),
+                'hora' => '09:00',
+                'nombre' => 'Ana',
+                'apellido' => 'Prueba',
+                'telefono' => $telefono,
+                'email' => 'ana.publica@example.test',
+            ])->assertSessionHasErrors('telefono');
+        }
+
+        $this->assertDatabaseCount('pacientes', 0);
+        $this->assertDatabaseCount('citas', 0);
+    }
 }

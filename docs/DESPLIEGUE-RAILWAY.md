@@ -1,8 +1,10 @@
-# Preparación de despliegue escolar en Railway
+# Despliegue escolar en Railway
 
-**Destino decidido:** Railway, para una demostración escolar breve con datos
-ficticios. **Estado:** preparación local; aún no se creó ni desplegó ningún
-servicio. **Revisión:** 15 de octubre de 2026.
+**Destino:** Railway, para una demostración escolar breve con datos ficticios.
+**Estado:** el dominio de producción existente respondió correctamente en `/up`
+y `/login` el 17 de octubre de 2026. La configuración interna de Railway no se
+ha inspeccionado desde este repositorio; confirma variables, respaldos y
+almacenamiento persistente desde el panel antes de usar datos reales.
 
 Railway será el alojamiento de la demostración, no una autorización para usar
 Dentissa con pacientes reales. El objetivo de esta etapa es separar el
@@ -31,11 +33,12 @@ configurarse y probarse por separado.
 - ejecuta `php artisan migrate --force` cada vez que inicia el contenedor;
 - depende del `.env` local montado por Compose.
 
-El servicio de Railway se preparará desde GitHub usando Railpack, que detecta
-Laravel y utiliza PHP-FPM/Caddy. Se renombró el Dockerfile local para que
-Railway no detecte por accidente el contenedor de desarrollo como producción.
-La aplicación y MySQL se crearán como servicios separados; Railway no ejecuta
-el `compose.yaml` local como una unidad.
+El repositorio conserva un `Dockerfile` de producción separado y
+`Dockerfile.local` para el entorno de desarrollo. Railway puede construir la
+imagen de producción desde el `Dockerfile` raíz cuando esa sea la estrategia
+configurada en el servicio; el `compose.yaml` local no se despliega como una
+unidad. Verifica el builder y el comando de inicio en Railway antes de cambiar
+la configuración del servicio.
 
 Railpack debe compilar los recursos Vite (`npm run build`) y usar la versión
 PHP compatible con `composer.json` (PHP 8.3 o superior, dentro de la línea
@@ -104,7 +107,7 @@ Antes de generar un dominio público:
   sesiones, enlaces de correo, archivos, PDF y dominio HTTPS antes de invitar al
   equipo.
 
-## Orden del despliegue (todavía no ejecutado)
+## Lista de verificación de despliegue y operación
 
 1. Confirmar propietario, precio vigente y límite de consumo desde el panel.
    No compartir credenciales ni datos de pago en el repositorio o el chat.
