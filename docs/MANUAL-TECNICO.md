@@ -25,6 +25,10 @@ En Windows el equipo puede usar Docker Desktop con la integración de WSL2
 activada. También es válido ejecutar Docker Engine directamente dentro de WSL;
 los comandos de `docker compose` son los mismos.
 
+
+
+La portada pública precarga su imagen principal y utiliza tipografías Figtree y Alex Brush servidas desde `public/fonts`, para no depender de un proveedor externo. Las imágenes del hero y servicios están configuradas en `config/dentissa.php`. El bloque de contacto se controla mediante `DENTISSA_MODO_DEMO`; debe permanecer activo mientras los valores sean ficticios y no debe abrirse el sitio a pacientes hasta configurar datos reales.
+
 ## 3. Arranque del proyecto
 
 Desde PowerShell o Windows Terminal:
@@ -132,6 +136,11 @@ docker compose exec app php artisan test --filter=CitaPublicaTest
 tratamiento, el margen entre citas, la capacidad simultánea y las citas ya
 registradas. Antes de guardar una cita vuelve a validar el horario dentro de
 una transacción para evitar reservas duplicadas.
+
+La zona horaria se configura con `APP_TIMEZONE`; por defecto usa
+`America/Mexico_City`, por lo que las fechas y horas del calendario reflejan
+la hora local de la clínica. En reservas concurrentes se bloquea brevemente la
+fila de configuración del día de semana antes de validar el cupo.
 
 `CitaReglasService` centraliza las validaciones compartidas por los flujos
 interno, público y asistente: catálogo activo, relación servicio-tratamiento y
