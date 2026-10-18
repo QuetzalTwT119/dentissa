@@ -48,12 +48,16 @@ return [
     |
     */
 
+    'modo_demo' => (bool) env('DENTISSA_MODO_DEMO', true),
+
     'contacto' => [
-        'telefono' => env('DENTISSA_TELEFONO', '+52 55 1234 5678'),
-        'whatsapp' => env('DENTISSA_WHATSAPP', '5215512345678'),
-        'correo' => env('DENTISSA_CORREO', 'contacto@melissalopez.dental'),
-        'direccion' => env('DENTISSA_DIRECCION', 'Av. Ejemplo 123, Ciudad de México'),
-        'horario_texto' => env('DENTISSA_HORARIO_TEXTO', 'Lunes a viernes, 8:00 a 18:00'),
+        'telefono' => env('DENTISSA_TELEFONO', '+52 55 0000 0000'),
+        'whatsapp' => env('DENTISSA_WHATSAPP', '5215500000000'),
+        'correo' => env('DENTISSA_CORREO', 'hola@dentissa.demo'),
+        'direccion' => env('DENTISSA_DIRECCION', 'Consultorio de demostración · Ciudad de México'),
+        'horario_texto' => env('DENTISSA_HORARIO_TEXTO', 'Lunes a viernes · 9:00 a 18:00'),
+        'telegram_usuario' => env('DENTISSA_TELEGRAM_USUARIO', '@dentissa_demo'),
+        'telegram_url' => env('DENTISSA_TELEGRAM_URL'),
     ],
 
     /*
