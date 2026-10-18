@@ -13,9 +13,9 @@
                         Selecciona un paciente para consultar o registrar su historial clínico.
                     </p>
 
-                    <form method="GET" action="{{ route('admin.pacientes.index') }}" class="flex items-center gap-2">
-                        <input type="text" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" placeholder="Buscar por nombre o correo…"
-                               class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                    <form method="GET" action="{{ route('admin.pacientes.index') }}" class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+                        <input type="text" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" placeholder="Nombre, correo o teléfono…" aria-label="Buscar pacientes por nombre, correo o teléfono"
+                               class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:w-72">
                         <x-secondary-button type="submit">Buscar</x-secondary-button>
                         @if (!empty($filtros['buscar']))
                             <a href="{{ route('admin.pacientes.index') }}" class="text-sm text-gray-500 hover:text-gray-700">Limpiar</a>
@@ -23,7 +23,8 @@
                     </form>
                 </div>
 
-                <table class="w-full text-left text-sm">
+                <div class="overflow-x-auto">
+                <table class="w-full min-w-[760px] text-left text-sm">
                     <thead class="border-y border-gray-200 bg-gray-50 text-gray-600">
                         <tr>
                             <th class="px-6 py-3">Nombre</th>
@@ -66,6 +67,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>

@@ -19,6 +19,38 @@ class AsistenteAgendaTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_el_asistente_rechaza_fechas_pasadas_en_el_servidor(): void
+    {
+        $usuario = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $paciente = Paciente::create([
+            'nombre' => 'Paciente',
+            'apellido' => 'De prueba',
+            'telefono' => '5512345678',
+            'email' => 'paciente@example.test',
+        ]);
+        $servicio = Servicio::create(['nombre' => 'Consulta de prueba', 'activo' => true]);
+        $tratamiento = Tratamiento::create([
+            'nombre' => 'Tratamiento de prueba',
+            'duracion_estimada' => 30,
+            'categoria' => 'Preventiva',
+            'activo' => true,
+        ]);
+        $servicio->tratamientos()->attach($tratamiento);
+
+        $this->actingAs($usuario)
+            ->from(route('asistente-agenda.create'))
+            ->post(route('asistente-agenda.proponer'), [
+                'id_paciente' => $paciente->id,
+                'id_servicio' => $servicio->id,
+                'id_tratamiento' => $tratamiento->id,
+                'fecha' => now()->subDay()->toDateString(),
+            ])
+            ->assertRedirect(route('asistente-agenda.create'))
+            ->assertSessionHasErrors('fecha');
+
+        $this->assertDatabaseCount('citas', 0);
+    }
+
     public function test_el_asistente_respeta_el_margen_y_puede_preparar_una_cita(): void
     {
         $usuario = User::factory()->create(['rol' => RolUsuario::Admin]);

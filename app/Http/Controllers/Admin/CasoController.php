@@ -6,6 +6,7 @@ use App\Enums\TipoImagen;
 use App\Http\Controllers\Controller;
 use App\Models\Caso;
 use App\Models\Imagen;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,9 +26,15 @@ class CasoController extends Controller
         return view('admin.casos.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
-        $caso = Caso::create($this->validated($request));
+        $caso = $auditoria->registrarCambio(
+            $request,
+            'caso.creado',
+            new Caso,
+            ['titulo', 'activo', 'orden'],
+            fn () => Caso::create($this->validated($request)),
+        );
 
         return Redirect::route('admin.casos.edit', $caso);
     }
@@ -39,41 +46,67 @@ class CasoController extends Controller
         ]);
     }
 
-    public function update(Request $request, Caso $caso): RedirectResponse
+    public function update(Request $request, Caso $caso, AuditoriaService $auditoria): RedirectResponse
     {
-        $caso->update($this->validated($request));
+        $auditoria->registrarCambio(
+            $request,
+            'caso.actualizado',
+            $caso,
+            ['titulo', 'activo', 'orden'],
+            fn () => $caso->update($this->validated($request)),
+        );
 
         return Redirect::route('admin.casos.index');
     }
 
-    public function destroy(Caso $caso): RedirectResponse
+    public function destroy(Request $request, Caso $caso, AuditoriaService $auditoria): RedirectResponse
     {
-        $caso->delete();
+        $auditoria->registrarCambio(
+            $request,
+            'caso.eliminado',
+            $caso,
+            ['titulo'],
+            fn () => $caso->delete(),
+            eliminado: true,
+        );
 
         return Redirect::route('admin.casos.index');
     }
 
-    public function storeImagen(Request $request, Caso $caso): RedirectResponse
+    public function storeImagen(Request $request, Caso $caso, AuditoriaService $auditoria): RedirectResponse
     {
         $request->validate([
             'archivo' => ['required', 'image', 'max:2048'],
         ]);
 
-        Imagen::create([
-            'titulo' => $request->file('archivo')->getClientOriginalName(),
-            'url' => $request->file('archivo')->store('casos', 'public'),
-            'tipo' => TipoImagen::Caso,
-            'referencia_id' => $caso->id,
-        ]);
+        $auditoria->registrarCambio(
+            $request,
+            'caso.imagen_agregada',
+            new Imagen,
+            ['titulo', 'tipo', 'referencia_id'],
+            fn () => Imagen::create([
+                'titulo' => $request->file('archivo')->getClientOriginalName(),
+                'url' => $request->file('archivo')->store('casos', 'public'),
+                'tipo' => TipoImagen::Caso,
+                'referencia_id' => $caso->id,
+            ]),
+        );
 
         return Redirect::route('admin.casos.edit', $caso);
     }
 
-    public function destroyImagen(Caso $caso, Imagen $imagen): RedirectResponse
+    public function destroyImagen(Request $request, Caso $caso, Imagen $imagen, AuditoriaService $auditoria): RedirectResponse
     {
         abort_unless($imagen->referencia_id === $caso->id && $imagen->tipo === TipoImagen::Caso, 404);
 
-        $imagen->delete();
+        $auditoria->registrarCambio(
+            $request,
+            'caso.imagen_eliminada',
+            $imagen,
+            ['titulo', 'tipo', 'referencia_id'],
+            fn () => $imagen->delete(),
+            eliminado: true,
+        );
 
         return Redirect::route('admin.casos.edit', $caso);
     }

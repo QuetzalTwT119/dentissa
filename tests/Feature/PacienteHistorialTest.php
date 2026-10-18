@@ -14,18 +14,36 @@ class PacienteHistorialTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_el_admin_puede_buscar_y_actualizar_datos_oficiales_del_paciente(): void
+    public function test_el_admin_puede_buscar_y_actualizar_datos_del_paciente(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
         $paciente = $this->crearPaciente('Sofia', 'QA');
+        $paciente->update(['telefono' => '5551236789']);
 
         $this->actingAs($admin)
-            ->get(route('admin.pacientes.index', ['buscar' => 'Sofia']))
+            ->get(route('admin.pacientes.index', ['buscar' => 'ofi']))
             ->assertOk()
             ->assertSee('Sofia QA');
 
         $this->actingAs($admin)
+            ->get(route('admin.pacientes.index', ['buscar' => '1236']))
+            ->assertOk()
+            ->assertSee('Sofia QA');
+
+        $this->actingAs($admin)
+            ->get(route('admin.pacientes.edit', $paciente))
+            ->assertOk()
+            ->assertSee('Nombre')
+            ->assertSee('Apellido')
+            ->assertSee('Teléfono (opcional)')
+            ->assertSee('Correo electrónico (opcional)');
+
+        $this->actingAs($admin)
             ->put(route('admin.pacientes.update', $paciente), [
+                'nombre' => 'Sofia Maria',
+                'apellido' => 'QA Actualizada',
+                'telefono' => '+52 (755) 555-1234',
+                'email' => 'sofia.actualizada@example.test',
                 'curp' => 'GORP800101HDFRZL09',
                 'rfc' => 'GORP800101AB1',
                 'ine_clave' => 'ABC123456789012345',
@@ -35,13 +53,67 @@ class PacienteHistorialTest extends TestCase
 
         $this->assertDatabaseHas('pacientes', [
             'id' => $paciente->id,
+            'nombre' => 'Sofia Maria',
+            'apellido' => 'QA Actualizada',
+            'telefono' => '+52 (755) 555-1234',
+            'email' => 'sofia.actualizada@example.test',
             'curp' => 'GORP800101HDFRZL09',
             'rfc' => 'GORP800101AB1',
             'ine_clave' => 'ABC123456789012345',
         ]);
-        $this->assertDatabaseHas('logs_auditoria', [
-            'id_usuario' => $admin->id,
-            'accion' => 'paciente.datos_oficiales_actualizados',
+        $evento = LogAuditoria::where('id_usuario', $admin->id)
+            ->where('accion', 'paciente.datos_actualizados')
+            ->where('tabla', 'pacientes')
+            ->where('registro_id', $paciente->id)
+            ->firstOrFail();
+        $this->assertEqualsCanonicalizing(
+            ['nombre', 'apellido', 'telefono', 'email', 'curp', 'rfc', 'ine_clave'],
+            $evento->datos_nuevos['campos_modificados']
+        );
+        $this->assertStringNotContainsString('sofia.actualizada@example.test', json_encode($evento->datos_nuevos));
+        $this->assertStringNotContainsString('+52 (755) 555-1234', json_encode($evento->datos_nuevos));
+    }
+
+    public function test_el_admin_no_puede_asignar_un_correo_duplicado_ni_un_telefono_invalido(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $paciente = $this->crearPaciente('Sofia', 'QA');
+        $otroPaciente = $this->crearPaciente('Otro', 'Paciente');
+
+        $datos = [
+            'nombre' => 'Sofia',
+            'apellido' => 'QA',
+            'telefono' => '5551236789',
+            'email' => $otroPaciente->email,
+            'curp' => null,
+            'rfc' => null,
+            'ine_clave' => null,
+            'tutor_id' => null,
+        ];
+
+        $this->actingAs($admin)
+            ->from(route('admin.pacientes.edit', $paciente))
+            ->put(route('admin.pacientes.update', $paciente), $datos)
+            ->assertRedirect(route('admin.pacientes.edit', $paciente))
+            ->assertSessionHasErrors('email');
+
+        $this->actingAs($admin)
+            ->from(route('admin.pacientes.edit', $paciente))
+            ->put(route('admin.pacientes.update', $paciente), [
+                ...$datos,
+                'telefono' => '555-123',
+                'email' => $paciente->email,
+            ])
+            ->assertRedirect(route('admin.pacientes.edit', $paciente))
+            ->assertSessionHasErrors('telefono');
+
+        $this->assertDatabaseHas('pacientes', [
+            'id' => $paciente->id,
+            'telefono' => '5555555555',
+            'email' => $paciente->email,
+        ]);
+        $this->assertDatabaseMissing('logs_auditoria', [
+            'accion' => 'paciente.datos_actualizados',
             'tabla' => 'pacientes',
             'registro_id' => $paciente->id,
         ]);
@@ -51,6 +123,20 @@ class PacienteHistorialTest extends TestCase
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
         $paciente = $this->crearPaciente();
+
+        $this->actingAs($admin)
+            ->get(route('admin.pacientes.historial.create', $paciente))
+            ->assertOk()
+            ->assertSee('Fecha de consulta (obligatoria)')
+            ->assertSee('Tipo de consulta (obligatorio)')
+            ->assertSee('Motivo de la consulta (obligatorio)')
+            ->assertSee('Diagnóstico (opcional)')
+            ->assertSee('Tratamiento realizado (opcional)')
+            ->assertSee('Medicamentos recetados (opcional)')
+            ->assertSee('Observaciones (opcional)')
+            ->assertSee('Notas privadas del doctor (opcional)')
+            ->assertSee('id="tipo_consulta" name="tipo_consulta" required', false);
+
         $datos = [
             'fecha_consulta' => '2026-10-07',
             'tipo_consulta' => 'primera_vez',
@@ -129,6 +215,27 @@ class PacienteHistorialTest extends TestCase
         $response->assertOk();
         $this->assertSame('application/pdf', $response->headers->get('content-type'));
         $this->assertStringStartsWith('%PDF', $response->getContent());
+    }
+
+    public function test_el_pdf_no_se_ofrece_ni_se_genera_si_el_historial_esta_vacio(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $paciente = $this->crearPaciente();
+
+        $response = $this->actingAs($admin)
+            ->get(route('admin.pacientes.historial.index', $paciente));
+
+        $response
+            ->assertOk()
+            ->assertSee('Este paciente todavía no tiene consultas registradas.')
+            ->assertSee('El PDF estará disponible cuando registres la primera consulta.')
+            ->assertSee('disabled', false)
+            ->assertDontSee('href="'.route('admin.pacientes.historial.pdf', $paciente).'"', false);
+
+        $this->actingAs($admin)
+            ->get(route('admin.pacientes.historial.pdf', $paciente))
+            ->assertRedirect(route('admin.pacientes.historial.index', $paciente))
+            ->assertSessionHas('status', 'Aún no hay consultas para generar el PDF.');
     }
 
     public function test_un_asistente_no_puede_acceder_al_modulo_administrativo_de_pacientes(): void

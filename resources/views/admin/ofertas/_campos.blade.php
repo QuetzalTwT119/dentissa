@@ -34,7 +34,7 @@ $valor = function (string $campo, $default = '') use ($oferta) {
     <x-input-error :messages="$errors->get('id_tratamiento')" class="mt-2" />
 </div>
 
-<div class="grid grid-cols-2 gap-4">
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
         <x-input-label for="tipo" value="Tipo de oferta" />
         <select id="tipo" name="tipo"
@@ -57,7 +57,7 @@ $valor = function (string $campo, $default = '') use ($oferta) {
     </div>
 </div>
 
-<div class="grid grid-cols-2 gap-4">
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
         <x-input-label for="valor_descuento" value="Valor del descuento" />
         <x-text-input id="valor_descuento" name="valor_descuento" type="number" step="0.01" class="mt-1 block w-full" :value="$valor('valor_descuento')" />
@@ -71,7 +71,7 @@ $valor = function (string $campo, $default = '') use ($oferta) {
     </div>
 </div>
 
-<div class="grid grid-cols-2 gap-4">
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
         <x-input-label for="fecha_inicio" value="Fecha de inicio" />
         <x-text-input id="fecha_inicio" name="fecha_inicio" type="date" class="mt-1 block w-full" :value="$valor('fecha_inicio')" required />

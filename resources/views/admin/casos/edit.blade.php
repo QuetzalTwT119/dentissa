@@ -25,7 +25,7 @@
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
                             <x-input-label for="orden" value="Orden" />
                             <x-text-input id="orden" name="orden" type="number" min="0" class="mt-1 block w-full" :value="old('orden', $caso->orden)" />
@@ -74,9 +74,9 @@
                     @endforelse
                 </div>
 
-                <form method="POST" action="{{ route('admin.casos.imagenes.store', $caso) }}" enctype="multipart/form-data" class="mt-4 flex items-end gap-4">
+                <form method="POST" action="{{ route('admin.casos.imagenes.store', $caso) }}" enctype="multipart/form-data" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
                     @csrf
-                    <div class="flex-1">
+                    <div class="min-w-0 flex-1">
                         <x-input-label for="archivo" value="Nueva foto (máx. 2MB)" />
                         <input id="archivo" name="archivo" type="file" accept="image/*" class="mt-1 block w-full text-sm">
                         <x-input-error :messages="$errors->get('archivo')" class="mt-2" />

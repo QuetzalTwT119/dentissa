@@ -78,20 +78,36 @@ DENTISSA_WHATSAPP_IDIOMA=es_MX
 
 Ver `config/dentissa.php` (bloque `whatsapp`) para cómo se leen.
 
-**Importante:** el paciente que agenda debe tener su `telefono` guardado
-**con código de país** (ej. `5215512345678` para México — sin `+` ni
-espacios). `WhatsappService::normalizarTelefono()` limpia el formato, pero
-no puede inventar el código de país si no está guardado.
+**Importante:** los teléfonos mexicanos pueden guardarse como diez dígitos
+(por ejemplo, `5512345678`) o con `+52`, espacios, guiones y paréntesis.
+`WhatsappService::normalizarTelefono()` convierte esos formatos al destinatario
+`5215512345678` antes de llamar a la API, y conserva números que ya tienen el
+prefijo `521`. Los teléfonos incompletos, excesivos o con letras se rechazan
+sin hacer una solicitud a Meta; `NotificacionService` usará el correo como
+respaldo si está disponible. Las pruebas de esta conversión usan HTTP simulado,
+no envían mensajes reales.
 
 ## 6. Probar
 
-1. Si el servidor ya estaba corriendo, `php artisan config:clear` para que
-   lea el `.env` nuevo.
-2. Agenda una cita de prueba usando el número que registraste como
-   destinatario de prueba en el paso 2.
+1. Con las credenciales del número de prueba en `.env`, envía primero la
+   plantilla que Meta ya incluye para pruebas. Sustituye el teléfono por el
+   destinatario que agregaste y verificaste en el panel de Meta:
+
+   ```sh
+   php artisan whatsapp:probar 5215512345678 --confirmar
+   ```
+
+   El comando solo envía si incluyes `--confirmar`; envía `hello_world` en
+   inglés y no crea una cita ni usa datos de pacientes. Si el servidor ya
+   estaba corriendo, ejecuta `php artisan config:clear` para que lea el `.env`
+   nuevo. No compartas el token en capturas o mensajes.
+2. Cuando confirmes la recepción, crea y espera la aprobación de la plantilla
+   `cita_agendada` descrita arriba. Solo entonces agenda una cita ficticia con
+   el teléfono de prueba para comprobar el flujo real de Dentissa.
 3. Si algo falla, revisa `storage/logs/laravel.log` — `WhatsappService`
-   registra el motivo exacto del rechazo de Meta (`response->json()`), o el
-   mensaje "WhatsApp sin configurar" si faltan credenciales.
+   registra el código HTTP/error sin guardar el teléfono ni los parámetros
+   personales de la plantilla. Si faltan credenciales, registra que WhatsApp
+   no está configurado.
 4. Cuando no llega por WhatsApp (sin credenciales, plantilla no aprobada,
    número sin código de país, etc.), `NotificacionService` cae a correo
    automáticamente — revisa la bandeja de `MAIL_MAILER` configurado

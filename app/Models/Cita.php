@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'id_paciente', 'id_servicio', 'id_tratamiento', 'fecha_hora', 'duracion_estimada',
-    'estado', 'motivo', 'observaciones', 'confirmada_por', 'fecha_confirmacion',
+    'estado', 'motivo', 'observaciones', 'clave_idempotencia', 'confirmada_por', 'fecha_confirmacion',
     'cancelada_por', 'fecha_cancelacion', 'motivo_cancelacion',
 ])]
 class Cita extends Model

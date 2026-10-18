@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\AgendaTelegramService;
+use App\Services\AsistenteAgendaService;
 use App\Services\AsistenteIaLocalService;
 use App\Services\AsistentePacienteService;
 use App\Services\AtencionOportunaService;
@@ -11,15 +11,15 @@ use Illuminate\Http\Request;
 
 class AsistentePacienteController extends Controller
 {
-    public function responder(Request $request, AsistentePacienteService $asistente, AsistenteIaLocalService $asistenteIa, AgendaTelegramService $agenda, AtencionOportunaService $atencion): JsonResponse
+    public function responder(Request $request, AsistentePacienteService $asistente, AsistenteIaLocalService $asistenteIa, AsistenteAgendaService $agenda, AtencionOportunaService $atencion): JsonResponse
     {
         $validated = $request->validate([
             'consulta' => ['required', 'string', 'min:3', 'max:300'],
             'conversacion_id' => ['required', 'uuid'],
         ]);
 
-        // La agenda usa el mismo flujo que Telegram, pero con una conversación
-        // separada por sesión web. Así no se mezclan pacientes ni canales.
+        // El widget conserva su flujo de consulta de horarios sin mezclarse
+        // con la captura de datos y confirmación de reservas de Telegram.
         $conversacion = 'web:'.$validated['conversacion_id'];
         $agendaEnCurso = $agenda->tieneConsultaEnCurso($conversacion);
         $consulta = $asistente->responder($validated['consulta']);

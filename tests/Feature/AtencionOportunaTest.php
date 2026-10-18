@@ -15,6 +15,26 @@ class AtencionOportunaTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_la_pantalla_de_urgencias_se_adapta_a_movil_y_escritorio(): void
+    {
+        $this->get(route('atencion.urgencia'))
+            ->assertOk()
+            ->assertSee('aspect-[2/1]')
+            ->assertSee('lg:grid-cols-[minmax(380px,0.95fr)_minmax(0,1.05fr)]')
+            ->assertSee('lg:gap-6')
+            ->assertSee('max-w-screen-2xl')
+            ->assertDontSee('lg:pr-48')
+            ->assertDontSee('lg:pr-40')
+            ->assertSee('pb-8 sm:px-6 sm:py-10 lg:pb-10')
+            ->assertSee('space-y-3 sm:space-y-4')
+            ->assertSee('min-h-11 w-full')
+            ->assertSee('sm:min-w-52')
+            ->assertSee('inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white')
+            ->assertSee('h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-600')
+            ->assertSee('whitespace-nowrap leading-none')
+            ->assertSee('Enviar solicitud');
+    }
+
     public function test_un_paciente_puede_enviar_una_solicitud_urgente_sin_que_se_agende_automaticamente(): void
     {
         $this->post(route('atencion.urgencia.store'), [

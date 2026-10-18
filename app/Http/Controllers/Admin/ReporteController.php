@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\ReporteExcelService;
 use App\Services\ReporteService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReporteController extends Controller
@@ -35,66 +36,31 @@ class ReporteController extends Controller
         return $pdf->download("reporte-dentissa-{$fechaInicio}-a-{$fechaFin}.pdf");
     }
 
-    public function csv(Request $request, ReporteService $reportes): StreamedResponse
+    public function excel(Request $request, ReporteService $reportes, ReporteExcelService $excel): StreamedResponse
     {
         [$fechaInicio, $fechaFin] = $this->rango($request);
         $reporte = $reportes->generar($fechaInicio, $fechaFin);
+        $spreadsheet = $excel->crear($reporte);
 
-        return Response::streamDownload(function () use ($reporte) {
-            $out = fopen('php://output', 'w');
-
-            fputcsv($out, ['Reporte Dentissa', $reporte['rango']['fecha_inicio'].' a '.$reporte['rango']['fecha_fin']]);
-            fputcsv($out, []);
-
-            fputcsv($out, ['Pacientes']);
-            fputcsv($out, ['Total registrados', $reporte['pacientes']['total']]);
-            fputcsv($out, ['Nuevos en el período', $reporte['pacientes']['nuevos']]);
-            fputcsv($out, []);
-
-            fputcsv($out, ['Citas por estado']);
-            foreach ($reporte['citas']['por_estado'] as $estado => $total) {
-                fputcsv($out, [$estado, $total]);
+        return response()->streamDownload(function () use ($spreadsheet) {
+            try {
+                (new Xlsx($spreadsheet))->save('php://output');
+            } finally {
+                $spreadsheet->disconnectWorksheets();
             }
-            fputcsv($out, ['Tasa de inasistencia (%)', $reporte['citas']['tasa_inasistencia']]);
-            fputcsv($out, []);
-
-            fputcsv($out, ['Tratamientos más solicitados']);
-            foreach ($reporte['catalogo']['tratamientos_mas_solicitados'] as $fila) {
-                fputcsv($out, [$fila['nombre'], $fila['total']]);
-            }
-            fputcsv($out, []);
-
-            fputcsv($out, ['Consultas de historial clínico por tipo']);
-            foreach ($reporte['historial']['por_tipo'] as $tipo => $total) {
-                fputcsv($out, [$tipo, $total]);
-            }
-            fputcsv($out, []);
-
-            fputcsv($out, ['Eficiencia']);
-            fputcsv($out, ['Citas completadas', $reporte['eficiencia']['citas_completadas']]);
-            fputcsv($out, ['Eficiencia (citas/bloque de 1.5h)', $reporte['eficiencia']['eficiencia']]);
-            fputcsv($out, ['Comparativa Gerín (citas/hora ÷ 1)', $reporte['eficiencia']['comparativa_gerin']]);
-            fputcsv($out, []);
-
-            fputcsv($out, ['Ocupación']);
-            fputcsv($out, ['Capacidad total', $reporte['ocupacion']['capacidad_total']]);
-            fputcsv($out, ['Citas atendidas', $reporte['ocupacion']['citas_atendidas']]);
-            fputcsv($out, ['Tasa de ocupación (%)', $reporte['ocupacion']['tasa_ocupacion']]);
-            fputcsv($out, []);
-
-            fputcsv($out, ['Satisfacción promedio', $reporte['satisfaccion'] ?? 'Sin datos']);
-
-            fclose($out);
-        }, "reporte-dentissa-{$fechaInicio}-a-{$fechaFin}.csv", [
-            'Content-Type' => 'text/csv',
+        }, "reporte-dentissa-{$fechaInicio}-a-{$fechaFin}.xlsx", [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
     }
 
     private function rango(Request $request): array
     {
         $validated = $request->validate([
-            'fecha_inicio' => ['nullable', 'date'],
-            'fecha_fin' => ['nullable', 'date'],
+            'fecha_inicio' => ['nullable', 'date', 'before_or_equal:'.Carbon::now()->toDateString()],
+            'fecha_fin' => ['nullable', 'date', 'before_or_equal:'.Carbon::now()->toDateString()],
+        ], [
+            'fecha_inicio.before_or_equal' => 'La fecha "Desde" no puede ser futura.',
+            'fecha_fin.before_or_equal' => 'La fecha "Hasta" no puede ser futura.',
         ]);
 
         $fechaInicio = $validated['fecha_inicio'] ?? Carbon::now()->startOfMonth()->toDateString();

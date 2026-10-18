@@ -17,7 +17,8 @@ $estadoClase = [
 ];
 $esPersonal = true;
 $esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
-$noFinalizable = ['completada', 'cancelada', 'no_asistio'];
+$estadosConAccionesSecundarias = ['agendada', 'confirmada'];
+$estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
 @endphp
 
 <x-app-layout>
@@ -29,6 +30,12 @@ $noFinalizable = ['completada', 'cancelada', 'no_asistio'];
 
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            @if (session('success'))
+                <div role="status" class="mb-4 rounded-md bg-green-50 p-4 text-sm text-green-800">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             @if (session('error'))
                 <div class="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-700">
                     {{ session('error') }}
@@ -41,7 +48,7 @@ $noFinalizable = ['completada', 'cancelada', 'no_asistio'];
                 </div>
             @endif
 
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+            <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="flex flex-wrap items-end justify-between gap-4 p-6">
                     @if ($esPersonal)
                         <form method="GET" action="{{ route('citas.index') }}" class="flex flex-wrap items-end gap-4">
@@ -71,7 +78,8 @@ $noFinalizable = ['completada', 'cancelada', 'no_asistio'];
                     </a>
                 </div>
 
-                <table class="w-full text-left text-sm">
+                <div class="overflow-x-auto sm:rounded-b-lg">
+                <table class="w-full min-w-[1100px] text-left text-sm">
                     <thead class="border-y border-gray-200 bg-gray-50 text-gray-600">
                         <tr>
                             <th class="px-6 py-3">Fecha y hora</th>
@@ -87,7 +95,7 @@ $noFinalizable = ['completada', 'cancelada', 'no_asistio'];
                     <tbody>
                         @forelse ($citas as $cita)
                             <tr class="border-b border-gray-100">
-                                <td class="px-6 py-4 text-gray-900">
+                                <td class="whitespace-nowrap px-6 py-4 text-gray-900">
                                     {{ \Illuminate\Support\Carbon::parse($cita->fecha_hora)->translatedFormat('d M Y, H:i') }}
                                 </td>
                                 @if ($esPersonal)
@@ -102,68 +110,66 @@ $noFinalizable = ['completada', 'cancelada', 'no_asistio'];
                                         {{ $estadoLabel[$cita->estado->value] }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-1">
+                                <td class="whitespace-nowrap px-6 py-4">
+                                    <div class="flex flex-wrap items-center gap-2">
                                         @if ($esPersonal && $cita->estado->value === 'agendada')
                                             <form method="POST" action="{{ route('citas.confirm', $cita) }}">
                                                 @csrf
                                                 @method('patch')
-                                                <button type="submit" title="Confirmar" aria-label="Confirmar cita"
-                                                        class="rounded p-1.5 text-blue-600 transition hover:bg-blue-50 hover:text-blue-900">
-                                                    <x-icon name="check" />
+                                                <button type="submit"
+                                                        class="inline-flex items-center whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                                                    Confirmar
                                                 </button>
                                             </form>
-                                        @endif
-
-                                        @if ($esPersonal && $cita->estado->value === 'confirmada')
+                                        @elseif ($esPersonal && $cita->estado->value === 'confirmada')
                                             <form method="POST" action="{{ route('citas.start', $cita) }}">
                                                 @csrf
                                                 @method('patch')
-                                                <button type="submit" title="Iniciar" aria-label="Iniciar cita"
-                                                        class="rounded px-2 py-1 text-xs font-medium text-brand-700 transition hover:bg-brand-50 hover:text-brand-900">
+                                                <button type="submit"
+                                                        class="inline-flex items-center whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
                                                     Iniciar
                                                 </button>
                                             </form>
-                                            <form method="POST" action="{{ route('citas.no-show', $cita) }}">
-                                                @csrf
-                                                @method('patch')
-                                                <button type="submit" title="No asistió" aria-label="Marcar como no asistió"
-                                                        class="rounded px-2 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 hover:text-red-900">
-                                                    No asistió
-                                                </button>
-                                            </form>
-                                        @endif
-
-                                        @if ($esPersonal && $cita->estado->value === 'en_curso')
+                                        @elseif ($esPersonal && $cita->estado->value === 'en_curso')
                                             <form method="POST" action="{{ route('citas.complete', $cita) }}">
                                                 @csrf
                                                 @method('patch')
-                                                <button type="submit" title="Completar" aria-label="Completar cita"
-                                                        class="rounded p-1.5 text-green-600 transition hover:bg-green-50 hover:text-green-900">
-                                                    <x-icon name="check-circle" />
+                                                <button type="submit"
+                                                        class="inline-flex items-center whitespace-nowrap rounded-md bg-gray-900 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                                                    Completar
                                                 </button>
                                             </form>
                                         @endif
 
-                                        @unless (in_array($cita->estado->value, $noFinalizable))
-                                            <a href="{{ route('citas.edit', $cita) }}" title="Reagendar" aria-label="Reagendar cita"
-                                               class="rounded p-1.5 text-brand-600 transition hover:bg-brand-50 hover:text-brand-900">
-                                                <x-icon name="calendar-clock" />
-                                            </a>
-                                        @endunless
-
-                                        @unless (in_array($cita->estado->value, $noFinalizable))
-                                            <form method="POST" action="{{ route('citas.cancel', $cita) }}"
-                                                  onsubmit="const motivo = prompt('Motivo de la cancelación (opcional):') ?? ''; if (!confirm('¿Cancelar esta cita?')) { return false; } this.querySelector('[name=motivo_cancelacion]').value = motivo; return true;">
-                                                @csrf
-                                                @method('patch')
-                                                <input type="hidden" name="motivo_cancelacion" value="">
-                                                <button type="submit" title="Cancelar" aria-label="Cancelar cita"
-                                                        class="rounded p-1.5 text-red-600 transition hover:bg-red-50 hover:text-red-900">
-                                                    <x-icon name="x" />
-                                                </button>
-                                            </form>
-                                        @endunless
+                                        @if ($esPersonal && in_array($cita->estado->value, $estadosConAccionesSecundarias, true))
+                                            <details class="group">
+                                                <summary class="inline-flex cursor-pointer list-none items-center gap-1 whitespace-nowrap rounded-md border border-gray-300 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                                                    Más acciones
+                                                    <svg class="h-4 w-4 transition group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 011.06 0L10 10.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 8.28a.75.75 0 010-1.06z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </summary>
+                                                <div class="mt-2 flex flex-wrap gap-1 rounded-lg border border-gray-200 bg-white p-2 shadow-sm">
+                                                    @if ($cita->estado->value === 'confirmada')
+                                                        <form method="POST" action="{{ route('citas.no-show', $cita) }}">
+                                                            @csrf
+                                                            @method('patch')
+                                                            <button type="submit" class="whitespace-nowrap rounded-md px-3 py-2 text-sm text-amber-800 transition hover:bg-amber-50 focus:bg-amber-50 focus:outline-none">No asistió</button>
+                                                        </form>
+                                                    @endif
+                                                    <a href="{{ route('citas.edit', $cita) }}" class="whitespace-nowrap rounded-md px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">Reagendar</a>
+                                                    <form method="POST" action="{{ route('citas.cancel', $cita) }}"
+                                                          onsubmit="const motivo = prompt('Motivo de la cancelación (opcional):') ?? ''; if (!confirm('¿Cancelar esta cita?')) { return false; } this.querySelector('[name=motivo_cancelacion]').value = motivo; return true;">
+                                                        @csrf
+                                                        @method('patch')
+                                                        <input type="hidden" name="motivo_cancelacion" value="">
+                                                        <button type="submit" class="whitespace-nowrap rounded-md px-3 py-2 text-sm text-red-700 transition hover:bg-red-50 focus:bg-red-50 focus:outline-none">Cancelar</button>
+                                                    </form>
+                                                </div>
+                                            </details>
+                                        @elseif ($esPersonal && in_array($cita->estado->value, $estadosTerminales, true))
+                                            <span class="text-sm text-gray-400">Sin acciones</span>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -176,6 +182,7 @@ $noFinalizable = ['completada', 'cancelada', 'no_asistio'];
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>

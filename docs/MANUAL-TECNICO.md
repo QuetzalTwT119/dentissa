@@ -21,6 +21,14 @@ mantener el entorno de desarrollo.
 - Git y GitHub para control de versiones.
 - PHPUnit/Pest mediante `php artisan test`.
 
+Las tipografías Figtree y Alex Brush se alojan en `public/fonts` y se precargan
+desde el mismo sitio. Así la interfaz no depende de un proveedor externo de
+fuentes y reduce el cambio visible de tipografía durante la carga. `server.php`
+permite al servidor integrado de PHP asignar caché a los recursos estáticos; las
+fuentes y scripts tienen una duración larga y las imágenes se conservan un día.
+La portada también precarga su imagen principal para evitar que llegue después
+del texto.
+
 En Windows el equipo puede usar Docker Desktop con la integración de WSL2
 activada. También es válido ejecutar Docker Engine directamente dentro de WSL;
 los comandos de `docker compose` son los mismos.
@@ -108,10 +116,17 @@ docker compose exec app php artisan test
 Las pruebas usan SQLite en memoria o el schema aislado `dentissa_test`; no
 deben modificar la base normal `dentissa`. La suite cubre reglas de catálogo,
 fechas futuras, ciclo de vida y concurrencia de citas, agenda pública,
-atención oportuna, permisos, historial clínico, auditoría y asistente. La
-última ejecución local completa contra MySQL 8.4, el 14/10/2026, pasó con
-**87 pruebas y 346 aserciones**. La prueba de concurrencia se omite en SQLite
-porque ese motor no valida de forma representativa `lockForUpdate`.
+atención oportuna, permisos, historial clínico, auditoría, notificaciones
+internas y asistente. El 16/10/2026 se reconstruyó el servicio `app` con el
+código vigente y pasaron **143 pruebas/701 aserciones en SQLite** (1 omisión
+esperada porque SQLite no valida de forma representativa `lockForUpdate`) y
+**144 pruebas/706 aserciones en MySQL 8.4**, incluida la prueba concurrente.
+Ambas ejecuciones usaron el entorno aislado de pruebas; la base operativa local
+no fue limpiada ni modificada por esta validación.
+
+La validación de estilo PHP también pasó con Pint para los 183 archivos
+revisados. Después de cualquier cambio de lógica, reconstruir el servicio app y
+repetir al menos la suite afectada antes de actualizar la matriz QA.
 
 La creación y reagenda bloquean, dentro de su transacción, la fila de
 configuración del día de semana antes de revisar las citas existentes. Esto
@@ -182,6 +197,18 @@ Revisa ambos jobs en la pestaña **Actions** antes de integrar un pull request.
 - **Base de datos:** conserva los datos mediante migraciones y MySQL; las
   pruebas pueden usar SQLite en memoria o un schema MySQL aislado.
 
+La lista administrativa de pacientes filtra por fragmentos del nombre,
+apellido, correo o teléfono. El campo tiene una etiqueta accesible y se adapta
+al ancho disponible; la tabla mantiene su ancho legible y permite
+desplazamiento horizontal en pantallas estrechas.
+
+La edición administrativa permite actualizar nombre, apellido, teléfono, correo,
+identificadores oficiales y tutor/responsable. Nombre y apellido son obligatorios;
+correo es opcional y único entre pacientes. El teléfono opcional valida diez
+dígitos y admite separadores visuales y el prefijo mexicano `+52`. El registro
+de auditoría conserva solo los nombres de los campos modificados, no los valores
+de correo o teléfono.
+
 ## 9. Regla de disponibilidad
 
 `DisponibilidadService` consulta el horario de atención, la duración del
@@ -189,15 +216,33 @@ tratamiento, el margen entre citas, la capacidad simultánea y las citas ya
 registradas. Antes de guardar una cita vuelve a validar el horario dentro de
 una transacción para evitar reservas duplicadas.
 
+La zona horaria de la aplicación se configura con `APP_TIMEZONE` y por defecto
+es `America/Mexico_City`. Debe corresponder a la ubicación de la clínica:
+horarios configurados como 9:00–14:00 se interpretan como hora local, no UTC.
+
 `CitaReglasService` centraliza las validaciones compartidas por los flujos
 interno, público y asistente: catálogo activo, relación servicio-tratamiento y
 fecha/hora futura. Esto evita que un formulario aplique reglas distintas a
 otro.
 
+La propuesta del asistente de agenda valida además que la fecha seleccionada
+sea hoy o posterior en el servidor. El atributo `min` de la interfaz mejora la
+experiencia, pero no sustituye esta validación de la solicitud.
+
+El filtro de `/citas` es de consulta: acepta cualquier fecha válida, incluidas
+fechas futuras, y puede combinarse con el estado. No debe heredar el límite de
+fecha futura que corresponde a crear o reagendar citas.
+
 La acción `citas.no-show` solo permite marcar una cita confirmada como
 **No asistió** cuando llega su `fecha_hora` programada o después. La validación
 se realiza en el servidor, por lo que también protege solicitudes directas que
 no provienen de la interfaz.
+
+La vista de agenda muestra **Más acciones** solo para citas `agendada` y
+`confirmada`, estados en los que se permite reagendar o cancelar. Una cita
+`en_curso` ofrece únicamente completar; las citas `completada`, `cancelada` o
+`no_asistio` se presentan sin acciones. La vista y las reglas del servidor se
+validan por separado para que un control oculto no sea la única barrera.
 
 ## 10. Respuestas del asistente de pacientes
 
@@ -271,37 +316,99 @@ Las notificaciones de cita guardan también `id_cita`, lo que permite enlazar
 un aviso con la cita que lo originó sin depender únicamente del texto del
 mensaje.
 
+La bandeja del personal se almacena aparte en `notificaciones_sistema`, para
+no mezclar avisos internos con entregas externas registradas en `notificaciones`.
+`NotificacionInternaService` genera avisos por altas y transiciones de citas,
+incluyendo solicitudes públicas y de Telegram; las cuentas activas de admin y
+asistente los reciben, excepto la cuenta que realizó el cambio interno. Cada
+cuenta solo consulta y marca sus propios avisos. La bandeja está protegida por
+`auth` y `role:admin,asistente`; filtra por estado conservando el usuario
+propietario y pagina los resultados. Las transiciones de lectura verifican
+también que el aviso pertenezca a la cuenta autenticada. Su contador se muestra
+en navegación de escritorio y móvil. La campana ofrece una vista previa de hasta
+cinco avisos pendientes de la propia cuenta, y las nuevas notificaciones se
+insertan en esa lista en vivo. Una falla al persistir una notificación no
+revierte la cita y queda registrada en el log de aplicación.
+
+`NotificacionSistemaCreada` transmite cada aviso inmediatamente mediante
+Laravel Reverb y Echo, por el canal privado `users.{id}`. La autorización del
+canal exige que la sesión pertenezca a la misma cuenta activa de admin o
+asistente; el evento solo transmite título, mensaje, vínculo y contador, nunca
+datos clínicos. Mientras la conexión WebSocket no está disponible, el
+navegador usa como respaldo `notificaciones.actualizaciones` cada 3 segundos;
+el endpoint filtra por la cuenta autenticada y no almacena la respuesta en
+caché. Docker inicia Reverb como servicio en el puerto 8080, sin costo de
+proveedor externo ni cola adicional. El sonido opcional se genera mediante Web
+Audio API, sin archivos ni servicios externos, y su preferencia se almacena en
+`localStorage` separada por usuario. El control se muestra en la bandeja de
+notificaciones, no en la barra de navegación. La interacción con **Activar sonido**
+desbloquea el audio respetando las políticas del navegador; fallar al reproducir
+el sonido nunca impide mostrar o guardar la notificación.
+
+En los formularios del historial, fecha, tipo y motivo de consulta se señalan
+como obligatorios en la interfaz y se validan también en el servidor. El selector
+de tipo incluye el atributo HTML `required`. Diagnóstico, tratamiento,
+medicamentos, observaciones, notas privadas y cita relacionada se identifican
+como opcionales; la cita relacionada solo se muestra si hay citas disponibles.
+
 ## 12. Auditoría de operaciones sensibles
 
-`AuditoriaService` centraliza el registro de acciones relevantes en
-`logs_auditoria`. Se auditan las altas y transiciones de citas, los cambios del
-historial clínico, los adjuntos clínicos, los datos oficiales del paciente y el
-seguimiento de atención oportuna.
+`AuditoriaService` centraliza el registro de acciones relevantes del personal
+en `logs_auditoria`. Solo registra solicitudes autenticadas de usuarios con rol
+`admin` o `asistente`; las altas de citas provenientes del portal público o de
+Telegram no se consideran cambios del personal y no se agregan a esta bitácora.
+Dentro de ese alcance se auditan las altas y transiciones internas de citas,
+los cambios del historial clínico, los adjuntos clínicos, los datos de contacto
+u oficiales del paciente y el seguimiento de atención oportuna. En la edición
+del paciente, los metadatos de auditoría enumeran campos modificados sin copiar
+correo ni teléfono. También se registran altas,
+ediciones, activaciones y bajas de cuentas; actualizaciones de perfil y
+contraseña (sin almacenar la contraseña); cambios de servicios, tratamientos,
+ofertas, testimonios, galería, casos, preguntas frecuentes, horarios y estado o
+eliminación de mensajes de contacto. Los cambios de relaciones servicio-
+tratamiento guardan los identificadores afectados. El alta pública de una cita,
+las solicitudes de atención iniciadas por pacientes y las operaciones de
+Telegram no se atribuyen a una cuenta del personal y quedan fuera de la bitácora.
 
 Los adjuntos del historial se sirven mediante una ruta autenticada que permite
 su lectura solo al rol `admin` y rechaza registros de imagen que no pertenezcan
 al historial clínico. Las pruebas `HistorialImagenAccessTest` cubren el acceso
 del administrador, el rechazo al asistente y a visitantes, y el tipo de imagen.
 
-Cada entrada conserva usuario (cuando existe), acción, tabla, registro, fecha,
-IP y agente de usuario. Para proteger la privacidad, los cambios de historial
+Cada entrada conserva el usuario autenticado, acción, tabla, registro, fecha,
+IP y agente de usuario, además de una copia del ID, nombre y rol del actor. La
+copia del actor permite conservar la identidad si la cuenta se elimina más
+adelante. Para proteger la privacidad, los cambios de historial
 guardan metadatos —por ejemplo paciente, cita, fecha y tipo de consulta—, pero
 no copian diagnóstico, medicamentos ni notas clínicas.
 
-`AuditoriaService` exige una transacción activa y que el modelo de negocio y la
-bitácora usen la misma conexión. Esto evita que una llamada futura escriba una
-auditoría que no pueda revertirse junto con el cambio. Las escrituras de negocio
-y su entrada de auditoría se ejecutan en una misma transacción de base de datos.
+`AuditoriaService::registrar` exige una transacción activa y que el modelo de
+negocio y la bitácora usen la misma conexión. `registrarCambio` envuelve las
+mutaciones administrativas simples y su entrada de auditoría en una misma
+transacción; para entidades con varios registros, los controladores usan una
+transacción explícita. Esto evita que una llamada escriba una auditoría que no
+pueda revertirse junto con el cambio. Las escrituras de negocio y su entrada de
+auditoría se ejecutan en una misma transacción de base de datos.
 Si la bitácora no puede guardarse, la excepción
 revierte también el cambio de negocio y la aplicación muestra una respuesta
 503 indicando que no se guardaron los cambios y que se intente de nuevo más
 tarde. Las notificaciones externas se envían después de confirmar la
 transacción; un fallo al enviar un aviso no deshace una cita válida.
 
+La ruta administrativa `admin.auditoria.index` ofrece una consulta paginada y
+de solo lectura, protegida por `auth` y `role:admin`. Acepta filtros validados
+por fecha, usuario y acción, y excluye de la vista los eventos sin ID de usuario
+ni rol del personal. La pantalla no expone IP ni agente de usuario y presenta únicamente
+los metadatos definidos por los emisores de auditoría. Las entradas históricas
+de canales externos creadas antes de limitar el alcance permanecen en la base,
+pero no se muestran en esta vista.
+
 ## 13. Autorización por rol
 
 Las rutas autenticadas de agenda usan `auth`; las rutas bajo `/admin` añaden el
-middleware `role:admin`. `CitaPolicy` permite las operaciones internas de cita
+middleware `role:admin`. El endpoint de PDF del historial vuelve a la ficha con
+un aviso cuando el historial aún no tiene consultas; las notas `notas_doctor`
+no se renderizan en ese PDF. `CitaPolicy` permite las operaciones internas de cita
 al personal con rol `admin` o `asistente`, mientras que los adjuntos del
 historial clínico están reservados a `admin`. La prueba
 `PermisosPorRolTest` verifica que el asistente reciba 403 en 12 páginas
@@ -311,7 +418,159 @@ en SQLite en memoria y en MySQL 8.4 con el schema aislado `dentissa_test`.
 
 ## 14. Respaldos y recuperación
 
-La automatización de respaldos y restauración se ha diferido y no forma parte
-de esta versión del proyecto. Antes de utilizar datos clínicos reales, el equipo
-debe definir, implementar y probar un procedimiento que cubra la base de datos,
-los archivos subidos, el cifrado, la retención y la recuperación.
+La automatización cifrada de respaldos y restauración sigue pendiente. El archivo
+SQL existente en `storage/backups/` es una copia puntual de trabajo, no un
+procedimiento verificado ni una política de retención. No debe considerarse un
+respaldo operativo. Antes de usar datos reales hay que definir e implementar
+cifrado, retención, cobertura conjunta de MySQL y `storage/app`, verificación de
+integridad y recuperación ensayada en un destino aislado. No restaurar sobre la
+base activa durante QA.
+
+## 15. Widget público en móvil y acceso por LAN
+
+El widget crea un UUID de conversación para que el servidor pueda relacionar
+mensajes. `crypto.randomUUID()` solo está disponible en contextos seguros en
+algunos navegadores; una dirección local por IP y HTTP, como
+`http://192.168.0.80:8000`, puede no ser considerada segura. El componente usa
+esa API cuando existe y genera un UUID v4 compatible como alternativa. El
+almacenamiento local también está protegido con manejo de errores para que una
+restricción del navegador no deje el widget sin inicializar.
+
+El acceso se posiciona fijo respecto a la ventana también en móvil: una cápsula
+horizontal compacta con ícono dental y nombre, pegada visualmente al panel del
+chat que se despliega encima. En las vistas públicas, un `IntersectionObserver`
+observa la franja ocupada por el botón (con margen inferior compacto y distinto
+en móvil y escritorio) y lo eleva temporalmente si una tarjeta, campo o acción
+importante la cruza; permanece visible y regresa a su posición al dejar libre
+esa zona. El flujo de agenda usa
+dos columnas desde `lg`: formulario y resumen con progreso compacto/reactivo. En
+el primer paso, elegir un servicio reemplaza esa lista por sus tratamientos y
+el recuadro del servicio seleccionado funciona como control para deseleccionarlo
+y volver a la lista, evitando un botón adicional y alargar el formulario. En móvil
+el resumen y sus accesos alternativos se apilan después del formulario; el panel
+lateral reúne progreso, selección, urgencia y lista de espera. La prueba
+`AsistenteVistasPublicasTest` valida el resumen y la cuadrícula responsiva.
+La agenda reserva más espacio inferior en móvil para el botón flotante y solo
+un margen reducido en escritorio, evitando desbordamiento vertical cuando el
+flujo cabe en la ventana. El contenido más alto conserva el desplazamiento
+normal. La aceptación visual final requiere recargar `/agendar-cita` en el
+teléfono conectado a la misma red.
+
+## 16. Preparación local para Railway
+
+Railway es el destino elegido para la demostración escolar. `Dockerfile.local`
+mantiene el entorno local de desarrollo/QA que utiliza `compose.yaml`; se
+separa del nombre `Dockerfile` para que Railway use Railpack y el runtime
+Laravel con PHP-FPM/Caddy. Railway no ejecuta el Compose local como un solo
+despliegue: la aplicación y MySQL serán servicios separados.
+
+Validación local después de cambiar esta separación:
+
+```bash
+docker compose config
+docker compose up -d --build app
+docker compose exec app php artisan test
+```
+
+Al configurar Railway se deberán definir las variables de producción en su
+panel (nunca en Git), validar la compilación Vite, ejecutar migraciones de
+forma controlada, mantener MySQL privado y usar `/up` como healthcheck. La
+demostración se limita a datos ficticios; Ollama, WhatsApp y Telegram no forman
+parte de la configuración web por defecto. Consultar
+`docs/DESPLIEGUE-RAILWAY.md` para el orden y los pendientes.
+
+El 16/10/2026 se reconstruyeron desde el código vigente los servicios locales
+`app`, `reverb` y `telegram`. Verificación: `/up` respondió HTTP 200, los puertos
+8000 de la app y 8080 de Reverb aceptaron conexiones, y MySQL informó estado
+saludable. Esto confirma el arranque local, no una entrega de notificación
+validada desde un navegador ni el despliegue en Railway. Se ejecutó la suite
+completa en SQLite (143 pruebas aprobadas, 701 aserciones, 1 omisión esperada)
+y MySQL 8.4 aislado (144 pruebas, 706 aserciones); Pint validó 183 archivos PHP.
+
+El seeder general `DatabaseSeeder` conserva credenciales fijas de desarrollo y
+no debe usarse en Railway. `DemoPresentacionSeeder` crea, de forma repetible,
+cuentas separadas para admin y asistente, el catálogo de demostración y un
+paciente ficticio sin datos clínicos. Exige una bandera explícita y dos
+contraseñas configuradas fuera del repositorio. Se ejecuta manualmente una vez
+desde la Shell del servicio; al terminar se deshabilita la bandera y se quitan
+las variables de contraseña.
+
+## 17. Exportación de reportes
+
+La exportación administrativa de Excel genera un libro `.xlsx` real usando
+PhpSpreadsheet, una dependencia PHP de código abierto con licencia MIT. El
+reporte conserva valores numéricos como números y los textos como texto para
+evitar que contenido del catálogo se interprete como fórmula. Se organiza en
+una hoja con título, período, indicadores y resúmenes. El PDF se genera por
+separado con DomPDF.
+
+La prueba `ReportePresentacionTest` valida la etiqueta del botón, el tipo MIME,
+la firma ZIP propia de XLSX y vuelve a abrir el archivo para comprobar etiquetas
+con acentos y valores numéricos. Después de cambiar el código, reconstruir y
+recrear el servicio local:
+
+```powershell
+docker compose build app
+docker compose up -d --no-deps app
+docker compose run --rm -T --no-deps --entrypoint php app artisan test tests/Feature/ReportePresentacionTest.php
+```
+
+## 18. Base responsiva
+
+Las vistas invitadas de autenticación comparten un layout responsivo de marca,
+con fotografía clínica, identidad visual y formulario; en escritorio presenta
+dos zonas y en móvil las apila. El login conserva las rutas, CSRF, autenticación, recuperación
+de contraseña y `remember`; `AuthenticationTest` valida el render, destino y
+presencia de estos controles.
+
+La navegación interna comparte la identidad visual de Dentissa en local y
+producción: marca, accesos a Inicio/Agenda/Asistente y grupos por función para
+administración. El menú horizontal se muestra desde `2xl`; en pantallas menores
+se usa el menú compacto para evitar comprimir enlaces. La lista móvil mantiene
+las rutas administrativas, incluida Auditoría. El botón compacto expone etiqueta
+accesible, estado abierto/cerrado y relación con su panel. La vista previa de
+notificaciones se adapta a móvil/escritorio y comparte el estado entre ambas
+presentaciones. Las tablas
+
+El panel de administración reúne accesos rápidos para agenda, urgencias,
+pacientes, servicios, contenido y usuarios; el panel de asistente mantiene sus
+accesos a citas y al asistente de agenda. El layout carga el manifiesto PWA y
+sus iconos; `public/sw.js` registra un caché básico y presenta `offline.html`
+cuando no hay conexión. `DashboardVisualTest` y `PwaArchivosPublicosTest`
+validan estas piezas.
+
+administrativas anchas se envuelven en contenedores `overflow-x-auto` con un
+ancho mínimo por contenido, para mantener legibles columnas y acciones. Los
+formularios que agrupan campos relacionados usan una columna en móvil y dos
+desde `sm`. Las vistas de cada módulo deben seguir validándose por separado;
+esta base no sustituye la revisión responsiva de tarjetas y flujos públicos.
+El scrollbar del documento se oculta globalmente con `scrollbar-width: none` y
+  `::-webkit-scrollbar { display: none }`; no se aplica `overflow: hidden`, así que
+  el desplazamiento existente permanece operativo. En la vista de urgencias, el
+  asistente vuelve a comprobar los campos visibles al desplazarse y busca una
+  posición libre iterativamente para evitar cubrir varios controles seguidos. Esta
+  vista usa una cuadrícula informativa/formulario de dos columnas desde `lg`,
+  aprovecha el ancho disponible sin reservar una columna vacía para el widget;
+  el observador lo desplaza al detectar campos visibles. El acceso compartido se
+  representa como una cápsula horizontal compacta con el ícono dental y el
+  nombre en una sola línea, tanto en móvil como en escritorio; el panel abre
+  justo encima con espaciado reducido. El botón de envío se limita en ancho. En móvil el contenido se apila,
+  reduce la proporción vertical de la imagen y compacta el espaciado, usa una sola
+  columna para señales y mantiene controles táctiles de al
+menos 44 px; `AtencionOportunaTest` protege estos puntos de quiebre.
+El inicio y los listados de ofertas/galería usan cuadrículas que crecen por
+breakpoint; urgencia y lista de espera mantienen formularios en una sola columna
+y protegen su acción principal de la superposición del asistente. El widget
+permanece visible: el observador comprueba el cruce real con cada zona protegida
+y eleva el botón flotante solo cuando coincide en horizontal y vertical.
+
+El 16/10 se corrigió el encabezado de la lista de Testimonios para que el filtro
+y la acción principal no compitan en una sola fila estrecha. Las cargas de fotos
+de Casos y adjuntos clínicos apilan el selector de archivo y el botón en móvil,
+pero vuelven a una fila alineada desde `sm`. Los nombres largos de adjuntos
+pueden partirse sin empujar el botón de eliminar fuera de pantalla.
+`NavegacionResponsivaTest` pasó 5 pruebas/20 aserciones; la suite quedó en
+SQLite 143 pruebas aprobadas/701 aserciones y una omisión esperada, y MySQL
+8.4 aislado 144 pruebas/706 aserciones. Vite construyó los assets durante la
+reconstrucción Docker; Pint pasó 183 archivos PHP. Falta aceptación visual en
+dispositivo real.

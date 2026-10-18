@@ -2,9 +2,10 @@
 
 ## Objetivo
 
-Entregar una versión estable y demostrable de Dentissa antes del **5 de
-diciembre de 2026**, dejando el 4 de diciembre como margen para correcciones
-finales.
+Entregar una versión estable y demostrable de Dentissa antes del **31 de
+octubre de 2026**. El usuario confirmó el 16/10/2026 que la fecha de entrega se
+adelantó al final de este mes; este calendario acelerado reemplaza la fecha
+anterior del 5 de diciembre.
 
 La meta inmediata es cerrar el MVP funcional antes de agregar funciones
 nuevas.
@@ -16,11 +17,10 @@ nuevas.
 - Datos demo reproducibles mediante seeders.
 - Entorno Docker documentado para Docker Desktop y WSL2; la aplicación local usa
   MySQL 8.4 y la suite puede correrse en SQLite o en un schema MySQL aislado.
-- Última suite MySQL completa registrada (14/10/2026): **90 pruebas y 351
-  aserciones** aprobadas en el schema aislado `dentissa_test`, después de
-  añadir la protección que evita ofrecer fuentes aprobadas pero ajenas a la
-  pregunta. GitHub Actions #9 había aprobado ambos jobs con la cobertura
-  anterior de 63 pruebas/250 aserciones en MySQL.
+- Última suite MySQL completa registrada (14/10/2026): **95 pruebas y 379
+  aserciones** aprobadas en el schema aislado `dentissa_test`. También pasó
+  SQLite con 94 pruebas/374 aserciones y una omisión esperada (concurrencia).
+  GitHub Actions #9 aprobó ambos jobs con una cobertura anterior.
 - El trabajo de respaldo y restauración está diferido y no forma parte de esta
   integración.
 - Autorización interna de citas y auditoría de operaciones sensibles cubiertas
@@ -32,7 +32,29 @@ nuevas.
   docker compose up -d --build app
   ```
 
+- Validación reejecutada el 16/10/2026 sobre la imagen reconstruida: SQLite
+  143 pruebas/701 aserciones con 1 omisión esperada; MySQL 8.4 aislado
+  `dentissa_test`, 144 pruebas/706 aserciones aprobadas, incluida concurrencia.
+  Pint aprobó 183 archivos y `git diff --check` quedó limpio.
+
 ## Calendario de trabajo
+
+### Calendario acelerado — 16 al 31 de octubre
+
+- **16–19 oct:** cerrar defectos bloqueantes, alinear Docker con el código
+  vigente y completar pruebas de agenda, auditoría, permisos y datos.
+- **20–23 oct:** terminar comprobaciones responsivas y el recorrido de
+  aceptación; resolver el procedimiento seguro de respaldo/restauración con
+  datos ficticios.
+- **24–27 oct:** preparar y validar el despliegue de demostración en Railway;
+  la publicación final puede requerir acceso del usuario a su cuenta.
+- **28–30 oct:** regresión completa, revisión de manuales, accesibilidad básica
+  y corrección de defectos críticos/importantes.
+- **31 oct:** congelar alcance y entregar el candidato estable; no añadir
+  funciones nuevas.
+
+El calendario original que aparece a continuación queda como referencia
+histórica y no debe usarse para fijar la fecha actual de entrega.
 
 ### 1. Cierre de alcance y matriz QA — 7 al 12 de octubre
 
@@ -112,11 +134,15 @@ probó contra 12 páginas y una modificación; también se comprobó el acceso
 anónimo. El 13/10 se aseguró que los cambios sensibles y su bitácora sean
 atómicos; ante una falla, el cambio se revierte. El 14/10 se endureció el
 servicio para rechazar auditorías fuera de una transacción activa o desde una
-conexión distinta. La suite MySQL aislada aprobó 90 pruebas/351 aserciones; la
-suite SQLite no se volvió a ejecutar en esta revisión. El siguiente paso es completar
-el recorrido manual de aceptación: agenda pública, flujo de asistente, estados
-de cita, historial clínico y permisos por rol, registrando el resultado en la
-matriz QA.
+conexión distinta. El 14/10 se corrigió la validación del teléfono en la agenda
+pública para aceptar formatos mexicanos comunes y rechazar longitudes/caracteres
+inválidos. Se preparó la integración de WhatsApp para normalizar teléfonos
+mexicanos, rechazar formatos incorrectos y no incluir teléfonos ni nombres en
+los logs; HTTP simulado valida el correo de respaldo sin enviar mensajes reales.
+Suite completa: MySQL 95/379 y SQLite 94/374 con una omisión esperada. El
+siguiente paso es completar el recorrido manual de aceptación:
+agenda pública, flujo de asistente, estados de cita, historial clínico y
+permisos por rol, registrando el resultado en la matriz QA.
 
 El 14/10 se verificó el prototipo de IA local en Docker con una respuesta real
 del catálogo. El widget público también mostró una FAQ ficticia aprobada ante
@@ -125,8 +151,27 @@ desde frío: la latencia y la sustitución de contenido ficticio por informació
 validada siguen pendientes antes de cualquier publicación. La IA local todavía
 no está configurada para el despliegue en Railway.
 
-El 14/10 se añadió `docs/DESPLIEGUE-RAILWAY.md`: confirma que Railway/MySQL es
-una decisión de despliegue pendiente de preparación, no un entorno ya publicado.
-Antes de desplegar faltan aprobación de presupuesto, proceso web de producción,
-almacenamiento persistente para archivos y respaldo/restauración. No usar datos
-clínicos reales; el respaldo sigue diferido.
+El 15/10 el equipo decidió Railway como destino para una demostración escolar
+breve con datos ficticios. Se separó el contenedor local (`Dockerfile.local`)
+del runtime Laravel administrado por Railpack. Se añadió un seeder exclusivo
+para la presentación con admin, asistente y registros ficticios; requiere
+habilitación y contraseñas seguras por variables privadas. Docker local, rutas
+de salud/agenda y suite completa contra MySQL 8.4 aislado (113 aprobadas, 473
+aserciones) pasaron. Sigue pendiente configurar Railway desde el panel; todavía
+no hay un servicio desplegado. No usar datos clínicos reales;
+respaldo/restauración sigue diferido.
+
+El 16/10/2026 se reconstruyeron `app`, `reverb` y `telegram` desde el código
+vigente. La app responde HTTP 200 en `/up`, Reverb acepta conexiones en el
+puerto 8080 y MySQL está saludable. Pint aprobó 183 archivos; SQLite aprobó
+143 pruebas/701 aserciones con 1 omisión esperada y MySQL 8.4 aislado aprobó
+144/706, incluida concurrencia. En la etapa responsiva se ajustaron el encabezado
+de Testimonios y las cargas de adjuntos/fotos de Historial y Casos; las pruebas
+de navegación responsiva pasan 5/20. El sitio también responde HTTP 200 en la
+IP local `192.168.0.80:8000` (inicio, agenda y healthcheck). No se tocó la base
+operativa ni se enviaron notificaciones. Falta aceptación visual final en
+dispositivos físicos y cerrar los recorridos responsivos QA-44/45/46/56/57/58;
+el control visual de navegador no estuvo disponible en esta sesión. Siguen
+pendientes el ensayo cifrado de respaldo/restauración (QA-23/27/31/32) y la
+configuración de Railway tras comprobar acceso y costos. No anunciar la versión
+como lista hasta cerrar bloqueantes y registrar evidencia.

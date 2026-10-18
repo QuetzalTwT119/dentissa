@@ -21,7 +21,8 @@ $diaLabel = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 =
                     @csrf
                     @method('put')
 
-                    <table class="w-full text-left text-sm">
+                    <div class="overflow-x-auto">
+                    <table class="w-full min-w-[640px] text-left text-sm">
                         <thead class="border-y border-gray-200 bg-gray-50 text-gray-600">
                             <tr>
                                 <th class="px-4 py-3">Día</th>
@@ -61,6 +62,7 @@ $diaLabel = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 =
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
 
                     <div class="mt-6 flex items-center gap-4">
                         <x-primary-button>Guardar</x-primary-button>

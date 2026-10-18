@@ -9,6 +9,7 @@ use App\Models\Servicio;
 use App\Services\AuditoriaService;
 use App\Services\CitaReglasService;
 use App\Services\DisponibilidadService;
+use App\Services\NotificacionInternaService;
 use App\Services\NotificacionService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -56,7 +57,7 @@ class CitaController extends Controller
         ]);
     }
 
-    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas, AuditoriaService $auditoria): RedirectResponse
+    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, NotificacionInternaService $notificacionesInternas, CitaReglasService $reglas, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('create', Cita::class);
 
@@ -98,8 +99,9 @@ class CitaController extends Controller
         }
 
         $notificaciones->citaAgendada($cita->load(['paciente', 'tratamiento']));
+        $notificacionesInternas->cambioCita($cita, 'agendada', $request->user()->id);
 
-        return Redirect::route('citas.index');
+        return Redirect::route('citas.index')->with('success', 'Cita agendada correctamente.');
     }
 
     public function edit(Cita $cita): View
@@ -111,7 +113,7 @@ class CitaController extends Controller
         ]);
     }
 
-    public function update(Request $request, Cita $cita, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas, AuditoriaService $auditoria): RedirectResponse
+    public function update(Request $request, Cita $cita, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, NotificacionInternaService $notificacionesInternas, CitaReglasService $reglas, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('update', $cita);
 
@@ -151,11 +153,12 @@ class CitaController extends Controller
         }
 
         $notificaciones->citaReagendada($cita->load('paciente'));
+        $notificacionesInternas->cambioCita($cita, 'reagendada', $request->user()->id);
 
-        return Redirect::route('citas.index');
+        return Redirect::route('citas.index')->with('success', 'Cita reagendada correctamente.');
     }
 
-    public function cancel(Request $request, Cita $cita, NotificacionService $notificaciones, AuditoriaService $auditoria): RedirectResponse
+    public function cancel(Request $request, Cita $cita, NotificacionService $notificaciones, NotificacionInternaService $notificacionesInternas, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('cancel', $cita);
 
@@ -180,11 +183,12 @@ class CitaController extends Controller
             $auditoria->registrar('cita.cancelada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
         });
         $notificaciones->citaCancelada($cita->load('paciente'));
+        $notificacionesInternas->cambioCita($cita, 'cancelada', $request->user()->id);
 
-        return Redirect::route('citas.index');
+        return Redirect::route('citas.index')->with('success', 'Cita cancelada correctamente.');
     }
 
-    public function confirm(Request $request, Cita $cita, NotificacionService $notificaciones, AuditoriaService $auditoria): RedirectResponse
+    public function confirm(Request $request, Cita $cita, NotificacionService $notificaciones, NotificacionInternaService $notificacionesInternas, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('confirm', $cita);
 
@@ -204,11 +208,12 @@ class CitaController extends Controller
             $auditoria->registrar('cita.confirmada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
         });
         $notificaciones->citaConfirmada($cita->load('paciente'));
+        $notificacionesInternas->cambioCita($cita, 'confirmada', $request->user()->id);
 
-        return Redirect::route('citas.index');
+        return Redirect::route('citas.index')->with('success', 'Cita confirmada correctamente.');
     }
 
-    public function start(Request $request, Cita $cita, AuditoriaService $auditoria): RedirectResponse
+    public function start(Request $request, Cita $cita, NotificacionInternaService $notificacionesInternas, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('start', $cita);
 
@@ -221,11 +226,12 @@ class CitaController extends Controller
             $cita->update(['estado' => EstadoCita::EnCurso]);
             $auditoria->registrar('cita.iniciada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
         });
+        $notificacionesInternas->cambioCita($cita, 'iniciada', $request->user()->id);
 
-        return Redirect::route('citas.index');
+        return Redirect::route('citas.index')->with('success', 'Cita iniciada correctamente.');
     }
 
-    public function noShow(Request $request, Cita $cita, AuditoriaService $auditoria): RedirectResponse
+    public function noShow(Request $request, Cita $cita, NotificacionInternaService $notificacionesInternas, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('noShow', $cita);
 
@@ -242,11 +248,12 @@ class CitaController extends Controller
             $cita->update(['estado' => EstadoCita::NoAsistio]);
             $auditoria->registrar('cita.no_asistio', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
         });
+        $notificacionesInternas->cambioCita($cita, 'no_asistio', $request->user()->id);
 
-        return Redirect::route('citas.index');
+        return Redirect::route('citas.index')->with('success', 'Cita marcada como no asistida.');
     }
 
-    public function complete(Request $request, Cita $cita, AuditoriaService $auditoria): RedirectResponse
+    public function complete(Request $request, Cita $cita, NotificacionInternaService $notificacionesInternas, AuditoriaService $auditoria): RedirectResponse
     {
         Gate::authorize('complete', $cita);
 
@@ -259,8 +266,9 @@ class CitaController extends Controller
             $cita->update(['estado' => EstadoCita::Completada]);
             $auditoria->registrar('cita.completada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
         });
+        $notificacionesInternas->cambioCita($cita, 'completada', $request->user()->id);
 
-        return Redirect::route('citas.index');
+        return Redirect::route('citas.index')->with('success', 'Cita completada correctamente.');
     }
 
     /** @return array<string, string> */

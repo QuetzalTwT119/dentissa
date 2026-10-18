@@ -14,7 +14,19 @@ class AuthenticationTest extends TestCase
     {
         $response = $this->get('/login');
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertSee('Iniciar sesión')
+            ->assertSee('Melissa López N.')
+            ->assertSee('Cada cita merece una atención bien coordinada.')
+            ->assertSee('hero-inicio.jpg')
+            ->assertSee('rounded-full bg-white/95 p-1')
+            ->assertDontSee('rounded-2xl border border-white/20 bg-white/95')
+            ->assertSee('Acceso privado del consultorio')
+            ->assertSee('Acceso · Melissa López N. — Odontología Integral')
+            ->assertDontSee('focus:ring-indigo-500')
+            ->assertSee('action="'.route('login').'"', false)
+            ->assertSee('name="remember"', false)
+            ->assertSee(route('password.request'), false);
     }
 
     public function test_users_can_authenticate_using_the_login_screen(): void

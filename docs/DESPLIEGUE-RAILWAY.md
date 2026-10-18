@@ -1,52 +1,66 @@
-# Preparación de despliegue en Railway
+# Preparación de despliegue escolar en Railway
 
-**Estado:** guía de preparación; no se ha creado ni desplegado ningún servicio.
-**Revisión:** 14 de octubre de 2026.
+**Destino decidido:** Railway, para una demostración escolar breve con datos
+ficticios. **Estado:** preparación local; aún no se creó ni desplegó ningún
+servicio. **Revisión:** 15 de octubre de 2026.
 
-El equipo ha señalado Railway con MySQL como destino candidato. La instalación
-actual de Docker Desktop sigue siendo el entorno local de desarrollo y pruebas.
-Este documento separa ambos entornos para evitar publicar accidentalmente una
-configuración local o datos ficticios como si fueran producción.
+Railway será el alojamiento de la demostración, no una autorización para usar
+Dentissa con pacientes reales. El objetivo de esta etapa es separar el
+contenedor local del constructor de producción, documentar la configuración y
+validar que la aplicación sigue funcionando en Docker.
 
-## Decisiones que faltan antes de desplegar
+## Costos y alcance de la demostración
 
-1. **Aprobar el costo y el plan con el equipo.** Railway no equivale a una
-   plataforma de costo garantizado cero: su plan Free incluye hasta USD 1 de
-   crédito de uso al mes; Hobby cuesta USD 5 al mes e incluye USD 5 de uso,
-   con cobros adicionales si el consumo supera el crédito. El costo exacto
-   depende de CPU, RAM, almacenamiento y tráfico, y debe revisarse nuevamente
-   en la página de precios antes de activar servicios.
-2. **Aprobar dónde se conservarán las subidas.** Dentissa guarda imágenes de
-   galería y otros contenidos en `storage/app/public`, y adjuntos clínicos en
-   `storage/app/private`. El almacenamiento local efímero de una aplicación
-   desplegada no es un repositorio persistente. Se necesita elegir y probar un
-   volumen persistente o almacenamiento compatible con S3; para los adjuntos
-   clínicos debe preservarse acceso privado. Un volumen Free tiene un límite
-   publicado de 0.5 GB y los volúmenes limitan ciertas opciones de réplicas y
-   despliegue.
-3. **Mantener fuera los datos de pacientes reales.** El procedimiento de
-   respaldo y restauración está diferido. No se debe cargar información médica
-   real ni abrir el servicio al uso clínico hasta aprobar, implementar y probar
-   la recuperación de la base y archivos.
+El equipo decidió Railway para la presentación. Antes de activar servicios hay
+que verificar el precio vigente y el límite de consumo en el panel. La cuota
+mínima mensual no se prorratea por usar el servicio solo un día. Un límite de
+consumo puede apagar los servicios al alcanzarlo, así que se debe probar la
+demo con anticipación y conservar una alternativa local.
+
+La demostración usará únicamente datos ficticios: nada de pacientes,
+diagnósticos ni archivos clínicos reales. Ollama, WhatsApp y Telegram no son
+dependencias del recorrido de presentación; permanecerán desactivados hasta
+configurarse y probarse por separado.
 
 ## Diferencia entre el entorno local y producción
 
-El `Dockerfile` raíz actual se usa con `compose.yaml` para desarrollo y QA:
+`Dockerfile.local` se usa con `compose.yaml` para desarrollo y QA:
 
 - instala dependencias de desarrollo por defecto (`INSTALL_DEV=true`);
 - arranca con `php artisan serve` en el puerto local `8000`;
 - ejecuta `php artisan migrate --force` cada vez que inicia el contenedor;
 - depende del `.env` local montado por Compose.
 
-No se debe conectar Railway a esa configuración tal como está. La guía de
-Laravel de Railway describe su despliegue Railpack con PHP-FPM y Caddy; como el
-repositorio tiene un Dockerfile raíz, antes del primer deploy hay que decidir y
-verificar en los detalles de build cuál constructor usará el servicio. No
-asumir que Railway está utilizando Railpack solo porque el proyecto sea Laravel.
-La configuración debe usar un proceso web apto para producción y escuchar en el
-puerto `PORT` proporcionado por Railway.
+El servicio de Railway se preparará desde GitHub usando Railpack, que detecta
+Laravel y utiliza PHP-FPM/Caddy. Se renombró el Dockerfile local para que
+Railway no detecte por accidente el contenedor de desarrollo como producción.
+La aplicación y MySQL se crearán como servicios separados; Railway no ejecuta
+el `compose.yaml` local como una unidad.
 
-## Checklist de preparación
+Railpack debe compilar los recursos Vite (`npm run build`) y usar la versión
+PHP compatible con `composer.json` (PHP 8.3 o superior, dentro de la línea
+soportada por Laravel). En los logs de build se comprobará la instalación de
+Composer y Node y la generación de `public/build/manifest.json`. No configurar
+un comando de inicio local como `php artisan serve`.
+
+## Checklist local previo a configurar Railway
+
+- [x] Validar que `docker compose config` acepte los servicios y resuelva
+  `Dockerfile.local`.
+- [x] Reconstruir la app local y verificar `/up` y `/agendar-cita`.
+- [x] Ejecutar la suite automatizada completa.
+- [x] Revisar que `.env`, tokens y datos locales sigan excluidos de Git.
+- [x] Confirmar que los seeders y el guion de demostración solo usen datos
+  ficticios.
+
+El seeder general no se debe ejecutar en Railway: actualmente contiene las
+cuentas locales `admin@dentissa.com` y `asistente@dentissa.com` con la
+contraseña fija `password`. Para preparar las cuentas y catálogo demo existe
+`DemoPresentacionSeeder`, que está desactivado por defecto y exige correos y
+contraseñas privadas distintos (20–72 bytes). Crea solo un admin, un asistente,
+el catálogo ficticio y un paciente demo sin historial clínico.
+
+## Configuración de los servicios al llegar al panel
 
 Antes de generar un dominio público:
 
@@ -63,8 +77,21 @@ Antes de generar un dominio público:
   `APP_DEBUG=false` y `APP_URL` con el dominio definitivo; revisar logs para que
   no incluyan datos personales o clínicos.
 - Ejecutar `php artisan migrate --force` como comando pre-deploy controlado,
-  después de revisar migraciones. No ejecutar `db:seed` en producción salvo una
-  decisión explícita y datos aprobados.
+  después de revisar migraciones. No ejecutar el seeder general ni un `db:seed`
+  sin clase en producción.
+- Para la demo completa, configurar temporalmente en Variables
+  `DENTISSA_DEMO_SEED_ENABLED=true`, correos distintos en
+  `DENTISSA_DEMO_ADMIN_EMAIL` y `DENTISSA_DEMO_ASISTENTE_EMAIL`, y contraseñas
+  aleatorias distintas de 20–72 bytes en sus variables `*_PASSWORD`. Ejecutar
+  manualmente una vez desde la Shell del servicio:
+
+  ```bash
+  php artisan db:seed --class=DemoPresentacionSeeder --force
+  ```
+
+  Después cambiar el indicador a `false` y quitar las variables de contraseña.
+  No copiar credenciales al README, al chat ni a Git. Los valores de tratamientos
+  que inserta el catálogo son ficticios; no representan precios reales.
 - Configurar `/up` como healthcheck: Laravel ya registra esa ruta en
   `bootstrap/app.php`. Railway usa el healthcheck para validar la nueva versión
   durante el despliegue; no sustituye un monitor continuo.
@@ -77,14 +104,18 @@ Antes de generar un dominio público:
   sesiones, enlaces de correo, archivos, PDF y dominio HTTPS antes de invitar al
   equipo.
 
-## Orden recomendado cuando el equipo autorice el despliegue
+## Orden del despliegue (todavía no ejecutado)
 
-1. Confirmar presupuesto, límites de uso y propietario de la cuenta/proyecto.
-2. Elegir constructor de producción y almacenamiento persistente.
-3. Crear servicios y variables desde el dashboard, sin copiar secretos al repo.
-4. Desplegar una versión de staging con contenido exclusivamente ficticio.
-5. Verificar `/up`, migraciones, flujos principales, archivos y costos observados.
-6. Aprobar respaldos/restauración y privacidad antes de considerar datos reales.
+1. Confirmar propietario, precio vigente y límite de consumo desde el panel.
+   No compartir credenciales ni datos de pago en el repositorio o el chat.
+2. Crear un servicio MySQL administrado y conectar el repositorio al servicio
+   web.
+3. Configurar variables y `APP_KEY` solo en Railway.
+4. Ejecutar migraciones con un comando controlado; no ejecutar seeders en
+   producción automáticamente.
+5. Verificar `/up`, `/agendar-cita`, agenda, archivos y consumo con contenido
+   ficticio.
+6. Mantener lista la alternativa local para la presentación.
 
 ## Referencias oficiales consultadas
 
@@ -94,3 +125,5 @@ Antes de generar un dominio público:
 - [Healthchecks](https://docs.railway.com/deployments/healthchecks)
 - [Volúmenes](https://docs.railway.com/volumes)
 - [Planes y precios](https://docs.railway.com/pricing/plans)
+- [Builds y Railpack](https://docs.railway.com/builds)
+- [Mapeo de Docker Compose a servicios Railway](https://docs.railway.com/guides/docker-compose)

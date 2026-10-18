@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\RolUsuario;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,7 +45,7 @@ class UsuarioController extends Controller
         return view('admin.usuarios.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
@@ -55,14 +56,20 @@ class UsuarioController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $usuario = User::create([
-            'nombre' => $validated['nombre'],
-            'apellido' => $validated['apellido'],
-            'email' => $validated['email'],
-            'telefono' => $validated['telefono'],
-            'rol' => $validated['rol'],
-            'password' => Hash::make($validated['password']),
-        ]);
+        $auditoria->registrarCambio(
+            $request,
+            'usuario.creado',
+            new User,
+            ['nombre', 'apellido', 'email', 'telefono', 'rol', 'activo'],
+            fn () => User::create([
+                'nombre' => $validated['nombre'],
+                'apellido' => $validated['apellido'],
+                'email' => $validated['email'],
+                'telefono' => $validated['telefono'],
+                'rol' => $validated['rol'],
+                'password' => Hash::make($validated['password']),
+            ]),
+        );
 
         return Redirect::route('admin.usuarios.index');
     }
@@ -74,7 +81,7 @@ class UsuarioController extends Controller
         ]);
     }
 
-    public function update(Request $request, User $usuario): RedirectResponse
+    public function update(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse
     {
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
@@ -85,28 +92,44 @@ class UsuarioController extends Controller
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $usuario->fill([
-            'nombre' => $validated['nombre'],
-            'apellido' => $validated['apellido'],
-            'email' => $validated['email'],
-            'telefono' => $validated['telefono'],
-            'rol' => $validated['rol'],
-        ]);
+        $auditoria->registrarCambio(
+            $request,
+            'usuario.actualizado',
+            $usuario,
+            ['nombre', 'apellido', 'email', 'telefono', 'rol', 'activo'],
+            function () use ($usuario, $validated) {
+                $usuario->fill([
+                    'nombre' => $validated['nombre'],
+                    'apellido' => $validated['apellido'],
+                    'email' => $validated['email'],
+                    'telefono' => $validated['telefono'],
+                    'rol' => $validated['rol'],
+                ]);
 
-        if (! empty($validated['password'])) {
-            $usuario->password = Hash::make($validated['password']);
-        }
+                if (! empty($validated['password'])) {
+                    $usuario->password = Hash::make($validated['password']);
+                }
 
-        $usuario->save();
+                $usuario->save();
+
+                return $usuario;
+            },
+        );
 
         return Redirect::route('admin.usuarios.index');
     }
 
-    public function toggleActivo(Request $request, User $usuario): RedirectResponse
+    public function toggleActivo(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse
     {
         abort_if($usuario->id === $request->user()->id, 422, 'No puedes desactivar tu propia cuenta.');
 
-        $usuario->update(['activo' => ! $usuario->activo]);
+        $auditoria->registrarCambio(
+            $request,
+            $usuario->activo ? 'usuario.desactivado' : 'usuario.activado',
+            $usuario,
+            ['activo'],
+            fn () => $usuario->update(['activo' => ! $usuario->activo]),
+        );
 
         return Redirect::route('admin.usuarios.index');
     }

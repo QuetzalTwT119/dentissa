@@ -22,14 +22,26 @@ $tipoConsultaLabel = [
                 </a>
 
                 <div class="flex gap-3">
-                    <a href="{{ route('admin.pacientes.historial.pdf', $paciente) }}">
-                        <x-secondary-button type="button">Descargar PDF</x-secondary-button>
-                    </a>
+                    @if ($consultas->isNotEmpty())
+                        <a href="{{ route('admin.pacientes.historial.pdf', $paciente) }}">
+                            <x-secondary-button type="button">Descargar PDF</x-secondary-button>
+                        </a>
+                    @else
+                        <x-secondary-button type="button" disabled title="Disponible después de registrar una consulta">
+                            Descargar PDF
+                        </x-secondary-button>
+                    @endif
                     <a href="{{ route('admin.pacientes.historial.create', $paciente) }}">
                         <x-primary-button>Nueva consulta</x-primary-button>
                     </a>
                 </div>
             </div>
+
+            @if (session('status'))
+                <div role="status" class="mb-4 rounded-md bg-blue-50 p-4 text-sm text-blue-800">
+                    {{ session('status') }}
+                </div>
+            @endif
 
             <div class="space-y-4">
                 @forelse ($consultas as $consulta)
@@ -70,6 +82,7 @@ $tipoConsultaLabel = [
                 @empty
                     <div class="bg-white p-6 text-center text-sm text-gray-500 shadow-sm sm:rounded-lg">
                         Este paciente todavía no tiene consultas registradas.
+                        <p class="mt-1">El PDF estará disponible cuando registres la primera consulta.</p>
                     </div>
                 @endforelse
             </div>

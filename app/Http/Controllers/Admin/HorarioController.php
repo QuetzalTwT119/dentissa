@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\HorarioAtencion;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 
 class HorarioController extends Controller
@@ -24,7 +26,7 @@ class HorarioController extends Controller
         ]);
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
         $validated = $request->validate([
             'dias' => ['required', 'array', 'size:7'],
@@ -35,14 +37,23 @@ class HorarioController extends Controller
             'dias.*.capacidad_simultanea' => ['required', 'integer', 'min:1'],
         ]);
 
-        foreach ($validated['dias'] as $dia) {
-            HorarioAtencion::where('dia_semana', $dia['dia_semana'])->update([
-                'abierto' => $dia['abierto'] ?? false,
-                'hora_apertura' => $dia['hora_apertura'],
-                'hora_cierre' => $dia['hora_cierre'],
-                'capacidad_simultanea' => $dia['capacidad_simultanea'],
-            ]);
-        }
+        DB::transaction(function () use ($request, $validated, $auditoria) {
+            foreach ($validated['dias'] as $dia) {
+                $horario = HorarioAtencion::where('dia_semana', $dia['dia_semana'])->firstOrFail();
+                $auditoria->registrarCambio(
+                    $request,
+                    'horario.actualizado',
+                    $horario,
+                    ['dia_semana', 'abierto', 'hora_apertura', 'hora_cierre', 'capacidad_simultanea'],
+                    fn () => $horario->update([
+                        'abierto' => $dia['abierto'] ?? false,
+                        'hora_apertura' => $dia['hora_apertura'],
+                        'hora_cierre' => $dia['hora_cierre'],
+                        'capacidad_simultanea' => $dia['capacidad_simultanea'],
+                    ]),
+                );
+            }
+        });
 
         return Redirect::route('admin.horarios.edit');
     }

@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\TipoImagen;
+use App\Http\Controllers\Admin\AtencionOportunaController as AdminAtencionOportunaController;
+use App\Http\Controllers\Admin\AuditoriaController;
 use App\Http\Controllers\Admin\CasoController;
 use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
 use App\Http\Controllers\Admin\HistorialClinicoController;
@@ -10,19 +13,19 @@ use App\Http\Controllers\Admin\PacienteController;
 use App\Http\Controllers\Admin\PreguntaFrecuenteController;
 use App\Http\Controllers\Admin\ReporteController;
 use App\Http\Controllers\Admin\ServicioController;
-use App\Http\Controllers\Admin\TratamientoController;
 use App\Http\Controllers\Admin\TestimonioController as AdminTestimonioController;
+use App\Http\Controllers\Admin\TratamientoController;
 use App\Http\Controllers\Admin\UsuarioController;
-use App\Http\Controllers\CitaController;
-use App\Http\Controllers\CitaPublicaController;
-use App\Http\Controllers\AtencionOportunaController;
 use App\Http\Controllers\AsistenteAgendaController;
 use App\Http\Controllers\AsistentePacienteController;
+use App\Http\Controllers\AtencionOportunaController;
+use App\Http\Controllers\CitaController;
+use App\Http\Controllers\CitaPublicaController;
 use App\Http\Controllers\DisponibilidadController;
-use App\Enums\TipoImagen;
 use App\Http\Controllers\GaleriaController;
 use App\Http\Controllers\HistorialImagenController;
 use App\Http\Controllers\MensajeContactoController;
+use App\Http\Controllers\NotificacionSistemaController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Caso;
@@ -86,6 +89,17 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified', 'no-cache'])->name('dashboard');
 
 Route::middleware(['auth', 'no-cache'])->group(function () {
+    Route::get('/notificaciones', [NotificacionSistemaController::class, 'index'])
+        ->middleware('role:admin,asistente')->name('notificaciones.index');
+    Route::get('/notificaciones/actualizaciones', [NotificacionSistemaController::class, 'actualizaciones'])
+        ->middleware('role:admin,asistente')->name('notificaciones.actualizaciones');
+    Route::patch('/notificaciones/{notificacion}/leida', [NotificacionSistemaController::class, 'marcarLeida'])
+        ->middleware('role:admin,asistente')->name('notificaciones.leida');
+    Route::patch('/notificaciones/{notificacion}/pendiente', [NotificacionSistemaController::class, 'marcarPendiente'])
+        ->middleware('role:admin,asistente')->name('notificaciones.pendiente');
+    Route::patch('/notificaciones/leidas', [NotificacionSistemaController::class, 'marcarTodasLeidas'])
+        ->middleware('role:admin,asistente')->name('notificaciones.leidas');
+
     Route::get('/asistente-agenda', [AsistenteAgendaController::class, 'create'])->name('asistente-agenda.create');
     Route::post('/asistente-agenda/proponer', [AsistenteAgendaController::class, 'proponer'])->name('asistente-agenda.proponer');
 
@@ -112,9 +126,10 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('atencion-oportuna', [\App\Http\Controllers\Admin\AtencionOportunaController::class, 'index'])->name('atencion-oportuna.index');
-    Route::patch('atencion-oportuna/urgencias/{urgencia}/contactar', [\App\Http\Controllers\Admin\AtencionOportunaController::class, 'contactarUrgencia'])->name('atencion-oportuna.urgencias.contactar');
-    Route::patch('atencion-oportuna/espera/{espera}/contactar', [\App\Http\Controllers\Admin\AtencionOportunaController::class, 'contactarEspera'])->name('atencion-oportuna.espera.contactar');
+    Route::get('auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
+    Route::get('atencion-oportuna', [AdminAtencionOportunaController::class, 'index'])->name('atencion-oportuna.index');
+    Route::patch('atencion-oportuna/urgencias/{urgencia}/contactar', [AdminAtencionOportunaController::class, 'contactarUrgencia'])->name('atencion-oportuna.urgencias.contactar');
+    Route::patch('atencion-oportuna/espera/{espera}/contactar', [AdminAtencionOportunaController::class, 'contactarEspera'])->name('atencion-oportuna.espera.contactar');
     Route::patch('servicios/{servicio}/tratamientos', [ServicioController::class, 'syncTratamientos'])->name('servicios.tratamientos.sync');
     Route::resource('servicios', ServicioController::class)->except('show');
     Route::resource('tratamientos', TratamientoController::class)->except('show');
@@ -145,7 +160,7 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
 
     Route::get('reportes', [ReporteController::class, 'index'])->name('reportes.index');
     Route::get('reportes/pdf', [ReporteController::class, 'pdf'])->name('reportes.pdf');
-    Route::get('reportes/csv', [ReporteController::class, 'csv'])->name('reportes.csv');
+    Route::get('reportes/excel', [ReporteController::class, 'excel'])->name('reportes.excel');
 
     Route::get('testimonios', [AdminTestimonioController::class, 'index'])->name('testimonios.index');
     Route::get('testimonios/crear', [AdminTestimonioController::class, 'create'])->name('testimonios.create');

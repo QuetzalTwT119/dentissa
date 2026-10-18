@@ -25,18 +25,18 @@ $rolClase = [
             <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                 <div class="flex flex-wrap items-center justify-between gap-4 p-6">
                     <p class="text-sm text-gray-600">
-                        Gestiona el personal y los pacientes registrados en la plataforma.
+                        Gestiona las cuentas y los roles del personal que accede a la plataforma.
                     </p>
 
                     <div class="flex flex-wrap items-center gap-3">
                         <form method="GET" action="{{ route('admin.usuarios.index') }}" class="flex items-center gap-3">
-                            <select name="rol" onchange="this.form.submit()"
+                            <select name="rol" aria-label="Filtrar por rol" onchange="this.form.submit()"
                                     class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                                 <option value="">Todos los roles</option>
                                 <option value="asistente" @selected(($filtros['rol'] ?? '') === 'asistente')>Asistente</option>
                                 <option value="admin" @selected(($filtros['rol'] ?? '') === 'admin')>Admin</option>
                             </select>
-                            <select name="activo" onchange="this.form.submit()"
+                            <select name="activo" aria-label="Filtrar por estado" onchange="this.form.submit()"
                                     class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
                                 <option value="">Todos los estados</option>
                                 <option value="1" @selected(($filtros['activo'] ?? '') === '1')>Activos</option>
@@ -50,7 +50,8 @@ $rolClase = [
                     </div>
                 </div>
 
-                <table class="w-full text-left text-sm">
+                <div class="overflow-x-auto">
+                <table class="w-full min-w-[760px] text-left text-sm">
                     <thead class="border-y border-gray-200 bg-gray-50 text-gray-600">
                         <tr>
                             <th class="px-6 py-3">Nombre</th>
@@ -104,6 +105,7 @@ $rolClase = [
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>

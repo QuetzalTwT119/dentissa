@@ -11,7 +11,7 @@
                 <form method="POST" action="{{ route('admin.usuarios.store') }}" class="space-y-6">
                     @csrf
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
                             <x-input-label for="nombre" value="Nombre" />
                             <x-text-input id="nombre" name="nombre" class="mt-1 block w-full" :value="old('nombre')" required autofocus />

@@ -12,12 +12,12 @@
 </template>
 
 <template x-if="idTratamiento && fecha && !loadingHorarios && horarios.length > 0">
-    <div class="flex flex-wrap gap-2">
+    <div class="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
         <template x-for="horario in horarios" :key="horario">
             <button type="button"
                     @click="hora = horario"
                     :class="hora === horario ? 'border-brand-600 bg-brand-600 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'"
-                    class="rounded-md border px-3 py-1.5 text-sm"
+                    class="min-h-11 rounded-md border px-2 py-2.5 text-center text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-brand-400"
                     x-text="horario"></button>
         </template>
     </div>

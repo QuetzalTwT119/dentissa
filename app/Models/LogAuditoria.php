@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['id_usuario', 'accion', 'tabla', 'registro_id', 'datos_anteriores', 'datos_nuevos', 'ip', 'user_agent', 'fecha'])]
+#[Fillable(['id_usuario', 'actor_user_id', 'actor_nombre', 'actor_rol', 'accion', 'tabla', 'registro_id', 'datos_anteriores', 'datos_nuevos', 'ip', 'user_agent', 'fecha'])]
 class LogAuditoria extends Model
 {
     use HasFactory;

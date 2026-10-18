@@ -28,8 +28,10 @@ class AsistenteAgendaController extends Controller
             'id_paciente' => ['required', 'exists:pacientes,id'],
             'id_servicio' => ['required', 'exists:servicios,id'],
             'id_tratamiento' => ['required', 'exists:tratamientos,id'],
-            'fecha' => ['required', 'date'],
+            'fecha' => ['required', 'date', 'after_or_equal:today'],
             'motivo' => ['nullable', 'string', 'max:1000'],
+        ], [
+            'fecha.after_or_equal' => 'Selecciona hoy o una fecha futura para buscar horarios.',
         ]);
 
         [, $tratamiento] = $reglas->validarCatalogo($validated['id_servicio'], $validated['id_tratamiento']);

@@ -61,17 +61,20 @@ return [
     | Datos de contacto (sitio público)
     |--------------------------------------------------------------------------
     |
-    | Se muestran en la sección de contacto del landing público. Son valores
-    | de ejemplo — reemplázalos con los datos reales del consultorio.
+    | El modo demostración usa información ficticia claramente identificada.
+    | Desactívalo y configura los datos reales antes de abrir el sitio al público.
     |
     */
 
+    'modo_demo' => (bool) env('DENTISSA_MODO_DEMO', true),
+
     'contacto' => [
-        'telefono' => env('DENTISSA_TELEFONO', '+52 55 1234 5678'),
-        'whatsapp' => env('DENTISSA_WHATSAPP', '5215512345678'),
-        'correo' => env('DENTISSA_CORREO', 'contacto@melissalopez.dental'),
-        'direccion' => env('DENTISSA_DIRECCION', 'Av. Ejemplo 123, Ciudad de México'),
-        'horario_texto' => env('DENTISSA_HORARIO_TEXTO', 'Lunes a viernes, 8:00 a 18:00'),
+        'telefono' => env('DENTISSA_TELEFONO', '+52 55 0000 0000'),
+        'correo' => env('DENTISSA_CORREO', 'hola@dentissa.demo'),
+        'direccion' => env('DENTISSA_DIRECCION', 'Consultorio de demostración · Ciudad de México'),
+        'horario_texto' => env('DENTISSA_HORARIO_TEXTO', 'Lunes a viernes · 9:00 a 18:00'),
+        'telegram_usuario' => env('DENTISSA_TELEGRAM_USUARIO', '@dentissa_demo'),
+        'telegram_url' => env('DENTISSA_TELEGRAM_URL'),
     ],
 
     /*
@@ -91,6 +94,22 @@ return [
         'access_token' => env('DENTISSA_WHATSAPP_TOKEN'),
         'api_version' => env('DENTISSA_WHATSAPP_API_VERSION', 'v21.0'),
         'plantilla_idioma' => env('DENTISSA_WHATSAPP_IDIOMA', 'es_MX'),
+    ],
+
+    /* Recursos visuales estáticos aprobados para el sitio público. */
+    'imagenes' => [
+        'hero' => 'images/dentissa/hero-inicio.jpg',
+        'urgencias' => 'images/dentissa/urgencias-dentales.jpg',
+        'lista_espera' => 'images/dentissa/lista-espera.jpg',
+        'servicios' => [
+            'Odontología General' => 'images/dentissa/odontologia-general.jpg',
+            'Odontología Estética' => 'images/dentissa/odontologia-estetica.jpg',
+            'Ortodoncia' => 'images/dentissa/ortodoncia.jpg',
+            'Implantología' => 'images/dentissa/implantologia.jpg',
+            'Periodoncia' => 'images/dentissa/periodoncia.jpg',
+            'Endodoncia' => 'images/dentissa/endodoncia.jpg',
+            'Odontopediatría' => 'images/dentissa/odontopediatria.jpg',
+        ],
     ],
 
 ];

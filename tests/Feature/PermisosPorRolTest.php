@@ -15,6 +15,7 @@ class PermisosPorRolTest extends TestCase
     {
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
         $rutasAdministrativas = [
+            'admin.auditoria.index',
             'admin.atencion-oportuna.index',
             'admin.servicios.index',
             'admin.pacientes.index',
@@ -43,6 +44,18 @@ class PermisosPorRolTest extends TestCase
         $this->actingAs($asistente)
             ->put(route('admin.horarios.update'), [])
             ->assertForbidden();
+    }
+
+    public function test_lista_de_usuarios_tiene_contexto_correcto_y_filtros_accesibles(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.usuarios.index'))
+            ->assertOk()
+            ->assertSee('Gestiona las cuentas y los roles del personal que accede a la plataforma.')
+            ->assertSee('aria-label="Filtrar por rol"', false)
+            ->assertSee('aria-label="Filtrar por estado"', false);
     }
 
     public function test_un_visitante_es_enviado_al_login_antes_de_entrar_a_administracion(): void

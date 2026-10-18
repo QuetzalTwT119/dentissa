@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PreguntaFrecuente;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,9 +24,15 @@ class PreguntaFrecuenteController extends Controller
         return view('admin.preguntas-frecuentes.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
-        PreguntaFrecuente::create($this->validated($request));
+        $auditoria->registrarCambio(
+            $request,
+            'faq.creada',
+            new PreguntaFrecuente,
+            ['pregunta', 'respuesta', 'variantes', 'orden', 'activa'],
+            fn () => PreguntaFrecuente::create($this->validated($request)),
+        );
 
         return Redirect::route('admin.preguntas-frecuentes.index');
     }
@@ -40,16 +47,29 @@ class PreguntaFrecuenteController extends Controller
         ]);
     }
 
-    public function update(Request $request, PreguntaFrecuente $preguntas_frecuente): RedirectResponse
+    public function update(Request $request, PreguntaFrecuente $preguntas_frecuente, AuditoriaService $auditoria): RedirectResponse
     {
-        $preguntas_frecuente->update($this->validated($request));
+        $auditoria->registrarCambio(
+            $request,
+            'faq.actualizada',
+            $preguntas_frecuente,
+            ['pregunta', 'respuesta', 'variantes', 'orden', 'activa'],
+            fn () => $preguntas_frecuente->update($this->validated($request)),
+        );
 
         return Redirect::route('admin.preguntas-frecuentes.index');
     }
 
-    public function destroy(PreguntaFrecuente $preguntas_frecuente): RedirectResponse
+    public function destroy(Request $request, PreguntaFrecuente $preguntas_frecuente, AuditoriaService $auditoria): RedirectResponse
     {
-        $preguntas_frecuente->delete();
+        $auditoria->registrarCambio(
+            $request,
+            'faq.eliminada',
+            $preguntas_frecuente,
+            ['pregunta'],
+            fn () => $preguntas_frecuente->delete(),
+            eliminado: true,
+        );
 
         return Redirect::route('admin.preguntas-frecuentes.index');
     }

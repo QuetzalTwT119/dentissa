@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\AuditoriaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -24,15 +26,26 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request, AuditoriaService $auditoria): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $auditoria->registrarCambio(
+            $request,
+            'perfil.actualizado',
+            $user,
+            ['nombre', 'apellido', 'email', 'telefono'],
+            function () use ($request, $user) {
+                $user->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+                if ($user->isDirty('email')) {
+                    $user->email_verified_at = null;
+                }
 
-        $request->user()->save();
+                $user->save();
+
+                return $user;
+            },
+        );
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -40,7 +53,7 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
@@ -48,9 +61,18 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
+        DB::transaction(function () use ($request, $auditoria, $user) {
+            $auditoria->registrar('usuario.cuenta_eliminada', $user, [
+                'nombre' => $user->nombre,
+                'apellido' => $user->apellido,
+                'email' => $user->email,
+                'rol' => $user->rol->value,
+            ], request: $request);
 
-        $user->delete();
+            $user->newQuery()->whereKey($user->getKey())->delete();
+        });
+
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

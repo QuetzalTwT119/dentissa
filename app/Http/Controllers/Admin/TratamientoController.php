@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\EstadoCita;
 use App\Http\Controllers\Controller;
 use App\Models\Tratamiento;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class TratamientoController extends Controller
         return view('admin.tratamientos.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
         $data = $this->validated($request);
 
@@ -33,7 +34,13 @@ class TratamientoController extends Controller
             $data['imagen'] = $request->file('imagen')->store('tratamientos', 'public');
         }
 
-        Tratamiento::create($data);
+        $auditoria->registrarCambio(
+            $request,
+            'tratamiento.creado',
+            new Tratamiento,
+            ['nombre', 'descripcion', 'categoria', 'duracion_estimada', 'precio_referencia', 'sesiones_requeridas', 'requiere_autorizacion', 'imagen', 'activo'],
+            fn () => Tratamiento::create($data),
+        );
 
         return Redirect::route('admin.tratamientos.index');
     }
@@ -45,7 +52,7 @@ class TratamientoController extends Controller
         ]);
     }
 
-    public function update(Request $request, Tratamiento $tratamiento): RedirectResponse
+    public function update(Request $request, Tratamiento $tratamiento, AuditoriaService $auditoria): RedirectResponse
     {
         $data = $this->validated($request, $tratamiento->id);
 
@@ -55,12 +62,18 @@ class TratamientoController extends Controller
             unset($data['imagen']);
         }
 
-        $tratamiento->update($data);
+        $auditoria->registrarCambio(
+            $request,
+            'tratamiento.actualizado',
+            $tratamiento,
+            ['nombre', 'descripcion', 'categoria', 'duracion_estimada', 'precio_referencia', 'sesiones_requeridas', 'requiere_autorizacion', 'imagen', 'activo'],
+            fn () => $tratamiento->update($data),
+        );
 
         return Redirect::route('admin.tratamientos.index');
     }
 
-    public function destroy(Tratamiento $tratamiento): RedirectResponse
+    public function destroy(Request $request, Tratamiento $tratamiento, AuditoriaService $auditoria): RedirectResponse
     {
         $tieneCitasActivas = $tratamiento->citas()
             ->whereNotIn('estado', [EstadoCita::Cancelada, EstadoCita::Completada, EstadoCita::NoAsistio])
@@ -71,7 +84,14 @@ class TratamientoController extends Controller
                 ->with('error', 'No se puede eliminar el tratamiento: tiene citas activas asociadas.');
         }
 
-        $tratamiento->delete();
+        $auditoria->registrarCambio(
+            $request,
+            'tratamiento.eliminado',
+            $tratamiento,
+            ['nombre', 'activo'],
+            fn () => $tratamiento->delete(),
+            eliminado: true,
+        );
 
         return Redirect::route('admin.tratamientos.index');
     }

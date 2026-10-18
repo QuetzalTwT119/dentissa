@@ -115,7 +115,7 @@ class ReporteService
             'citas_completadas' => $citasCompletadas,
             'bloques_hora_y_media' => round($bloques, 1),
             'eficiencia' => $bloques > 0 ? round($citasCompletadas / $bloques, 2) : 0,
-            'comparativa_gerin' => round($citasPorHora / 1, 2),
+            'citas_por_hora' => round($citasPorHora, 2),
         ];
     }
 

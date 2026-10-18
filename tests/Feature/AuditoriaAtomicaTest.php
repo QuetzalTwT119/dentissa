@@ -13,6 +13,7 @@ use App\Models\Tratamiento;
 use App\Models\User;
 use App\Services\AuditoriaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -23,6 +24,7 @@ class AuditoriaAtomicaTest extends TestCase
 
     public function test_la_auditoria_se_guarda_en_la_transaccion_del_modelo(): void
     {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
@@ -30,11 +32,15 @@ class AuditoriaAtomicaTest extends TestCase
             'email' => 'paciente-auditoria-transaccion@example.test',
         ]);
 
-        DB::transaction(function () use ($paciente): void {
+        $request = Request::create('/');
+        $request->setUserResolver(fn () => $admin);
+
+        DB::transaction(function () use ($paciente, $request): void {
             app(AuditoriaService::class)->registrar(
                 'paciente.prueba',
                 $paciente,
                 datosNuevos: ['origen' => 'prueba QA'],
+                request: $request,
             );
         });
 
@@ -45,7 +51,7 @@ class AuditoriaAtomicaTest extends TestCase
         ]);
     }
 
-    public function test_la_reserva_publica_se_revierte_si_falla_la_auditoria(): void
+    public function test_la_reserva_publica_no_se_agrega_a_la_bitacora_del_personal(): void
     {
         $servicio = Servicio::create(['nombre' => 'Servicio QA', 'activo' => true]);
         $tratamiento = Tratamiento::create([
@@ -60,8 +66,6 @@ class AuditoriaAtomicaTest extends TestCase
             $fecha->addDay();
         }
 
-        $this->fallarAuditoria();
-
         $this->post(route('citas.publica.store'), [
             'id_servicio' => $servicio->id,
             'id_tratamiento' => $tratamiento->id,
@@ -72,11 +76,12 @@ class AuditoriaAtomicaTest extends TestCase
             'telefono' => '5555555555',
             'email' => 'paciente-auditoria@example.test',
         ])
-            ->assertStatus(503)
-            ->assertSee('No se guardaron los cambios');
+            ->assertRedirect(route('citas.publica.create'))
+            ->assertSessionHas('success');
 
-        $this->assertDatabaseCount('citas', 0);
-        $this->assertDatabaseMissing('pacientes', ['email' => 'paciente-auditoria@example.test']);
+        $this->assertDatabaseCount('citas', 1);
+        $this->assertDatabaseHas('pacientes', ['email' => 'paciente-auditoria@example.test']);
+        $this->assertDatabaseCount('logs_auditoria', 0);
     }
 
     public function test_la_cancelacion_de_cita_se_revierte_si_falla_la_auditoria(): void
@@ -132,6 +137,10 @@ class AuditoriaAtomicaTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('admin.pacientes.update', $paciente), [
+                'nombre' => $paciente->nombre,
+                'apellido' => $paciente->apellido,
+                'telefono' => $paciente->telefono,
+                'email' => $paciente->email,
                 'curp' => 'GORP800101HDFRZL09',
                 'rfc' => 'GORP800101AB1',
                 'ine_clave' => 'ABC123456789012345',

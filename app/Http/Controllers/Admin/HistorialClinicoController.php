@@ -146,12 +146,17 @@ class HistorialClinicoController extends Controller
         return Redirect::route('admin.pacientes.historial.edit', [$paciente, $historial]);
     }
 
-    public function pdf(Paciente $paciente): HttpResponse
+    public function pdf(Paciente $paciente): HttpResponse|RedirectResponse
     {
         $consultas = $paciente->historialClinico()
             ->with(['doctor:id,nombre,apellido'])
             ->orderByDesc('fecha_consulta')
             ->get();
+
+        if ($consultas->isEmpty()) {
+            return Redirect::route('admin.pacientes.historial.index', $paciente)
+                ->with('status', 'Aún no hay consultas para generar el PDF.');
+        }
 
         $pdf = Pdf::loadView('pdf.historial', [
             'paciente' => $paciente,

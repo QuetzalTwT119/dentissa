@@ -29,11 +29,12 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                 <form method="GET" action="{{ route('admin.reportes.index') }}" class="flex flex-wrap items-end gap-4">
                     <div>
                         <x-input-label for="fecha_inicio" value="Desde" />
-                        <x-text-input id="fecha_inicio" name="fecha_inicio" type="date" class="mt-1" value="{{ old('fecha_inicio', $reporte['rango']['fecha_inicio']) }}" />
+                        <x-text-input id="fecha_inicio" name="fecha_inicio" type="date" class="mt-1" max="{{ now()->toDateString() }}" value="{{ old('fecha_inicio', $reporte['rango']['fecha_inicio']) }}" />
+                        <x-input-error :messages="$errors->get('fecha_inicio')" class="mt-2" />
                     </div>
                     <div>
                         <x-input-label for="fecha_fin" value="Hasta" />
-                        <x-text-input id="fecha_fin" name="fecha_fin" type="date" class="mt-1" value="{{ old('fecha_fin', $reporte['rango']['fecha_fin']) }}" />
+                        <x-text-input id="fecha_fin" name="fecha_fin" type="date" class="mt-1" max="{{ now()->toDateString() }}" value="{{ old('fecha_fin', $reporte['rango']['fecha_fin']) }}" />
                         <x-input-error :messages="$errors->get('fecha_fin')" class="mt-2" />
                     </div>
 
@@ -43,14 +44,14 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                         <a href="{{ route('admin.reportes.pdf').$queryString }}">
                             <x-secondary-button type="button">Descargar PDF</x-secondary-button>
                         </a>
-                        <a href="{{ route('admin.reportes.csv').$queryString }}">
+                        <a href="{{ route('admin.reportes.excel').$queryString }}">
                             <x-secondary-button type="button">Descargar Excel</x-secondary-button>
                         </a>
                     </div>
                 </form>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            <div class="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
                 <div class="bg-white p-4 shadow-sm sm:rounded-lg">
                     <p class="text-xs uppercase tracking-wide text-gray-500">Tasa de ocupación</p>
                     <p class="mt-1 text-2xl font-semibold text-brand-primary">{{ $reporte['ocupacion']['tasa_ocupacion'] }}%</p>
@@ -64,8 +65,8 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                     <p class="mt-1 text-2xl font-semibold text-brand-primary">{{ $reporte['eficiencia']['eficiencia'] }}</p>
                 </div>
                 <div class="bg-white p-4 shadow-sm sm:rounded-lg">
-                    <p class="text-xs uppercase tracking-wide text-gray-500">Comparativa Gerín</p>
-                    <p class="mt-1 text-2xl font-semibold text-brand-primary">{{ $reporte['eficiencia']['comparativa_gerin'] }}×</p>
+                    <p class="text-xs uppercase tracking-wide text-gray-500">Citas completadas por hora</p>
+                    <p class="mt-1 text-2xl font-semibold text-brand-primary">{{ $reporte['eficiencia']['citas_por_hora'] }}</p>
                 </div>
                 <div class="bg-white p-4 shadow-sm sm:rounded-lg">
                     <p class="text-xs uppercase tracking-wide text-gray-500">Satisfacción promedio</p>
@@ -76,7 +77,7 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div class="bg-white p-6 shadow-sm sm:rounded-lg">
                     <h3 class="mb-3 text-sm font-medium text-gray-900">Pacientes</h3>
-                    <p class="text-sm text-gray-600">Total registrados: <span class="font-semibold">{{ $reporte['pacientes']['total'] }}</span></p>
+                    <p class="text-sm text-gray-600">Total histórico registrado: <span class="font-semibold">{{ $reporte['pacientes']['total'] }}</span></p>
                     <p class="text-sm text-gray-600">Nuevos en el período: <span class="font-semibold">{{ $reporte['pacientes']['nuevos'] }}</span></p>
                 </div>
 
@@ -113,13 +114,13 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                         </tbody>
                     </table>
                     <p class="mt-3 text-xs text-gray-500">
-                        {{ $reporte['catalogo']['servicios_activos'] }} servicios activos · {{ $reporte['catalogo']['tratamientos_activos'] }} tratamientos activos
+                        Catálogo actual: {{ $reporte['catalogo']['servicios_activos'] }} servicios activos · {{ $reporte['catalogo']['tratamientos_activos'] }} tratamientos activos
                     </p>
                 </div>
 
                 <div class="bg-white p-6 shadow-sm sm:rounded-lg">
                     <h3 class="mb-3 text-sm font-medium text-gray-900">
-                        Historial clínico ({{ $reporte['historial']['total'] }} consultas)
+                        Historial clínico ({{ $reporte['historial']['total'] }} {{ $reporte['historial']['total'] === 1 ? 'consulta' : 'consultas' }})
                     </h3>
                     <table class="w-full text-sm">
                         <tbody>

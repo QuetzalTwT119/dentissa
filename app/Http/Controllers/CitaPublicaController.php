@@ -2,19 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\EstadoCita;
-use App\Models\Cita;
-use App\Models\Paciente;
 use App\Models\Servicio;
-use App\Services\AuditoriaService;
-use App\Services\CitaReglasService;
-use App\Services\DisponibilidadService;
+use App\Services\CrearCitaService;
 use App\Services\NotificacionService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 
 class CitaPublicaController extends Controller
@@ -31,7 +24,7 @@ class CitaPublicaController extends Controller
         ]);
     }
 
-    public function store(Request $request, DisponibilidadService $disponibilidad, NotificacionService $notificaciones, CitaReglasService $reglas, AuditoriaService $auditoria): RedirectResponse
+    public function store(Request $request, CrearCitaService $crearCita, NotificacionService $notificaciones): RedirectResponse
     {
         $validated = $request->validate([
             'id_servicio' => ['required', 'exists:servicios,id'],
@@ -40,55 +33,28 @@ class CitaPublicaController extends Controller
             'hora' => ['required', 'date_format:H:i'],
             'nombre' => ['required', 'string', 'max:100'],
             'apellido' => ['required', 'string', 'max:100'],
-            'telefono' => ['required', 'string', 'max:20'],
+            'telefono' => [
+                'required',
+                'string',
+                'size:10',
+                'regex:/^[0-9]{10}$/',
+            ],
             'email' => ['required', 'email', 'max:100'],
             'motivo' => ['nullable', 'string'],
+        ], [
+            'telefono.regex' => 'Ingresa exactamente 10 dígitos numéricos de México.',
         ]);
 
-        [, $tratamiento] = $reglas->validarCatalogo($validated['id_servicio'], $validated['id_tratamiento']);
-        $fechaHora = Carbon::parse("{$validated['fecha']} {$validated['hora']}");
-        $reglas->validarFechaFutura($fechaHora);
-
-        // La notificación (WhatsApp/correo) se dispara DESPUÉS de que la
-        // transacción confirma — nunca dentro de ella, para no mantener el
-        // lock de disponibilidad abierto mientras se espera a una API externa.
-        $cita = DB::transaction(function () use ($disponibilidad, $fechaHora, $tratamiento, $validated, $auditoria, $request) {
-            if (! $disponibilidad->estaDisponible($fechaHora, $tratamiento)) {
-                return null;
-            }
-
-            $paciente = Paciente::firstOrCreate(
-                ['email' => $validated['email']],
-                [
-                    'nombre' => $validated['nombre'],
-                    'apellido' => $validated['apellido'],
-                    'telefono' => $validated['telefono'],
-                ],
-            );
-
-            $cita = Cita::create([
-                'id_paciente' => $paciente->id,
-                'id_servicio' => $validated['id_servicio'],
-                'id_tratamiento' => $tratamiento->id,
-                'fecha_hora' => $fechaHora,
-                'duracion_estimada' => $tratamiento->duracion_estimada,
-                'motivo' => $validated['motivo'] ?? null,
-            ]);
-
-            $auditoria->registrar('cita.creada', $cita, datosNuevos: [
-                'estado' => $cita->estado?->value ?? EstadoCita::Agendada->value,
-                'fecha_hora' => $cita->fecha_hora->toIso8601String(),
-                'canal' => 'publico',
-            ], request: $request);
-
-            return $cita;
-        });
+        $resultado = $crearCita->crear($validated, 'publico', request: $request);
+        $cita = $resultado['cita'];
 
         if (! $cita) {
             return back()->withErrors(['hora' => 'Ese horario ya no está disponible. Por favor elige otro.']);
         }
 
-        $notificaciones->citaAgendada($cita->load(['paciente', 'tratamiento']));
+        if ($resultado['creada']) {
+            $notificaciones->citaAgendada($cita->load(['paciente', 'tratamiento']));
+        }
 
         return Redirect::route('citas.publica.create')
             ->with('success', 'Tu cita quedó agendada. Te esperamos.');

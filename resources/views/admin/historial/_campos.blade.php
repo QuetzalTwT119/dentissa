@@ -15,17 +15,17 @@ $valor = function (string $campo, $default = '') use ($historial) {
 };
 @endphp
 
-<div class="grid grid-cols-2 gap-4">
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
-        <x-input-label for="fecha_consulta" value="Fecha de consulta" />
+        <x-input-label for="fecha_consulta" value="Fecha de consulta (obligatoria)" />
         <x-text-input id="fecha_consulta" name="fecha_consulta" type="date" class="mt-1 block w-full" required
                       :value="$valor('fecha_consulta', $historial ? \Illuminate\Support\Carbon::parse($historial->fecha_consulta)->toDateString() : now()->toDateString())" />
         <x-input-error :messages="$errors->get('fecha_consulta')" class="mt-2" />
     </div>
 
     <div>
-        <x-input-label for="tipo_consulta" value="Tipo de consulta" />
-        <select id="tipo_consulta" name="tipo_consulta"
+        <x-input-label for="tipo_consulta" value="Tipo de consulta (obligatorio)" />
+        <select id="tipo_consulta" name="tipo_consulta" required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
             @foreach ($tiposConsulta as $valorTipo => $etiqueta)
                 <option value="{{ $valorTipo }}" @selected($valor('tipo_consulta', 'primera_vez') === $valorTipo)>{{ $etiqueta }}</option>
@@ -52,43 +52,47 @@ $valor = function (string $campo, $default = '') use ($historial) {
 @endif
 
 <div>
-    <x-input-label for="motivo_consulta" value="Motivo de la consulta" />
+    <x-input-label for="motivo_consulta" value="Motivo de la consulta (obligatorio)" />
     <textarea id="motivo_consulta" name="motivo_consulta" rows="2" required
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ $valor('motivo_consulta') }}</textarea>
     <x-input-error :messages="$errors->get('motivo_consulta')" class="mt-2" />
 </div>
 
 <div>
-    <x-input-label for="diagnostico" value="Diagnóstico" />
+    <x-input-label for="diagnostico" value="Diagnóstico (opcional)" />
     <textarea id="diagnostico" name="diagnostico" rows="2"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ $valor('diagnostico') }}</textarea>
     <x-input-error :messages="$errors->get('diagnostico')" class="mt-2" />
 </div>
 
 <div>
-    <x-input-label for="tratamiento_realizado" value="Tratamiento realizado" />
+    <x-input-label for="tratamiento_realizado" value="Tratamiento realizado (opcional)" />
     <textarea id="tratamiento_realizado" name="tratamiento_realizado" rows="2"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ $valor('tratamiento_realizado') }}</textarea>
     <x-input-error :messages="$errors->get('tratamiento_realizado')" class="mt-2" />
 </div>
 
 <div>
-    <x-input-label for="medicamentos_recetados" value="Medicamentos recetados" />
+    <x-input-label for="medicamentos_recetados" value="Medicamentos recetados (opcional)" />
     <textarea id="medicamentos_recetados" name="medicamentos_recetados" rows="2"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ $valor('medicamentos_recetados') }}</textarea>
     <x-input-error :messages="$errors->get('medicamentos_recetados')" class="mt-2" />
 </div>
 
 <div>
-    <x-input-label for="observaciones" value="Observaciones" />
+    <x-input-label for="observaciones" value="Observaciones (opcional)" />
     <textarea id="observaciones" name="observaciones" rows="2"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ $valor('observaciones') }}</textarea>
     <x-input-error :messages="$errors->get('observaciones')" class="mt-2" />
 </div>
 
 <div>
-    <x-input-label for="notas_doctor" value="Notas privadas del doctor" />
+    <x-input-label for="notas_doctor" value="Notas privadas del doctor (opcional)" />
+    <p id="notas_doctor_ayuda" class="mt-1 text-sm text-gray-500">
+        Solo el administrador puede consultar estas notas. No se incluyen en el PDF del historial.
+    </p>
     <textarea id="notas_doctor" name="notas_doctor" rows="2"
+              aria-describedby="notas_doctor_ayuda"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ $valor('notas_doctor') }}</textarea>
     <x-input-error :messages="$errors->get('notas_doctor')" class="mt-2" />
 </div>

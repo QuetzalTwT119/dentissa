@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -28,9 +29,16 @@ class WhatsappService
     {
         if (! $this->configurado()) {
             Log::info('WhatsApp sin configurar — mensaje no enviado (revisa DENTISSA_WHATSAPP_PHONE_ID / _TOKEN)', [
-                'telefono' => $telefono,
                 'plantilla' => $plantilla,
-                'parametros' => $parametros,
+            ]);
+
+            return false;
+        }
+
+        $destinatario = $this->normalizarTelefono($telefono);
+        if (! $destinatario) {
+            Log::warning('WhatsApp: teléfono inválido; envío omitido', [
+                'plantilla' => $plantilla,
             ]);
 
             return false;
@@ -45,7 +53,7 @@ class WhatsappService
                 ->timeout(10)
                 ->post("/{$phoneNumberId}/messages", [
                     'messaging_product' => 'whatsapp',
-                    'to' => $this->normalizarTelefono($telefono),
+                    'to' => $destinatario,
                     'type' => 'template',
                     'template' => [
                         'name' => $plantilla,
@@ -59,28 +67,49 @@ class WhatsappService
                         ]],
                     ],
                 ]);
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        } catch (ConnectionException $e) {
             // Nunca debe tumbar el flujo de agendar/confirmar/cancelar una cita
             // por un problema de red hacia Meta — se degrada a correo.
-            Log::warning('WhatsApp: fallo de conexión', ['telefono' => $telefono, 'plantilla' => $plantilla, 'error' => $e->getMessage()]);
+            Log::warning('WhatsApp: fallo de conexión', ['plantilla' => $plantilla, 'error' => $e->getMessage()]);
 
             return false;
         }
 
         if ($response->failed()) {
             Log::warning('WhatsApp rechazó el envío', [
-                'telefono' => $telefono,
                 'plantilla' => $plantilla,
                 'status' => $response->status(),
-                'respuesta' => $response->json(),
+                'codigo_error' => $response->json('error.code'),
             ]);
         }
 
         return $response->successful();
     }
 
-    private function normalizarTelefono(string $telefono): string
+    private function normalizarTelefono(string $telefono): ?string
     {
-        return preg_replace('/[^0-9]/', '', $telefono);
+        $telefono = trim($telefono);
+        if ($telefono === '' || ! preg_match('/^\+?[0-9\s().-]+$/', $telefono)) {
+            return null;
+        }
+
+        $digitos = preg_replace('/[^0-9]/', '', $telefono);
+
+        // Los teléfonos mexicanos móviles usan 521 + los diez dígitos del
+        // número en esta integración. También aceptamos el formato nacional
+        // y el internacional +52 para convertirlos aquí de manera uniforme.
+        if (strlen($digitos) === 10) {
+            return '521'.$digitos;
+        }
+
+        if (preg_match('/^52[0-9]{10}$/', $digitos)) {
+            return '521'.substr($digitos, 2);
+        }
+
+        if (preg_match('/^521[0-9]{10}$/', $digitos)) {
+            return $digitos;
+        }
+
+        return null;
     }
 }

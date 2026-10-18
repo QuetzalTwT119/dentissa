@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\TipoImagen;
 use App\Http\Controllers\Controller;
 use App\Models\Imagen;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class GaleriaController extends Controller
         return view('admin.galeria.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
         $validated = $request->validate([
             'titulo' => ['nullable', 'string', 'max:100'],
@@ -36,14 +37,20 @@ class GaleriaController extends Controller
             'activa' => ['boolean'],
         ]);
 
-        Imagen::create([
-            'titulo' => $validated['titulo'] ?? null,
-            'descripcion' => $validated['descripcion'] ?? null,
-            'url' => $request->file('imagen')->store('galeria', 'public'),
-            'tipo' => TipoImagen::Galeria,
-            'orden' => $validated['orden'] ?? 0,
-            'activa' => $validated['activa'] ?? true,
-        ]);
+        $auditoria->registrarCambio(
+            $request,
+            'galeria.imagen_agregada',
+            new Imagen,
+            ['titulo', 'tipo', 'orden', 'activa'],
+            fn () => Imagen::create([
+                'titulo' => $validated['titulo'] ?? null,
+                'descripcion' => $validated['descripcion'] ?? null,
+                'url' => $request->file('imagen')->store('galeria', 'public'),
+                'tipo' => TipoImagen::Galeria,
+                'orden' => $validated['orden'] ?? 0,
+                'activa' => $validated['activa'] ?? true,
+            ]),
+        );
 
         return Redirect::route('admin.galeria.index');
     }
@@ -55,7 +62,7 @@ class GaleriaController extends Controller
         ]);
     }
 
-    public function update(Request $request, Imagen $imagen): RedirectResponse
+    public function update(Request $request, Imagen $imagen, AuditoriaService $auditoria): RedirectResponse
     {
         $validated = $request->validate([
             'titulo' => ['nullable', 'string', 'max:100'],
@@ -76,14 +83,27 @@ class GaleriaController extends Controller
             $data['url'] = $request->file('imagen')->store('galeria', 'public');
         }
 
-        $imagen->update($data);
+        $auditoria->registrarCambio(
+            $request,
+            'galeria.imagen_actualizada',
+            $imagen,
+            ['titulo', 'tipo', 'orden', 'activa'],
+            fn () => $imagen->update($data),
+        );
 
         return Redirect::route('admin.galeria.index');
     }
 
-    public function destroy(Imagen $imagen): RedirectResponse
+    public function destroy(Request $request, Imagen $imagen, AuditoriaService $auditoria): RedirectResponse
     {
-        $imagen->delete();
+        $auditoria->registrarCambio(
+            $request,
+            'galeria.imagen_eliminada',
+            $imagen,
+            ['titulo', 'tipo'],
+            fn () => $imagen->delete(),
+            eliminado: true,
+        );
 
         return Redirect::route('admin.galeria.index');
     }

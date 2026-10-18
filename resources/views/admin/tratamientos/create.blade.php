@@ -36,7 +36,7 @@
                         <x-input-error :messages="$errors->get('categoria')" class="mt-2" />
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
                             <x-input-label for="duracion_estimada" value="Duración (minutos)" />
                             <x-text-input id="duracion_estimada" name="duracion_estimada" type="number" class="mt-1 block w-full" :value="old('duracion_estimada')" />

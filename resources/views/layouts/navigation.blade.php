@@ -1,193 +1,153 @@
 @php
-$esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
+$usuario = auth()->user();
+$esAdmin = $usuario->rol === \App\Enums\RolUsuario::Admin;
+$notificacionesNoLeidas = $usuario->notificacionesSistema()->whereNull('leida_en')->count();
+$notificacionesRecientes = $usuario->notificacionesSistema()->whereNull('leida_en')->latest('id')->limit(5)->get();
+$clasesEnlace = 'inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-slate-600 transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300';
+$clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:ring-offset-2';
 @endphp
 
-<nav x-data="{ open: false }" class="border-b-2 border-brand-100 bg-white">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 justify-between">
-            <div class="flex">
-                <div class="flex shrink-0 items-center">
-                    <a href="/">
-                        <x-application-logo class="block h-10 w-10 fill-current text-brand-primary" />
-                    </a>
-                </div>
+<nav x-data="{ open: false, notificationsOpen: false }" class="relative z-40 border-b border-brand-100 bg-white">
+    <div class="mx-auto flex min-h-[5.5rem] max-w-screen-2xl items-center justify-between gap-4 px-4 sm:px-6 2xl:px-10">
+        <a href="{{ route('dashboard') }}" class="flex min-w-0 shrink-0 items-center gap-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-300" aria-label="Dentissa, ir al inicio">
+            <img src="/images/brand/logo-rosa-transparente.png" alt="" class="h-12 w-12 rounded-full border border-brand-100 bg-white object-cover p-0.5" width="48" height="48">
+            <span class="flex min-w-0 flex-col leading-tight">
+                <span class="truncate text-lg font-bold tracking-tight text-brand-700">Dentissa</span>
+                <span class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-slate-400">{{ $esAdmin ? 'Administración' : 'Asistencia' }}</span>
+            </span>
+        </a>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('citas.index')" :active="request()->routeIs('citas.*')">
-                        Citas
-                    </x-nav-link>
-
-                    <x-nav-link :href="route('asistente-agenda.create')" :active="request()->routeIs('asistente-agenda.*')">
-                        Asistente
-                    </x-nav-link>
-
-                    @unless ($esAdmin)
-                        <x-nav-link :href="route('ofertas.index')" :active="request()->routeIs('ofertas.index')">
-                            Ofertas
-                        </x-nav-link>
-                        <x-nav-link :href="route('galeria.index')" :active="request()->routeIs('galeria.index')">
-                            Galería
-                        </x-nav-link>
-                    @endunless
-
-                    @if ($esAdmin)
-                        <x-nav-link :href="route('admin.pacientes.index')" :active="request()->routeIs('admin.pacientes.*')">
-                            Pacientes
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.usuarios.index')" :active="request()->routeIs('admin.usuarios.*')">
-                            Usuarios
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.reportes.index')" :active="request()->routeIs('admin.reportes.*')">
-                            Reportes
-                        </x-nav-link>
-
-                        <x-nav-dropdown :active="request()->routeIs('admin.servicios.*') || request()->routeIs('admin.tratamientos.*')">
-                            <x-slot name="label">Catálogo</x-slot>
-
-                            <x-dropdown-link :href="route('admin.servicios.index')">Servicios</x-dropdown-link>
-                            <x-dropdown-link :href="route('admin.tratamientos.index')">Tratamientos</x-dropdown-link>
-                        </x-nav-dropdown>
-
-                        <x-nav-dropdown :active="request()->routeIs('admin.ofertas.*') || request()->routeIs('admin.testimonios.*') || request()->routeIs('admin.galeria.*') || request()->routeIs('admin.casos.*') || request()->routeIs('admin.preguntas-frecuentes.*')">
-                            <x-slot name="label">Contenido</x-slot>
-
-                            <x-dropdown-link :href="route('admin.ofertas.index')">Ofertas</x-dropdown-link>
-                            <x-dropdown-link :href="route('admin.testimonios.index')">Testimonios</x-dropdown-link>
-                            <x-dropdown-link :href="route('admin.galeria.index')">Galería</x-dropdown-link>
-                            <x-dropdown-link :href="route('admin.casos.index')">Casos</x-dropdown-link>
-                            <x-dropdown-link :href="route('admin.preguntas-frecuentes.index')">Preguntas frecuentes</x-dropdown-link>
-                        </x-nav-dropdown>
-
-                        <x-nav-dropdown :active="request()->routeIs('admin.horarios.*') || request()->routeIs('admin.mensajes.*')">
-                            <x-slot name="label">Configuración</x-slot>
-
-                            <x-dropdown-link :href="route('admin.horarios.edit')">Horarios</x-dropdown-link>
-                            <x-dropdown-link :href="route('admin.mensajes.index')">Mensajes</x-dropdown-link>
-                        </x-nav-dropdown>
-                    @endif
-                </div>
-            </div>
-
-            <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                <div class="relative ms-3">
-                    <x-dropdown align="right" width="48">
-                        <x-slot name="trigger">
-                            <button type="button" class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
-                                {{ auth()->user()->nombre }} {{ auth()->user()->apellido }}
-
-                                <svg class="-me-0.5 ms-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <x-dropdown-link :href="route('profile.edit')">
-                                Mi perfil
-                            </x-dropdown-link>
-
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-
-                                <x-dropdown-link :href="route('logout')"
-                                        onclick="event.preventDefault(); this.closest('form').submit();">
-                                    Cerrar sesión
-                                </x-dropdown-link>
-                            </form>
-                        </x-slot>
-                    </x-dropdown>
-                </div>
-            </div>
-
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="space-y-1 pb-3 pt-2">
-            <x-responsive-nav-link :href="route('citas.index')" :active="request()->routeIs('citas.*')">
-                Citas
-            </x-responsive-nav-link>
-
-            <x-responsive-nav-link :href="route('asistente-agenda.create')" :active="request()->routeIs('asistente-agenda.*')">
-                Asistente
-            </x-responsive-nav-link>
+        <div class="hidden min-w-0 flex-1 items-center justify-center gap-1 2xl:flex">
+            <a href="{{ route('dashboard') }}" @class([$clasesEnlaceActivo => request()->routeIs('dashboard'), $clasesEnlace => ! request()->routeIs('dashboard')]) @if(request()->routeIs('dashboard')) aria-current="page" @endif>Inicio</a>
+            <a href="{{ route('citas.index') }}" @class([$clasesEnlaceActivo => request()->routeIs('citas.*'), $clasesEnlace => ! request()->routeIs('citas.*')]) @if(request()->routeIs('citas.*')) aria-current="page" @endif>Agenda</a>
+            <a href="{{ route('asistente-agenda.create') }}" @class([$clasesEnlaceActivo => request()->routeIs('asistente-agenda.*'), $clasesEnlace => ! request()->routeIs('asistente-agenda.*')]) @if(request()->routeIs('asistente-agenda.*')) aria-current="page" @endif>Asistente</a>
 
             @unless ($esAdmin)
-                <x-responsive-nav-link :href="route('ofertas.index')" :active="request()->routeIs('ofertas.index')">
-                    Ofertas
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('galeria.index')" :active="request()->routeIs('galeria.index')">
-                    Galería
-                </x-responsive-nav-link>
+                <span class="mx-2 h-8 w-px bg-brand-100" aria-hidden="true"></span>
+                <a href="{{ route('ofertas.index') }}" @class([$clasesEnlaceActivo => request()->routeIs('ofertas.*'), $clasesEnlace => ! request()->routeIs('ofertas.*')]) @if(request()->routeIs('ofertas.*')) aria-current="page" @endif>Ofertas</a>
+                <a href="{{ route('galeria.index') }}" @class([$clasesEnlaceActivo => request()->routeIs('galeria.*'), $clasesEnlace => ! request()->routeIs('galeria.*')]) @if(request()->routeIs('galeria.*')) aria-current="page" @endif>Galería</a>
             @endunless
 
             @if ($esAdmin)
-                <x-responsive-nav-link :href="route('admin.servicios.index')" :active="request()->routeIs('admin.servicios.*')">
-                    Servicios
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.tratamientos.index')" :active="request()->routeIs('admin.tratamientos.*')">
-                    Tratamientos
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.pacientes.index')" :active="request()->routeIs('admin.pacientes.*')">
-                    Pacientes
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.usuarios.index')" :active="request()->routeIs('admin.usuarios.*')">
-                    Usuarios
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.reportes.index')" :active="request()->routeIs('admin.reportes.*')">
-                    Reportes
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.testimonios.index')" :active="request()->routeIs('admin.testimonios.*')">
-                    Testimonios
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.ofertas.index')" :active="request()->routeIs('admin.ofertas.*')">
-                    Ofertas
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.galeria.index')" :active="request()->routeIs('admin.galeria.*')">
-                    Galería
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.horarios.edit')" :active="request()->routeIs('admin.horarios.*')">
-                    Horarios
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.mensajes.index')" :active="request()->routeIs('admin.mensajes.*')">
-                    Mensajes
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.casos.index')" :active="request()->routeIs('admin.casos.*')">
-                    Casos
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.preguntas-frecuentes.index')" :active="request()->routeIs('admin.preguntas-frecuentes.*')">
-                    Preguntas frecuentes
-                </x-responsive-nav-link>
+                <span class="mx-2 h-8 w-px bg-brand-100" aria-hidden="true"></span>
+                <x-nav-dropdown :active="request()->routeIs('admin.pacientes.*') || request()->routeIs('admin.usuarios.*') || request()->routeIs('admin.reportes.*') || request()->routeIs('admin.atencion-oportuna.*') || request()->routeIs('admin.mensajes.*') || request()->routeIs('admin.auditoria.*')">
+                    <x-slot name="label">Gestión</x-slot>
+                    <x-dropdown-link :href="route('admin.pacientes.index')">Pacientes</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.usuarios.index')">Usuarios</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.reportes.index')">Reportes</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.atencion-oportuna.index')">Urgencias y lista de espera</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.mensajes.index')">Mensajes</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.auditoria.index')">Auditoría</x-dropdown-link>
+                </x-nav-dropdown>
+
+                <x-nav-dropdown :active="request()->routeIs('admin.servicios.*') || request()->routeIs('admin.tratamientos.*')">
+                    <x-slot name="label">Catálogo</x-slot>
+                    <x-dropdown-link :href="route('admin.servicios.index')">Servicios</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.tratamientos.index')">Tratamientos</x-dropdown-link>
+                </x-nav-dropdown>
+
+                <x-nav-dropdown :active="request()->routeIs('admin.ofertas.*') || request()->routeIs('admin.testimonios.*') || request()->routeIs('admin.galeria.*') || request()->routeIs('admin.casos.*') || request()->routeIs('admin.preguntas-frecuentes.*')">
+                    <x-slot name="label">Contenido</x-slot>
+                    <x-dropdown-link :href="route('admin.ofertas.index')">Ofertas</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.testimonios.index')">Testimonios</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.galeria.index')">Galería</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.casos.index')">Casos</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.preguntas-frecuentes.index')">Preguntas frecuentes</x-dropdown-link>
+                </x-nav-dropdown>
+
+                <x-nav-dropdown :active="request()->routeIs('admin.horarios.*')">
+                    <x-slot name="label">Configuración</x-slot>
+                    <x-dropdown-link :href="route('admin.horarios.edit')">Horarios</x-dropdown-link>
+                </x-nav-dropdown>
             @endif
         </div>
 
-        <div class="border-t border-gray-200 pb-1 pt-4">
-            <div class="px-4">
-                <div class="text-base font-medium text-gray-800">{{ auth()->user()->nombre }} {{ auth()->user()->apellido }}</div>
-                <div class="text-sm font-medium text-gray-500">{{ auth()->user()->email }}</div>
+        <div class="hidden shrink-0 items-center gap-2 2xl:flex">
+            <div class="relative">
+                <button type="button" data-notification-preview-trigger @click.stop="notificationsOpen = !notificationsOpen" :aria-expanded="notificationsOpen.toString()" aria-controls="notification-preview-panel" class="relative inline-flex h-11 w-11 items-center justify-center rounded-full text-slate-500 transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300" aria-label="Ver notificaciones recientes" title="Ver notificaciones recientes">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9a6 6 0 1 0-12 0v.75a8.967 8.967 0 0 1-2.312 6.022 23.848 23.848 0 0 0 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                    </svg>
+                    <span data-notification-count-badge class="absolute right-1 top-1 inline-flex min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.65rem] font-bold leading-4 text-white {{ $notificacionesNoLeidas > 0 ? '' : 'hidden' }}" @if ($notificacionesNoLeidas === 0) hidden @endif>{{ $notificacionesNoLeidas > 99 ? '99+' : $notificacionesNoLeidas }}</span>
+                </button>
+
             </div>
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    Mi perfil
-                </x-responsive-nav-link>
+            <div class="relative" x-data="{ profileOpen: false }" @click.outside="profileOpen = false" @keydown.escape.window="profileOpen = false">
+                <button type="button" @click="profileOpen = !profileOpen" :aria-expanded="profileOpen.toString()" class="inline-flex min-h-11 max-w-56 items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-4 text-sm font-semibold text-slate-700 transition hover:border-brand-200 hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-300">
+                    <span class="truncate">{{ $usuario->nombre }} {{ $usuario->apellido }}</span>
+                    <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
+                <div x-cloak x-show="profileOpen" x-transition.origin.top.right class="absolute right-0 top-14 z-50 w-52 overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-xl" @click="profileOpen = false">
+                    <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm text-slate-700 transition hover:bg-brand-50">Mi perfil</a>
+                    <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="block w-full px-4 py-2.5 text-left text-sm text-slate-700 transition hover:bg-brand-50">Cerrar sesión</button></form>
+                </div>
+            </div>
+        </div>
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
+        <div class="flex shrink-0 items-center gap-1 2xl:hidden">
+            <button type="button" data-notification-preview-trigger @click.stop="notificationsOpen = !notificationsOpen" :aria-expanded="notificationsOpen.toString()" aria-label="Ver notificaciones recientes" class="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-300">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9a6 6 0 1 0-12 0v.75a8.967 8.967 0 0 1-2.312 6.022 23.848 23.848 0 0 0 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+                <span data-notification-count-badge class="absolute right-1 top-1 inline-flex min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.65rem] font-bold leading-4 text-white {{ $notificacionesNoLeidas > 0 ? '' : 'hidden' }}" @if ($notificacionesNoLeidas === 0) hidden @endif>{{ $notificacionesNoLeidas > 99 ? '99+' : $notificacionesNoLeidas }}</span>
+            </button>
+            <button type="button" @click="open = !open" :aria-expanded="open.toString()" :aria-label="open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'" aria-controls="mobile-navigation-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-300">
+                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true"><path :class="{'hidden': open, 'inline-flex': !open}" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /><path :class="{'hidden': !open, 'inline-flex': open}" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+    </div>
 
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault(); this.closest('form').submit();">
-                        Cerrar sesión
-                    </x-responsive-nav-link>
-                </form>
+    <div id="notification-preview-panel" data-notification-preview-panel x-cloak x-show="notificationsOpen" @click.outside="notificationsOpen = false" @keydown.escape.window="notificationsOpen = false" x-transition.origin.top.right class="fixed left-4 right-4 top-20 z-50 2xl:absolute 2xl:left-auto 2xl:right-40 2xl:top-20 2xl:w-[26rem]" role="dialog" aria-label="Notificaciones recientes">
+        <section class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ring-1 ring-black/5">
+            <header class="flex items-center justify-between border-b border-gray-100 px-4 py-3.5">
+                <div><h2 class="font-semibold text-gray-900">Notificaciones recientes</h2><p class="mt-0.5 text-xs text-gray-500"><span data-notification-count-summary>{{ $notificacionesNoLeidas }}</span> pendientes</p></div>
+                <button type="button" @click="notificationsOpen = false" class="rounded-md p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-primary" aria-label="Cerrar notificaciones"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 0 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 0 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /></svg></button>
+            </header>
+            <div data-notification-preview-list class="max-h-[min(60vh,26rem)] divide-y divide-gray-100 overflow-y-auto">
+                @forelse ($notificacionesRecientes as $notificacion)
+                    <a data-notification-preview="{{ $notificacion->id }}" href="{{ $notificacion->url ?: route('citas.index') }}" @click="notificationsOpen = false" class="flex gap-3 px-4 py-3.5 transition hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"><span data-notification-preview-dot class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full {{ $notificacion->leida_en ? 'bg-gray-300' : 'bg-brand-600' }}" aria-hidden="true"></span><span class="min-w-0 flex-1"><span class="flex items-start justify-between gap-3"><span data-notification-preview-title class="notification-preview-title text-sm font-semibold text-gray-900">{{ $notificacion->titulo }}</span><time class="shrink-0 text-xs text-gray-400" datetime="{{ $notificacion->created_at->toIso8601String() }}">{{ $notificacion->created_at->diffForHumans() }}</time></span><span data-notification-preview-message class="notification-preview-message mt-1 text-sm leading-5 text-gray-600">{{ $notificacion->mensaje }}</span></span></a>
+                @empty
+                    <p data-notification-preview-empty class="px-4 py-8 text-center text-sm text-gray-500">No hay notificaciones recientes.</p>
+                @endforelse
+            </div>
+            <footer class="border-t border-gray-100 bg-gray-50 px-4 py-3 text-center"><a href="{{ route('notificaciones.index') }}" class="text-sm font-semibold text-brand-700 hover:underline" @click="notificationsOpen = false">Ver todas las notificaciones</a></footer>
+        </section>
+    </div>
+
+    <div id="mobile-navigation-menu" x-cloak x-show="open" x-transition class="border-t border-brand-100 bg-white px-4 pb-4 pt-2 2xl:hidden">
+        <div class="grid gap-1 sm:grid-cols-2">
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Inicio</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('citas.index')" :active="request()->routeIs('citas.*')">Agenda</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('asistente-agenda.create')" :active="request()->routeIs('asistente-agenda.*')">Asistente</x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('notificaciones.index')" :active="request()->routeIs('notificaciones.*')">Notificaciones <span data-notification-count-badge class="ms-2 rounded-full bg-brand-600 px-2 py-0.5 text-xs text-white {{ $notificacionesNoLeidas > 0 ? '' : 'hidden' }}" @if ($notificacionesNoLeidas === 0) hidden @endif>{{ $notificacionesNoLeidas > 99 ? '99+' : $notificacionesNoLeidas }}</span></x-responsive-nav-link>
+            @unless ($esAdmin)
+                <x-responsive-nav-link :href="route('ofertas.index')" :active="request()->routeIs('ofertas.*')">Ofertas</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('galeria.index')" :active="request()->routeIs('galeria.*')">Galería</x-responsive-nav-link>
+            @endunless
+            @if ($esAdmin)
+                <p class="col-span-full px-3 pt-3 text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Gestión</p>
+                <x-responsive-nav-link :href="route('admin.pacientes.index')" :active="request()->routeIs('admin.pacientes.*')">Pacientes</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.usuarios.index')" :active="request()->routeIs('admin.usuarios.*')">Usuarios</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.reportes.index')" :active="request()->routeIs('admin.reportes.*')">Reportes</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.atencion-oportuna.index')" :active="request()->routeIs('admin.atencion-oportuna.*')">Urgencias y lista de espera</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.mensajes.index')" :active="request()->routeIs('admin.mensajes.*')">Mensajes</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.auditoria.index')" :active="request()->routeIs('admin.auditoria.*')">Auditoría</x-responsive-nav-link>
+                <p class="col-span-full px-3 pt-3 text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Catálogo y contenido</p>
+                <x-responsive-nav-link :href="route('admin.servicios.index')" :active="request()->routeIs('admin.servicios.*')">Servicios</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.tratamientos.index')" :active="request()->routeIs('admin.tratamientos.*')">Tratamientos</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.ofertas.index')" :active="request()->routeIs('admin.ofertas.*')">Ofertas</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.testimonios.index')" :active="request()->routeIs('admin.testimonios.*')">Testimonios</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.galeria.index')" :active="request()->routeIs('admin.galeria.*')">Galería</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.casos.index')" :active="request()->routeIs('admin.casos.*')">Casos</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.preguntas-frecuentes.index')" :active="request()->routeIs('admin.preguntas-frecuentes.*')">Preguntas frecuentes</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.horarios.edit')" :active="request()->routeIs('admin.horarios.*')">Horarios</x-responsive-nav-link>
+            @endif
+        </div>
+        <div class="mt-3 border-t border-gray-100 pt-3">
+            <p class="px-3 text-sm font-semibold text-slate-800">{{ $usuario->nombre }} {{ $usuario->apellido }}</p>
+            <p class="px-3 text-xs text-slate-500">{{ $usuario->email }}</p>
+            <div class="mt-2 grid gap-1 sm:grid-cols-2">
+                <x-responsive-nav-link :href="route('profile.edit')">Mi perfil</x-responsive-nav-link>
+                <form method="POST" action="{{ route('logout') }}">@csrf<x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">Cerrar sesión</x-responsive-nav-link></form>
             </div>
         </div>
     </div>

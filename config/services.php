@@ -39,4 +39,16 @@ return [
         'bot_token' => env('DENTISSA_TELEGRAM_BOT_TOKEN'),
     ],
 
+    'demo_presentacion' => [
+        'habilitada' => env('DENTISSA_DEMO_SEED_ENABLED', false),
+        'admin' => [
+            'email' => env('DENTISSA_DEMO_ADMIN_EMAIL'),
+            'password' => env('DENTISSA_DEMO_ADMIN_PASSWORD'),
+        ],
+        'asistente' => [
+            'email' => env('DENTISSA_DEMO_ASISTENTE_EMAIL'),
+            'password' => env('DENTISSA_DEMO_ASISTENTE_PASSWORD'),
+        ],
+    ],
+
 ];

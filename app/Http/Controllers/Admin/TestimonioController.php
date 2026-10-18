@@ -6,6 +6,7 @@ use App\Enums\EstadoTestimonio;
 use App\Http\Controllers\Controller;
 use App\Models\Paciente;
 use App\Models\Testimonio;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,7 +39,7 @@ class TestimonioController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
         $data = $this->validated($request);
 
@@ -46,7 +47,13 @@ class TestimonioController extends Controller
             $data['fecha_publicacion'] = now();
         }
 
-        Testimonio::create($data);
+        $auditoria->registrarCambio(
+            $request,
+            'testimonio.creado',
+            new Testimonio,
+            ['id_paciente', 'calificacion', 'estado', 'fecha_publicacion'],
+            fn () => Testimonio::create($data),
+        );
 
         return Redirect::route('admin.testimonios.index');
     }
@@ -59,7 +66,7 @@ class TestimonioController extends Controller
         ]);
     }
 
-    public function update(Request $request, Testimonio $testimonio): RedirectResponse
+    public function update(Request $request, Testimonio $testimonio, AuditoriaService $auditoria): RedirectResponse
     {
         $data = $this->validated($request);
 
@@ -67,31 +74,56 @@ class TestimonioController extends Controller
             $data['fecha_publicacion'] = now();
         }
 
-        $testimonio->update($data);
+        $auditoria->registrarCambio(
+            $request,
+            'testimonio.actualizado',
+            $testimonio,
+            ['id_paciente', 'calificacion', 'estado', 'fecha_publicacion'],
+            fn () => $testimonio->update($data),
+        );
 
         return Redirect::route('admin.testimonios.index');
     }
 
-    public function aprobar(Testimonio $testimonio): RedirectResponse
+    public function aprobar(Request $request, Testimonio $testimonio, AuditoriaService $auditoria): RedirectResponse
     {
-        $testimonio->update([
-            'estado' => EstadoTestimonio::Aprobado,
-            'fecha_publicacion' => now(),
-        ]);
+        $auditoria->registrarCambio(
+            $request,
+            'testimonio.aprobado',
+            $testimonio,
+            ['estado', 'fecha_publicacion'],
+            fn () => $testimonio->update([
+                'estado' => EstadoTestimonio::Aprobado,
+                'fecha_publicacion' => now(),
+            ]),
+        );
 
         return Redirect::route('admin.testimonios.index');
     }
 
-    public function rechazar(Testimonio $testimonio): RedirectResponse
+    public function rechazar(Request $request, Testimonio $testimonio, AuditoriaService $auditoria): RedirectResponse
     {
-        $testimonio->update(['estado' => EstadoTestimonio::Rechazado]);
+        $auditoria->registrarCambio(
+            $request,
+            'testimonio.rechazado',
+            $testimonio,
+            ['estado'],
+            fn () => $testimonio->update(['estado' => EstadoTestimonio::Rechazado]),
+        );
 
         return Redirect::route('admin.testimonios.index');
     }
 
-    public function destroy(Testimonio $testimonio): RedirectResponse
+    public function destroy(Request $request, Testimonio $testimonio, AuditoriaService $auditoria): RedirectResponse
     {
-        $testimonio->delete();
+        $auditoria->registrarCambio(
+            $request,
+            'testimonio.eliminado',
+            $testimonio,
+            ['id_paciente', 'calificacion', 'estado'],
+            fn () => $testimonio->delete(),
+            eliminado: true,
+        );
 
         return Redirect::route('admin.testimonios.index');
     }

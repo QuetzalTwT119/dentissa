@@ -4,10 +4,10 @@ namespace Tests\Feature;
 
 use App\Enums\EstadoCita;
 use App\Models\Cita;
-use App\Models\LogAuditoria;
 use App\Models\Paciente;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
+use App\Services\DisponibilidadService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -15,6 +15,30 @@ use Tests\TestCase;
 class CitaPublicaTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_los_horarios_se_calculan_con_la_hora_local_de_la_clinica(): void
+    {
+        $this->assertSame('America/Mexico_City', config('app.timezone'));
+
+        Carbon::setTestNow(Carbon::parse('2026-10-17 10:00:00', 'America/Mexico_City'));
+
+        try {
+            $tratamiento = Tratamiento::create([
+                'nombre' => 'Limpieza Dental',
+                'duracion_estimada' => 60,
+                'categoria' => 'Preventiva',
+                'activo' => true,
+            ]);
+
+            $horarios = app(DisponibilidadService::class)
+                ->horariosDisponibles('2026-10-17', $tratamiento);
+
+            $this->assertContains('10:30', $horarios);
+            $this->assertContains('13:00', $horarios);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
 
     public function test_un_paciente_puede_agendar_una_cita_desde_el_formulario_publico(): void
     {
@@ -41,7 +65,7 @@ class CitaPublicaTest extends TestCase
             ->assertSee('Odontología General')
             ->assertSee('Agendar cita');
 
-        $this->post(route('citas.publica.store'), [
+        $respuesta = $this->post(route('citas.publica.store'), [
             'id_servicio' => $servicio->id,
             'id_tratamiento' => $tratamiento->id,
             'fecha' => $fecha->toDateString(),
@@ -51,11 +75,19 @@ class CitaPublicaTest extends TestCase
             'telefono' => '5555555555',
             'email' => 'ana.publica@example.test',
             'motivo' => 'Consulta de prueba',
-        ])
+        ]);
+
+        $respuesta
             ->assertRedirect(route('citas.publica.create'))
             ->assertSessionHas('success');
 
+        $this->get(route('citas.publica.create'))
+            ->assertOk()
+            ->assertSee('¡Listo! Tu cita quedó agendada. Te esperamos.')
+            ->assertSee('Volver al inicio');
+
         $paciente = Paciente::where('email', 'ana.publica@example.test')->firstOrFail();
+        $this->assertSame('5555555555', $paciente->telefono);
         $cita = Cita::where('id_paciente', $paciente->id)->firstOrFail();
 
         $this->assertSame(EstadoCita::Agendada, $cita->estado);
@@ -69,13 +101,11 @@ class CitaPublicaTest extends TestCase
             'canal' => 'cita_agendada',
         ]);
 
-        $auditoria = LogAuditoria::where('tabla', 'citas')
-            ->where('registro_id', $cita->id)
-            ->where('accion', 'cita.creada')
-            ->firstOrFail();
-
-        $this->assertNull($auditoria->id_usuario);
-        $this->assertSame('publico', $auditoria->datos_nuevos['canal']);
+        $this->assertDatabaseMissing('logs_auditoria', [
+            'tabla' => 'citas',
+            'registro_id' => $cita->id,
+            'accion' => 'cita.creada',
+        ]);
     }
 
     public function test_el_formulario_publico_etiqueta_los_datos_requeridos_y_aclara_el_paso_de_resumen(): void
@@ -89,7 +119,8 @@ class CitaPublicaTest extends TestCase
             ->assertSee('for="motivo"', false)
             ->assertSee('name="nombre" autocomplete="given-name" maxlength="100" required', false)
             ->assertSee('name="apellido" autocomplete="family-name" maxlength="100" required', false)
-            ->assertSee('name="telefono" autocomplete="tel" maxlength="20" required', false)
+            ->assertSee('name="telefono" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}"', false)
+            ->assertSee('Ingresa exactamente 10 dígitos numéricos.', false)
             ->assertSee('name="email" autocomplete="email" maxlength="100" required', false)
             ->assertSee('Resumen de la cita')
             ->assertSee('Continuar a mis datos');
@@ -122,6 +153,43 @@ class CitaPublicaTest extends TestCase
             'hora' => '09:00',
         ])
             ->assertSessionHasErrors(['nombre', 'apellido', 'telefono', 'email']);
+
+        $this->assertDatabaseCount('pacientes', 0);
+        $this->assertDatabaseCount('citas', 0);
+    }
+
+    public function test_la_agenda_publica_rechaza_telefonos_con_longitud_o_caracteres_invalidos(): void
+    {
+        $servicio = Servicio::create([
+            'nombre' => 'Odontología General',
+            'orden' => 1,
+            'activo' => true,
+        ]);
+        $tratamiento = Tratamiento::create([
+            'nombre' => 'Limpieza Dental',
+            'duracion_estimada' => 60,
+            'categoria' => 'Preventiva',
+            'activo' => true,
+        ]);
+        $servicio->tratamientos()->attach($tratamiento);
+
+        $fecha = Carbon::tomorrow();
+        while ($fecha->isSunday()) {
+            $fecha->addDay();
+        }
+
+        foreach (['123456789', '12345678901', '521234567890', '+5555555555', 'abc1234567', '7551131833333333333'] as $telefono) {
+            $this->post(route('citas.publica.store'), [
+                'id_servicio' => $servicio->id,
+                'id_tratamiento' => $tratamiento->id,
+                'fecha' => $fecha->toDateString(),
+                'hora' => '09:00',
+                'nombre' => 'Ana',
+                'apellido' => 'Prueba',
+                'telefono' => $telefono,
+                'email' => 'ana.publica@example.test',
+            ])->assertSessionHasErrors('telefono');
+        }
 
         $this->assertDatabaseCount('pacientes', 0);
         $this->assertDatabaseCount('citas', 0);

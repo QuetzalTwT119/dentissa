@@ -6,7 +6,6 @@ use App\Enums\EstadoCita;
 use App\Enums\RolUsuario;
 use App\Models\Cita;
 use App\Models\HorarioAtencion;
-use App\Models\LogAuditoria;
 use App\Models\Paciente;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
@@ -14,11 +13,66 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class CitaReglasTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Estas pruebas validan las transiciones, no integraciones externas.
+        Http::fake();
+        config()->set('dentissa.whatsapp.phone_number_id', null);
+        config()->set('dentissa.whatsapp.access_token', null);
+    }
+
+    public function test_el_filtro_de_citas_permite_fechas_futuras_y_combina_fecha_con_estado(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        [$servicio, $tratamiento] = $this->crearCatalogo();
+        $fecha = Carbon::today()->addDays(14);
+
+        $pacienteAgendado = Paciente::create([
+            'nombre' => 'Cita',
+            'apellido' => 'Futura agendada',
+            'telefono' => '5555551001',
+            'email' => 'futura-agendada@example.test',
+        ]);
+        $pacienteConfirmado = Paciente::create([
+            'nombre' => 'Cita',
+            'apellido' => 'Futura confirmada',
+            'telefono' => '5555551002',
+            'email' => 'futura-confirmada@example.test',
+        ]);
+
+        foreach ([
+            [$pacienteAgendado, EstadoCita::Agendada],
+            [$pacienteConfirmado, EstadoCita::Confirmada],
+        ] as [$paciente, $estado]) {
+            Cita::create([
+                'id_paciente' => $paciente->id,
+                'id_servicio' => $servicio->id,
+                'id_tratamiento' => $tratamiento->id,
+                'fecha_hora' => $fecha->copy()->setTime(10, 0),
+                'duracion_estimada' => 30,
+                'estado' => $estado,
+            ]);
+        }
+
+        $this->actingAs($admin)
+            ->get(route('citas.index', [
+                'fecha' => $fecha->toDateString(),
+                'estado' => EstadoCita::Agendada->value,
+            ]))
+            ->assertOk()
+            ->assertSee('Cita Futura agendada')
+            ->assertDontSee('Cita Futura confirmada')
+            ->assertSee('value="'.$fecha->toDateString().'"', false);
+    }
 
     public function test_no_se_puede_agendar_un_tratamiento_que_no_pertenece_al_servicio(): void
     {
@@ -139,15 +193,41 @@ class CitaReglasTest extends TestCase
 
         $this->actingAs($asistente)
             ->patch(route('citas.start', $cita))
-            ->assertRedirect(route('citas.index'));
+            ->assertRedirect(route('citas.index'))
+            ->assertSessionHas('success', 'Cita iniciada correctamente.');
 
         $this->assertDatabaseHas('citas', ['id' => $cita->id, 'estado' => EstadoCita::EnCurso->value]);
 
         $this->actingAs($asistente)
             ->patch(route('citas.complete', $cita))
-            ->assertRedirect(route('citas.index'));
+            ->assertRedirect(route('citas.index'))
+            ->assertSessionHas('success', 'Cita completada correctamente.');
 
         $this->assertDatabaseHas('citas', ['id' => $cita->id, 'estado' => EstadoCita::Completada->value]);
+    }
+
+    public function test_una_cita_en_curso_muestra_completar_sin_acciones_secundarias(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $paciente = $this->crearPaciente();
+        [$servicio, $tratamiento] = $this->crearCatalogo();
+        $cita = Cita::create([
+            'id_paciente' => $paciente->id,
+            'id_servicio' => $servicio->id,
+            'id_tratamiento' => $tratamiento->id,
+            'fecha_hora' => $this->fechaFutura()->setTime(10, 0),
+            'duracion_estimada' => $tratamiento->duracion_estimada,
+            'estado' => EstadoCita::EnCurso,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('citas.index'))
+            ->assertOk()
+            ->assertSee('Completar')
+            ->assertDontSee('Más acciones')
+            ->assertDontSee('Reagendar')
+            ->assertDontSee('Cancelar')
+            ->assertDontSee('Sin acciones');
     }
 
     public function test_el_personal_puede_crear_una_cita_interna_valida(): void
@@ -166,7 +246,8 @@ class CitaReglasTest extends TestCase
                 'hora' => '10:00',
                 'motivo' => 'Consulta interna de QA',
             ])
-            ->assertRedirect(route('citas.index'));
+            ->assertRedirect(route('citas.index'))
+            ->assertSessionHas('success', 'Cita agendada correctamente.');
 
         $this->assertDatabaseHas('citas', [
             'id_paciente' => $paciente->id,
@@ -240,8 +321,25 @@ class CitaReglasTest extends TestCase
         ]);
 
         $this->actingAs($admin)
+            ->get(route('citas.index'))
+            ->assertOk()
+            ->assertSee('Confirmar')
+            ->assertSee('Más acciones')
+            ->assertSee('Reagendar')
+            ->assertSee('Cancelar')
+            ->assertDontSee(route('citas.no-show', $cita), false);
+
+        $this->actingAs($admin)
             ->patch(route('citas.confirm', $cita))
-            ->assertRedirect(route('citas.index'));
+            ->assertRedirect(route('citas.index'))
+            ->assertSessionHas('success', 'Cita confirmada correctamente.');
+
+        $this->get(route('citas.index'))
+            ->assertOk()
+            ->assertSee('Cita confirmada correctamente.')
+            ->assertSee('Confirmada')
+            ->assertSee('Iniciar')
+            ->assertSee(route('citas.no-show', $cita), false);
 
         $cita->refresh();
 
@@ -274,7 +372,8 @@ class CitaReglasTest extends TestCase
             ->patch(route('citas.cancel', $cita), [
                 'motivo_cancelacion' => 'Cancelación de prueba QA',
             ])
-            ->assertRedirect(route('citas.index'));
+            ->assertRedirect(route('citas.index'))
+            ->assertSessionHas('success', 'Cita cancelada correctamente.');
 
         $cita->refresh();
 
@@ -311,7 +410,8 @@ class CitaReglasTest extends TestCase
                 'fecha' => $nuevaFecha->toDateString(),
                 'hora' => '11:00',
             ])
-            ->assertRedirect(route('citas.index'));
+            ->assertRedirect(route('citas.index'))
+            ->assertSessionHas('success', 'Cita reagendada correctamente.');
 
         $cita->refresh();
 
@@ -346,7 +446,8 @@ class CitaReglasTest extends TestCase
         try {
             $this->actingAs($admin)
                 ->patch(route('citas.no-show', $cita))
-                ->assertRedirect(route('citas.index'));
+                ->assertRedirect(route('citas.index'))
+                ->assertSessionHas('success', 'Cita marcada como no asistida.');
         } finally {
             Carbon::setTestNow();
         }

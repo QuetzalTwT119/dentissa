@@ -9,12 +9,46 @@
         <div class="mx-auto max-w-2xl sm:px-6 lg:px-8">
             <div class="bg-white p-6 shadow-sm sm:rounded-lg">
                 <p class="text-sm text-gray-600">
-                    Identificadores oficiales y relación familiar del paciente. Estos campos son opcionales.
+                    Actualiza los datos de contacto y, si hace falta, los identificadores oficiales o la relación familiar.
                 </p>
 
                 <form method="POST" action="{{ route('admin.pacientes.update', $paciente) }}" class="mt-6 space-y-6">
                     @csrf
                     @method('put')
+
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <x-input-label for="nombre" value="Nombre" />
+                            <x-text-input id="nombre" name="nombre" class="mt-1 block w-full"
+                                          value="{{ old('nombre', $paciente->nombre) }}" required maxlength="100" />
+                            <x-input-error :messages="$errors->get('nombre')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="apellido" value="Apellido" />
+                            <x-text-input id="apellido" name="apellido" class="mt-1 block w-full"
+                                          value="{{ old('apellido', $paciente->apellido) }}" required maxlength="100" />
+                            <x-input-error :messages="$errors->get('apellido')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="telefono" value="Teléfono (opcional)" />
+                            <x-text-input id="telefono" name="telefono" type="tel" class="mt-1 block w-full"
+                                          value="{{ old('telefono', $paciente->telefono) }}" maxlength="20"
+                                          placeholder="10 dígitos; +52 opcional" />
+                            <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="email" value="Correo electrónico (opcional)" />
+                            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full"
+                                          value="{{ old('email', $paciente->email) }}" maxlength="100" />
+                            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                        </div>
+                    </div>
+
+                    <hr class="border-gray-200">
+                    <p class="text-sm font-medium text-gray-700">Identificadores oficiales y relación familiar (opcionales)</p>
 
                     <div>
                         <x-input-label for="curp" value="CURP" />

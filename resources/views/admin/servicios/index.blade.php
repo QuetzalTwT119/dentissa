@@ -24,7 +24,8 @@
                     </a>
                 </div>
 
-                <table class="w-full text-left text-sm">
+                <div class="overflow-x-auto">
+                <table class="w-full min-w-[700px] text-left text-sm">
                     <thead class="border-y border-gray-200 bg-gray-50 text-gray-600">
                         <tr>
                             <th class="px-6 py-3">Nombre</th>
@@ -72,6 +73,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>

@@ -26,7 +26,8 @@ class PacienteController extends Controller
                 $query->where(function ($q) use ($termino) {
                     $q->where('nombre', 'like', "%{$termino}%")
                         ->orWhere('apellido', 'like', "%{$termino}%")
-                        ->orWhere('email', 'like', "%{$termino}%");
+                        ->orWhere('email', 'like', "%{$termino}%")
+                        ->orWhere('telefono', 'like', "%{$termino}%");
                 });
             })
             ->orderBy('nombre')
@@ -61,6 +62,16 @@ class PacienteController extends Controller
         ]);
 
         $validated = $request->validate([
+            'nombre' => ['required', 'string', 'max:100'],
+            'apellido' => ['required', 'string', 'max:100'],
+            'telefono' => [
+                'nullable', 'string', 'max:20',
+                'regex:/^(?:\\+?52[\\s().-]*)?(?:[0-9][\\s().-]*){10}$/',
+            ],
+            'email' => [
+                'nullable', 'email', 'max:100',
+                Rule::unique('pacientes', 'email')->ignore($paciente->id),
+            ],
             'curp' => [
                 'nullable', 'string', 'size:18',
                 'regex:/^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]{2}$/',
@@ -82,20 +93,24 @@ class PacienteController extends Controller
             ],
         ]);
 
-        $camposModificados = collect(['curp', 'rfc', 'ine_clave', 'tutor_id'])
+        $camposModificados = collect(['nombre', 'apellido', 'telefono', 'email', 'curp', 'rfc', 'ine_clave', 'tutor_id'])
             ->filter(fn (string $campo) => $paciente->getAttribute($campo) !== ($validated[$campo] ?? null))
             ->values()
             ->all();
 
         DB::transaction(function () use ($paciente, $validated, $camposModificados, $auditoria, $request) {
             $paciente->update([
+                'nombre' => $validated['nombre'],
+                'apellido' => $validated['apellido'],
+                'telefono' => $validated['telefono'] ?? null,
+                'email' => $validated['email'] ?? null,
                 'curp' => $validated['curp'] ?? null,
                 'rfc' => $validated['rfc'] ?? null,
                 'ine_clave' => $validated['ine_clave'] ?? null,
                 'tutor_id' => $validated['tutor_id'] ?? null,
             ]);
 
-            $auditoria->registrar('paciente.datos_oficiales_actualizados', $paciente, datosNuevos: [
+            $auditoria->registrar('paciente.datos_actualizados', $paciente, datosNuevos: [
                 'campos_modificados' => $camposModificados,
             ], request: $request);
         });

@@ -5,26 +5,63 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>Acceso · Melissa López N. — Odontología Integral</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600|alex-brush:400&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
+        <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/figtree-latin-ext-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/alex-brush-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-brand-50">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+    <body class="font-sans antialiased text-gray-900">
+        <main class="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-brand-50 via-white to-brand-100 px-4 py-8 sm:px-6 lg:py-12">
+            <div aria-hidden="true" class="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-brand-100/70 blur-3xl"></div>
+            <div aria-hidden="true" class="pointer-events-none absolute -bottom-40 -right-24 h-[28rem] w-[28rem] rounded-full bg-brand-100/60 blur-3xl"></div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+            <a href="/" class="absolute left-5 top-5 z-10 inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-gray-600 shadow-sm backdrop-blur transition hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:left-8 sm:top-8">
+                <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m15 18-6-6 6-6M9 12h12" />
+                </svg>
+                Volver al sitio
+            </a>
+
+            <div class="relative grid w-full max-w-5xl overflow-hidden rounded-[1.75rem] border border-white/80 bg-white shadow-2xl shadow-brand-200/50 lg:grid-cols-[0.9fr_1.1fr]">
+                <aside class="relative flex min-h-56 flex-col justify-between overflow-hidden bg-gray-900 p-6 text-white sm:p-8 lg:min-h-[560px] lg:p-10">
+                    <img src="/images/dentissa/hero-inicio.jpg" alt="Odontóloga conversando con una paciente en el consultorio" class="absolute inset-0 h-full w-full object-cover object-[62%_center]">
+                    <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-gray-950/85 via-gray-950/35 to-gray-950/15"></div>
+
+                    <div class="relative flex w-fit items-center gap-3">
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/95 p-1 shadow-lg ring-1 ring-white/50 sm:h-14 sm:w-14">
+                            <img src="/images/brand/logo-rosa-transparente.png" alt="" class="h-full w-full object-contain">
+                        </span>
+                        <div class="leading-tight drop-shadow-md">
+                            <p class="font-cursive text-2xl text-white sm:text-[1.8rem]">Melissa López N.</p>
+                            <p class="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/90">Odontología integral</p>
+                        </div>
+                    </div>
+
+                    <div class="relative mt-8 max-w-lg">
+                        <p class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-sm">
+                            <span class="h-1.5 w-1.5 rounded-full bg-pink-300" aria-hidden="true"></span>
+                            Espacio de trabajo Dentissa
+                        </p>
+                        <h1 class="mt-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">Cada cita merece una atención bien coordinada.</h1>
+                        <p class="mt-3 max-w-md text-sm leading-6 text-white/85 sm:text-base sm:leading-7">Agenda, pacientes y solicitudes del consultorio, organizados para el equipo.</p>
+                    </div>
+
+                    <p class="relative mt-5 inline-flex items-center gap-2 text-xs font-medium text-white/85 sm:text-sm">
+                        <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 10V7a5 5 0 0 1 10 0v3m-11 0h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" />
+                        </svg>
+                        Acceso privado del consultorio
+                    </p>
+                </aside>
+
+                <section class="flex items-center p-6 sm:p-10 lg:px-14 lg:py-12">
+                    <div class="mx-auto w-full max-w-md">
+                        {{ $slot }}
+                    </div>
+                </section>
             </div>
-        </div>
+        </main>
     </body>
 </html>

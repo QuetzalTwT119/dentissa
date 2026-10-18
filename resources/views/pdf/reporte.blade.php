@@ -31,7 +31,7 @@
             </tr>
             <tr>
                 <td>Eficiencia (citas por bloque 1.5h): <span class="kpi-valor">{{ $reporte['eficiencia']['eficiencia'] }}</span></td>
-                <td>Comparativa Gerín (citas/hora ÷ 1): <span class="kpi-valor">{{ $reporte['eficiencia']['comparativa_gerin'] }}</span></td>
+                <td>Citas completadas por hora: <span class="kpi-valor">{{ $reporte['eficiencia']['citas_por_hora'] }}</span></td>
             </tr>
             <tr>
                 <td>Satisfacción promedio: <span class="kpi-valor">{{ $reporte['satisfaccion'] ?? 'Sin datos' }}</span></td>
@@ -43,7 +43,7 @@
     <div class="seccion">
         <h2>Pacientes</h2>
         <table>
-            <tr><td>Total registrados</td><td>{{ $reporte['pacientes']['total'] }}</td></tr>
+            <tr><td>Total histórico registrado</td><td>{{ $reporte['pacientes']['total'] }}</td></tr>
             <tr><td>Nuevos en el período</td><td>{{ $reporte['pacientes']['nuevos'] }}</td></tr>
         </table>
     </div>
@@ -66,6 +66,8 @@
             @empty
                 <tr><td colspan="2">Sin citas registradas en el período.</td></tr>
             @endforelse
+            <tr><td>Servicios activos en el catálogo actual</td><td>{{ $reporte['catalogo']['servicios_activos'] }}</td></tr>
+            <tr><td>Tratamientos activos en el catálogo actual</td><td>{{ $reporte['catalogo']['tratamientos_activos'] }}</td></tr>
         </table>
     </div>
 

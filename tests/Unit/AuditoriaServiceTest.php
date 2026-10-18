@@ -2,9 +2,12 @@
 
 namespace Tests\Unit;
 
+use App\Enums\RolUsuario;
 use App\Exceptions\AuditoriaNoDisponible;
 use App\Models\Paciente;
+use App\Models\User;
 use App\Services\AuditoriaService;
+use Illuminate\Http\Request;
 use LogicException;
 use Tests\TestCase;
 
@@ -13,7 +16,7 @@ class AuditoriaServiceTest extends TestCase
     public function test_rechaza_registrar_fuera_de_una_transaccion(): void
     {
         $this->assertErrorDeContrato(
-            new Paciente(),
+            new Paciente,
             'AuditoriaService::registrar requiere una transacción activa.',
         );
     }
@@ -26,7 +29,7 @@ class AuditoriaServiceTest extends TestCase
             ),
         ]);
 
-        $paciente = (new Paciente())->setConnection('auditoria_qa');
+        $paciente = (new Paciente)->setConnection('auditoria_qa');
 
         $this->assertErrorDeContrato(
             $paciente,
@@ -36,8 +39,16 @@ class AuditoriaServiceTest extends TestCase
 
     private function assertErrorDeContrato(Paciente $paciente, string $mensaje): void
     {
+        $request = Request::create('/');
+        $request->setUserResolver(fn () => new User([
+            'nombre' => 'Admin',
+            'apellido' => 'QA',
+            'email' => 'admin-auditoria@example.test',
+            'rol' => RolUsuario::Admin,
+        ]));
+
         try {
-            app(AuditoriaService::class)->registrar('paciente.prueba', $paciente);
+            app(AuditoriaService::class)->registrar('paciente.prueba', $paciente, request: $request);
             $this->fail('La auditoría debe rechazar la configuración inválida.');
         } catch (AuditoriaNoDisponible $exception) {
             $this->assertInstanceOf(LogicException::class, $exception->getPrevious());

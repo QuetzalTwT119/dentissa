@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Oferta;
 use App\Models\Tratamiento;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class OfertaController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
         $data = $this->validated($request);
 
@@ -34,7 +35,13 @@ class OfertaController extends Controller
             $data['imagen'] = $request->file('imagen')->store('ofertas', 'public');
         }
 
-        Oferta::create($data);
+        $auditoria->registrarCambio(
+            $request,
+            'oferta.creada',
+            new Oferta,
+            ['titulo', 'id_tratamiento', 'tipo', 'valor_descuento', 'tipo_valor', 'precio_especial', 'fecha_inicio', 'fecha_fin', 'cupo_total', 'imagen', 'activa'],
+            fn () => Oferta::create($data),
+        );
 
         return Redirect::route('admin.ofertas.index');
     }
@@ -47,7 +54,7 @@ class OfertaController extends Controller
         ]);
     }
 
-    public function update(Request $request, Oferta $oferta): RedirectResponse
+    public function update(Request $request, Oferta $oferta, AuditoriaService $auditoria): RedirectResponse
     {
         $data = $this->validated($request);
 
@@ -57,14 +64,27 @@ class OfertaController extends Controller
             unset($data['imagen']);
         }
 
-        $oferta->update($data);
+        $auditoria->registrarCambio(
+            $request,
+            'oferta.actualizada',
+            $oferta,
+            ['titulo', 'id_tratamiento', 'tipo', 'valor_descuento', 'tipo_valor', 'precio_especial', 'fecha_inicio', 'fecha_fin', 'cupo_total', 'imagen', 'activa'],
+            fn () => $oferta->update($data),
+        );
 
         return Redirect::route('admin.ofertas.index');
     }
 
-    public function destroy(Oferta $oferta): RedirectResponse
+    public function destroy(Request $request, Oferta $oferta, AuditoriaService $auditoria): RedirectResponse
     {
-        $oferta->delete();
+        $auditoria->registrarCambio(
+            $request,
+            'oferta.eliminada',
+            $oferta,
+            ['titulo', 'activa'],
+            fn () => $oferta->delete(),
+            eliminado: true,
+        );
 
         return Redirect::route('admin.ofertas.index');
     }

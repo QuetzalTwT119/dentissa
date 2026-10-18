@@ -23,8 +23,8 @@ $estadoClase = [
             @endif
 
             <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                <div class="flex items-center justify-between gap-4 p-6">
-                    <form method="GET" action="{{ route('admin.testimonios.index') }}" class="flex items-center gap-3">
+                <div class="flex flex-col items-stretch gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                    <form method="GET" action="{{ route('admin.testimonios.index') }}" class="flex flex-wrap items-center gap-3">
                         <span class="text-sm text-gray-600">Filtrar por estado:</span>
                         <select name="estado" onchange="this.form.submit()"
                                 class="rounded-md border-gray-300 text-sm shadow-sm focus:border-brand-500 focus:ring-brand-500">
@@ -35,12 +35,13 @@ $estadoClase = [
                         </select>
                     </form>
 
-                    <a href="{{ route('admin.testimonios.create') }}">
+                    <a href="{{ route('admin.testimonios.create') }}" class="self-start sm:self-auto">
                         <x-primary-button>Nuevo testimonio</x-primary-button>
                     </a>
                 </div>
 
-                <table class="w-full text-left text-sm">
+                <div class="overflow-x-auto">
+                <table class="w-full min-w-[760px] text-left text-sm">
                     <thead class="border-y border-gray-200 bg-gray-50 text-gray-600">
                         <tr>
                             <th class="px-6 py-3">Paciente</th>
@@ -108,6 +109,7 @@ $estadoClase = [
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>

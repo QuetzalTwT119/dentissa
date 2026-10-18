@@ -6,9 +6,11 @@ use App\Enums\EstadoCita;
 use App\Http\Controllers\Controller;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 
@@ -26,7 +28,7 @@ class ServicioController extends Controller
         return view('admin.servicios.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
         $data = $this->validated($request);
 
@@ -34,7 +36,13 @@ class ServicioController extends Controller
             $data['imagen'] = $request->file('imagen')->store('servicios', 'public');
         }
 
-        Servicio::create($data);
+        $auditoria->registrarCambio(
+            $request,
+            'servicio.creado',
+            new Servicio,
+            ['nombre', 'descripcion', 'icono', 'imagen', 'activo', 'orden'],
+            fn () => Servicio::create($data),
+        );
 
         return Redirect::route('admin.servicios.index');
     }
@@ -48,7 +56,7 @@ class ServicioController extends Controller
         ]);
     }
 
-    public function update(Request $request, Servicio $servicio): RedirectResponse
+    public function update(Request $request, Servicio $servicio, AuditoriaService $auditoria): RedirectResponse
     {
         $data = $this->validated($request, $servicio->id);
 
@@ -58,24 +66,39 @@ class ServicioController extends Controller
             unset($data['imagen']);
         }
 
-        $servicio->update($data);
+        $auditoria->registrarCambio(
+            $request,
+            'servicio.actualizado',
+            $servicio,
+            ['nombre', 'descripcion', 'icono', 'imagen', 'activo', 'orden'],
+            fn () => $servicio->update($data),
+        );
 
         return Redirect::route('admin.servicios.index');
     }
 
-    public function syncTratamientos(Request $request, Servicio $servicio): RedirectResponse
+    public function syncTratamientos(Request $request, Servicio $servicio, AuditoriaService $auditoria): RedirectResponse
     {
         $validated = $request->validate([
             'tratamiento_ids' => ['array'],
             'tratamiento_ids.*' => ['integer', 'exists:tratamientos,id'],
         ]);
 
-        $servicio->tratamientos()->sync($validated['tratamiento_ids'] ?? []);
+        DB::transaction(function () use ($request, $servicio, $auditoria, $validated) {
+            $anteriores = $servicio->tratamientos()->pluck('tratamientos.id')->all();
+            $nuevos = $validated['tratamiento_ids'] ?? [];
+            $servicio->tratamientos()->sync($nuevos);
+            $auditoria->registrar('servicio.tratamientos_actualizados', $servicio, [
+                'tratamiento_ids' => $anteriores,
+            ], [
+                'tratamiento_ids' => $nuevos,
+            ], $request);
+        });
 
         return Redirect::route('admin.servicios.edit', $servicio);
     }
 
-    public function destroy(Servicio $servicio): RedirectResponse
+    public function destroy(Request $request, Servicio $servicio, AuditoriaService $auditoria): RedirectResponse
     {
         $tieneCitasActivas = $servicio->citas()
             ->whereNotIn('estado', [EstadoCita::Cancelada, EstadoCita::Completada, EstadoCita::NoAsistio])
@@ -86,7 +109,14 @@ class ServicioController extends Controller
                 ->with('error', 'No se puede eliminar el servicio: tiene citas activas asociadas.');
         }
 
-        $servicio->delete();
+        $auditoria->registrarCambio(
+            $request,
+            'servicio.eliminado',
+            $servicio,
+            ['nombre', 'activo'],
+            fn () => $servicio->delete(),
+            eliminado: true,
+        );
 
         return Redirect::route('admin.servicios.index');
     }

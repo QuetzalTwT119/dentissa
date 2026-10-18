@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\MensajeContacto;
+use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,16 +28,29 @@ class MensajeContactoController extends Controller
         ]);
     }
 
-    public function toggleLeido(MensajeContacto $mensaje): RedirectResponse
+    public function toggleLeido(Request $request, MensajeContacto $mensaje, AuditoriaService $auditoria): RedirectResponse
     {
-        $mensaje->update(['leido' => ! $mensaje->leido]);
+        $auditoria->registrarCambio(
+            $request,
+            $mensaje->leido ? 'mensaje.marco_no_leido' : 'mensaje.marco_leido',
+            $mensaje,
+            ['leido'],
+            fn () => $mensaje->update(['leido' => ! $mensaje->leido]),
+        );
 
         return back();
     }
 
-    public function destroy(MensajeContacto $mensaje): RedirectResponse
+    public function destroy(Request $request, MensajeContacto $mensaje, AuditoriaService $auditoria): RedirectResponse
     {
-        $mensaje->delete();
+        $auditoria->registrarCambio(
+            $request,
+            'mensaje.eliminado',
+            $mensaje,
+            ['leido'],
+            fn () => $mensaje->delete(),
+            eliminado: true,
+        );
 
         return back();
     }
