@@ -14,6 +14,10 @@ independiente. Se necesita Internet para consultar información actualizada o
 enviar formularios; si no hay conexión, Dentissa muestra una pantalla para
 reintentar.
 
+
+
+La página principal presenta los servicios y explica el proceso de agenda. En el bloque de contacto, los datos de demostración muestran el aviso **Información ficticia · No contactar** y no se convierten en enlaces. No los uses para contactar al consultorio.
+
 ## 2. Agendamiento público
 
 1. Abre `/agendar-cita`.
