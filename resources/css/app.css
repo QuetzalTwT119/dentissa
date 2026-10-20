@@ -137,7 +137,6 @@ html::-webkit-scrollbar {
     will-change: transform;
 }
 
-.servicios-marquee-mask:hover .servicios-marquee-track,
 .servicios-marquee-mask:focus-within .servicios-marquee-track {
     animation-play-state: paused;
 }

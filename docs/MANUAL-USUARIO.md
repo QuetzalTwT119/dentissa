@@ -51,8 +51,9 @@ La página principal presenta una portada editorial de la clínica: mensaje de
 bienvenida, fotografía principal y acceso directo a la agenda. Debajo resume
 el proceso de cita en tres pasos. Los servicios aparecen en una cuadrícula
 en un carrusel continuo con tarjetas de altura uniforme; en móvil muestra una
-tarjeta casi completa y en escritorio varias a la vez. El movimiento se pausa
-al pasar el cursor y respeta la preferencia de movimiento reducido del sistema.
+tarjeta casi completa y en escritorio varias a la vez. El movimiento es continuo,
+se pausa cuando un control recibe el foco y respeta la preferencia de movimiento
+reducido del sistema.
 En
 el bloque de contacto, los datos de demostración muestran el aviso
 **Información ficticia · No contactar** y no se convierten en enlaces. No los
