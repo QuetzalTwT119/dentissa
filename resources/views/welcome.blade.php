@@ -27,8 +27,8 @@
                 'imagen' => null,
                 'descripcion' => 'Atención profesional adaptada a las necesidades de tu sonrisa.',
             ]))
-        <div class="min-h-screen bg-brand-50">
-            <header class="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div class="min-h-screen bg-[#faf7f4]">
+            <header class="mx-auto flex max-w-7xl flex-col gap-5 border-b border-[#e9dfdb] px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
                 <div class="flex items-center gap-3">
                     <img src="/images/brand/logo-rosa-transparente.png" alt="Melissa López N." class="h-12 w-12 object-contain">
                     <div class="leading-tight">
@@ -37,24 +37,24 @@
                     </div>
                 </div>
 
-                <nav class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-medium text-gray-700">
-                    <a href="#servicios" class="hover:text-brand-600">Servicios</a>
+                <nav class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-medium text-[#51464a]">
+                    <a href="#servicios" class="transition hover:text-brand-700">Servicios</a>
                     @if ($ofertas->isNotEmpty())
-                        <a href="#ofertas" class="hover:text-brand-600">Ofertas</a>
+                        <a href="#ofertas" class="transition hover:text-brand-700">Ofertas</a>
                     @endif
                     @if ($casos->isNotEmpty())
-                        <a href="#casos" class="hover:text-brand-600">Casos</a>
+                        <a href="#casos" class="transition hover:text-brand-700">Casos</a>
                     @endif
                     @if ($testimonios->isNotEmpty())
-                        <a href="#testimonios" class="hover:text-brand-600">Testimonios</a>
+                        <a href="#testimonios" class="transition hover:text-brand-700">Testimonios</a>
                     @endif
                     @if ($galeria->isNotEmpty())
-                        <a href="#galeria" class="hover:text-brand-600">Galería</a>
+                        <a href="#galeria" class="transition hover:text-brand-700">Galería</a>
                     @endif
                     @if ($faqs->isNotEmpty())
-                        <a href="#faq" class="hover:text-brand-600">Preguntas frecuentes</a>
+                        <a href="#faq" class="transition hover:text-brand-700">Preguntas frecuentes</a>
                     @endif
-                    <a href="#contacto" class="hover:text-brand-600">Contacto</a>
+                    <a href="#contacto" class="transition hover:text-brand-700">Contacto</a>
 
                     @auth
                             <a href="{{ route('dashboard') }}" class="rounded-full bg-brand-600 px-5 py-2.5 font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
@@ -68,59 +68,64 @@
                 </nav>
             </header>
 
-            <main class="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12 lg:px-8 lg:pb-20">
-                <section class="relative isolate overflow-hidden rounded-[2rem] bg-[#fff8fa] px-5 py-9 sm:px-9 sm:py-12 lg:px-14 lg:py-14" aria-labelledby="inicio-titulo">
-                    <div aria-hidden="true" class="absolute -right-20 -top-24 -z-10 h-72 w-72 rounded-full bg-brand-100/70 blur-3xl"></div>
-                    <div class="grid items-center gap-9 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
-                        <div class="text-center lg:text-left">
-                            <p class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-700">
-                                <span class="h-2 w-2 rounded-full bg-brand-500" aria-hidden="true"></span>
-                                Odontología integral
-                            </p>
-                            <p class="mt-6 font-cursive text-3xl text-brand-600 sm:text-4xl">Melissa López N.</p>
-                            <h1 id="inicio-titulo" class="mx-auto mt-3 max-w-xl text-4xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl lg:mx-0 lg:text-[3.4rem]">
-                                Ir al dentista puede ser más sencillo.
-                            </h1>
-                            <p class="mx-auto mt-5 max-w-lg text-base leading-7 text-slate-600 sm:text-lg lg:mx-0">
-                                Explora los tratamientos y agenda en línea eligiendo el servicio, la atención que necesitas y un horario disponible.
-                            </p>
-                            <div data-asistente-zona-reservada class="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
-                                <a href="{{ route('citas.publica.create') }}" class="inline-flex min-h-12 items-center justify-center rounded-full bg-brand-600 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-200 transition hover:-translate-y-0.5 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
-                                    Agendar una cita
-                                </a>
-                                <a href="#servicios" class="inline-flex min-h-12 items-center justify-center rounded-full border border-brand-200 bg-white px-7 py-3 text-sm font-semibold text-brand-800 transition hover:border-brand-400 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
-                                    Explorar tratamientos
-                                </a>
-                            </div>
-                            <p class="mt-5 text-sm text-slate-500">Agenda en línea, sin necesidad de crear una cuenta.</p>
+            <main class="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:pb-20">
+                <section class="grid items-center gap-10 py-5 sm:gap-12 lg:min-h-[570px] lg:grid-cols-[0.88fr_1.12fr] lg:gap-16 lg:py-10" aria-labelledby="inicio-titulo">
+                    <div class="relative z-10 text-center lg:py-12 lg:text-left">
+                        <p class="flex items-center justify-center gap-3 text-xs font-semibold uppercase tracking-[0.22em] text-brand-700 lg:justify-start">
+                            <span class="h-px w-9 bg-brand-500" aria-hidden="true"></span>
+                            Odontología integral · Ciudad de México
+                        </p>
+                        <p class="mt-8 font-cursive text-3xl text-brand-600 sm:text-4xl">Melissa López N.</p>
+                        <h1 id="inicio-titulo" class="mx-auto mt-3 max-w-xl text-[2.7rem] font-medium leading-[1.08] tracking-[-0.045em] text-[#211a20] sm:text-6xl lg:mx-0 lg:text-[4.25rem]">
+                            Tu sonrisa, <span class="text-brand-700">en manos que te conocen.</span>
+                        </h1>
+                        <p class="mx-auto mt-6 max-w-lg text-base leading-7 text-[#665b5e] sm:text-lg sm:leading-8 lg:mx-0">
+                            Atención dental cercana, con tiempo para escucharte y un plan pensado para ti.
+                        </p>
+                        <div data-asistente-zona-reservada class="mt-8 flex flex-col justify-center gap-4 sm:flex-row lg:justify-start">
+                            <a href="{{ route('citas.publica.create') }}" class="inline-flex min-h-12 items-center justify-center rounded-lg bg-[#a92f58] px-7 py-3 text-sm font-semibold text-white transition hover:bg-[#8f2448] focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
+                                Agendar una cita <span class="ml-3 text-lg" aria-hidden="true">→</span>
+                            </a>
+                            <a href="#servicios" class="inline-flex min-h-12 items-center justify-center px-4 py-3 text-sm font-semibold text-[#51464a] transition hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
+                                Conocer tratamientos <span class="ml-2" aria-hidden="true">↓</span>
+                            </a>
                         </div>
-
-                        <div class="relative mx-auto w-full max-w-2xl lg:max-w-none">
-                            <img src="{{ $heroImage }}" alt="Paciente conversa con su dentista en un consultorio luminoso" fetchpriority="high" decoding="sync" class="aspect-[4/3] w-full rounded-[1.5rem] object-cover shadow-2xl shadow-brand-200/70 sm:aspect-[16/10]">
-                        </div>
+                        <p class="mt-5 text-sm text-[#817579]">Puedes revisar horarios sin crear una cuenta.</p>
                     </div>
+
+                    <figure class="relative mx-auto w-full max-w-2xl lg:max-w-none">
+                        <div aria-hidden="true" class="absolute -bottom-4 -left-4 -z-10 h-2/3 w-2/3 border-b border-l border-brand-300 sm:-bottom-6 sm:-left-6"></div>
+                        <img src="{{ $heroImage }}" alt="Paciente conversa con su dentista en un consultorio luminoso" fetchpriority="high" decoding="sync" class="aspect-[4/3] w-full rounded-tl-[4.5rem] rounded-br-[4.5rem] object-cover sm:aspect-[16/10]">
+                        <figcaption class="mt-5 flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-[#817579]">
+                            <span class="h-px w-8 bg-brand-400" aria-hidden="true"></span>
+                            Un espacio tranquilo para cuidar de ti
+                        </figcaption>
+                    </figure>
                 </section>
 
-                <section class="mt-16 lg:mt-20" aria-labelledby="como-agendar-titulo">
-                    <div class="mx-auto max-w-2xl text-center">
-                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">Sin complicaciones</p>
-                        <h2 id="como-agendar-titulo" class="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">Así puedes agendar</h2>
+                <section class="mt-12 border-t border-[#e9dfdb] pt-9 lg:mt-16" aria-labelledby="como-agendar-titulo">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">Tu visita, a tu ritmo</p>
+                            <h2 id="como-agendar-titulo" class="mt-2 text-2xl font-medium tracking-tight text-[#211a20] sm:text-3xl">Tres pasos para encontrar tu horario</h2>
+                        </div>
+                        <a href="{{ route('citas.publica.create') }}" class="text-sm font-semibold text-brand-700 hover:text-brand-800">Empezar ahora <span aria-hidden="true">→</span></a>
                     </div>
-                    <ol class="mt-8 grid gap-4 sm:grid-cols-3 sm:gap-5">
-                        <li class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm sm:p-6">
-                            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700">01</span>
-                            <h3 class="mt-4 font-semibold text-slate-900">Elige un servicio</h3>
-                            <p class="mt-2 text-sm leading-6 text-slate-600">Revisa las opciones disponibles para encontrar la atención que buscas.</p>
+                    <ol class="mt-7 grid gap-0 sm:grid-cols-3">
+                        <li class="border-t-2 border-brand-500 py-5 sm:mr-7">
+                            <span class="font-cursive text-2xl text-brand-600">01</span>
+                            <h3 class="mt-3 font-semibold text-[#2c2428]">Cuéntanos qué necesitas</h3>
+                            <p class="mt-2 text-sm leading-6 text-[#665b5e]">Elige el servicio y el tratamiento que buscas.</p>
                         </li>
-                        <li class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm sm:p-6">
-                            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700">02</span>
-                            <h3 class="mt-4 font-semibold text-slate-900">Selecciona tratamiento</h3>
-                            <p class="mt-2 text-sm leading-6 text-slate-600">Cuéntanos qué tratamiento necesitas para continuar con tu solicitud.</p>
+                        <li class="border-t-2 border-[#d7c9c8] py-5 sm:mr-7">
+                            <span class="font-cursive text-2xl text-brand-600">02</span>
+                            <h3 class="mt-3 font-semibold text-[#2c2428]">Escoge un horario</h3>
+                            <p class="mt-2 text-sm leading-6 text-[#665b5e]">Consulta los espacios disponibles en línea.</p>
                         </li>
-                        <li class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm sm:p-6">
-                            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700">03</span>
-                            <h3 class="mt-4 font-semibold text-slate-900">Escoge un horario</h3>
-                            <p class="mt-2 text-sm leading-6 text-slate-600">Consulta la disponibilidad y envía tu solicitud de cita en línea.</p>
+                        <li class="border-t-2 border-[#d7c9c8] py-5">
+                            <span class="font-cursive text-2xl text-brand-600">03</span>
+                            <h3 class="mt-3 font-semibold text-[#2c2428]">Solicita tu cita</h3>
+                            <p class="mt-2 text-sm leading-6 text-[#665b5e]">Déjanos tus datos y el consultorio te confirmará.</p>
                         </li>
                     </ol>
                 </section>

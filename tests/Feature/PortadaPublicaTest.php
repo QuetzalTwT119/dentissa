@@ -16,8 +16,8 @@ class PortadaPublicaTest extends TestCase
 
         $this->get('/')
             ->assertOk()
-            ->assertSee('Ir al dentista puede ser más sencillo.')
-            ->assertSee('Así puedes agendar')
+            ->assertSee('Tu sonrisa,')
+            ->assertSee('Tres pasos para encontrar tu horario')
             ->assertSee('Explora nuestros servicios')
             ->assertDontSee('Tu cita, paso a paso')
             ->assertDontSee('fonts.bunny.net')
