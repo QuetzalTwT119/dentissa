@@ -43,6 +43,9 @@ services:
       # El archivo .env nunca debe versionarse y permanece excluido por Git.
       - ./.env:/var/www/html/.env
       - ./storage:/var/www/html/storage
+      # Solo en desarrollo: permite que /version lea el SHA y estado exactos
+      # del checkout del host. No se monta en producción.
+      - ./.git:/var/www/html/.git:ro
     develop:
       watch:
         # El código PHP y las vistas se sincronizan al guardar, sin reconstruir

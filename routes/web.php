@@ -35,8 +35,48 @@ use App\Models\PreguntaFrecuente;
 use App\Models\Servicio;
 use App\Models\Testimonio;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\Process\Process;
 
 Route::post('/contacto', [MensajeContactoController::class, 'store'])->name('contacto.store');
+
+Route::get('/version', function () {
+    $railwayCommit = env('RAILWAY_GIT_COMMIT_SHA');
+
+    if ($railwayCommit) {
+        return response()->json([
+            'commit' => $railwayCommit,
+            'source' => 'railway',
+            'working_tree_clean' => null,
+        ])->header('Cache-Control', 'no-store');
+    }
+
+    if (! is_dir(base_path('.git'))) {
+        return response()->json([
+            'commit' => 'unknown',
+            'source' => 'unavailable',
+            'working_tree_clean' => null,
+        ])->header('Cache-Control', 'no-store');
+    }
+
+    $environment = ['GIT_OPTIONAL_LOCKS' => '0'];
+    // The container runs as www-data while the mounted checkout belongs to the
+    // host user. Mark this exact repository safe per command instead of changing
+    // Git's global configuration inside the container.
+    $git = ['git', '-c', 'safe.directory='.base_path()];
+    $commitProcess = new Process([...$git, 'rev-parse', 'HEAD'], base_path(), $environment);
+    $statusProcess = new Process([...$git, 'status', '--porcelain', '--untracked-files=normal'], base_path(), $environment);
+    $commitProcess->run();
+    $statusProcess->run();
+
+    $commit = $commitProcess->isSuccessful() ? trim($commitProcess->getOutput()) : 'unknown';
+    $clean = $statusProcess->isSuccessful() ? trim($statusProcess->getOutput()) === '' : null;
+
+    return response()->json([
+        'commit' => $commit,
+        'source' => 'local',
+        'working_tree_clean' => $clean,
+    ])->header('Cache-Control', 'no-store');
+})->name('version');
 
 Route::get('/agendar-cita', [CitaPublicaController::class, 'create'])->name('citas.publica.create');
 Route::post('/agendar-cita', [CitaPublicaController::class, 'store'])->name('citas.publica.store');

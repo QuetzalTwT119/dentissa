@@ -51,6 +51,11 @@ CSS, JavaScript o dependencias, reconstruye la imagen y los assets de Vite.
 Detén el modo de desarrollo con `Ctrl+C`. No borra la base de datos ni su
 volumen.
 
+Para comparar la versión local con producción, abre `/version` en ambos sitios.
+Solo son iguales cuando el campo `commit` coincide y `working_tree_clean` en
+local es `true`; si es `false`, hay cambios locales aún no incluidos en un
+commit.
+
 El bot de Telegram es opcional y se inicia cuando ya configuraste
 `DENTISSA_TELEGRAM_BOT_TOKEN` en `.env`, con
 `docker compose --profile telegram up -d`. Consulta la [guía de Telegram](docs/CONFIGURACION-TELEGRAM.md)

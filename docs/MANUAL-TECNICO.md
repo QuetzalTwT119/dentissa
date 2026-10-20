@@ -80,6 +80,19 @@ primera reconstrucción puede tardar; las siguientes aprovechan las capas de
 Docker. `Ctrl+C` detiene el modo de observación; los datos permanecen en el
 volumen MySQL y `storage/`.
 
+La ruta `/version` muestra el SHA actual del checkout local y si hay cambios
+sin commit. En Railway devuelve el SHA de `RAILWAY_GIT_COMMIT_SHA`. Para
+confirmar paridad, compara `commit` en ambos ambientes y exige
+`working_tree_clean: true` en local. Si el valor dice `false`, compara solo
+después de guardar los cambios en un commit y reiniciar Compose Watch.
+
+GitHub Actions también construye ambos Dockerfiles a partir del mismo commit y
+publica el check agregado `Tests / release-gate`. Para que producción no reciba
+un merge con pruebas fallidas, proteger `master` desde GitHub: requerir pull
+request y exigir `Tests / release-gate` como verificación aprobada. La regla
+de rama se configura una vez en GitHub (Settings > Branches o Rulesets); Railway
+debe seguir desplegando desde `master` después del merge aprobado.
+
 Si no se desea dejar una terminal observando cambios, puede iniciarse el modo
 normal; después de cambiar de rama o código se debe reconstruir manualmente:
 

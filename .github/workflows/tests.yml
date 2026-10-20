@@ -142,3 +142,50 @@ jobs:
             base_sha="$(git merge-base origin/master HEAD)"
           fi
           git diff --check "$base_sha...HEAD" -- . ':!output/pdf/*.pdf'
+
+  build-images:
+    name: build-images
+    needs: [test, test-mysql]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Preparar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Construir imagen de producción
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          tags: dentissa:production-check
+
+      - name: Construir imagen local
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.local
+          push: false
+          tags: dentissa:local-check
+
+  release-gate:
+    name: release-gate
+    if: always()
+    needs: [test, test-mysql, build-images]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Exigir pruebas y construcciones correctas
+        env:
+          TEST_RESULT: ${{ needs.test.result }}
+          MYSQL_RESULT: ${{ needs.test-mysql.result }}
+          IMAGES_RESULT: ${{ needs.build-images.result }}
+        run: |
+          if [ "$TEST_RESULT" != "success" ] || [ "$MYSQL_RESULT" != "success" ] || [ "$IMAGES_RESULT" != "success" ]; then
+            echo "No se permite integrar: pruebas o construcción Docker fallidas."
+            exit 1
+          fi
+          echo "Pruebas y ambas imágenes completadas correctamente."
