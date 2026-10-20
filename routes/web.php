@@ -64,7 +64,18 @@ Route::get('/version', function () {
     // Git's global configuration inside the container.
     $git = ['git', '-c', 'safe.directory='.base_path()];
     $commitProcess = new Process([...$git, 'rev-parse', 'HEAD'], base_path(), $environment);
-    $statusProcess = new Process([...$git, 'status', '--porcelain', '--untracked-files=normal'], base_path(), $environment);
+    // The local runtime image intentionally omits developer-only files that
+    // .dockerignore excludes (such as .github/ and .env.example/).
+    $statusProcess = new Process([
+        ...$git,
+        'status',
+        '--porcelain',
+        '--untracked-files=normal',
+        '--',
+        '.',
+        ':!.env.example',
+        ':!.github',
+    ], base_path(), $environment);
     $commitProcess->run();
     $statusProcess->run();
 
