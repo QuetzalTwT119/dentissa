@@ -48,14 +48,13 @@ debe apagar o eliminar el servicio de Railway desde el panel.
 
 
 La página principal presenta una portada editorial de la clínica: mensaje de
-bienvenida, fotografía principal y acceso directo a la agenda. Debajo resume
-el proceso de cita en tres pasos. Los servicios aparecen en una cuadrícula
-en un carrusel continuo con tarjetas de altura uniforme; en móvil muestra una
-tarjeta casi completa y en escritorio varias a la vez. El movimiento es continuo,
-se pausa cuando un control recibe el foco y respeta la preferencia de movimiento
-reducido del sistema.
-En
-el bloque de contacto, los datos de demostración muestran el aviso
+bienvenida, fotografía principal y acceso directo a la agenda. Debajo ofrece
+accesos directos a la agenda, atención urgente y lista de espera. Los servicios
+se presentan en un carrusel continuo con tarjetas de altura uniforme; en móvil
+muestra una tarjeta casi completa y en escritorio varias a la vez. El movimiento
+es continuo, se pausa cuando un control recibe el foco y respeta la preferencia
+de movimiento reducido del sistema. En el bloque de contacto, los datos de
+demostración muestran el aviso
 **Información ficticia · No contactar** y no se convierten en enlaces. No los
 uses para contactar al consultorio.
 
@@ -165,9 +164,9 @@ se hace más compacta, el formulario reduce espacios y los campos conservan un
 el formulario utiliza dos columnas y deja solo un margen exterior estrecho para
 el acceso flotante; el envío se muestra compacto y alineado a la derecha. La
 portada tiene una composición editorial: mensaje principal y agenda a la
-izquierda, fotografía de la clínica a la derecha y una guía de tres pasos en una
-fila sin tarjetas flotantes. Los servicios se recorren en un carrusel continuo
-con imágenes alineadas y tarjetas de altura uniforme. Contacto conserva el fondo claro
+izquierda, fotografía de la clínica a la derecha y accesos directos a las tres
+opciones del paciente. Los servicios se recorren en un carrusel continuo con
+imágenes alineadas y tarjetas de altura uniforme. Contacto conserva el fondo claro
 de la marca y presenta el botón de agenda separado de las tarjetas de
 información; no muestra una tarjeta de contacto vacía si no hay datos
 configurados. En la portada el asistente flotante permanece visible sobre las
