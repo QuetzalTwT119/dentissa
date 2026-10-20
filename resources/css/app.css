@@ -127,22 +127,6 @@ html::-webkit-scrollbar {
     animation: carousel-fade-in 0.6s ease-out both;
 }
 
-.servicios-marquee-mask {
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-    mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-}
-
-.servicios-marquee-track {
-    animation: servicios-marquee 42s linear infinite;
-    will-change: transform;
-}
-
-@keyframes servicios-marquee {
-    to {
-        transform: translate3d(-50%, 0, 0);
-    }
-}
-
 @media (prefers-reduced-motion: reduce) {
     .animate-carousel-fade-in {
         animation: none;
@@ -186,27 +170,6 @@ html.agenda-publica::-webkit-scrollbar-thumb:hover {
 
     html.agenda-publica::-webkit-scrollbar {
         display: none;
-    }
-}
-.servicios-marquee-mask {
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-    mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-}
-
-.servicios-marquee-track {
-    animation: servicios-marquee 42s linear infinite;
-    will-change: transform;
-}
-
-@keyframes servicios-marquee {
-    to {
-        transform: translate3d(-50%, 0, 0);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .animate-carousel-fade-in {
-        animation: none;
     }
 }
 

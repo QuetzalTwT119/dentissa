@@ -47,7 +47,12 @@ debe apagar o eliminar el servicio de Railway desde el panel.
 
 
 
-La página principal presenta los servicios y explica el proceso de agenda. En el bloque de contacto, los datos de demostración muestran el aviso **Información ficticia · No contactar** y no se convierten en enlaces. No los uses para contactar al consultorio.
+La página principal presenta los servicios en una cuadrícula responsiva, con
+tarjetas e imágenes alineadas; en móvil se apilan y en pantallas amplias se
+distribuyen en varias columnas. También explica el proceso de agenda. En
+el bloque de contacto, los datos de demostración muestran el aviso
+**Información ficticia · No contactar** y no se convierten en enlaces. No los
+uses para contactar al consultorio.
 
 ## 2. Agendamiento público
 
