@@ -39,6 +39,18 @@ docker compose up -d
 docker compose ps
 ```
 
+Para trabajar con actualización automática del contenedor local:
+
+```powershell
+docker compose up --build --watch app
+```
+
+Deja esa terminal abierta mientras desarrollas. Al guardar cambios PHP, rutas,
+configuración o vistas, Compose los sincroniza con el contenedor; al cambiar
+CSS, JavaScript o dependencias, reconstruye la imagen y los assets de Vite.
+Detén el modo de desarrollo con `Ctrl+C`. No borra la base de datos ni su
+volumen.
+
 El bot de Telegram es opcional y se inicia cuando ya configuraste
 `DENTISSA_TELEGRAM_BOT_TOKEN` en `.env`, con
 `docker compose --profile telegram up -d`. Consulta la [guía de Telegram](docs/CONFIGURACION-TELEGRAM.md)

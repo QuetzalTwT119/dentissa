@@ -63,6 +63,30 @@ docker compose ps
 
 La aplicación queda disponible en <http://localhost:8000>.
 
+### Actualización automática durante desarrollo local
+
+Para evitar que el contenedor sirva una compilación anterior después de cambiar
+de rama o editar archivos, inicia el servicio con Compose Watch:
+
+```powershell
+docker compose up --build --watch app
+```
+
+Mantén la terminal abierta. Compose sincroniza al contenedor cambios de PHP,
+rutas, configuración y vistas. Los cambios de CSS, JavaScript, dependencias o
+configuración de Vite/Tailwind disparan una reconstrucción de la imagen, que
+vuelve a generar `public/build/manifest.json` y sus archivos versionados. La
+primera reconstrucción puede tardar; las siguientes aprovechan las capas de
+Docker. `Ctrl+C` detiene el modo de observación; los datos permanecen en el
+volumen MySQL y `storage/`.
+
+Si no se desea dejar una terminal observando cambios, puede iniciarse el modo
+normal; después de cambiar de rama o código se debe reconstruir manualmente:
+
+```powershell
+docker compose up -d --build app
+```
+
 Para reconstruir la imagen cuando cambian el `Dockerfile`, los seeders o los
 archivos que se copian durante la construcción:
 

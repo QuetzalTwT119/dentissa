@@ -43,6 +43,60 @@ services:
       # El archivo .env nunca debe versionarse y permanece excluido por Git.
       - ./.env:/var/www/html/.env
       - ./storage:/var/www/html/storage
+    develop:
+      watch:
+        # El código PHP y las vistas se sincronizan al guardar, sin reconstruir
+        # toda la imagen por cada ajuste de interfaz o lógica.
+        - action: sync
+          path: ./app
+          target: /var/www/html/app
+        - action: sync
+          path: ./bootstrap
+          target: /var/www/html/bootstrap
+          ignore:
+            - cache/
+        - action: sync
+          path: ./config
+          target: /var/www/html/config
+        - action: sync
+          path: ./database
+          target: /var/www/html/database
+          ignore:
+            - backups/
+        - action: sync
+          path: ./lang
+          target: /var/www/html/lang
+        - action: sync
+          path: ./resources/views
+          target: /var/www/html/resources/views
+        - action: sync
+          path: ./routes
+          target: /var/www/html/routes
+        - action: sync
+          path: ./public/images
+          target: /var/www/html/public/images
+        # Los estilos y JavaScript se compilan dentro de la imagen con Vite.
+        # Dependencias o configuración frontend también requieren reconstruir.
+        - action: rebuild
+          path: ./resources/css
+        - action: rebuild
+          path: ./resources/js
+        - action: rebuild
+          path: ./Dockerfile.local
+        - action: rebuild
+          path: ./composer.json
+        - action: rebuild
+          path: ./composer.lock
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./package-lock.json
+        - action: rebuild
+          path: ./postcss.config.js
+        - action: rebuild
+          path: ./tailwind.config.js
+        - action: rebuild
+          path: ./vite.config.js
 
   reverb:
     build:
