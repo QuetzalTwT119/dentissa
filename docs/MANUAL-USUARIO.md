@@ -50,8 +50,10 @@ debe apagar o eliminar el servicio de Railway desde el panel.
 La página principal presenta una portada editorial de la clínica: mensaje de
 bienvenida, fotografía principal y acceso directo a la agenda. Debajo resume
 el proceso de cita en tres pasos. Los servicios aparecen en una cuadrícula
-responsiva, con tarjetas e imágenes alineadas; en móvil se apilan y en pantallas
-amplias se distribuyen en varias columnas. En
+en un carrusel continuo con tarjetas de altura uniforme; en móvil muestra una
+tarjeta casi completa y en escritorio varias a la vez. El movimiento se pausa
+al pasar el cursor y respeta la preferencia de movimiento reducido del sistema.
+En
 el bloque de contacto, los datos de demostración muestran el aviso
 **Información ficticia · No contactar** y no se convierten en enlaces. No los
 uses para contactar al consultorio.
@@ -163,8 +165,8 @@ el formulario utiliza dos columnas y deja solo un margen exterior estrecho para
 el acceso flotante; el envío se muestra compacto y alineado a la derecha. La
 portada tiene una composición editorial: mensaje principal y agenda a la
 izquierda, fotografía de la clínica a la derecha y una guía de tres pasos en una
-fila sin tarjetas flotantes. Los servicios se muestran en una cuadrícula
-responsiva con imágenes alineadas. Contacto conserva el fondo claro
+fila sin tarjetas flotantes. Los servicios se recorren en un carrusel continuo
+con imágenes alineadas y tarjetas de altura uniforme. Contacto conserva el fondo claro
 de la marca y presenta el botón de agenda separado de las tarjetas de
 información; no muestra una tarjeta de contacto vacía si no hay datos
 configurados. En la portada el asistente flotante permanece visible sobre las

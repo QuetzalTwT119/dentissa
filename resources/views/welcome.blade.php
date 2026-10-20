@@ -145,26 +145,49 @@
                             <div class="mb-5 flex items-center justify-between gap-4 text-sm text-slate-500">
                                 <p>{{ $serviciosPublicos->count() }} servicios disponibles</p>
                             </div>
-                            <div role="list" aria-label="Servicios dentales" class="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                                @foreach ($serviciosPublicos as $servicio)
-                                    <article role="listitem" class="flex h-full flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-100/70">
-                                        @if ($servicio->imagen)
-                                            <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-48 w-full object-cover" loading="lazy">
-                                        @elseif ($imagenPredeterminada = ($imagenesServicios[$servicio->nombre] ?? null))
-                                            <img src="{{ asset($imagenPredeterminada) }}" alt="{{ $servicio->nombre }}" class="h-48 w-full object-cover" loading="lazy">
-                                        @else
-                                            <div class="flex h-48 w-full items-center justify-center bg-brand-100 text-sm text-brand-400">
-                                                Imagen próximamente
-                                            </div>
-                                        @endif
-                                        <div class="flex flex-1 flex-col p-5 sm:p-6">
-                                            <h3 class="min-h-12 font-semibold text-slate-900">{{ $servicio->nombre }}</h3>
-                                            @if ($servicio->descripcion)
-                                                <p class="mt-2 text-sm leading-6 text-slate-600">{{ $servicio->descripcion }}</p>
-                                            @endif
-                                        </div>
-                                    </article>
-                                @endforeach
+                            <div class="servicios-marquee-mask overflow-hidden" role="region" aria-label="Servicios dentales disponibles">
+                                <div class="servicios-marquee-track flex w-max">
+                                    <div role="list" aria-label="Servicios dentales" class="flex shrink-0 gap-4 pr-4 sm:gap-5 sm:pr-5 lg:gap-6 lg:pr-6">
+                                        @foreach ($serviciosPublicos as $servicio)
+                                            <article role="listitem" class="group flex h-[356px] w-[84vw] max-w-[360px] shrink-0 flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition duration-200 hover:shadow-lg sm:w-[min(44vw,360px)] lg:w-[min(28vw,360px)]">
+                                                @if ($servicio->imagen)
+                                                    <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-48 w-full shrink-0 object-cover" loading="lazy">
+                                                @elseif ($imagenPredeterminada = ($imagenesServicios[$servicio->nombre] ?? null))
+                                                    <img src="{{ asset($imagenPredeterminada) }}" alt="{{ $servicio->nombre }}" class="h-48 w-full shrink-0 object-cover" loading="lazy">
+                                                @else
+                                                    <div class="flex h-48 w-full shrink-0 items-center justify-center bg-brand-100 text-sm text-brand-400">
+                                                        Imagen próximamente
+                                                    </div>
+                                                @endif
+                                                <div class="flex flex-1 flex-col p-5 sm:p-6">
+                                                    <h3 class="min-h-12 font-semibold text-slate-900">{{ $servicio->nombre }}</h3>
+                                                    @if ($servicio->descripcion)
+                                                        <p class="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{{ $servicio->descripcion }}</p>
+                                                    @endif
+                                                </div>
+                                            </article>
+                                        @endforeach
+                                    </div>
+                                    <div aria-hidden="true" class="flex shrink-0 gap-4 pr-4 sm:gap-5 sm:pr-5 lg:gap-6 lg:pr-6">
+                                        @foreach ($serviciosPublicos as $servicio)
+                                            <article class="flex h-[356px] w-[84vw] max-w-[360px] shrink-0 flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm sm:w-[min(44vw,360px)] lg:w-[min(28vw,360px)]">
+                                                @if ($servicio->imagen)
+                                                    <img src="/storage/{{ $servicio->imagen }}" alt="" class="h-48 w-full shrink-0 object-cover" loading="lazy">
+                                                @elseif ($imagenPredeterminada = ($imagenesServicios[$servicio->nombre] ?? null))
+                                                    <img src="{{ asset($imagenPredeterminada) }}" alt="" class="h-48 w-full shrink-0 object-cover" loading="lazy">
+                                                @else
+                                                    <div class="flex h-48 w-full shrink-0 items-center justify-center bg-brand-100 text-sm text-brand-400">Imagen próximamente</div>
+                                                @endif
+                                                <div class="flex flex-1 flex-col p-5 sm:p-6">
+                                                    <h3 class="min-h-12 font-semibold text-slate-900">{{ $servicio->nombre }}</h3>
+                                                    @if ($servicio->descripcion)
+                                                        <p class="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{{ $servicio->descripcion }}</p>
+                                                    @endif
+                                                </div>
+                                            </article>
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
