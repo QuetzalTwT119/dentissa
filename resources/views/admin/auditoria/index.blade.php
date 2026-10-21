@@ -75,36 +75,41 @@ $etiquetasTabla = [
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">Auditoría</h2>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-xl font-semibold leading-tight text-[#2D2526]">Auditoría</h2>
+                <p class="mt-1 text-xs text-[#8A7A7D]">Trazabilidad de seguridad, cambios en datos clínicos y actividad del personal.</p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-            <section class="rounded-lg bg-white p-6 shadow-sm" aria-labelledby="auditoria-intro">
-                <h3 id="auditoria-intro" class="text-base font-medium text-gray-900">Actividad registrada</h3>
-                <p class="mt-2 text-sm text-gray-600">
-                    Consulta de solo lectura para administración. Desde este cambio solo se registran acciones hechas por cuentas
+            <section class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft" aria-labelledby="auditoria-intro">
+                <h3 id="auditoria-intro" class="text-base font-semibold text-[#2D2526]">Actividad registrada</h3>
+                <p class="mt-2 text-sm leading-relaxed text-[#6b5e62]">
+                    Consulta de solo lectura para administración. Solo se registran acciones hechas por cuentas
                     del administrador o de las asistentes. Las solicitudes iniciadas por pacientes en el portal o Telegram no se
                     muestran aquí. Los detalles no incluyen contraseñas ni notas clínicas.
                 </p>
             </section>
 
-            <section class="overflow-hidden rounded-lg bg-white shadow-sm" aria-label="Filtros de auditoría">
+            <section class="overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-soft" aria-label="Filtros de auditoría">
                 <form method="GET" action="{{ route('admin.auditoria.index') }}" class="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
                     <div>
                         <x-input-label for="filtro_desde" value="Desde" />
                         <input id="filtro_desde" type="date" name="desde" value="{{ $filtros['desde'] ?? '' }}"
-                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                               class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                     </div>
                     <div>
                         <x-input-label for="filtro_hasta" value="Hasta" />
                         <input id="filtro_hasta" type="date" name="hasta" value="{{ $filtros['hasta'] ?? '' }}"
-                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                               class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                     </div>
                     <div>
                         <x-input-label for="filtro_usuario" value="Usuario" />
                         <select id="filtro_usuario" name="usuario_id"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                                class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="">Todos</option>
                             @foreach ($usuarios as $usuario)
                                 <option value="{{ $usuario->id }}" @selected((string) ($filtros['usuario_id'] ?? '') === (string) $usuario->id)>
@@ -116,7 +121,7 @@ $etiquetasTabla = [
                     <div>
                         <x-input-label for="filtro_accion" value="Acción" />
                         <select id="filtro_accion" name="accion"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+                                class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="">Todas</option>
                             @foreach ($acciones as $accion)
                                 <option value="{{ $accion }}" @selected(($filtros['accion'] ?? '') === $accion)>
@@ -128,63 +133,63 @@ $etiquetasTabla = [
                     <div class="flex gap-2">
                         <x-primary-button>Filtrar</x-primary-button>
                         <a href="{{ route('admin.auditoria.index') }}"
-                           class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wider text-gray-700 shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
+                           class="inline-flex items-center rounded-xl border border-[#e9dfdb] bg-white px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#6b5e62] shadow-sm transition hover:bg-[#FAF6F6] hover:text-[#2D2526] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2">
                             Limpiar
                         </a>
                     </div>
                 </form>
-                <div class="border-t border-gray-200 px-6 py-3 text-sm text-gray-600" role="status">
+                <div class="border-t border-[#e9dfdb]/80 bg-[#FAF6F6]/50 px-6 py-3 text-xs font-medium text-[#6b5e62]" role="status">
                     {{ $registros->total() }} {{ $registros->total() === 1 ? 'evento' : 'eventos' }} encontrados
                 </div>
             </section>
 
-            <section class="overflow-hidden rounded-lg bg-white shadow-sm" aria-label="Eventos de auditoría">
+            <section class="overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-soft" aria-label="Eventos de auditoría">
                 <div class="overflow-x-auto">
                     <table class="w-full min-w-[900px] text-left text-sm">
-                        <thead class="border-y border-gray-200 bg-gray-50 text-gray-600">
+                        <thead class="border-b border-[#e9dfdb] bg-[#FAF6F6] text-xs font-semibold uppercase tracking-wider text-[#6b5e62]">
                             <tr>
-                                <th scope="col" class="whitespace-nowrap px-6 py-3">Fecha y hora</th>
-                                <th scope="col" class="px-6 py-3">Usuario</th>
-                                <th scope="col" class="px-6 py-3">Acción</th>
-                                <th scope="col" class="px-6 py-3">Registro</th>
-                                <th scope="col" class="px-6 py-3">Detalles</th>
+                                <th scope="col" class="whitespace-nowrap px-6 py-3.5">Fecha y hora</th>
+                                <th scope="col" class="px-6 py-3.5">Usuario</th>
+                                <th scope="col" class="px-6 py-3.5">Acción</th>
+                                <th scope="col" class="px-6 py-3.5">Registro</th>
+                                <th scope="col" class="px-6 py-3.5">Detalles</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-[#e9dfdb]/60">
                             @forelse ($registros as $registro)
-                                <tr class="border-b border-gray-100 align-top">
-                                    <td class="whitespace-nowrap px-6 py-4 text-gray-700">
+                                <tr class="transition hover:bg-[#FAF6F6]/60 align-top">
+                                    <td class="whitespace-nowrap px-6 py-4 text-[#6b5e62]">
                                         {{ $registro->fecha?->translatedFormat('d M Y, H:i') ?? '—' }}
                                     </td>
-                                    <td class="px-6 py-4 text-gray-700">
+                                    <td class="px-6 py-4 text-[#2D2526] font-medium">
                                         {{ $registro->usuario ? $registro->usuario->nombre.' '.$registro->usuario->apellido : ($registro->actor_nombre ?? 'Usuario no disponible') }}
                                     </td>
-                                    <td class="px-6 py-4 font-medium text-gray-900">
+                                    <td class="px-6 py-4 font-semibold text-[#2D2526]">
                                         {{ $etiquetasAccion[$registro->accion] ?? str_replace('.', ' · ', ucfirst($registro->accion ?? 'Evento')) }}
                                     </td>
-                                    <td class="px-6 py-4 text-gray-700">
+                                    <td class="px-6 py-4 text-[#6b5e62]">
                                         {{ $etiquetasTabla[$registro->tabla] ?? ucfirst(str_replace('_', ' ', $registro->tabla ?? 'Registro')) }}
-                                        <span class="text-gray-500">#{{ $registro->registro_id ?? '—' }}</span>
+                                        <span class="text-[#8A7A7D]">#{{ $registro->registro_id ?? '—' }}</span>
                                     </td>
                                     <td class="px-6 py-4">
                                         @if ($registro->datos_anteriores || $registro->datos_nuevos)
                                             <details class="group">
-                                                <summary class="inline-flex cursor-pointer list-none items-center gap-1 rounded-md px-2 py-1 text-sm font-medium text-brand-700 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                                <summary class="inline-flex cursor-pointer list-none items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-semibold text-brand-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500">
                                                     Ver cambios
                                                     <svg class="h-4 w-4 transition group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                                         <path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 011.06 0L10 10.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 8.28a.75.75 0 010-1.06z" clip-rule="evenodd" />
                                                     </svg>
                                                 </summary>
-                                                <div class="mt-2 min-w-64 space-y-3 rounded-md border border-gray-200 bg-gray-50 p-3">
+                                                <div class="mt-2 min-w-64 space-y-3 rounded-xl border border-[#e9dfdb] bg-[#FAF6F6] p-3 text-xs">
                                                     @foreach (['Antes' => $registro->datos_anteriores, 'Después' => $registro->datos_nuevos] as $titulo => $datos)
                                                         @if ($datos)
                                                             <div>
-                                                                <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500">{{ $titulo }}</h4>
+                                                                <h4 class="text-[10px] font-semibold uppercase tracking-wider text-[#8A7A7D]">{{ $titulo }}</h4>
                                                                 <dl class="mt-1 space-y-1">
                                                                     @foreach ($datos as $campo => $valor)
-                                                                        <div class="grid grid-cols-[minmax(7rem,auto)_1fr] gap-2 text-xs">
-                                                                            <dt class="font-medium text-gray-600">{{ ucfirst(str_replace('_', ' ', $campo)) }}</dt>
-                                                                            <dd class="break-words text-gray-800">{{ is_scalar($valor) ? ($valor === '' ? '—' : $valor) : json_encode($valor, JSON_UNESCAPED_UNICODE) }}</dd>
+                                                                        <div class="grid grid-cols-[minmax(7rem,auto)_1fr] gap-2">
+                                                                            <dt class="font-medium text-[#6b5e62]">{{ ucfirst(str_replace('_', ' ', $campo)) }}</dt>
+                                                                            <dd class="break-words text-[#2D2526] font-mono">{{ is_scalar($valor) ? ($valor === '' ? '—' : $valor) : json_encode($valor, JSON_UNESCAPED_UNICODE) }}</dd>
                                                                         </div>
                                                                     @endforeach
                                                                 </dl>
@@ -194,13 +199,13 @@ $etiquetasTabla = [
                                                 </div>
                                             </details>
                                         @else
-                                            <span class="text-gray-400">Sin detalle</span>
+                                            <span class="text-xs text-[#8A7A7D]">Sin detalle</span>
                                         @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                    <td colspan="5" class="px-6 py-12 text-center text-sm text-[#8A7A7D]">
                                         No hay eventos de auditoría para los filtros seleccionados.
                                     </td>
                                 </tr>
@@ -209,7 +214,7 @@ $etiquetasTabla = [
                     </table>
                 </div>
                 @if ($registros->hasPages())
-                    <div class="border-t border-gray-200 px-6 py-4">
+                    <div class="border-t border-[#e9dfdb] px-6 py-4">
                         {{ $registros->links() }}
                     </div>
                 @endif

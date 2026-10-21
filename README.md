@@ -4,6 +4,34 @@ Sistema web de gestión para un consultorio dental, desarrollado con Laravel.
 Este repositorio corresponde al proyecto Dentissa; la información que aparece
 en los datos de demostración no es información oficial de una clínica.
 
+## Trabajo conjunto: Antigravity + Dentissa
+
+Antigravity trabaja directamente en `C:\laragon\www\dentissa`, la misma carpeta de Dentissa. Puede rediseñar las vistas y recursos de interfaz delimitados en `ANTIGRAVITY.md`; el backend, Docker y los datos clínicos quedan fuera de su alcance.
+
+Cuando Antigravity termine una propuesta, abre PowerShell en la carpeta del proyecto y ejecuta:
+
+```powershell
+.\scripts\antigravity.ps1
+```
+
+El comando valida el frontend en un contenedor aislado y, si aprueba, reconstruye la aplicación en `http://localhost:8000`. No se copian archivos entre carpetas. Para validar sin reconstruir, agrega `-ValidarSolo`.
+
+## Respaldos cifrados locales
+
+El disco externo `E:\DentissaBackups` contiene el repositorio cifrado de Restic. Para crear un respaldo de MySQL y `storage/app`, sin guardar la contraseña en archivos, ejecuta:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\respaldo-dentissa.ps1
+```
+
+La consola pide la contraseña de forma oculta, crea un snapshot cifrado y verifica una fracción de sus datos. No elimina copias anteriores. Para ensayar una recuperación fuera de la aplicación activa:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\restaurar-prueba-dentissa.ps1
+```
+
+La recuperación sólo crea una carpeta nueva bajo `E:\DentissaBackups\restauraciones-prueba`; nunca restaura sobre la base MySQL activa.
+
 ## Requisitos
 
 - Windows con Docker Desktop y backend WSL 2 habilitado, o Docker Engine y
@@ -83,6 +111,17 @@ base de desarrollo:
 
 ```powershell
 docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DATABASE=dentissa_test app php artisan test --compact
+```
+
+### Validar una entrega de frontend
+
+Cuando se integre una propuesta visual externa, ejecuta este control antes de
+probarla manualmente. Construye los recursos de Vite, compila las vistas Blade y
+ejecuta pruebas de portada, imágenes, PWA y diseño responsivo con SQLite
+efímero; no modifica la base local ni publica servicios.
+
+```powershell
+docker compose --profile qa run --rm --build qa
 ```
 
 Última ejecución local registrada (14/10/2026): **95 pruebas y 379 aserciones

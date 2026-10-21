@@ -3,11 +3,11 @@ $usuario = auth()->user();
 $esAdmin = $usuario->rol === \App\Enums\RolUsuario::Admin;
 $notificacionesNoLeidas = $usuario->notificacionesSistema()->whereNull('leida_en')->count();
 $notificacionesRecientes = $usuario->notificacionesSistema()->whereNull('leida_en')->latest('id')->limit(5)->get();
-$clasesEnlace = 'inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-slate-600 transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300';
+$clasesEnlace = 'inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-[#5c4f53] transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300';
 $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:ring-offset-2';
 @endphp
 
-<nav x-data="{ open: false, notificationsOpen: false }" class="relative z-40 border-b border-brand-100 bg-white">
+<nav x-data="{ open: false, notificationsOpen: false }" class="relative z-40 border-b border-[#e9dfdb] bg-white/95 backdrop-blur-md">
     <div class="mx-auto flex min-h-[5.5rem] max-w-screen-2xl items-center justify-between gap-4 px-4 sm:px-6 2xl:px-10">
         <a href="{{ route('dashboard') }}" class="flex min-w-0 shrink-0 items-center gap-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-300" aria-label="Dentissa, ir al inicio">
             <img src="/images/brand/logo-rosa-transparente.png" alt="" class="h-12 w-12 rounded-full border border-brand-100 bg-white object-cover p-0.5" width="48" height="48">
@@ -74,13 +74,13 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-6
             </div>
 
             <div class="relative" x-data="{ profileOpen: false }" @click.outside="profileOpen = false" @keydown.escape.window="profileOpen = false">
-                <button type="button" @click="profileOpen = !profileOpen" :aria-expanded="profileOpen.toString()" class="inline-flex min-h-11 max-w-56 items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-4 text-sm font-semibold text-slate-700 transition hover:border-brand-200 hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-300">
+                <button type="button" @click="profileOpen = !profileOpen" :aria-expanded="profileOpen.toString()" class="inline-flex min-h-11 max-w-56 items-center gap-2 rounded-full border border-[#e9dfdb] bg-[#faf7f4] px-4 text-sm font-semibold text-[#382d31] transition hover:border-brand-300 hover:bg-brand-50/70 focus:outline-none focus:ring-2 focus:ring-brand-300">
                     <span class="truncate">{{ $usuario->nombre }} {{ $usuario->apellido }}</span>
-                    <svg class="h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                    <svg class="h-4 w-4 shrink-0 text-[#8A7A7D]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                 </button>
-                <div x-cloak x-show="profileOpen" x-transition.origin.top.right class="absolute right-0 top-14 z-50 w-52 overflow-hidden rounded-xl border border-gray-100 bg-white py-1 shadow-xl" @click="profileOpen = false">
-                    <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm text-slate-700 transition hover:bg-brand-50">Mi perfil</a>
-                    <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="block w-full px-4 py-2.5 text-left text-sm text-slate-700 transition hover:bg-brand-50">Cerrar sesión</button></form>
+                <div x-cloak x-show="profileOpen" x-transition.origin.top.right class="absolute right-0 top-14 z-50 w-52 overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white py-1.5 shadow-xl ring-1 ring-black/5" @click="profileOpen = false">
+                    <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm font-medium text-[#403539] transition hover:bg-brand-50 hover:text-brand-700">Mi perfil</a>
+                    <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="block w-full px-4 py-2.5 text-left text-sm font-medium text-[#403539] transition hover:bg-brand-50 hover:text-brand-700">Cerrar sesión</button></form>
                 </div>
             </div>
         </div>
@@ -97,19 +97,19 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-6
     </div>
 
     <div id="notification-preview-panel" data-notification-preview-panel x-cloak x-show="notificationsOpen" @click.outside="notificationsOpen = false" @keydown.escape.window="notificationsOpen = false" x-transition.origin.top.right class="fixed left-4 right-4 top-20 z-50 2xl:absolute 2xl:left-auto 2xl:right-40 2xl:top-20 2xl:w-[26rem]" role="dialog" aria-label="Notificaciones recientes">
-        <section class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl ring-1 ring-black/5">
-            <header class="flex items-center justify-between border-b border-gray-100 px-4 py-3.5">
-                <div><h2 class="font-semibold text-gray-900">Notificaciones recientes</h2><p class="mt-0.5 text-xs text-gray-500"><span data-notification-count-summary>{{ $notificacionesNoLeidas }}</span> pendientes</p></div>
-                <button type="button" @click="notificationsOpen = false" class="rounded-md p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-primary" aria-label="Cerrar notificaciones"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 0 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 0 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /></svg></button>
+        <section class="overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-2xl ring-1 ring-black/5">
+            <header class="flex items-center justify-between border-b border-[#e9dfdb]/70 bg-[#FAF6F6] px-4 py-3.5">
+                <div><h2 class="font-semibold text-[#2c2428]">Notificaciones recientes</h2><p class="mt-0.5 text-xs text-[#8A7A7D]"><span data-notification-count-summary>{{ $notificacionesNoLeidas }}</span> pendientes</p></div>
+                <button type="button" @click="notificationsOpen = false" class="rounded-lg p-2 text-[#8A7A7D] transition hover:bg-white hover:text-[#2c2428] focus:outline-none focus:ring-2 focus:ring-brand-primary" aria-label="Cerrar notificaciones"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 0 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 0 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /></svg></button>
             </header>
-            <div data-notification-preview-list class="max-h-[min(60vh,26rem)] divide-y divide-gray-100 overflow-y-auto">
+            <div data-notification-preview-list class="max-h-[min(60vh,26rem)] divide-y divide-[#e9dfdb]/60 overflow-y-auto">
                 @forelse ($notificacionesRecientes as $notificacion)
-                    <a data-notification-preview="{{ $notificacion->id }}" href="{{ $notificacion->url ?: route('citas.index') }}" @click="notificationsOpen = false" class="flex gap-3 px-4 py-3.5 transition hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"><span data-notification-preview-dot class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full {{ $notificacion->leida_en ? 'bg-gray-300' : 'bg-brand-600' }}" aria-hidden="true"></span><span class="min-w-0 flex-1"><span class="flex items-start justify-between gap-3"><span data-notification-preview-title class="notification-preview-title text-sm font-semibold text-gray-900">{{ $notificacion->titulo }}</span><time class="shrink-0 text-xs text-gray-400" datetime="{{ $notificacion->created_at->toIso8601String() }}">{{ $notificacion->created_at->diffForHumans() }}</time></span><span data-notification-preview-message class="notification-preview-message mt-1 text-sm leading-5 text-gray-600">{{ $notificacion->mensaje }}</span></span></a>
+                    <a data-notification-preview="{{ $notificacion->id }}" href="{{ $notificacion->url ?: route('citas.index') }}" @click="notificationsOpen = false" class="flex gap-3 px-4 py-3.5 transition hover:bg-[#faf7f4] focus:bg-[#faf7f4] focus:outline-none"><span data-notification-preview-dot class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full {{ $notificacion->leida_en ? 'bg-slate-300' : 'bg-brand-600' }}" aria-hidden="true"></span><span class="min-w-0 flex-1"><span class="flex items-start justify-between gap-3"><span data-notification-preview-title class="notification-preview-title text-sm font-semibold text-[#2c2428]">{{ $notificacion->titulo }}</span><time class="shrink-0 text-xs text-[#8A7A7D]" datetime="{{ $notificacion->created_at->toIso8601String() }}">{{ $notificacion->created_at->diffForHumans() }}</time></span><span data-notification-preview-message class="notification-preview-message mt-1 text-sm leading-5 text-[#665b5e]">{{ $notificacion->mensaje }}</span></span></a>
                 @empty
-                    <p data-notification-preview-empty class="px-4 py-8 text-center text-sm text-gray-500">No hay notificaciones recientes.</p>
+                    <p data-notification-preview-empty class="px-4 py-8 text-center text-sm text-[#8A7A7D]">No hay notificaciones recientes.</p>
                 @endforelse
             </div>
-            <footer class="border-t border-gray-100 bg-gray-50 px-4 py-3 text-center"><a href="{{ route('notificaciones.index') }}" class="text-sm font-semibold text-brand-700 hover:underline" @click="notificationsOpen = false">Ver todas las notificaciones</a></footer>
+            <footer class="border-t border-[#e9dfdb]/70 bg-[#FAF6F6] px-4 py-3 text-center"><a href="{{ route('notificaciones.index') }}" class="text-sm font-semibold text-brand-700 hover:text-brand-800 transition" @click="notificationsOpen = false">Ver todas las notificaciones</a></footer>
         </section>
     </div>
 

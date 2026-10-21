@@ -1,19 +1,27 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
-            Nueva pregunta frecuente
-        </h2>
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-semibold leading-tight text-[#2D2526]">
+                    Nueva pregunta frecuente
+                </h2>
+                <p class="mt-1 text-xs text-[#8A7A7D]">Alta de pregunta y respuesta oficial del consultorio.</p>
+            </div>
+            <a href="{{ route('admin.preguntas-frecuentes.index') }}" class="hidden sm:inline-block">
+                <x-secondary-button type="button">Volver al listado</x-secondary-button>
+            </a>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="mx-auto max-w-2xl sm:px-6 lg:px-8">
-            <div class="bg-white p-6 shadow-sm sm:rounded-lg">
+    <div class="py-8 sm:py-10">
+        <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+            <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft sm:p-8">
                 <form method="POST" action="{{ route('admin.preguntas-frecuentes.store') }}" class="space-y-6">
                     @csrf
 
                     @include('admin.preguntas-frecuentes._campos', ['pregunta' => null])
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 pt-4 border-t border-[#e9dfdb]">
                         <x-primary-button>Guardar</x-primary-button>
 
                         <a href="{{ route('admin.preguntas-frecuentes.index') }}">

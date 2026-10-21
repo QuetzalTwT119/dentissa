@@ -1,5 +1,11 @@
 # Manual técnico de Dentissa
 
+## Entregas de frontend con Antigravity
+
+Antigravity trabaja directamente en `C:\laragon\www\dentissa`. Sus instrucciones de alcance están en `ANTIGRAVITY.md`: puede rediseñar todas las vistas y recursos de interfaz, pero no backend, rutas, base de datos, Docker ni credenciales.
+
+El servicio `app` monta `resources/views` y `public/images` desde la carpeta del proyecto. Por ello, al guardar una portada o imagen, Laravel usa ese mismo archivo sin una copia intermedia. `scripts/antigravity.ps1` ejecuta QA en Docker y reconstruye la aplicación sólo si la validación aprueba; `-ValidarSolo` omite la reconstrucción.
+
 ## 1. Propósito
 
 Dentissa es un sistema web para la gestión de una clínica dental. Permite
@@ -147,6 +153,32 @@ Al iniciar, el contenedor crea las carpetas de caché de Laravel dentro de
 puede comenzar vacío en una instalación nueva.
 
 ## 6. Pruebas automatizadas
+
+### Validación de entregas de frontend
+
+El servicio opcional `qa` ofrece una barrera local entre una entrega visual y
+su integración con Laravel. Se inicia bajo demanda y termina solo al finalizar:
+
+```powershell
+docker compose --profile qa run --rm --build qa
+```
+
+La imagen compila los recursos de Vite durante el build, compila las vistas
+Blade y ejecuta las pruebas de portada, imágenes públicas, PWA y responsividad
+con SQLite en memoria. No expone puertos, no utiliza la base MySQL de desarrollo
+y no sustituye la revisión visual manual ni la aprobación del contenido por la
+clínica.
+
+El perfil `qa` incluye claves ficticias de Reverb exclusivamente para que la
+suite pueda comprobar la autorización de canales privados de notificaciones.
+No se conecta a un servicio Reverb real ni utiliza credenciales del `.env`.
+Para probar lógica recién modificada dentro de una imagen limpia, sin depender
+de la copia que ya está ejecutándose en `app`, usar:
+
+```powershell
+docker compose --profile qa build qa
+docker compose --profile qa run --rm --no-deps --entrypoint php qa artisan test
+```
 
 Ejecutar la suite completa:
 
@@ -459,13 +491,21 @@ en SQLite en memoria y en MySQL 8.4 con el schema aislado `dentissa_test`.
 
 ## 14. Respaldos y recuperación
 
-La automatización cifrada de respaldos y restauración sigue pendiente. El archivo
-SQL existente en `storage/backups/` es una copia puntual de trabajo, no un
-procedimiento verificado ni una política de retención. No debe considerarse un
-respaldo operativo. Antes de usar datos reales hay que definir e implementar
-cifrado, retención, cobertura conjunta de MySQL y `storage/app`, verificación de
-integridad y recuperación ensayada en un destino aislado. No restaurar sobre la
-base activa durante QA.
+Los scripts `scripts/respaldo-dentissa.ps1` y
+`scripts/restaurar-prueba-dentissa.ps1` usan el repositorio Restic cifrado de
+`E:\DentissaBackups\restic-repo`. La contraseña se pide de forma interactiva,
+se conserva sólo durante la ejecución y no se guarda en Git ni en `.env`.
+
+El respaldo exporta MySQL con una transacción consistente, incluye `storage/app`
+y un manifiesto con el hash SHA-256 del dump. Después crea un snapshot cifrado y
+ejecuta `restic check --read-data-subset=1/10`. No borra snapshots ni aplica
+retención automática: ese proceso requiere una política de conservación
+aprobada para no eliminar copias históricas.
+
+La restauración de prueba sólo permite un destino que no exista bajo el disco
+externo; comprueba que se recuperen el manifiesto y el dump. No importa ni
+sobrescribe la base activa. El ensayo de importación a un schema MySQL aislado
+queda como siguiente paso antes de usar datos clínicos reales.
 
 ## 15. Widget público en móvil y acceso por LAN
 
@@ -615,3 +655,23 @@ SQLite 143 pruebas aprobadas/701 aserciones y una omisión esperada, y MySQL
 8.4 aislado 144 pruebas/706 aserciones. Vite construyó los assets durante la
 reconstrucción Docker; Pint pasó 183 archivos PHP. Falta aceptación visual en
 dispositivo real.
+
+## 19. Rediseño visual integral y sistema de diseño boutique
+
+Se completó el rediseño visual de todo el ecosistema de Dentissa (sitio público, autenticación y panel de administración) alineándolo a la identidad de marca cálida y boutique:
+
+- **Tokens de color y jerarquía visual:**
+  - Rosa de marca: `#d75078` (acciones primarias, estados destacados y acentos)
+  - Durazno cálido: `#f2b0a6` (fondos de selección, bordes activos y detalles suaves)
+  - Fondo base: `#FAF6F6` (lienzo unificado libre de contrastes fríos o grises clínicos duros)
+  - Texto principal: `#2D2526` (alto contraste y calidez para legibilidad óptima)
+  - Verde salvia: `#4E8D72` (confirmaciones, estados activos y badges de éxito clínico)
+  - Bordes neutros cálidos: `#e9dfdb` (separadores sutiles y tarjetas suaves)
+
+- **Componentes y arquitectura de interfaz:**
+  - Componentes atómicos en `resources/views/components/`: botones primarios (`bg-brand-600`, esquinas redondeadas `rounded-xl`, sombra suave), secundarios con borde cálido, inputs y selects consistentes, modales con desenfoque de fondo y alertas amigables.
+  - Vistas públicas (`welcome`, agenda pública wizard por pasos, urgencias, lista de espera, galería, ofertas): tipografía Figtree y Alex Brush locales precargadas, carrusel de servicios optimizado y menú responsivo desplegable para móvil y tablet.
+  - Vistas de acceso (`guest`, `login`, recuperación de contraseña): tarjetas centradas de estilo boutique con fondo ambiental cálido y enlaces visibles.
+  - Panel administrativo (`layouts/app`, `navigation`, `dashboard`, citas, pacientes, historial clínico con fotos/radiografías, catálogo de servicios y tratamientos, horarios, usuarios, reportes, auditoría, seguimiento de atención oportuna, mensajes, testimonios, casos y preguntas frecuentes): tablas con encabezados claros en `#FAF6F6`, badges de estado legibles, filtros organizados y scroll horizontal en móviles (`min-w-[760px]`).
+  - Total preservación de lógica de negocio, nombres de campos, CSRF, validaciones y roles. La suite de pruebas completa pasó con 158 pruebas aprobadas y 0 fallos.
+

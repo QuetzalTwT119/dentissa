@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\ListaEspera;
 use App\Models\Servicio;
 use App\Models\SolicitudUrgencia;
+use App\Services\CitaReglasService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class AtencionOportunaController extends Controller
 {
@@ -43,18 +46,31 @@ class AtencionOportunaController extends Controller
         return view('atencion.lista-espera', compact('servicios'));
     }
 
-    public function guardarListaEspera(Request $request): RedirectResponse
+    public function guardarListaEspera(Request $request, CitaReglasService $reglas): RedirectResponse
     {
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:150'],
             'telefono' => ['required', 'string', 'max:20'],
             'email' => ['nullable', 'email', 'max:100'],
-            'id_servicio' => ['nullable', 'exists:servicios,id'],
-            'id_tratamiento' => ['nullable', 'exists:tratamientos,id'],
+            'id_servicio' => ['nullable', Rule::exists('servicios', 'id')->where('activo', true)],
+            'id_tratamiento' => ['nullable', Rule::exists('tratamientos', 'id')->where('activo', true)],
             'fecha_preferida' => ['nullable', 'date', 'after_or_equal:today'],
             'franja_horaria' => ['required', 'in:cualquiera,manana,tarde'],
             'notas' => ['nullable', 'string', 'max:500'],
         ]);
+
+        $idServicio = $validated['id_servicio'] ?? null;
+        $idTratamiento = $validated['id_tratamiento'] ?? null;
+
+        if ($idTratamiento && ! $idServicio) {
+            throw ValidationException::withMessages([
+                'id_servicio' => 'Selecciona el servicio al que pertenece el tratamiento.',
+            ]);
+        }
+
+        if ($idServicio && $idTratamiento) {
+            $reglas->validarCatalogo($idServicio, $idTratamiento);
+        }
 
         ListaEspera::create($validated + ['estado' => 'pendiente']);
 

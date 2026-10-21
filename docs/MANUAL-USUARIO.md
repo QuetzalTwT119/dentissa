@@ -1,6 +1,14 @@
 # Manual de usuario de Dentissa
 
+## Revisión de cambios de la portada
+
+Antigravity trabaja en la misma carpeta que Dentissa. Cuando termine un cambio visual, abre PowerShell en `C:\laragon\www\dentissa` y ejecuta `powershell -ExecutionPolicy Bypass -File .\scripts\antigravity.ps1`. El sistema revisa automáticamente la portada y después actualiza la aplicación local. Finalmente abre `http://localhost:8000` para revisar el resultado.
+
 ## 1. Acceso
+
+> Nota para la clínica: el contenedor de validación `qa` es una herramienta
+> interna del equipo técnico. No modifica citas, pacientes ni historiales y no
+> requiere ninguna acción del personal clínico.
 
 Abre <http://localhost:8000>. El personal de la clínica inicia sesión desde
 `/login`. Los pacientes pueden agendar desde el formulario público sin crear
@@ -47,16 +55,12 @@ debe apagar o eliminar el servicio de Railway desde el panel.
 
 
 
-La página principal presenta una portada editorial de la clínica: mensaje de
-bienvenida, fotografía principal y acceso directo a la agenda. Debajo ofrece
-accesos directos a la agenda, atención urgente y lista de espera. Los servicios
-se presentan en un carrusel continuo con tarjetas de altura uniforme; en móvil
-muestra una tarjeta casi completa y en escritorio varias a la vez. El movimiento
-es continuo, se pausa cuando un control recibe el foco y respeta la preferencia
-de movimiento reducido del sistema. En el bloque de contacto, los datos de
-demostración muestran el aviso
-**Información ficticia · No contactar** y no se convierten en enlaces. No los
-uses para contactar al consultorio.
+La página principal presenta una portada cálida para Dentissa con fotografía,
+servicios, galería y un acceso directo a la agenda. El botón **Elegir fecha y
+horario** abre el flujo público validado; ahí se seleccionan tratamiento, fecha
+y hora antes de solicitar la cita. La portada no crea citas por sí misma ni usa
+teléfonos, correos, horarios, calificaciones o testimonios como si ya fueran
+datos oficiales. La clínica debe aprobar ese contenido antes de publicarlo.
 
 ## 2. Agendamiento público
 
@@ -308,3 +312,18 @@ desde el mismo control.
 
 Los avisos son internos del sistema y no dependen de WhatsApp ni envían un
 mensaje externo al paciente.
+
+## 12. Experiencia visual y navegación boutique
+
+Dentissa cuenta con una interfaz visual unificada con paleta cálida (rosa `#d75078`, durazno `#f2b0a6`, fondo `#FAF6F6`, texto `#2D2526` y verde salvia `#4E8D72`), pensada para transmitir tranquilidad y profesionalismo tanto a los pacientes como al equipo de la clínica:
+
+1. **Navegación fluida y adaptativa:**
+   - En computadoras de escritorio, la barra superior permanece accesible con accesos directos claros a Inicio, Agenda, Asistente y a los menús agrupados de Gestión, Catálogo, Contenido y Configuración.
+   - En celulares y tablets, el botón de menú con ícono de tres líneas permite desplegar todas las secciones en un panel vertical accesible sin saturar la pantalla.
+2. **Tablas con desplazamiento lateral seguro:**
+   - En pantallas angostas, las listas de citas, pacientes, usuarios, testimonios y reportes conservan todas sus columnas e información legible mediante desplazamiento horizontal, evitando columnas comprimidas o textos cortados.
+3. **Formularios confortables y claros:**
+   - Los campos de captura cuentan con bordes suaves, enfoque en color rosa de marca y mensajes de ayuda legibles para evitar errores durante el registro de datos clínicos o citas.
+4. **Asistente flotante no invasivo:**
+   - El widget del asistente virtual se reposiciona dinámicamente para nunca tapar botones de acción, formularios ni tarjetas de selección.
+

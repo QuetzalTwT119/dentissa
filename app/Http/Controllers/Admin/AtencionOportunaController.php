@@ -43,6 +43,10 @@ class AtencionOportunaController extends Controller
 
     public function contactarUrgencia(Request $request, SolicitudUrgencia $urgencia, AuditoriaService $auditoria): RedirectResponse
     {
+        if ($urgencia->estado !== 'pendiente') {
+            return back()->withErrors(['estado' => 'Esta solicitud ya fue atendida y no puede marcarse como contactada nuevamente.']);
+        }
+
         DB::transaction(function () use ($request, $urgencia, $auditoria) {
             $estadoAnterior = $urgencia->estado;
             $urgencia->update([
@@ -61,6 +65,10 @@ class AtencionOportunaController extends Controller
 
     public function contactarEspera(Request $request, ListaEspera $espera, AuditoriaService $auditoria): RedirectResponse
     {
+        if ($espera->estado !== 'pendiente') {
+            return back()->withErrors(['estado' => 'Esta solicitud ya fue atendida y no puede marcarse como contactada nuevamente.']);
+        }
+
         DB::transaction(function () use ($request, $espera, $auditoria) {
             $estadoAnterior = $espera->estado;
             $espera->update([

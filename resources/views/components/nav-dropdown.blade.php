@@ -3,7 +3,7 @@
 @php
 $classes = $active
             ? 'inline-flex min-h-11 items-center rounded-full bg-brand-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:ring-offset-2'
-            : 'inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-slate-600 transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300';
+            : 'inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-[#5c4f53] transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300';
 @endphp
 
 <div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
@@ -22,10 +22,10 @@ $classes = $active
             x-transition:leave="transition ease-in duration-75"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
-            class="absolute start-0 z-50 mt-2 w-56 rounded-xl border border-gray-100 shadow-xl ltr:origin-top-left rtl:origin-top-right"
+            class="absolute start-0 z-50 mt-2 w-56 rounded-2xl border border-[#e9dfdb] shadow-xl ltr:origin-top-left rtl:origin-top-right"
             style="display: none;"
             @click="open = false">
-        <div class="rounded-xl bg-white py-1 ring-1 ring-black/5">
+        <div class="rounded-2xl bg-white py-1.5 ring-1 ring-black/5">
             {{ $slot }}
         </div>
     </div>

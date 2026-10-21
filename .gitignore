@@ -21,6 +21,8 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/app/antigravity-respaldos/
+/storage/app/backup-staging/
 /vendor
 _ide_helper.php
 Homestead.json

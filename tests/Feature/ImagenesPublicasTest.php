@@ -20,12 +20,12 @@ class ImagenesPublicasTest extends TestCase
         }
     }
 
-    public function test_la_portada_muestra_las_especialidades_predeterminadas_si_aun_no_hay_servicios(): void
+    public function test_la_portada_muestra_el_catalogo_visual_base_si_aun_no_hay_servicios(): void
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('Explora nuestros servicios')
-            ->assertSee('Odontología General')
-            ->assertSee('/images/dentissa/odontologia-general.jpg');
+            ->assertSee('Tratamientos diseñados para tu salud y armonía')
+            ->assertSee('Valoración Integral')
+            ->assertSee('/images/3.jpg');
     }
 }

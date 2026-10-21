@@ -95,6 +95,24 @@ class AtencionOportunaTest extends TestCase
             ->assertSee('Luis Prueba');
     }
 
+    public function test_la_lista_de_espera_rechaza_un_tratamiento_que_no_pertenece_al_servicio_elegido(): void
+    {
+        $servicioElegido = Servicio::create(['nombre' => 'Preventiva', 'activo' => true]);
+        $otroServicio = Servicio::create(['nombre' => 'Estética', 'activo' => true]);
+        $tratamiento = Tratamiento::create(['nombre' => 'Blanqueamiento', 'duracion_estimada' => 45, 'categoria' => 'Estética', 'activo' => true]);
+        $otroServicio->tratamientos()->attach($tratamiento);
+
+        $this->post(route('atencion.lista-espera.store'), [
+            'nombre' => 'Luis Prueba',
+            'telefono' => '5587654321',
+            'id_servicio' => $servicioElegido->id,
+            'id_tratamiento' => $tratamiento->id,
+            'franja_horaria' => 'manana',
+        ])->assertSessionHasErrors('id_tratamiento');
+
+        $this->assertDatabaseCount('lista_espera', 0);
+    }
+
     public function test_el_admin_puede_marcar_una_urgencia_como_contactada(): void
     {
         $urgencia = SolicitudUrgencia::create([
@@ -115,5 +133,25 @@ class AtencionOportunaTest extends TestCase
             'tabla' => 'solicitudes_urgencia',
             'registro_id' => $urgencia->id,
         ]);
+    }
+
+    public function test_una_solicitud_ya_contactada_no_puede_registrarse_como_contactada_por_segunda_vez(): void
+    {
+        $urgencia = SolicitudUrgencia::create([
+            'nombre' => 'Eva Prueba',
+            'telefono' => '5511111111',
+            'motivo' => 'Tengo un golpe dental y dolor desde hace una hora.',
+            'estado' => 'contactada',
+            'contactado_por' => User::factory()->create(['rol' => RolUsuario::Admin])->id,
+            'fecha_contacto' => now()->subHour(),
+        ]);
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        $this->actingAs($admin)
+            ->patch(route('admin.atencion-oportuna.urgencias.contactar', $urgencia))
+            ->assertSessionHasErrors('estado');
+
+        $this->assertSame('contactada', $urgencia->fresh()->estado);
+        $this->assertDatabaseCount('logs_auditoria', 0);
     }
 }

@@ -97,7 +97,7 @@ class AsistenteVistasPublicasTest extends TestCase
     public function test_el_asistente_no_cubre_tarjetas_ni_acciones_importantes_en_vistas_publicas(): void
     {
         foreach ([
-            url('/') => ['Agendar una cita', 1],
+            url('/') => ['Reservar mi valoración', 1],
             route('atencion.urgencia') => ['Enviar solicitud', 6],
             route('atencion.lista-espera') => ['Unirme a la lista de espera', 9],
         ] as $url => [$textoAccion, $zonasEsperadas]) {
