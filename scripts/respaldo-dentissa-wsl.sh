@@ -14,7 +14,7 @@ die() {
     exit 1
 }
 
-[[ -f "${REPOSITORY}/config" ]] || die "No se encontró el repositorio Restic en: ${REPOSITORY}"
+[[ -d "$(dirname "${REPOSITORY}")" ]] || die "No se encontró la carpeta del disco externo para el repositorio: $(dirname "${REPOSITORY}")"
 [[ -f "${PROJECT_DIR}/compose.yaml" ]] || die "No se encontró el proyecto en: ${PROJECT_DIR}"
 command -v docker >/dev/null || die "Docker no está disponible en Ubuntu/WSL."
 
@@ -39,7 +39,12 @@ run_restic() {
 }
 
 echo "Verificando acceso al repositorio cifrado..."
+mkdir -p -- "${REPOSITORY}"
 mkdir -p -- "${STAGING}"
+if [[ ! -f "${REPOSITORY}/config" ]]; then
+    echo "Inicializando un repositorio cifrado nuevo..."
+    run_restic init
+fi
 run_restic snapshots
 
 echo "Exportando MySQL de forma consistente..."
