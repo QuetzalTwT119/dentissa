@@ -496,6 +496,20 @@ Los scripts `scripts/respaldo-dentissa.ps1` y
 `E:\DentissaBackups\restic-repo`. La contraseña se pide de forma interactiva,
 se conserva sólo durante la ejecución y no se guarda en Git ni en `.env`.
 
+En este equipo Docker Desktop no monta de forma fiable la unidad externa `E:`
+desde PowerShell. El respaldo operativo se ejecuta desde Ubuntu/WSL con
+`scripts/respaldo-dentissa-wsl.sh`, donde la unidad se usa como
+`/mnt/e/DentissaBackups/restic-repo`. Si la unidad no aparece en WSL, se monta
+una vez desde PowerShell con `wsl -d Ubuntu -u root -- mount -t drvfs E:
+/mnt/e`; después, desde Ubuntu, se ejecuta:
+
+```bash
+bash /mnt/c/laragon/www/dentissa/scripts/respaldo-dentissa-wsl.sh
+```
+
+El script inicializa el repositorio sólo cuando no existe y nunca elimina
+snapshots anteriores.
+
 El respaldo exporta MySQL con una transacción consistente, incluye `storage/app`
 y un manifiesto con el hash SHA-256 del dump. Después crea un snapshot cifrado y
 ejecuta `restic check --read-data-subset=1/10`. No borra snapshots ni aplica
