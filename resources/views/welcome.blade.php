@@ -728,13 +728,13 @@
                 </div>
 
                 <div>
-                    <h4 class="font-serif-luxury font-bold text-xs text-[#f2b0a6] uppercase tracking-wider mb-3">Acceso al Sistema</h4>
+                    <h4 class="font-serif-luxury font-bold text-xs text-[#f2b0a6] uppercase tracking-wider mb-3">Contacto y citas</h4>
                     <ul class="space-y-2 text-xs text-white/70">
-                        <li>Portal privado para personal y pacientes.</li>
-                        <li class="pt-2">
-                            <a href="{{ url('/login') }}" class="inline-block px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-all">
-                                Iniciar sesión →
-                            </a>
+                        <li><a href="tel:+527551020089" class="hover:text-white transition-colors">755 102 0089</a></li>
+                        <li><a href="mailto:trabajout745@gmail.com" class="break-all hover:text-white transition-colors">trabajout745@gmail.com</a></li>
+                        <li class="pt-2 flex flex-wrap gap-2">
+                            <a href="https://wa.me/527551020089" target="_blank" rel="noopener noreferrer" class="inline-block rounded-xl bg-[#4E8D72] px-3.5 py-2 text-xs font-bold text-white transition-all hover:bg-[#3d735d]">WhatsApp</a>
+                            <a href="{{ url('/login') }}" class="inline-block rounded-xl bg-white/10 px-3.5 py-2 text-xs font-bold text-white transition-all hover:bg-white/20">Portal →</a>
                         </li>
                     </ul>
                 </div>
@@ -743,7 +743,7 @@
 
             <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-white/40 gap-3">
                 <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
-                <p>Información clínica y de contacto sujeta a validación de la clínica.</p>
+                <p>Atención con previa cita.</p>
             </div>
         </div>
     </footer>
