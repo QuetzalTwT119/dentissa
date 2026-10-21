@@ -407,10 +407,18 @@ revierte la cita y queda registrada en el log de aplicación.
 Laravel Reverb y Echo, por el canal privado `users.{id}`. La autorización del
 canal exige que la sesión pertenezca a la misma cuenta activa de admin o
 asistente; el evento solo transmite título, mensaje, vínculo y contador, nunca
-datos clínicos. Mientras la conexión WebSocket no está disponible, el
-navegador usa como respaldo `notificaciones.actualizaciones` cada 3 segundos;
-el endpoint filtra por la cuenta autenticada y no almacena la respuesta en
-caché. Docker inicia Reverb como servicio en el puerto 8080, sin costo de
+datos clínicos. Además del WebSocket, el navegador consulta
+`notificaciones.actualizaciones` cada 3 segundos: así un fallo de suscripción,
+una reconexión o un reinicio de Reverb no puede ocultar avisos nuevos. El
+endpoint filtra por la cuenta autenticada y no almacena la respuesta en caché.
+Al abrir la campana, el navegador marca los avisos pendientes como leídos,
+actualiza el contador y conserva en pantalla los cinco más recientes. El
+centro de actividad agrupa el historial por día y clasifica visualmente cada
+evento; cancelaciones e inasistencias se consideran prioritarias. Las
+rutas guardadas para avisos internos son relativas (por ejemplo, `/citas`),
+por lo que funcionan igual desde `localhost`, una IP local o el dominio de
+producción, sin perder la sesión. Docker inicia
+Reverb como servicio en el puerto 8080, sin costo de
 proveedor externo ni cola adicional. El sonido opcional se genera mediante Web
 Audio API, sin archivos ni servicios externos, y su preferencia se almacena en
 `localStorage` separada por usuario. El control se muestra en la bandeja de

@@ -302,6 +302,12 @@ inasistencia. Las solicitudes hechas desde el
 portal o Telegram también avisan al personal; estos avisos no se agregan a la
 auditoría como si los hubiera realizado un empleado. Cada persona ve sus
 propios avisos y puede marcarlos como leídos individualmente o todos a la vez.
+Al abrir la campana, los avisos pendientes se marcan como leídos y el contador
+queda en cero, pero los últimos cinco siguen visibles en la vista rápida con
+un punto gris. El centro completo agrupa los avisos por **Hoy**, **Ayer** y
+**Anteriores**, y etiqueta el tipo de cambio; cancelaciones e inasistencias se
+destacan para facilitar el seguimiento. Al abrir un aviso desde esa lista o desde el aviso emergente,
+el sistema lleva a la cita relacionada sin cerrar la sesión.
 Con la sesión abierta, la notificación aparece al instante en un aviso
 emergente y el contador se actualiza sin recargar la página. Si el canal en
 vivo se desconecta temporalmente, el sistema revisa novedades cada pocos
