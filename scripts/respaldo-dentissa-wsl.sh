@@ -7,7 +7,7 @@ set -euo pipefail
 PROJECT_DIR="${PROJECT_DIR:-/mnt/c/laragon/www/dentissa}"
 REPOSITORY="${RESTIC_REPOSITORY_PATH:-/mnt/e/DentissaBackups/restic-repo}"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
-STAGING="${PROJECT_DIR}/storage/app/backup-staging/dentissa-${TIMESTAMP}"
+STAGING="${PROJECT_DIR}/.backup-staging/dentissa-${TIMESTAMP}"
 
 die() {
     echo "Error: $*" >&2

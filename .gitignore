@@ -23,6 +23,7 @@
 /storage/pail
 /storage/app/antigravity-respaldos/
 /storage/app/backup-staging/
+/.backup-staging/
 /vendor
 _ide_helper.php
 Homestead.json
