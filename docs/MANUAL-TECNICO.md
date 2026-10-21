@@ -500,8 +500,13 @@ En este equipo Docker Desktop no monta de forma fiable la unidad externa `E:`
 desde PowerShell. El respaldo operativo se ejecuta desde Ubuntu/WSL con
 `scripts/respaldo-dentissa-wsl.sh`, donde la unidad se usa como
 `/mnt/e/DentissaBackups/restic-repo`. Si la unidad no aparece en WSL, se monta
-una vez desde PowerShell con `wsl -d Ubuntu -u root -- mount -t drvfs E:
-/mnt/e`; después, desde Ubuntu, se ejecuta:
+una vez desde PowerShell con:
+
+```powershell
+wsl -d Ubuntu -u root -- mount -t drvfs E: /mnt/e
+```
+
+Después, desde Ubuntu, se ejecuta:
 
 ```bash
 bash /mnt/c/laragon/www/dentissa/scripts/respaldo-dentissa-wsl.sh
