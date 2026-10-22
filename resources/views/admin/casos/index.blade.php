@@ -82,6 +82,7 @@
                     </tbody>
                 </table>
                 </div>
+                <x-pagination-summary :items="$casos" label="casos" />
             </div>
         </div>
     </div>

@@ -118,6 +118,7 @@ $estadoClase = [
                     </tbody>
                 </table>
                 </div>
+                <x-pagination-summary :items="$testimonios" label="testimonios" />
             </div>
         </div>
     </div>

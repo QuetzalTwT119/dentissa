@@ -31,7 +31,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-2">
             <div>
                 <div class="flex items-center gap-2">
                     <span class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full border border-brand-200/50">
@@ -42,12 +42,6 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                     {{ $esPersonal ? 'Citas' : 'Mis citas' }}
                 </h1>
                 <p class="mt-0.5 text-xs sm:text-sm text-[#8A7A7D]">Monitoreo de citas médicas, estados de atención y tiempos clínicos.</p>
-            </div>
-            <div class="flex items-center gap-2.5">
-                <a href="{{ route('citas.create') }}" class="btn-brand">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>Agendar cita</span>
-                </a>
             </div>
         </div>
     </x-slot>
@@ -74,45 +68,74 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
             @endif
 
             <!-- Filtros y Barra de Acciones Superior -->
-            <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft">
-                <div class="flex flex-wrap items-end justify-between gap-4">
-                    @if ($esPersonal)
-                        <form method="GET" action="{{ route('citas.index') }}" class="flex flex-wrap items-end gap-3 sm:gap-4">
-                            <div>
-                                <x-input-label for="filtro_fecha" value="Fecha" class="text-xs uppercase tracking-wider text-[#8A7A7D]" />
-                                <input id="filtro_fecha" type="date" name="fecha" value="{{ $filtros['fecha'] ?? '' }}"
-                                       onchange="this.form.submit()"
-                                       class="mt-1 block rounded-xl border border-[#e9dfdb] bg-[#FAF6F6]/50 px-3 py-2 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-200">
-                            </div>
-                            <div>
-                                <x-input-label for="filtro_estado" value="Estado" class="text-xs uppercase tracking-wider text-[#8A7A7D]" />
-                                <select id="filtro_estado" name="estado" onchange="this.form.submit()"
-                                        class="mt-1 block rounded-xl border border-[#e9dfdb] bg-[#FAF6F6]/50 px-3 py-2 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-200">
-                                    <option value="">Todos los estados</option>
-                                    @foreach ($estadoLabel as $valor => $etiqueta)
-                                        <option value="{{ $valor }}" @selected(($filtros['estado'] ?? '') === $valor)>{{ $etiqueta }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @if (!empty($filtros['fecha']) || !empty($filtros['estado']))
-                                <a href="{{ route('citas.index') }}" class="text-xs font-semibold text-[#8A7A7D] hover:text-brand-600 transition pb-2.5">
-                                    Limpiar filtros
-                                </a>
-                            @endif
-                        </form>
-                    @else
-                        <p class="text-sm text-[#6b5e62]">Aquí puedes consultar el estado y horario de tus citas programadas.</p>
-                    @endif
+            <div class="rounded-3xl border border-[#e9dfdb] bg-white p-5 sm:p-6 shadow-soft">
+                @if ($esPersonal)
+                    <form method="GET" action="{{ route('citas.index') }}" role="search" data-citas-live-search class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-12 xl:items-end">
+                        @if (request()->has('per_page'))
+                            <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+                        @endif
 
-                    <a href="{{ route('citas.create') }}" class="btn-brand">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        <span>Agendar cita</span>
-                    </a>
-                </div>
+                        <div class="min-w-0 xl:col-span-4">
+                            <label for="buscar_citas" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#76676b]">Buscar</label>
+                            <div class="relative">
+                                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#d75078]" aria-hidden="true">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4" stroke-linecap="round"/></svg>
+                                </span>
+                                <input id="buscar_citas" type="search" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" maxlength="100"
+                                       placeholder="Paciente, teléfono, servicio o tratamiento"
+                                       aria-label="Buscar citas por paciente, teléfono, servicio o tratamiento"
+                                       x-on:input.debounce.600ms="$el.form.requestSubmit()"
+                                       class="block h-12 w-full rounded-xl border border-[#e9dfdb] bg-[#FAF6F6]/60 pl-11 pr-4 text-sm text-[#2D2526] shadow-sm transition placeholder:text-[#8A7A7D]/70 hover:border-brand-300 hover:bg-white focus:border-[#d75078] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#d75078]/20">
+                            </div>
+                        </div>
+
+                        <div class="min-w-0 xl:col-span-2">
+                            <label for="filtro_fecha" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#76676b]">Fecha</label>
+                            <input id="filtro_fecha" type="date" name="fecha" value="{{ $filtros['fecha'] ?? '' }}" onchange="this.form.submit()"
+                                   class="h-12 w-full rounded-xl border border-[#e9dfdb] bg-[#FAF6F6]/60 px-3 text-sm text-[#2D2526] shadow-sm transition hover:border-brand-300 hover:bg-white focus:border-[#d75078] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#d75078]/20">
+                        </div>
+
+                        <div class="min-w-0 xl:col-span-2">
+                            <label for="filtro_estado" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#76676b]">Estado</label>
+                            <select id="filtro_estado" name="estado" onchange="this.form.submit()"
+                                    class="h-12 w-full rounded-xl border border-[#e9dfdb] bg-[#FAF6F6]/60 px-3 text-sm text-[#2D2526] shadow-sm transition hover:border-brand-300 hover:bg-white focus:border-[#d75078] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#d75078]/20">
+                                <option value="">Todos los estados</option>
+                                @foreach ($estadoLabel as $valor => $etiqueta)
+                                    <option value="{{ $valor }}" @selected(($filtros['estado'] ?? '') === $valor)>{{ $etiqueta }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <button type="submit" class="sr-only">Buscar citas</button>
+
+                        <div class="flex items-center gap-2 sm:col-span-2 xl:col-span-4 xl:justify-end">
+                            <a data-citas-clear
+                               href="{{ route('citas.index', request()->only('per_page')) }}"
+                               @class([
+                                   'inline-flex h-12 items-center justify-center rounded-xl px-3 text-xs font-semibold text-[#8A7A7D] transition hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-400',
+                                   'hidden' => empty($filtros['buscar']) && empty($filtros['fecha']) && empty($filtros['estado']),
+                               ])>
+                                Limpiar
+                            </a>
+                            <a href="{{ route('citas.create') }}" class="btn-brand inline-flex h-12 shrink-0 items-center justify-center rounded-xl px-4 text-xs">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                <span>Agendar cita</span>
+                            </a>
+                        </div>
+                    </form>
+                @else
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <p class="text-sm text-[#6b5e62]">Aquí puedes consultar el estado y horario de tus citas programadas.</p>
+                        <a href="{{ route('citas.create') }}" class="btn-brand shrink-0">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <span>Agendar cita</span>
+                        </a>
+                    </div>
+                @endif
             </div>
 
             <!-- Tabla de Citas -->
-            <div class="overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-soft">
+            <div data-citas-results aria-live="polite" aria-busy="false" class="overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-soft">
                 <div class="overflow-x-auto">
                 <table class="w-full min-w-[1100px] text-left text-sm">
                     <thead class="border-b border-[#e9dfdb] bg-[#FAF6F6] text-xs font-semibold uppercase tracking-wider text-[#6b5e62]">
@@ -167,13 +190,13 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                     </span>
                                 </td>
                                 <td class="whitespace-nowrap px-6 py-4">
-                                    <div class="flex flex-wrap items-center gap-2">
+                                    <div class="flex w-max max-w-full items-center justify-center gap-2">
                                         @if ($esPersonal && $cita->estado->value === 'agendada')
                                             <form method="POST" action="{{ route('citas.confirm', $cita) }}">
                                                 @csrf
                                                 @method('patch')
                                                 <button type="submit"
-                                                        class="inline-flex items-center whitespace-nowrap rounded-xl bg-brand-600 px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
+                                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
                                                     Confirmar
                                                 </button>
                                             </form>
@@ -182,7 +205,8 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                                 @csrf
                                                 @method('patch')
                                                 <button type="submit"
-                                                        class="inline-flex items-center whitespace-nowrap rounded-xl bg-brand-600 px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
+                                                        class="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-xl bg-brand-600 px-3.5 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
+                                                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.5 4.75a.75.75 0 011.143-.64l8 5a.75.75 0 010 1.28l-8 5A.75.75 0 016.5 14.75v-10z" /></svg>
                                                     Iniciar
                                                 </button>
                                             </form>
@@ -191,7 +215,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                                 @csrf
                                                 @method('patch')
                                                 <button type="submit"
-                                                        class="inline-flex items-center whitespace-nowrap rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2">
+                                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2">
                                                     Completar
                                                 </button>
                                             </form>
@@ -199,27 +223,47 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
 
                                         @if ($esPersonal && in_array($cita->estado->value, $estadosConAccionesSecundarias, true))
                                             <details class="group relative">
-                                                <summary class="inline-flex cursor-pointer list-none items-center gap-1 whitespace-nowrap rounded-xl border border-[#e9dfdb] bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wider text-[#51464a] shadow-sm transition hover:bg-[#FAF6F6] hover:text-brand-700 hover:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-400">
+                                                <summary aria-label="Abrir más acciones de la cita" title="Más acciones" class="inline-flex h-[42px] cursor-pointer list-none items-center justify-center gap-2 rounded-xl border border-[#e9dfdb] bg-white px-3 text-xs font-semibold text-[#51464a] shadow-sm transition duration-200 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 [&::-webkit-details-marker]:hidden">
+                                                    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                            <path d="M10 4.25a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zm0 4.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zm0 4.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5z" />
+                                                        </svg>
+                                                    </span>
                                                     Más acciones
-                                                    <svg class="h-4 w-4 transition group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                        <path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 011.06 0L10 10.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 8.28a.75.75 0 010-1.06z" clip-rule="evenodd" />
-                                                    </svg>
+                                                    <svg class="h-3.5 w-3.5 text-[#8A7A7D] transition group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 011.06 0L10 10.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 8.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
                                                 </summary>
-                                                <div class="absolute right-0 top-11 z-30 flex min-w-36 flex-col gap-1 rounded-xl border border-[#e9dfdb] bg-white p-1.5 shadow-xl">
+                                                <div x-data="{}" x-init="$nextTick(() => { const detail = $el.closest('details'); detail?.addEventListener('toggle', () => { if (!detail.open) return; const trigger = detail.querySelector('summary').getBoundingClientRect(); const scrollArea = detail.closest('.overflow-x-auto')?.getBoundingClientRect(); const top = scrollArea?.top ?? 0; const bottom = scrollArea?.bottom ?? window.innerHeight; const roomBelow = bottom - trigger.bottom; const roomAbove = trigger.top - top; $el.classList.toggle('bottom-full', roomBelow < 220 && roomAbove > roomBelow); $el.classList.toggle('top-full', !(roomBelow < 220 && roomAbove > roomBelow)); $el.classList.toggle('mb-2', roomBelow < 220 && roomAbove > roomBelow); $el.classList.toggle('mt-2', !(roomBelow < 220 && roomAbove > roomBelow)); }); })" class="absolute right-0 top-full z-30 mt-2 flex min-w-48 flex-col rounded-2xl border border-[#eee3e0] bg-white p-2 shadow-[0_16px_40px_-18px_rgba(72,35,48,0.38)] ring-1 ring-black/[0.03]">
+                                                    <p class="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#9a858b]">Gestionar cita</p>
                                                     @if ($cita->estado->value === 'confirmada')
                                                         <form method="POST" action="{{ route('citas.no-show', $cita) }}">
                                                             @csrf
                                                             @method('patch')
-                                                            <button type="submit" class="whitespace-nowrap rounded-lg px-3 py-2 text-left text-xs font-medium text-amber-800 transition hover:bg-amber-50 focus:bg-amber-50 focus:outline-none w-full">No asistió</button>
+                                                            <button type="submit" class="flex w-full items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-left text-sm font-medium text-[#675354] transition hover:bg-amber-50 hover:text-amber-800 focus:bg-amber-50 focus:outline-none">
+                                                                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+                                                                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v3.5c0 .414.336.75.75.75h2a.75.75 0 000-1.5h-1.25v-2.75z" clip-rule="evenodd" /></svg>
+                                                                </span>
+                                                                Marcar inasistencia
+                                                            </button>
                                                         </form>
                                                     @endif
-                                                    <a href="{{ route('citas.edit', $cita) }}" class="whitespace-nowrap rounded-lg px-3 py-2 text-xs font-medium text-[#403539] transition hover:bg-brand-50 hover:text-brand-700 focus:bg-brand-50 focus:outline-none">Reagendar</a>
+                                                    <a href="{{ route('citas.edit', $cita) }}" class="flex items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-medium text-[#51464a] transition hover:bg-brand-50 hover:text-brand-800 focus:bg-brand-50 focus:text-brand-800 focus:outline-none">
+                                                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M10 4v2m0 8v2m6-6h-2M6 10H4m10.243-4.243-1.414 1.414M7.172 12.828l-1.414 1.414m8.485 0-1.414-1.414M7.172 7.172 5.758 5.758" /><circle cx="10" cy="10" r="3" stroke-width="1.6" /></svg>
+                                                        </span>
+                                                        Reagendar
+                                                    </a>
+                                                    <div class="mx-2 my-1 border-t border-[#f1e9e6]"></div>
                                                     <form method="POST" action="{{ route('citas.cancel', $cita) }}"
                                                           onsubmit="const motivo = prompt('Motivo de la cancelación (opcional):') ?? ''; if (!confirm('¿Cancelar esta cita?')) { return false; } this.querySelector('[name=motivo_cancelacion]').value = motivo; return true;">
                                                         @csrf
                                                         @method('patch')
                                                         <input type="hidden" name="motivo_cancelacion" value="">
-                                                        <button type="submit" class="whitespace-nowrap rounded-lg px-3 py-2 text-left text-xs font-medium text-rose-700 transition hover:bg-rose-50 focus:bg-rose-50 focus:outline-none w-full">Cancelar</button>
+                                                        <button type="submit" class="flex w-full items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-left text-sm font-medium text-rose-700 transition hover:bg-rose-50 focus:bg-rose-50 focus:outline-none">
+                                                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
+                                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="m6 6 8 8M14 6l-8 8" /></svg>
+                                                            </span>
+                                                            Cancelar cita
+                                                        </button>
                                                     </form>
                                                 </div>
                                             </details>
@@ -243,7 +287,75 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                     </tbody>
                 </table>
                 </div>
+                <x-pagination-summary :items="$citas" label="citas" />
             </div>
         </div>
     </div>
+
+    @if ($esPersonal)
+        <script>
+            (() => {
+                const inicializarBusquedaEnVivo = () => {
+                    const form = document.querySelector('[data-citas-live-search]');
+                    const resultados = document.querySelector('[data-citas-results]');
+                    const entrada = form?.querySelector('[name="buscar"]');
+                    const limpiar = form?.querySelector('[data-citas-clear]');
+
+                    if (!form || !resultados || !entrada || form.dataset.liveSearchReady) return;
+
+                    form.dataset.liveSearchReady = 'true';
+                    let temporizador = null;
+                    let solicitud = null;
+
+                    entrada.addEventListener('input', () => {
+                        clearTimeout(temporizador);
+                        solicitud?.abort();
+
+                        temporizador = setTimeout(async () => {
+                            const parametros = new URLSearchParams(new FormData(form));
+                            const url = `${form.action}?${parametros.toString()}`;
+                            solicitud = new AbortController();
+                            resultados.setAttribute('aria-busy', 'true');
+
+                            try {
+                                const respuesta = await fetch(url, {
+                                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                                    signal: solicitud.signal,
+                                });
+
+                                if (!respuesta.ok) throw new Error('No se pudieron actualizar las citas.');
+
+                                const html = await respuesta.text();
+                                const documento = new DOMParser().parseFromString(html, 'text/html');
+                                const resultadosNuevos = documento.querySelector('[data-citas-results]');
+
+                                if (!resultadosNuevos) throw new Error('No se encontró la lista actualizada de citas.');
+
+                                resultados.innerHTML = resultadosNuevos.innerHTML;
+                                resultados.setAttribute('aria-busy', 'false');
+                                window.history.replaceState({}, '', url);
+
+                                const hayFiltros = ['buscar', 'fecha', 'estado'].some((nombre) =>
+                                    String(form.elements.namedItem(nombre)?.value ?? '').trim() !== ''
+                                );
+                                limpiar?.classList.toggle('hidden', !hayFiltros);
+                                window.Alpine?.initTree(resultados);
+                            } catch (error) {
+                                if (error.name !== 'AbortError') {
+                                    resultados.setAttribute('aria-busy', 'false');
+                                    console.error(error);
+                                }
+                            }
+                        }, 180);
+                    });
+                };
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', inicializarBusquedaEnVivo, { once: true });
+                } else {
+                    inicializarBusquedaEnVivo();
+                }
+            })();
+        </script>
+    @endif
 </x-app-layout>

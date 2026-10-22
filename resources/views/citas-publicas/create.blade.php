@@ -23,7 +23,7 @@
                         </svg>
                     </div>
                     <p class="font-cursive text-3xl text-brand-600">Melissa López N.</p>
-                    <h1 class="mt-4 text-2xl font-bold tracking-tight text-[#2D2526]">¡Listo! Tu cita quedó agendada. Te esperamos.</h1>
+                    <h1 class="mt-4 text-2xl font-bold tracking-tight text-[#2D2526]">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
                     <p class="mt-2 text-sm text-[#8A7A7D]">Tu solicitud ha sido registrada correctamente en el consultorio. Te enviaremos un recordatorio previo a tu cita.</p>
                     <a href="/" class="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-7 py-3.5 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5">
                         Volver al inicio
@@ -480,19 +480,7 @@
                             </dl>
                         </div>
 
-                        <p class="mt-4 text-[11px] leading-relaxed text-[#8A7A7D] text-center">La cita se solicita al completar tus datos y pulsar “Agendar cita”.</p>
-
-                        <!-- Enlaces Rápidos de Urgencia y Lista de Espera -->
-                        <div class="mt-5 grid gap-2.5 sm:grid-cols-2">
-                            <a data-asistente-zona-reservada href="{{ route('atencion.urgencia') }}" class="group rounded-2xl border border-rose-200 bg-rose-50/60 p-3.5 transition hover:bg-rose-100 hover:shadow-xs">
-                                <strong class="block text-xs font-bold text-rose-900 group-hover:text-rose-950">¿Dolor intenso o urgencia?</strong>
-                                <span class="mt-0.5 block text-[11px] text-rose-700">Pide que el consultorio te contacte.</span>
-                            </a>
-                            <a data-asistente-zona-reservada href="{{ route('atencion.lista-espera') }}" class="group rounded-2xl border border-[#e9dfdb] bg-[#FAF6F6] p-3.5 transition hover:bg-white hover:border-brand-300 hover:shadow-xs">
-                                <strong class="block text-xs font-bold text-brand-700 group-hover:text-brand-800">¿No encuentras horario?</strong>
-                                <span class="mt-0.5 block text-[11px] text-[#6b5e62]">Únete a la lista de espera.</span>
-                            </a>
-                        </div>
+                        <p class="mt-4 text-[11px] leading-relaxed text-[#8A7A7D] text-center">Elige un horario disponible y completa tus datos para reservar tu cita.</p>
                     </aside>
                 </div>
             </div>

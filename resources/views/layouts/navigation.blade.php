@@ -1,8 +1,8 @@
 @php
 $usuario = auth()->user();
 $esAdmin = $usuario->rol === \App\Enums\RolUsuario::Admin;
-$notificacionesNoLeidas = $usuario->notificacionesSistema()->whereNull('leida_en')->count();
-$notificacionesRecientes = $usuario->notificacionesSistema()->whereNull('leida_en')->latest('id')->limit(5)->get();
+$notificacionesNuevas = $usuario->notificacionesSistema()->whereNull('vista_en')->count();
+$notificacionesRecientes = $usuario->notificacionesSistema()->latest('id')->limit(5)->get();
 $clasesEnlace = 'inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-[#5c4f53] transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300';
 $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:ring-offset-2';
 @endphp
@@ -30,12 +30,11 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-6
 
             @if ($esAdmin)
                 <span class="mx-2 h-8 w-px bg-brand-100" aria-hidden="true"></span>
-                <x-nav-dropdown :active="request()->routeIs('admin.pacientes.*') || request()->routeIs('admin.usuarios.*') || request()->routeIs('admin.reportes.*') || request()->routeIs('admin.atencion-oportuna.*') || request()->routeIs('admin.mensajes.*') || request()->routeIs('admin.auditoria.*')">
+                <x-nav-dropdown :active="request()->routeIs('admin.pacientes.*') || request()->routeIs('admin.usuarios.*') || request()->routeIs('admin.reportes.*') || request()->routeIs('admin.mensajes.*') || request()->routeIs('admin.auditoria.*')">
                     <x-slot name="label">Gestión</x-slot>
                     <x-dropdown-link :href="route('admin.pacientes.index')">Pacientes</x-dropdown-link>
                     <x-dropdown-link :href="route('admin.usuarios.index')">Usuarios</x-dropdown-link>
                     <x-dropdown-link :href="route('admin.reportes.index')">Reportes</x-dropdown-link>
-                    <x-dropdown-link :href="route('admin.atencion-oportuna.index')">Urgencias y lista de espera</x-dropdown-link>
                     <x-dropdown-link :href="route('admin.mensajes.index')">Mensajes</x-dropdown-link>
                     <x-dropdown-link :href="route('admin.auditoria.index')">Auditoría</x-dropdown-link>
                 </x-nav-dropdown>
@@ -68,7 +67,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-6
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9a6 6 0 1 0-12 0v.75a8.967 8.967 0 0 1-2.312 6.022 23.848 23.848 0 0 0 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                     </svg>
-                    <span data-notification-count-badge class="absolute right-1 top-1 inline-flex min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.65rem] font-bold leading-4 text-white {{ $notificacionesNoLeidas > 0 ? '' : 'hidden' }}" @if ($notificacionesNoLeidas === 0) hidden @endif>{{ $notificacionesNoLeidas > 99 ? '99+' : $notificacionesNoLeidas }}</span>
+                    <span data-notification-count-badge class="absolute right-1 top-1 inline-flex min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.65rem] font-bold leading-4 text-white {{ $notificacionesNuevas > 0 ? '' : 'hidden' }}" @if ($notificacionesNuevas === 0) hidden @endif>{{ $notificacionesNuevas > 99 ? '99+' : $notificacionesNuevas }}</span>
                 </button>
 
             </div>
@@ -88,7 +87,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-6
         <div class="flex shrink-0 items-center gap-1 2xl:hidden">
             <button type="button" data-notification-preview-trigger @click.stop="notificationsOpen = !notificationsOpen" :aria-expanded="notificationsOpen.toString()" aria-label="Ver notificaciones recientes" class="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-600 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-300">
                 <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9a6 6 0 1 0-12 0v.75a8.967 8.967 0 0 1-2.312 6.022 23.848 23.848 0 0 0 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
-                <span data-notification-count-badge class="absolute right-1 top-1 inline-flex min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.65rem] font-bold leading-4 text-white {{ $notificacionesNoLeidas > 0 ? '' : 'hidden' }}" @if ($notificacionesNoLeidas === 0) hidden @endif>{{ $notificacionesNoLeidas > 99 ? '99+' : $notificacionesNoLeidas }}</span>
+                <span data-notification-count-badge class="absolute right-1 top-1 inline-flex min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.65rem] font-bold leading-4 text-white {{ $notificacionesNuevas > 0 ? '' : 'hidden' }}" @if ($notificacionesNuevas === 0) hidden @endif>{{ $notificacionesNuevas > 99 ? '99+' : $notificacionesNuevas }}</span>
             </button>
             <button type="button" @click="open = !open" :aria-expanded="open.toString()" :aria-label="open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'" aria-controls="mobile-navigation-menu" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-300">
                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true"><path :class="{'hidden': open, 'inline-flex': !open}" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /><path :class="{'hidden': !open, 'inline-flex': open}" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -99,12 +98,12 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-6
     <div id="notification-preview-panel" data-notification-preview-panel x-cloak x-show="notificationsOpen" @click.outside="notificationsOpen = false" @keydown.escape.window="notificationsOpen = false" x-transition.origin.top.right class="fixed left-4 right-4 top-20 z-50 2xl:absolute 2xl:left-auto 2xl:right-40 2xl:top-20 2xl:w-[26rem]" role="dialog" aria-label="Notificaciones recientes">
         <section class="overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-2xl ring-1 ring-black/5">
             <header class="flex items-center justify-between border-b border-[#e9dfdb]/70 bg-[#FAF6F6] px-4 py-3.5">
-                <div><h2 class="font-semibold text-[#2c2428]">Notificaciones recientes</h2><p class="mt-0.5 text-xs text-[#8A7A7D]"><span data-notification-count-summary>{{ $notificacionesNoLeidas }}</span> pendientes</p></div>
+                <div><h2 class="font-semibold text-[#2c2428]">Notificaciones recientes</h2><p class="mt-0.5 text-xs text-[#8A7A7D]"><span data-notification-count-summary>{{ $notificacionesNuevas }}</span> nuevas</p></div>
                 <button type="button" @click="notificationsOpen = false" class="rounded-lg p-2 text-[#8A7A7D] transition hover:bg-white hover:text-[#2c2428] focus:outline-none focus:ring-2 focus:ring-brand-primary" aria-label="Cerrar notificaciones"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 0 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 0 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /></svg></button>
             </header>
             <div data-notification-preview-list class="max-h-[min(60vh,26rem)] divide-y divide-[#e9dfdb]/60 overflow-y-auto">
                 @forelse ($notificacionesRecientes as $notificacion)
-                    <a data-notification-preview="{{ $notificacion->id }}" href="{{ $notificacion->url ?: route('citas.index') }}" @click="notificationsOpen = false" class="flex gap-3 px-4 py-3.5 transition hover:bg-[#faf7f4] focus:bg-[#faf7f4] focus:outline-none"><span data-notification-preview-dot class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full {{ $notificacion->leida_en ? 'bg-slate-300' : 'bg-brand-600' }}" aria-hidden="true"></span><span class="min-w-0 flex-1"><span class="flex items-start justify-between gap-3"><span data-notification-preview-title class="notification-preview-title text-sm font-semibold text-[#2c2428]">{{ $notificacion->titulo }}</span><time class="shrink-0 text-xs text-[#8A7A7D]" datetime="{{ $notificacion->created_at->toIso8601String() }}">{{ $notificacion->created_at->diffForHumans() }}</time></span><span data-notification-preview-message class="notification-preview-message mt-1 text-sm leading-5 text-[#665b5e]">{{ $notificacion->mensaje }}</span></span></a>
+                    <a data-notification-preview="{{ $notificacion->id }}" data-notification-read-url="{{ route('notificaciones.leida', $notificacion, false) }}" href="{{ $notificacion->url ?: route('citas.index', [], false) }}" @click="notificationsOpen = false" class="flex gap-3 px-4 py-3.5 transition hover:bg-[#faf7f4] focus:bg-[#faf7f4] focus:outline-none"><span data-notification-preview-dot class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full {{ $notificacion->leida_en ? 'bg-slate-300' : 'bg-brand-600 ring-4 ring-brand-100 animate-pulse' }}" aria-label="{{ $notificacion->leida_en ? 'Notificación leída' : 'Notificación nueva' }}"></span><span class="min-w-0 flex-1"><span class="flex items-start justify-between gap-3"><span data-notification-preview-title class="notification-preview-title text-sm font-semibold text-[#2c2428]">{{ $notificacion->titulo }}</span><time class="shrink-0 text-xs text-[#8A7A7D]" datetime="{{ $notificacion->created_at->toIso8601String() }}">{{ $notificacion->created_at->diffForHumans() }}</time></span><span data-notification-preview-message class="notification-preview-message mt-1 text-sm leading-5 text-[#665b5e]">{{ $notificacion->mensaje }}</span></span></a>
                 @empty
                     <p data-notification-preview-empty class="px-4 py-8 text-center text-sm text-[#8A7A7D]">No hay notificaciones recientes.</p>
                 @endforelse
@@ -118,7 +117,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-6
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Inicio</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('citas.index')" :active="request()->routeIs('citas.*')">Agenda</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('asistente-agenda.create')" :active="request()->routeIs('asistente-agenda.*')">Asistente</x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('notificaciones.index')" :active="request()->routeIs('notificaciones.*')">Notificaciones <span data-notification-count-badge class="ms-2 rounded-full bg-brand-600 px-2 py-0.5 text-xs text-white {{ $notificacionesNoLeidas > 0 ? '' : 'hidden' }}" @if ($notificacionesNoLeidas === 0) hidden @endif>{{ $notificacionesNoLeidas > 99 ? '99+' : $notificacionesNoLeidas }}</span></x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('notificaciones.index')" :active="request()->routeIs('notificaciones.*')">Notificaciones <span data-notification-count-badge class="ms-2 rounded-full bg-brand-600 px-2 py-0.5 text-xs text-white {{ $notificacionesNuevas > 0 ? '' : 'hidden' }}" @if ($notificacionesNuevas === 0) hidden @endif>{{ $notificacionesNuevas > 99 ? '99+' : $notificacionesNuevas }}</span></x-responsive-nav-link>
             @unless ($esAdmin)
                 <x-responsive-nav-link :href="route('ofertas.index')" :active="request()->routeIs('ofertas.*')">Ofertas</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('galeria.index')" :active="request()->routeIs('galeria.*')">Galería</x-responsive-nav-link>
@@ -128,7 +127,6 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-6
                 <x-responsive-nav-link :href="route('admin.pacientes.index')" :active="request()->routeIs('admin.pacientes.*')">Pacientes</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.usuarios.index')" :active="request()->routeIs('admin.usuarios.*')">Usuarios</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reportes.index')" :active="request()->routeIs('admin.reportes.*')">Reportes</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.atencion-oportuna.index')" :active="request()->routeIs('admin.atencion-oportuna.*')">Urgencias y lista de espera</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.mensajes.index')" :active="request()->routeIs('admin.mensajes.*')">Mensajes</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.auditoria.index')" :active="request()->routeIs('admin.auditoria.*')">Auditoría</x-responsive-nav-link>
                 <p class="col-span-full px-3 pt-3 text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Catálogo y contenido</p>

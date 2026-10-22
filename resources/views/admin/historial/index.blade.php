@@ -98,6 +98,7 @@ $tipoConsultaLabel = [
                     </div>
                 @endforelse
             </div>
+            <x-pagination-summary :items="$consultas" label="consultas" :integrated="false" />
         </div>
     </div>
 </x-app-layout>

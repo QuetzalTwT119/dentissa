@@ -127,6 +127,7 @@
                         </tbody>
                     </table>
                 </div>
+                <x-pagination-summary :items="$pacientes" label="pacientes" />
             </div>
         </div>
     </div>

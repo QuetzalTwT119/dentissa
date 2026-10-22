@@ -54,6 +54,7 @@
                     </div>
                 @endforelse
             </div>
+            <x-pagination-summary :items="$imagenes" label="imágenes" :integrated="false" />
         </div>
     </div>
 </x-app-layout>

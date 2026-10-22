@@ -74,6 +74,7 @@
                     </tbody>
                 </table>
                 </div>
+                <x-pagination-summary :items="$preguntas" label="preguntas" />
             </div>
         </div>
     </div>

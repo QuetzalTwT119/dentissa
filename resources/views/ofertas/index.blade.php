@@ -47,5 +47,6 @@
                 </div>
             @endforelse
         </div>
+        <x-pagination-summary :items="$ofertas" label="ofertas" :integrated="false" />
     </div>
 </x-app-layout>

@@ -86,6 +86,7 @@
                     </tbody>
                 </table>
                 </div>
+                <x-pagination-summary :items="$servicios" label="servicios" />
             </div>
         </div>
     </div>

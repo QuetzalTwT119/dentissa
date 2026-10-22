@@ -15,7 +15,7 @@
         <!-- Scripts & Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="h-full font-sans antialiased bg-[#FAF6F6] text-[#2D2526] selection:bg-[#f2b0a6] selection:text-[#2D2526]" @auth data-notifications-updates-url="{{ route('notificaciones.actualizaciones') }}" data-notifications-cursor="{{ auth()->user()->notificacionesSistema()->max('id') ?? 0 }}" data-realtime-user-id="{{ auth()->id() }}" data-realtime-key="{{ config('broadcasting.connections.reverb.key') }}" data-realtime-host="{{ config('reverb.client.host') }}" data-realtime-port="{{ config('reverb.client.port') }}" data-realtime-scheme="{{ config('reverb.client.scheme') }}" @endauth>
+    <body class="h-full font-sans antialiased bg-[#FAF6F6] text-[#2D2526] selection:bg-[#f2b0a6] selection:text-[#2D2526]" @auth data-notifications-updates-url="{{ route('notificaciones.actualizaciones', [], false) }}" data-notifications-cursor="{{ auth()->user()->notificacionesSistema()->max('id') ?? 0 }}" data-notifications-read-url="{{ route('notificaciones.leida', ['notificacion' => '__NOTIFICATION_ID__'], false) }}" data-notifications-mark-seen-url="{{ route('notificaciones.vistas', [], false) }}" data-realtime-user-id="{{ auth()->id() }}" data-realtime-key="{{ config('broadcasting.connections.reverb.key') }}" data-realtime-host="{{ config('reverb.client.host') }}" data-realtime-port="{{ config('reverb.client.port') }}" data-realtime-scheme="{{ config('reverb.client.scheme') }}" @endauth>
         <!-- Acento superior de marca Dentissa -->
         <div class="h-1 bg-gradient-to-r from-[#d75078] via-[#f2b0a6] to-[#4E8D72] w-full sticky top-0 z-50"></div>
 
@@ -36,13 +36,6 @@
                 {{ $slot }}
             </main>
 
-            <!-- Footer administrativo sutil -->
-            <footer class="border-t border-[#e9dfdb]/60 py-6 text-center text-xs text-[#8A7A7D] bg-white/40">
-                <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-                    <p class="font-medium text-[#2D2526]/80">Dentissa · Odontología Integral</p>
-                    <p class="text-[11px]">Sistema de Gestión Clínica · Dra. Melissa López N.</p>
-                </div>
-            </footer>
         </div>
     </body>
 </html>

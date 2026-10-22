@@ -77,10 +77,18 @@
                 </nav>
             </section>
 
-            <section class="space-y-3" aria-label="Lista de notificaciones" aria-live="polite">
-                @forelse ($notificaciones as $notificacion)
+            <section class="space-y-6" aria-label="Lista de notificaciones" aria-live="polite">
+                @if ($notificaciones->isNotEmpty())
+                    @foreach ($gruposNotificaciones as $fecha => $grupo)
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3 px-1">
+                                <h3 class="text-xs font-bold uppercase tracking-[0.16em] text-[#8A7A7D]">{{ $fecha }}</h3>
+                                <span class="h-px flex-1 bg-[#e9dfdb]"></span>
+                            </div>
+                            @foreach ($grupo as $notificacion)
                     @php($pendiente = is_null($notificacion->leida_en))
-                    <article class="relative overflow-hidden rounded-2xl border bg-white shadow-soft transition hover:shadow-md {{ $pendiente ? 'border-[#f2b0a6]' : 'border-[#e9dfdb]' }}">
+                    @php($prioritaria = $notificacion->esPrioritaria())
+                    <article class="relative overflow-hidden rounded-2xl border bg-white shadow-soft transition hover:shadow-md {{ $pendiente ? ($prioritaria ? 'border-rose-300' : 'border-[#f2b0a6]') : 'border-[#e9dfdb]' }}">
                         @if ($pendiente)
                             <span class="absolute inset-y-0 left-0 w-1.5 bg-brand-600" aria-hidden="true"></span>
                         @endif
@@ -100,6 +108,13 @@
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
                                         <h3 class="font-semibold text-[#2D2526]">{{ $notificacion->titulo }}</h3>
+                                        <span @class([
+                                            'rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider border',
+                                            'border-rose-200 bg-rose-50 text-rose-700' => $prioritaria,
+                                            'border-amber-200 bg-amber-50 text-amber-700' => $notificacion->evento === 'reagendada',
+                                            'border-emerald-200 bg-emerald-50 text-emerald-700' => in_array($notificacion->evento, ['confirmada', 'completada'], true),
+                                            'border-brand-200/60 bg-brand-50 text-brand-700' => ! $prioritaria && ! in_array($notificacion->evento, ['reagendada', 'confirmada', 'completada'], true),
+                                        ])>{{ $notificacion->etiquetaEvento() }}</span>
                                         <span @class([
                                             'rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
                                             'bg-rose-50 text-brand-700 border border-rose-200/60' => $pendiente,
@@ -137,7 +152,10 @@
                             </div>
                         </div>
                     </article>
-                @empty
+                            @endforeach
+                        </div>
+                    @endforeach
+                @else
                     <div class="rounded-2xl border border-dashed border-[#e9dfdb] bg-white px-6 py-14 text-center shadow-soft">
                         <span class="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 border border-brand-200/50" aria-hidden="true">
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
@@ -157,12 +175,9 @@
                             <a href="{{ route('notificaciones.index', ['estado' => 'todas']) }}" class="mt-4 inline-flex rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider text-brand-600 hover:bg-brand-50 transition">Ver todas</a>
                         @endif
                     </div>
-                @endforelse
+                @endif
+                <x-pagination-summary :items="$notificaciones" label="notificaciones" />
             </section>
-
-            @if ($notificaciones->hasPages())
-                <div class="pt-2">{{ $notificaciones->links() }}</div>
-            @endif
         </div>
     </div>
 </x-app-layout>

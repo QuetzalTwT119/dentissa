@@ -92,6 +92,7 @@ $tipoLabel = [
                     </tbody>
                 </table>
                 </div>
+                <x-pagination-summary :items="$ofertas" label="ofertas" />
             </div>
         </div>
     </div>

@@ -73,19 +73,12 @@
                 </div>
 
                 <!-- Tira de Indicadores Clínicos Integrados -->
-                <div class="mt-8 grid grid-cols-2 gap-3 pt-6 border-t border-white/10 sm:grid-cols-4">
+                <div class="mt-8 grid grid-cols-2 gap-3 pt-6 border-t border-white/10 sm:grid-cols-3">
                     <a href="{{ route('citas.index') }}" class="rounded-2xl bg-white/5 p-3.5 backdrop-blur-xs transition hover:bg-white/10 border border-white/5 group">
                         <p class="text-[11px] font-bold uppercase tracking-wider text-peach-200">Agenda Activa</p>
                         <p class="text-sm font-bold text-white mt-0.5 flex items-center justify-between">
                             Consultas de hoy
                             <span class="text-xs text-peach-300 transition group-hover:translate-x-1">→</span>
-                        </p>
-                    </a>
-                    <a href="{{ route('admin.atencion-oportuna.index') }}" class="rounded-2xl bg-white/5 p-3.5 backdrop-blur-xs transition hover:bg-white/10 border border-white/5 group">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-rose-300">Triage Clínico</p>
-                        <p class="text-sm font-bold text-white mt-0.5 flex items-center justify-between">
-                            Urgencias y espera
-                            <span class="text-xs text-rose-300 transition group-hover:translate-x-1">→</span>
                         </p>
                     </a>
                     <a href="{{ route('admin.pacientes.index') }}" class="rounded-2xl bg-white/5 p-3.5 backdrop-blur-xs transition hover:bg-white/10 border border-white/5 group">
@@ -141,25 +134,7 @@
                         </div>
                     </a>
 
-                    <!-- 2. Urgencias y espera -->
-                    <a href="{{ route('admin.atencion-oportuna.index') }}" class="group relative rounded-3xl border border-rose-200/80 bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-rose-400 hover:shadow-xl">
-                        <div class="flex items-center justify-between">
-                            <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-50 to-rose-100 text-rose-600 border border-rose-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-rose-600 group-hover:text-white shadow-xs">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                </svg>
-                            </span>
-                            <span class="rounded-full bg-rose-100 px-3 py-1 text-[11px] font-bold text-rose-800 border border-rose-200">Prioridad</span>
-                        </div>
-                        <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-rose-600 transition-colors">Urgencias y espera</h3>
-                        <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Da seguimiento a solicitudes prioritarias.</p>
-                        <div class="mt-4 flex items-center gap-1 text-xs font-bold text-rose-700 pt-3 border-t border-rose-100/60">
-                            <span>Revisar solicitudes</span>
-                            <span class="transition-transform group-hover:translate-x-1">→</span>
-                        </div>
-                    </a>
-
-                    <!-- 3. Pacientes -->
+                    <!-- 2. Pacientes -->
                     <a href="{{ route('admin.pacientes.index') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-teal-400 hover:shadow-xl">
                         <div class="flex items-center justify-between">
                             <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-100 text-teal-700 border border-teal-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-teal-600 group-hover:text-white shadow-xs">
@@ -243,7 +218,7 @@
                     </div>
                     <div>
                         <p class="font-bold text-base text-[#2D2526]">Consejo de operación clínica</p>
-                        <p class="mt-0.5 text-sm text-[#6b5e62]">Revisa la agenda y las solicitudes urgentes antes de iniciar la jornada para optimizar los tiempos de esterilización y sillón.</p>
+                        <p class="mt-0.5 text-sm text-[#6b5e62]">Revisa la agenda y los horarios configurados antes de iniciar la jornada para optimizar los tiempos de esterilización y sillón.</p>
                     </div>
                 </div>
                 <a href="{{ route('admin.horarios.edit') }}" class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand-700 hover:text-brand-800 transition sm:mt-0 group shrink-0">

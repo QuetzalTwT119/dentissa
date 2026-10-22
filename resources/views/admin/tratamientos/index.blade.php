@@ -90,6 +90,7 @@
                     </tbody>
                 </table>
                 </div>
+                <x-pagination-summary :items="$tratamientos" label="tratamientos" />
             </div>
         </div>
     </div>

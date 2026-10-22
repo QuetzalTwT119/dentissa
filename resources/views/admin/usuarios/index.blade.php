@@ -114,6 +114,7 @@ $rolClase = [
                     </tbody>
                 </table>
                 </div>
+                <x-pagination-summary :items="$usuarios" label="usuarios" />
             </div>
         </div>
     </div>

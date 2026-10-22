@@ -28,5 +28,6 @@
                 </div>
             @endforelse
         </div>
+        <x-pagination-summary :items="$imagenes" label="imágenes" :integrated="false" />
     </div>
 </x-app-layout>
