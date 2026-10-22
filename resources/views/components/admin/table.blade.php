@@ -1,9 +1,9 @@
 @props([
-    'minWidth' => '760px',
+    'minWidth' => 'min-w-[760px]',
 ])
 
 <div class="overflow-x-auto">
-    <table {{ $attributes->merge(['class' => 'w-full text-left text-sm']) }} style="min-width: {{ $minWidth }}">
+    <table {{ $attributes->merge(['class' => "w-full text-left text-sm {$minWidth}"]) }}>
         <thead class="border-b border-[#e9dfdb] bg-[#FAF6F6] text-xs font-semibold uppercase tracking-wider text-[#6b5e62]">
             {{ $head }}
         </thead>

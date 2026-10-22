@@ -53,10 +53,10 @@ class CitaPublicaController extends Controller
         }
 
         if ($resultado['creada']) {
-            $notificaciones->citaAgendada($cita->load(['paciente', 'tratamiento']));
+            $notificaciones->citaConfirmada($cita->load(['paciente', 'tratamiento']));
         }
 
         return Redirect::route('citas.publica.create')
-            ->with('success', 'Tu cita quedó agendada. Te esperamos.');
+            ->with('success', 'Tu cita quedó confirmada. Te esperamos.');
     }
 }

@@ -2,7 +2,12 @@
     'badge' => null,
     'title',
     'description' => null,
+    'subtitle' => null,
 ])
+
+@php
+    $desc = $description ?? $subtitle;
+@endphp
 
 <div {{ $attributes->merge(['class' => 'flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between']) }}>
     <div>
@@ -17,8 +22,8 @@
         <h2 class="mt-1 text-2xl font-bold tracking-tight text-[#2D2526]">
             {{ $title }}
         </h2>
-        @if ($description)
-            <p class="mt-0.5 text-xs text-[#8A7A7D]">{{ $description }}</p>
+        @if ($desc)
+            <p class="mt-0.5 text-xs text-[#8A7A7D]">{{ $desc }}</p>
         @endif
     </div>
 

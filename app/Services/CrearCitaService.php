@@ -60,14 +60,21 @@ class CrearCitaService
                     'duracion_estimada' => $tratamiento->duracion_estimada,
                     'motivo' => $datos['motivo'] ?? null,
                     'clave_idempotencia' => $claveIdempotencia,
+                    'estado' => EstadoCita::Confirmada,
+                    // La disponibilidad se valida antes de guardar; la reserva queda
+                    // confirmada de inmediato, sin requerir una segunda aprobación.
+                    'fecha_confirmacion' => now(),
                 ]);
 
                 $this->auditoria->registrar('cita.creada', $cita, datosNuevos: [
-                    'estado' => $cita->estado?->value ?? EstadoCita::Agendada->value,
+                    'estado' => $cita->estado?->value ?? EstadoCita::Confirmada->value,
                     'fecha_hora' => $cita->fecha_hora->toIso8601String(),
                     'canal' => $canal,
                 ], request: $request);
-                $this->notificacionesInternas->cambioCita($cita, 'agendada');
+                $this->notificacionesInternas->cambioCita(
+                    $cita,
+                    'confirmada',
+                );
 
                 return ['cita' => $cita, 'creada' => true];
             });

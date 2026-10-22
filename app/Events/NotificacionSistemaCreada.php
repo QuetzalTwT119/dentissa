@@ -33,11 +33,12 @@ class NotificacionSistemaCreada implements ShouldBroadcastNow
             'id' => $this->notificacion->id,
             'titulo' => $this->notificacion->titulo,
             'mensaje' => $this->notificacion->mensaje,
-            'url' => $this->notificacion->url ?: route('notificaciones.index'),
+            'url' => $this->notificacion->url ?: route('notificaciones.index', [], false),
+            'leida_url' => route('notificaciones.leida', $this->notificacion, false),
             'creada' => $this->notificacion->created_at->toIso8601String(),
-            'no_leidas' => NotificacionSistema::query()
+            'no_vistas' => NotificacionSistema::query()
                 ->where('user_id', $this->notificacion->user_id)
-                ->whereNull('leida_en')
+                ->whereNull('vista_en')
                 ->count(),
         ];
     }

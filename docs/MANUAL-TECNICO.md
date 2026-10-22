@@ -9,7 +9,7 @@ El servicio `app` monta `resources/views` y `public/images` desde la carpeta del
 ## 1. Propósito
 
 Dentissa es un sistema web para la gestión de una clínica dental. Permite
-administrar pacientes, servicios, tratamientos, citas, atención oportuna,
+administrar pacientes, servicios, tratamientos, citas,
 historial clínico, notificaciones y reportes.
 
 Este manual describe cómo levantar el proyecto, ejecutar las pruebas y
@@ -41,7 +41,7 @@ los comandos de `docker compose` son los mismos.
 
 
 
-La portada pública precarga su imagen principal y utiliza tipografías Figtree y Alex Brush servidas desde `public/fonts`, para no depender de un proveedor externo. Su composición editorial usa el nombre de la clínica como firma, describe el flujo real de agenda en línea y presenta accesos directos a agenda, atención urgente y lista de espera. Los servicios se renderizan como carrusel duplicado animado con CSS para permitir un bucle continuo; las tarjetas conservan altura e imagen uniformes, la animación se pausa al recibir foco y se desactiva con `prefers-reduced-motion`. Las imágenes del hero y servicios están configuradas en `config/dentissa.php`. El bloque de contacto se controla mediante `DENTISSA_MODO_DEMO`; debe permanecer activo mientras los valores sean ficticios y no debe abrirse el sitio a pacientes hasta configurar datos reales.
+La portada pública precarga su imagen principal y utiliza tipografías Figtree y Alex Brush servidas desde `public/fonts`, para no depender de un proveedor externo. Su composición editorial usa el nombre de la clínica como firma, describe el flujo real de agenda en línea y presenta un acceso directo a la agenda. Los servicios se renderizan como carrusel duplicado animado con CSS para permitir un bucle continuo; las tarjetas conservan altura e imagen uniformes, la animación se pausa al recibir foco y se desactiva con `prefers-reduced-motion`. Las imágenes del hero y servicios están configuradas en `config/dentissa.php`. El bloque de contacto se controla mediante `DENTISSA_MODO_DEMO`; debe permanecer activo mientras los valores sean ficticios y no debe abrirse el sitio a pacientes hasta configurar datos reales.
 
 ## 3. Arranque del proyecto
 
@@ -189,7 +189,7 @@ docker compose exec app php artisan test
 Las pruebas usan SQLite en memoria o el schema aislado `dentissa_test`; no
 deben modificar la base normal `dentissa`. La suite cubre reglas de catálogo,
 fechas futuras, ciclo de vida y concurrencia de citas, agenda pública,
-atención oportuna, permisos, historial clínico, auditoría, notificaciones
+permisos, historial clínico, auditoría, notificaciones
 internas y asistente. El 16/10/2026 se reconstruyó el servicio `app` con el
 código vigente y pasaron **143 pruebas/701 aserciones en SQLite** (1 omisión
 esperada porque SQLite no valida de forma representativa `lockForUpdate`) y
@@ -265,7 +265,7 @@ Revisa ambos jobs en la pestaña **Actions** antes de integrar un pull request.
 - **Modelos:** representan usuarios, pacientes, servicios, tratamientos,
   citas e historial.
 - **Servicios:** contienen reglas reutilizables como disponibilidad,
-  notificaciones y atención oportuna.
+  notificaciones.
 - **Vistas Blade/Alpine:** muestran formularios, estados y acciones.
 - **Base de datos:** conserva los datos mediante migraciones y MySQL; las
   pruebas pueden usar SQLite en memoria o un schema MySQL aislado.
@@ -311,8 +311,11 @@ La acción `citas.no-show` solo permite marcar una cita confirmada como
 se realiza en el servidor, por lo que también protege solicitudes directas que
 no provienen de la interfaz.
 
-La vista de agenda muestra **Más acciones** solo para citas `agendada` y
-`confirmada`, estados en los que se permite reagendar o cancelar. Una cita
+La vista de agenda muestra **Más acciones** solo para citas `agendada` (estado
+heredado de citas históricas) y `confirmada`, estados en los que se permite
+reagendar o cancelar. Las citas creadas por cualquier canal vigente nacen
+confirmadas; el control para confirmar manualmente se conserva para registros
+históricos pendientes. Una cita
 `en_curso` ofrece únicamente completar; las citas `completada`, `cancelada` o
 `no_asistio` se presentan sin acciones. La vista y las reglas del servidor se
 validan por separado para que un control oculto no sea la única barrera.
@@ -378,12 +381,7 @@ de `AsistenteIaLocalTest` la habilitan explícitamente y simulan las respuestas
 HTTP de Ollama. Así la suite no depende de que el modelo esté descargado o
 disponible y no envía consultas de prueba a un servicio real.
 
-## 11. Atención oportuna e historial
-
-Las solicitudes urgentes y de lista de espera se conservan en la base de
-datos. El panel administrativo muestra por separado los pendientes y el
-historial de seguimiento, con filtros de estado y fechas. La transición a
-**Contactada** o **Cerrada** no elimina datos.
+## 11. Historial y notificaciones
 
 Las notificaciones de cita guardan también `id_cita`, lo que permite enlazar
 un aviso con la cita que lo originó sin depender únicamente del texto del
@@ -411,8 +409,10 @@ datos clínicos. Además del WebSocket, el navegador consulta
 `notificaciones.actualizaciones` cada 3 segundos: así un fallo de suscripción,
 una reconexión o un reinicio de Reverb no puede ocultar avisos nuevos. El
 endpoint filtra por la cuenta autenticada y no almacena la respuesta en caché.
-Al abrir la campana, el navegador marca los avisos pendientes como leídos,
-actualiza el contador y conserva en pantalla los cinco más recientes. El
+La tabla `notificaciones_sistema` separa `vista_en` de `leida_en`: al abrir la
+campana, el navegador registra los avisos como vistos, actualiza el contador de
+novedades y conserva el estado pendiente (punto rosa) hasta que cada aviso se
+lee individualmente. El
 centro de actividad agrupa el historial por día y clasifica visualmente cada
 evento; cancelaciones e inasistencias se consideran prioritarias. Las
 rutas guardadas para avisos internos son relativas (por ejemplo, `/citas`),
@@ -440,7 +440,7 @@ en `logs_auditoria`. Solo registra solicitudes autenticadas de usuarios con rol
 Telegram no se consideran cambios del personal y no se agregan a esta bitácora.
 Dentro de ese alcance se auditan las altas y transiciones internas de citas,
 los cambios del historial clínico, los adjuntos clínicos, los datos de contacto
-u oficiales del paciente y el seguimiento de atención oportuna. En la edición
+u oficiales del paciente. En la edición
 del paciente, los metadatos de auditoría enumeran campos modificados sin copiar
 correo ni teléfono. También se registran altas,
 ediciones, activaciones y bajas de cuentas; actualizaciones de perfil y
@@ -556,7 +556,7 @@ el primer paso, elegir un servicio reemplaza esa lista por sus tratamientos y
 el recuadro del servicio seleccionado funciona como control para deseleccionarlo
 y volver a la lista, evitando un botón adicional y alargar el formulario. En móvil
 el resumen y sus accesos alternativos se apilan después del formulario; el panel
-lateral reúne progreso, selección, urgencia y lista de espera. La prueba
+lateral reúne progreso y selección. La prueba
 `AsistenteVistasPublicasTest` valida el resumen y la cuadrícula responsiva.
 La agenda reserva más espacio inferior en móvil para el botón flotante y solo
 un margen reducido en escritorio, evitando desbordamiento vertical cuando el
@@ -640,7 +640,7 @@ accesible, estado abierto/cerrado y relación con su panel. La vista previa de
 notificaciones se adapta a móvil/escritorio y comparte el estado entre ambas
 presentaciones. Las tablas
 
-El panel de administración reúne accesos rápidos para agenda, urgencias,
+El panel de administración reúne accesos rápidos para agenda,
 pacientes, servicios, contenido y usuarios; el panel de asistente mantiene sus
 accesos a citas y al asistente de agenda. El layout carga el manifiesto PWA y
 sus iconos; `public/sw.js` registra un caché básico y presenta `offline.html`
@@ -654,21 +654,12 @@ desde `sm`. Las vistas de cada módulo deben seguir validándose por separado;
 esta base no sustituye la revisión responsiva de tarjetas y flujos públicos.
 El scrollbar del documento se oculta globalmente con `scrollbar-width: none` y
   `::-webkit-scrollbar { display: none }`; no se aplica `overflow: hidden`, así que
-  el desplazamiento existente permanece operativo. En la vista de urgencias, el
-  asistente vuelve a comprobar los campos visibles al desplazarse y busca una
-  posición libre iterativamente para evitar cubrir varios controles seguidos. Esta
-  vista usa una cuadrícula informativa/formulario de dos columnas desde `lg`,
-  aprovecha el ancho disponible sin reservar una columna vacía para el widget;
-  el observador lo desplaza al detectar campos visibles. El acceso compartido se
+  el desplazamiento existente permanece operativo. El acceso compartido se
   representa como una cápsula horizontal compacta con el ícono dental y el
   nombre en una sola línea, tanto en móvil como en escritorio; el panel abre
-  justo encima con espaciado reducido. El botón de envío se limita en ancho. En móvil el contenido se apila,
-  reduce la proporción vertical de la imagen y compacta el espaciado, usa una sola
-  columna para señales y mantiene controles táctiles de al
-menos 44 px; `AtencionOportunaTest` protege estos puntos de quiebre.
+  justo encima con espaciado reducido.
 El inicio y los listados de ofertas/galería usan cuadrículas que crecen por
-breakpoint; urgencia y lista de espera mantienen formularios en una sola columna
-y protegen su acción principal de la superposición del asistente. El widget
+breakpoint; la agenda protege su acción principal de la superposición del asistente. El widget
 permanece visible: el observador comprueba el cruce real con cada zona protegida
 y eleva el botón flotante solo cuando coincide en horizontal y vertical.
 
@@ -697,8 +688,8 @@ Se completó el rediseño visual de todo el ecosistema de Dentissa (sitio públi
 
 - **Componentes y arquitectura de interfaz:**
   - Componentes atómicos en `resources/views/components/`: botones primarios (`bg-brand-600`, esquinas redondeadas `rounded-xl`, sombra suave), secundarios con borde cálido, inputs y selects consistentes, modales con desenfoque de fondo y alertas amigables.
-  - Vistas públicas (`welcome`, agenda pública wizard por pasos, urgencias, lista de espera, galería, ofertas): tipografía Figtree y Alex Brush locales precargadas, carrusel de servicios optimizado y menú responsivo desplegable para móvil y tablet.
+  - Vistas públicas (`welcome`, agenda pública wizard por pasos, galería, ofertas): tipografía Figtree y Alex Brush locales precargadas, carrusel de servicios optimizado y menú responsivo desplegable para móvil y tablet.
   - Vistas de acceso (`guest`, `login`, recuperación de contraseña): tarjetas centradas de estilo boutique con fondo ambiental cálido y enlaces visibles.
-  - Panel administrativo (`layouts/app`, `navigation`, `dashboard`, citas, pacientes, historial clínico con fotos/radiografías, catálogo de servicios y tratamientos, horarios, usuarios, reportes, auditoría, seguimiento de atención oportuna, mensajes, testimonios, casos y preguntas frecuentes): tablas con encabezados claros en `#FAF6F6`, badges de estado legibles, filtros organizados y scroll horizontal en móviles (`min-w-[760px]`).
+  - Panel administrativo (`layouts/app`, `navigation`, `dashboard`, citas, pacientes, historial clínico con fotos/radiografías, catálogo de servicios y tratamientos, horarios, usuarios, reportes, auditoría, mensajes, testimonios, casos y preguntas frecuentes): tablas con encabezados claros en `#FAF6F6`, badges de estado legibles, filtros organizados y scroll horizontal en móviles (`min-w-[760px]`).
   - Total preservación de lógica de negocio, nombres de campos, CSRF, validaciones y roles. La suite de pruebas completa pasó con 158 pruebas aprobadas y 0 fallos.
 

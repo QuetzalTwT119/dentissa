@@ -14,10 +14,10 @@ use Illuminate\Validation\Rule;
 
 class TratamientoController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         return view('admin.tratamientos.index', [
-            'tratamientos' => Tratamiento::withCount('servicios')->orderBy('nombre')->get(),
+            'tratamientos' => Tratamiento::withCount('servicios')->orderBy('nombre')->paginate($this->paginationPageSize($request)),
         ]);
     }
 

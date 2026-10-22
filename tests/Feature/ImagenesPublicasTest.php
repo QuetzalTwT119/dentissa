@@ -15,7 +15,7 @@ class ImagenesPublicasTest extends TestCase
 
         $this->assertNotEmpty($imagenes['hero']);
 
-        foreach ([$imagenes['hero'], $imagenes['urgencias'], $imagenes['lista_espera'], ...array_values($imagenes['servicios'])] as $ruta) {
+        foreach ([$imagenes['hero'], ...array_values($imagenes['servicios'])] as $ruta) {
             $this->assertFileExists(public_path($ruta));
         }
     }

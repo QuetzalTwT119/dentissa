@@ -16,7 +16,6 @@ class PermisosPorRolTest extends TestCase
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
         $rutasAdministrativas = [
             'admin.auditoria.index',
-            'admin.atencion-oportuna.index',
             'admin.servicios.index',
             'admin.pacientes.index',
             'admin.usuarios.index',

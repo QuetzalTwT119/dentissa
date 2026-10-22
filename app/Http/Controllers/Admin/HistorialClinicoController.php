@@ -20,14 +20,14 @@ use Throwable;
 
 class HistorialClinicoController extends Controller
 {
-    public function index(Paciente $paciente): View
+    public function index(Request $request, Paciente $paciente): View
     {
         return view('admin.historial.index', [
             'paciente' => $paciente,
             'consultas' => $paciente->historialClinico()
                 ->with(['doctor:id,nombre,apellido', 'cita', 'imagenes'])
                 ->orderByDesc('fecha_consulta')
-                ->get(),
+                ->paginate($this->paginationPageSize($request)),
         ]);
     }
 

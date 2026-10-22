@@ -85,14 +85,16 @@ class CitaPublicaTest extends TestCase
 
         $this->get(route('citas.publica.create'))
             ->assertOk()
-            ->assertSee('¡Listo! Tu cita quedó agendada. Te esperamos.')
+            ->assertSee('¡Listo! Tu cita quedó confirmada. Te esperamos.')
             ->assertSee('Volver al inicio');
 
         $paciente = Paciente::where('email', 'ana.publica@example.test')->firstOrFail();
         $this->assertSame('5555555555', $paciente->telefono);
         $cita = Cita::where('id_paciente', $paciente->id)->firstOrFail();
 
-        $this->assertSame(EstadoCita::Agendada, $cita->estado);
+        $this->assertSame(EstadoCita::Confirmada, $cita->estado);
+        $this->assertNull($cita->confirmada_por);
+        $this->assertNotNull($cita->fecha_confirmacion);
         $this->assertSame(
             $fecha->copy()->setTime(9, 0)->format('Y-m-d H:i:s'),
             $cita->fecha_hora->format('Y-m-d H:i:s'),
@@ -100,7 +102,7 @@ class CitaPublicaTest extends TestCase
         $this->assertDatabaseHas('notificaciones', [
             'id_paciente' => $paciente->id,
             'id_cita' => $cita->id,
-            'canal' => 'cita_agendada',
+            'canal' => 'cita_confirmada',
         ]);
 
         $this->assertDatabaseMissing('logs_auditoria', [

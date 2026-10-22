@@ -14,7 +14,7 @@ flowchart LR
     Datos[(SQLite)]
     Notif[Notificaciones]
 
-    Paciente -->|Agendar, urgencia, lista de espera| Sistema
+    Paciente -->|Agendar cita| Sistema
     Personal -->|Gestionar citas y pacientes| Sistema
     Admin -->|Catálogos, usuarios, reportes| Sistema
     Sistema --> Datos
@@ -40,9 +40,9 @@ sequenceDiagram
     C->>C: Valida servicio, tratamiento y relación activa
     C->>C: Valida fecha/hora futura
     C->>D: Revalida el horario dentro de una transacción
-    C->>DB: Crea o reutiliza paciente y crea cita como Agendada
+    C->>DB: Crea o reutiliza paciente y crea cita como Confirmada
     C->>N: Registra la notificación después del commit
-    C-->>P: Confirmación de cita agendada
+    C-->>P: Confirmación de cita confirmada
 ```
 
 Si la combinación de catálogo no está activa, el tratamiento no pertenece al
@@ -53,14 +53,14 @@ devuelve errores y no crea la cita.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Agendada
-    Agendada --> Confirmada: confirmar
+    [*] --> Confirmada: reserva pública, Telegram o interna
+    Agendada --> Confirmada: confirmar una cita histórica pendiente
     Agendada --> Cancelada: cancelar
     Agendada --> Agendada: reagendar
     Confirmada --> EnCurso: iniciar atención
     Confirmada --> NoAsistio: marcar inasistencia (desde hora programada)
     Confirmada --> Cancelada: cancelar
-    Confirmada --> Agendada: reagendar
+    Confirmada --> Confirmada: reagendar
     EnCurso --> Completada: completar
     Completada --> [*]
     NoAsistio --> [*]
@@ -73,30 +73,7 @@ marcar inasistencia y completar requieren autorización del personal.
 La inasistencia se rechaza si la fecha y hora programadas aún están en el
 futuro.
 
-## 4. Atención oportuna
-
-```mermaid
-flowchart TD
-    Inicio[Persona necesita atención] --> Tipo{¿Qué necesita?}
-    Tipo -->|Urgencia| U[Formulario de urgencia]
-    Tipo -->|No hay horario| E[Formulario de lista de espera]
-    U --> UP[Solicitud pendiente]
-    E --> EP[Solicitud pendiente]
-    UP --> ContactarU[Personal revisa y contacta]
-    EP --> ContactarE[Personal revisa y contacta]
-    ContactarU --> UC[Estado contactada]
-    ContactarE --> EC[Estado contactada]
-    UC --> UH[Historial de urgencias]
-    EC --> EH[Historial de lista de espera]
-    UP -.->|No crea cita automáticamente| Fin[Seguimiento humano]
-    EP -.->|No confirma cita| Fin
-```
-
-Los registros contactados o cerrados dejan de estar pendientes, pero se
-conservan en el historial de **Atención oportuna**, filtrable por estado y
-fechas.
-
-## 5. Historial clínico
+## 4. Historial clínico
 
 ```mermaid
 flowchart LR
@@ -109,7 +86,7 @@ flowchart LR
     F --> H[Generar PDF]
 ```
 
-## 6. Observaciones para la siguiente etapa
+## 5. Observaciones para la siguiente etapa
 
 - El asistente de agenda actualmente es un asistente guiado: propone horarios
   y requiere confirmación humana.

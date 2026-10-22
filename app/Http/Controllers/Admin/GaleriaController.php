@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Redirect;
 
 class GaleriaController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         return view('admin.galeria.index', [
             'imagenes' => Imagen::where('tipo', TipoImagen::Galeria)
                 ->orderBy('orden')
-                ->get(),
+                ->paginate($this->paginationPageSize($request)),
         ]);
     }
 

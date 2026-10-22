@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\EstadoCita;
 use App\Models\Cita;
 use App\Models\HorarioAtencion;
 use App\Models\Paciente;
@@ -453,6 +454,7 @@ class TelegramAsistenteTest extends TestCase
         $paciente = Paciente::where('email', 'ana.telegram@example.test')->firstOrFail();
         $this->assertSame($paciente->id, $cita->id_paciente);
         $this->assertSame('telegram:cb-confirmar-unico', $cita->clave_idempotencia);
+        $this->assertSame(EstadoCita::Confirmada, $cita->estado);
         $this->assertDatabaseMissing('logs_auditoria', [
             'tabla' => 'citas',
             'registro_id' => $cita->id,
@@ -461,6 +463,6 @@ class TelegramAsistenteTest extends TestCase
         Http::assertSent(fn ($request) => str_ends_with($request->url(), '/answerCallbackQuery')
             && $request['callback_query_id'] === 'cb-confirmar-unico');
         Http::assertSent(fn ($request) => str_ends_with($request->url(), '/sendMessage')
-            && str_contains($request['text'], 'tu cita quedó agendada'));
+            && str_contains($request['text'], 'tu cita quedó confirmada'));
     }
 }

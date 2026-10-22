@@ -386,10 +386,10 @@ class AgendaTelegramService
         $cita = $resultado['cita']->load(['paciente', 'tratamiento']);
 
         if ($resultado['creada']) {
-            $this->notificaciones->citaAgendada($cita);
+            $this->notificaciones->citaConfirmada($cita);
         }
 
-        return "¡Listo, tu cita quedó agendada!\n\n"
+        return "¡Listo, tu cita quedó confirmada!\n\n"
             ."{$cita->tratamiento->nombre}\n"
             .$cita->fecha_hora->translatedFormat('d/m/Y, H:i')."\n"
             .'Te esperamos. Si necesitas cambiarla, comunícate con el consultorio.';

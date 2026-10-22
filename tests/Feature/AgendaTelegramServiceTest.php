@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\EstadoCita;
 use App\Models\Cita;
 use App\Models\HorarioAtencion;
 use App\Models\Servicio;
@@ -127,12 +128,15 @@ class AgendaTelegramServiceTest extends TestCase
         Mail::fake();
         $confirmacion = $agenda->responderSeleccion(999, 'agenda:confirmar:si', 'callback-confirm-999');
 
-        $this->assertStringContainsString('tu cita quedó agendada', $confirmacion);
+        $this->assertStringContainsString('tu cita quedó confirmada', $confirmacion);
         $cita = Cita::with('paciente')->firstOrFail();
         $this->assertSame('ana.prueba@example.test', $cita->paciente->email);
         $this->assertSame('+52 755 555 0101', $cita->paciente->telefono);
         $this->assertSame($hora, $cita->fecha_hora->format('H:i'));
         $this->assertSame('telegram:callback-confirm-999', $cita->clave_idempotencia);
+        $this->assertSame(EstadoCita::Confirmada, $cita->estado);
+        $this->assertNull($cita->confirmada_por);
+        $this->assertNotNull($cita->fecha_confirmacion);
         $this->assertDatabaseMissing('logs_auditoria', [
             'tabla' => 'citas',
             'registro_id' => $cita->id,

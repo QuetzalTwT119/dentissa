@@ -74,6 +74,90 @@ class CitaReglasTest extends TestCase
             ->assertSee('value="'.$fecha->toDateString().'"', false);
     }
 
+    public function test_el_buscador_de_citas_acepta_nombre_completo_telefono_servicio_y_tratamiento(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        [$servicio, $tratamiento] = $this->crearCatalogo();
+        $pacienteEncontrado = Paciente::create([
+            'nombre' => 'Ana María',
+            'apellido' => 'Torres Luna',
+            'telefono' => '5555550012',
+            'email' => 'ana.torres@example.test',
+        ]);
+        $pacienteOtro = Paciente::create([
+            'nombre' => 'Rosa',
+            'apellido' => 'Leal',
+            'telefono' => '5555550013',
+            'email' => 'rosa.leal@example.test',
+        ]);
+
+        foreach ([$pacienteEncontrado, $pacienteOtro] as $paciente) {
+            Cita::create([
+                'id_paciente' => $paciente->id,
+                'id_servicio' => $servicio->id,
+                'id_tratamiento' => $tratamiento->id,
+                'fecha_hora' => $this->fechaFutura()->setTime(10, 0),
+                'duracion_estimada' => 30,
+                'estado' => EstadoCita::Confirmada,
+            ]);
+        }
+
+        $this->actingAs($admin)
+            ->get(route('citas.index', ['buscar' => 'Ana Torres', 'estado' => EstadoCita::Confirmada->value]))
+            ->assertOk()
+            ->assertSee('Ana María Torres Luna')
+            ->assertDontSee('Rosa Leal')
+            ->assertSee('value="Ana Torres"', false)
+            ->assertSee('value="confirmada" selected', false)
+            ->assertSee('data-citas-live-search', false)
+            ->assertSee('data-citas-results', false)
+            ->assertSee('entrada.addEventListener', false);
+
+        $this->actingAs($admin)
+            ->get(route('citas.index', ['buscar' => '5555550012']))
+            ->assertOk()
+            ->assertSee('Ana María Torres Luna')
+            ->assertDontSee('Rosa Leal');
+
+        $this->actingAs($admin)
+            ->get(route('citas.index', ['buscar' => 'Tratamiento QA']))
+            ->assertOk()
+            ->assertSee('Ana María Torres Luna')
+            ->assertSee('Rosa Leal');
+    }
+
+    public function test_el_listado_de_citas_muestra_20_por_defecto_y_permite_elegir_50(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        [$servicio, $tratamiento] = $this->crearCatalogo();
+        $paciente = $this->crearPaciente();
+
+        foreach (range(1, 21) as $numero) {
+            Cita::create([
+                'id_paciente' => $paciente->id,
+                'id_servicio' => $servicio->id,
+                'id_tratamiento' => $tratamiento->id,
+                'fecha_hora' => Carbon::today()->addDays($numero)->setTime(10, 0),
+                'duracion_estimada' => 30,
+                'estado' => EstadoCita::Agendada,
+            ]);
+        }
+
+        $this->actingAs($admin)
+            ->get(route('citas.index'))
+            ->assertOk()
+            ->assertSee('Mostrando')
+            ->assertSee('1–20', false)
+            ->assertSee('de <strong class="font-semibold text-[#2D2526]">21</strong> citas', false)
+            ->assertSee('<option value="20" selected>20</option>', false);
+
+        $this->actingAs($admin)
+            ->get(route('citas.index', ['per_page' => 50]))
+            ->assertOk()
+            ->assertSee('1–21', false)
+            ->assertSee('<option value="50" selected>50</option>', false);
+    }
+
     public function test_no_se_puede_agendar_un_tratamiento_que_no_pertenece_al_servicio(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
@@ -230,7 +314,7 @@ class CitaReglasTest extends TestCase
             ->assertDontSee('Sin acciones');
     }
 
-    public function test_el_personal_puede_crear_una_cita_interna_valida(): void
+    public function test_el_personal_puede_crear_una_cita_interna_ya_confirmada(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
         $paciente = $this->crearPaciente();
@@ -247,15 +331,18 @@ class CitaReglasTest extends TestCase
                 'motivo' => 'Consulta interna de QA',
             ])
             ->assertRedirect(route('citas.index'))
-            ->assertSessionHas('success', 'Cita agendada correctamente.');
+            ->assertSessionHas('success', 'Cita confirmada correctamente.');
 
         $this->assertDatabaseHas('citas', [
             'id_paciente' => $paciente->id,
             'id_servicio' => $servicio->id,
             'id_tratamiento' => $tratamiento->id,
-            'estado' => EstadoCita::Agendada->value,
+            'estado' => EstadoCita::Confirmada->value,
+            'confirmada_por' => $admin->id,
             'motivo' => 'Consulta interna de QA',
         ]);
+        $cita = Cita::query()->where('id_paciente', $paciente->id)->latest('id')->firstOrFail();
+        $this->assertNotNull($cita->fecha_confirmacion);
         $this->assertDatabaseHas('logs_auditoria', [
             'id_usuario' => $admin->id,
             'accion' => 'cita.creada',
@@ -425,6 +512,40 @@ class CitaReglasTest extends TestCase
             'tabla' => 'citas',
             'registro_id' => $cita->id,
         ]);
+    }
+
+    public function test_una_cita_confirmada_conserva_su_estado_al_reagendarse(): void
+    {
+        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $paciente = $this->crearPaciente();
+        [$servicio, $tratamiento] = $this->crearCatalogo();
+        $fechaConfirmacion = now()->subMinute();
+        $nuevaFecha = $this->fechaFutura()->addWeek()->setTime(11, 0);
+        $cita = Cita::create([
+            'id_paciente' => $paciente->id,
+            'id_servicio' => $servicio->id,
+            'id_tratamiento' => $tratamiento->id,
+            'fecha_hora' => $this->fechaFutura()->setTime(10, 0),
+            'duracion_estimada' => $tratamiento->duracion_estimada,
+            'estado' => EstadoCita::Confirmada,
+            'fecha_confirmacion' => $fechaConfirmacion,
+        ]);
+
+        $this->actingAs($asistente)
+            ->put(route('citas.update', $cita), [
+                'fecha' => $nuevaFecha->toDateString(),
+                'hora' => '11:00',
+            ])
+            ->assertRedirect(route('citas.index'));
+
+        $cita->refresh();
+
+        $this->assertSame(EstadoCita::Confirmada, $cita->estado);
+        $this->assertTrue($cita->fecha_hora->equalTo($nuevaFecha));
+        $this->assertSame(
+            $fechaConfirmacion->format('Y-m-d H:i:s'),
+            $cita->fecha_confirmacion->format('Y-m-d H:i:s'),
+        );
     }
 
     public function test_una_cita_confirmada_puede_marcarse_como_no_asistio(): void

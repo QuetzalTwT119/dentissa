@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\TipoImagen;
-use App\Http\Controllers\Admin\AtencionOportunaController as AdminAtencionOportunaController;
 use App\Http\Controllers\Admin\AuditoriaController;
 use App\Http\Controllers\Admin\CasoController;
 use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
@@ -18,7 +17,6 @@ use App\Http\Controllers\Admin\TratamientoController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\AsistenteAgendaController;
 use App\Http\Controllers\AsistentePacienteController;
-use App\Http\Controllers\AtencionOportunaController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\CitaPublicaController;
 use App\Http\Controllers\DisponibilidadController;
@@ -91,12 +89,6 @@ Route::get('/version', function () {
 
 Route::get('/agendar-cita', [CitaPublicaController::class, 'create'])->name('citas.publica.create');
 Route::post('/agendar-cita', [CitaPublicaController::class, 'store'])->name('citas.publica.store');
-Route::get('/atencion-urgente', [AtencionOportunaController::class, 'urgencia'])->name('atencion.urgencia');
-Route::post('/atencion-urgente', [AtencionOportunaController::class, 'guardarUrgencia'])
-    ->middleware('throttle:10,1')->name('atencion.urgencia.store');
-Route::get('/lista-de-espera', [AtencionOportunaController::class, 'listaEspera'])->name('atencion.lista-espera');
-Route::post('/lista-de-espera', [AtencionOportunaController::class, 'guardarListaEspera'])
-    ->middleware('throttle:10,1')->name('atencion.lista-espera.store');
 Route::get('/disponibilidad', [DisponibilidadController::class, 'index'])->name('disponibilidad.index');
 Route::post('/asistente-paciente/responder', [AsistentePacienteController::class, 'responder'])
     ->middleware('throttle:30,1')
@@ -150,7 +142,8 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
         ->middleware('role:admin,asistente')->name('notificaciones.pendiente');
     Route::patch('/notificaciones/leidas', [NotificacionSistemaController::class, 'marcarTodasLeidas'])
         ->middleware('role:admin,asistente')->name('notificaciones.leidas');
-
+    Route::patch('/notificaciones/vistas', [NotificacionSistemaController::class, 'marcarTodasVistas'])
+        ->middleware('role:admin,asistente')->name('notificaciones.vistas');
     Route::get('/asistente-agenda', [AsistenteAgendaController::class, 'create'])->name('asistente-agenda.create');
     Route::post('/asistente-agenda/proponer', [AsistenteAgendaController::class, 'proponer'])->name('asistente-agenda.proponer');
 
@@ -178,9 +171,6 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 
 Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
-    Route::get('atencion-oportuna', [AdminAtencionOportunaController::class, 'index'])->name('atencion-oportuna.index');
-    Route::patch('atencion-oportuna/urgencias/{urgencia}/contactar', [AdminAtencionOportunaController::class, 'contactarUrgencia'])->name('atencion-oportuna.urgencias.contactar');
-    Route::patch('atencion-oportuna/espera/{espera}/contactar', [AdminAtencionOportunaController::class, 'contactarEspera'])->name('atencion-oportuna.espera.contactar');
     Route::patch('servicios/{servicio}/tratamientos', [ServicioController::class, 'syncTratamientos'])->name('servicios.tratamientos.sync');
     Route::resource('servicios', ServicioController::class)->except('show');
     Route::resource('tratamientos', TratamientoController::class)->except('show');

@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Redirect;
 
 class PreguntaFrecuenteController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         return view('admin.preguntas-frecuentes.index', [
-            'preguntas' => PreguntaFrecuente::orderBy('orden')->orderBy('id')->get(),
+            'preguntas' => PreguntaFrecuente::orderBy('orden')->orderBy('id')->paginate($this->paginationPageSize($request)),
         ]);
     }
 

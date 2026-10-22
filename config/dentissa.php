@@ -100,8 +100,6 @@ return [
     /* Recursos visuales estáticos aprobados para el sitio público. */
     'imagenes' => [
         'hero' => 'images/dentissa/hero-inicio.jpg',
-        'urgencias' => 'images/dentissa/urgencias-dentales.jpg',
-        'lista_espera' => 'images/dentissa/lista-espera.jpg',
         'servicios' => [
             'Odontología General' => 'images/dentissa/odontologia-general.jpg',
             'Odontología Estética' => 'images/dentissa/odontologia-estetica.jpg',

@@ -261,23 +261,6 @@ class AsistenteIaLocalTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_chat_no_consulta_ia_para_atencion_urgente(): void
-    {
-        config([
-            'dentissa.asistente_ia.habilitada' => true,
-            'dentissa.asistente_ia.ollama_url' => 'http://ollama:11434',
-        ]);
-        Http::preventStrayRequests();
-
-        $this->postJson(route('asistente-paciente.responder'), [
-            'consulta' => 'Tengo dolor intenso y necesito ayuda',
-            'conversacion_id' => '00000000-0000-4000-8000-000000000023',
-        ])->assertOk()
-            ->assertJsonPath('accion.etiqueta', 'Solicitar atención urgente');
-
-        Http::assertNothingSent();
-    }
-
     public function test_chat_respeta_el_paso_actual_de_agenda_aunque_el_texto_coincida_con_una_faq(): void
     {
         PreguntaFrecuente::create([

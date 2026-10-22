@@ -21,12 +21,17 @@ class AuditoriaController extends Controller
             'hasta' => ['nullable', 'date', 'after_or_equal:desde'],
         ]);
 
-        $consulta = LogAuditoria::query()
-            ->with('usuario:id,nombre,apellido')
+        // Usa la misma población permitida para los resultados y las opciones
+        // del filtro. Así no se ofrecen acciones de pacientes/Telegram que la
+        // propia bitácora oculta.
+        $eventosDelPersonal = LogAuditoria::query()
             ->where(function ($query) {
                 $query->whereNotNull('id_usuario')
                     ->orWhereIn('actor_rol', ['admin', 'asistente']);
-            })
+            });
+
+        $consulta = (clone $eventosDelPersonal)
+            ->with('usuario:id,nombre,apellido')
             ->when($filtros['accion'] ?? null, fn ($query, $accion) => $query->where('accion', $accion))
             ->when($filtros['usuario_id'] ?? null, fn ($query, $usuarioId) => $query->where(function ($subquery) use ($usuarioId) {
                 $subquery->where('id_usuario', $usuarioId)
@@ -38,9 +43,13 @@ class AuditoriaController extends Controller
             ->orderByDesc('id');
 
         return view('admin.auditoria.index', [
-            'registros' => $consulta->paginate(20)->withQueryString(),
+            'registros' => $consulta->paginate($this->paginationPageSize($request))->withQueryString(),
             'usuarios' => User::query()->orderBy('nombre')->orderBy('apellido')->get(['id', 'nombre', 'apellido']),
-            'acciones' => LogAuditoria::query()->whereNotNull('accion')->distinct()->orderBy('accion')->pluck('accion'),
+            'acciones' => (clone $eventosDelPersonal)
+                ->whereNotNull('accion')
+                ->distinct()
+                ->orderBy('accion')
+                ->pluck('accion'),
             'filtros' => $filtros,
         ]);
     }

@@ -16,6 +16,18 @@
             </div>
         @endif
 
-        {{ $slot }}
+        @if (isset($actions))
+            <div class="flex flex-wrap items-center gap-3">
+                {{ $actions }}
+            </div>
+        @else
+            {{ $slot }}
+        @endif
     </div>
+
+    @if (isset($extra))
+        <div class="mt-5 pt-4 border-t border-[#e9dfdb]/70">
+            {{ $extra }}
+        </div>
+    @endif
 </div>

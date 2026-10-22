@@ -143,20 +143,4 @@ class AsistenteAgendaTest extends TestCase
         $this->assertStringContainsString('Limpieza web', $servicioElegido->json('respuesta'));
     }
 
-    public function test_el_chat_web_dirige_urgencias_y_falta_de_horario_a_las_funciones_correctas(): void
-    {
-        $conversacion = '00000000-0000-4000-8000-000000000003';
-
-        $this->postJson(route('asistente-paciente.responder'), [
-            'consulta' => 'Tengo dolor intenso y necesito ayuda',
-            'conversacion_id' => $conversacion,
-        ])->assertOk()
-            ->assertJsonPath('accion.etiqueta', 'Solicitar atención urgente');
-
-        $this->postJson(route('asistente-paciente.responder'), [
-            'consulta' => 'No encuentro horario, quiero lista de espera',
-            'conversacion_id' => '00000000-0000-4000-8000-000000000004',
-        ])->assertOk()
-            ->assertJsonPath('accion.etiqueta', 'Unirme a la lista de espera');
-    }
 }
