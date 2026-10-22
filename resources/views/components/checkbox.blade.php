@@ -4,5 +4,5 @@
     @disabled($disabled)
     type="checkbox"
     {{ $checked ? 'checked' : '' }}
-    {{ $attributes->merge(['class' => 'rounded border-gray-300 text-brand-600 shadow-sm focus:ring-brand-500']) }}
+    {{ $attributes->merge(['class' => 'rounded-md border-[#e9dfdb] text-brand-600 shadow-sm focus:ring-brand-400 focus:ring-offset-1 transition']) }}
 >

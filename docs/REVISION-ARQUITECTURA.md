@@ -1,14 +1,14 @@
 # Revisión de arquitectura y calidad — Dentissa
 
 **Fecha de revisión:** 13 de octubre de 2026
-**Alcance:** MVP de agenda, atención oportuna, pacientes e historial clínico
+**Alcance:** MVP de agenda, pacientes e historial clínico
 **Responsable de revisión:** QA y arquitectura de software
 
 ## 1. Dictamen ejecutivo
 
 Dentissa tiene una arquitectura de **monolito modular Laravel** adecuada para
 la entrega del MVP. Los módulos están separados por responsabilidad (citas,
-disponibilidad, notificaciones, atención oportuna e historial clínico) y las
+disponibilidad, notificaciones e historial clínico) y las
 reglas más delicadas de agenda ya se concentran en servicios reutilizables.
 
 La base es entregable. La autorización defensiva para la creación interna ya
@@ -40,12 +40,12 @@ Navegador / formulario público / panel interno
 
 ### Canales principales
 
-- **Público:** agenda una cita, solicita atención urgente o entra a lista de
-  espera. El paciente público se crea o reutiliza por correo.
+- **Público:** agenda una cita. El paciente público se crea o reutiliza por
+  correo.
 - **Personal autenticado:** consulta y administra citas; el asistente propone
   horarios, pero la cita solo se guarda al confirmar.
 - **Administración:** gestiona catálogo, horarios, pacientes, historial clínico,
-  contenido, reportes y solicitudes de atención oportuna.
+  contenido y reportes.
 
 ### Reglas críticas ya centralizadas
 
@@ -113,8 +113,8 @@ Navegador / formulario público / panel interno
    la instalación de dependencias, el build de frontend, migraciones y pruebas
    en los cambios enviados a GitHub.
 3. ~~**Auditoría consistente.**~~ **Completado para el MVP:**
-   `AuditoriaService` registra cambios de citas, pacientes, historial y
-   atención oportuna con usuario, acción, registro, fecha e IP, evitando copiar
+   `AuditoriaService` registra cambios de citas, pacientes e historial con
+   usuario, acción, registro, fecha e IP, evitando copiar
    diagnóstico y medicamentos. El cambio y la auditoría se escriben en la
    misma transacción; ante una falla, se revierte el cambio y se muestra un
    error 503 comprensible. QA-36 está aprobado en SQLite y MySQL 8.4.

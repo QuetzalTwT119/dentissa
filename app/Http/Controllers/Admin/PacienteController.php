@@ -31,7 +31,8 @@ class PacienteController extends Controller
                 });
             })
             ->orderBy('nombre')
-            ->get();
+            ->paginate($this->paginationPageSize($request))
+            ->withQueryString();
 
         return view('admin.pacientes.index', [
             'pacientes' => $pacientes,

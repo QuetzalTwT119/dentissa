@@ -1,6 +1,14 @@
 # Manual de usuario de Dentissa
 
+## Revisión de cambios de la portada
+
+Antigravity trabaja en la misma carpeta que Dentissa. Cuando termine un cambio visual, abre PowerShell en `C:\laragon\www\dentissa` y ejecuta `powershell -ExecutionPolicy Bypass -File .\scripts\antigravity.ps1`. El sistema revisa automáticamente la portada y después actualiza la aplicación local. Finalmente abre `http://localhost:8000` para revisar el resultado.
+
 ## 1. Acceso
+
+> Nota para la clínica: el contenedor de validación `qa` es una herramienta
+> interna del equipo técnico. No modifica citas, pacientes ni historiales y no
+> requiere ninguna acción del personal clínico.
 
 Abre <http://localhost:8000>. El personal de la clínica inicia sesión desde
 `/login`. Los pacientes pueden agendar desde el formulario público sin crear
@@ -13,7 +21,7 @@ solo en un dispositivo de confianza; si no recuerdas la contraseña, abre
 
 La navegación interna muestra la marca Dentissa, un acceso a **Inicio**, otro a
 la **Agenda** y otro al **Asistente**. En administración, **Gestión** agrupa
-Pacientes, Usuarios, Reportes, atención oportuna, Mensajes y Auditoría; los
+Pacientes, Usuarios, Reportes, Mensajes y Auditoría; los
 menús **Catálogo**, **Contenido** y **Configuración** reúnen el resto de las
 secciones. En pantallas angostas, usa el botón de menú para encontrar las
 mismas opciones y la campana para abrir una vista rápida de notificaciones.
@@ -23,8 +31,12 @@ controles de carga se acomodan en varias filas para facilitar el toque.
 **Auditoría** solo está disponible para administración; las cuentas de
 asistente no ven esa opción.
 
-El inicio del administrador reúne accesos rápidos para agendar citas, atender
-urgencias/lista de espera, consultar pacientes, administrar servicios y
+Los listados de registros muestran **20 elementos por página de forma predeterminada**. En el pie del listado puedes elegir **20** o **50** registros por página. Cuando
+hay más resultados, al final aparecen los botones **Anterior**, los números de
+página y **Siguiente**; los filtros actuales se conservan al cambiar de página.
+
+El inicio del administrador reúne accesos rápidos para agendar citas,
+consultar pacientes, administrar servicios y
 contenido, y gestionar usuarios. Las cuentas de asistente ven un inicio más
 sencillo con accesos a sus citas y al asistente de agenda. El sitio también
 puede instalarse como aplicación compatible; si se pierde la conexión, muestra
@@ -47,7 +59,12 @@ debe apagar o eliminar el servicio de Railway desde el panel.
 
 
 
-La página principal presenta los servicios y explica el proceso de agenda. En el bloque de contacto, los datos de demostración muestran el aviso **Información ficticia · No contactar** y no se convierten en enlaces. No los uses para contactar al consultorio.
+La página principal presenta una portada cálida para Dentissa con fotografía,
+servicios, galería y un acceso directo a la agenda. El botón **Elegir fecha y
+horario** abre el flujo público validado; ahí se seleccionan tratamiento, fecha
+y hora antes de solicitar la cita. La portada no crea citas por sí misma ni usa
+teléfonos, correos, horarios, calificaciones o testimonios como si ya fueran
+datos oficiales. La clínica debe aprobar ese contenido antes de publicarlo.
 
 ## 2. Agendamiento público
 
@@ -66,24 +83,29 @@ actual y un resumen que se actualiza con el servicio, tratamiento, fecha y hora
 seleccionados. En móvil, ese panel se acomoda debajo del formulario para mantener
 los controles cómodos. Al elegir un servicio, su nombre permanece visible sobre
 los tratamientos para conservar el contexto; el mismo recuadro permite volver
-a elegir otro servicio. Las alternativas de urgencia y lista de espera están junto
-al resumen en escritorio y debajo del formulario en móvil.
+a elegir otro servicio.
 
-El sistema crea o reutiliza el paciente por correo y crea la cita en estado
-**Agendada**. La pantalla muestra un mensaje de confirmación.
+El sistema crea o reutiliza el paciente por correo, bloquea el horario y crea
+la cita en estado **Confirmada**. La pantalla muestra la confirmación; no hace
+falta que el personal pulse una segunda vez **Confirmar**.
 
 ## 3. Gestión interna de citas
 
 Desde `/citas`, el personal puede:
 
 - crear una cita seleccionando paciente, servicio, tratamiento, fecha y hora;
-- confirmar una cita agendada;
+- las citas nuevas creadas aquí quedan confirmadas en cuanto el horario se
+  reserva; las citas históricas que sigan agendadas conservan la opción de
+  confirmación manual;
 - reagendar una cita a otro horario disponible;
 - iniciar la atención de una cita confirmada;
 - marcar una cita confirmada como **No asistió**, solo desde la hora programada;
 - completar una cita;
 - cancelarla indicando un motivo opcional;
-- filtrar por fecha y estado.
+- buscar por nombre o apellido del paciente, teléfono, correo, servicio o
+  tratamiento, y combinar la búsqueda con los filtros por fecha y estado. La
+  lista se actualiza automáticamente tras dejar de escribir; no es necesario
+  pulsar un botón de búsqueda.
 
 El filtro de fecha permite consultar citas pasadas, de hoy o futuras; no crea ni
 modifica citas. La fecha futura es válida aquí porque la agenda incluye
@@ -92,20 +114,25 @@ reservas próximas.
 Estados principales:
 
 ```text
-Agendada → Confirmada → En curso → Completada
-    │
-    ├→ Reagendada → Agendada
-    ├→ No asistió
-    └→ Cancelada
+Reserva pública, Telegram o interna → Confirmada → En curso → Completada
+                                     │
+                                     ├→ Reagendada → Confirmada
+                                     ├→ No asistió
+                                     └→ Cancelada
+
+Cita histórica pendiente → Agendada → Confirmada o Cancelada
 ```
 
 Una cita no se puede completar directamente desde **Agendada** o
 **Confirmada**. Primero se debe pulsar **Iniciar** cuando comienza la
 atención. La agenda muestra una acción principal según el estado y agrupa
-opciones secundarias en **Más acciones**. Las acciones disponibles dependen del
-estado actual de la cita: **Más acciones** aparece solo en citas agendadas o
-confirmadas; una cita **En curso** muestra únicamente **Completar**, y los
-estados finales muestran **Sin acciones**.
+opciones secundarias en el botón **Acciones**. El menú muestra sus opciones con
+iconos y separa visualmente la cancelación. Las acciones disponibles dependen
+del estado actual de la cita: **Acciones** aparece solo en citas agendadas o
+confirmadas. En la agenda, la acción principal y el menú **Acciones** se
+presentan alineados en una misma línea para ubicarlos rápidamente. Una cita **En
+curso** muestra únicamente **Completar**, y los estados finales muestran **Sin
+acciones**.
 La inasistencia no se puede registrar antes de la fecha y hora programadas.
 Después de una acción válida, la agenda muestra el estado actualizado y un
 aviso de confirmación; si la operación no procede, muestra el motivo del error.
@@ -137,39 +164,25 @@ Para precios sin una FAQ que hable de ellos, síntomas, medicamentos y
 diagnósticos, el chat pide reformular la duda o contactar al consultorio.
 En todas las pantallas, el asistente permanece disponible en una cápsula
 horizontal compacta, con un ícono dental y su nombre en la esquina inferior
-derecha. Al abrirlo, el panel aparece cerca, justo encima del acceso. En urgencias
-y lista de espera, el widget se aparta de los campos visibles sin reservar una
-franja lateral o inferior grande.
-En la agenda pública, el flujo principal se presenta primero; las opciones de
-atención urgente y lista de espera aparecen junto al resumen en escritorio y
-debajo del formulario en móvil.
+derecha. Al abrirlo, el panel aparece cerca, justo encima del acceso.
+En la agenda pública, el flujo principal se presenta primero.
 
-El inicio, las ofertas, la galería y los formularios de atención se adaptan al
+El inicio, las ofertas, la galería y la agenda pública se adaptan al
 ancho de la pantalla: las tarjetas pasan a una o varias columnas según el
 espacio disponible y los formularios conservan sus controles a lo ancho. La barra
 de desplazamiento se oculta por estética, pero la página sigue desplazándose con
-rueda, teclado o gestos. La solicitud urgente coloca la información y la
-advertencia junto al formulario en escritorio y los apila en móvil. En teléfonos, la imagen
-se hace más compacta, el formulario reduce espacios y los campos conservan un
-área cómoda para tocar; las
-señales se muestran en una columna. En escritorio, el formulario utiliza dos
-columnas y deja solo un margen exterior estrecho para el acceso flotante; el
-envío se muestra compacto y alineado a la derecha. La portada presenta el
-mensaje «Ir al dentista puede ser más sencillo», explica el
-flujo de agenda en tres pasos y mantiene una acción visible
-para iniciar una cita. Los servicios se recorren en un carrusel: muestra tres
-tarjetas a la vez en escritorio, dos en tablet y una tarjeta casi completa en
-móvil para indicar que hay más opciones. Avanza continuamente en un bucle
-visual de 42 segundos; las tarjetas duplicadas permiten que el recorrido vuelva
-al inicio sin un salto perceptible. No necesita flechas ni controles de
-reproducción. La imagen principal se mantiene limpia, sin una tarjeta de texto
-superpuesta; la explicación del proceso aparece en su propia sección. Contacto conserva el fondo claro
+rueda, teclado o gestos. En teléfonos, el formulario reduce espacios y los
+campos conservan un área cómoda para tocar. En escritorio, el formulario usa
+el ancho disponible y deja un margen exterior estrecho para el acceso flotante.
+La
+portada tiene una composición editorial: mensaje principal y agenda a la
+izquierda, fotografía de la clínica a la derecha y acceso directo a la agenda.
+Los servicios se recorren en un carrusel continuo con
+imágenes alineadas y tarjetas de altura uniforme. Contacto conserva el fondo claro
 de la marca y presenta el botón de agenda separado de las tarjetas de
 información; no muestra una tarjeta de contacto vacía si no hay datos
 configurados. En la portada el asistente flotante permanece visible sobre las
-tarjetas informativas. En formularios de urgencia y lista de espera se aparta
-temporalmente de los controles que podrían quedar cubiertos y reaparece al
-despejarse esa zona. El acceso combina el ícono dental de la marca y el nombre
+tarjetas informativas. El acceso combina el ícono dental de la marca y el nombre
 en una sola cápsula horizontal, sin una etiqueta suelta debajo. El chat abierto
 queda más compacto y se reduce el espacio inferior y lateral que no aporta al
 contenido. Los datos de
@@ -194,29 +207,7 @@ disponible cuando el equipo de desarrollo la habilita en Docker; su activación 
 significa que el modelo esté disponible en el sitio desplegado. Si no puede
 apoyarse en una respuesta activa, debe mostrar el mensaje de respaldo.
 
-## 6. Atención oportuna
-
-### Solicitud urgente
-
-En `/atencion-urgente`, una persona describe su situación y puede seleccionar
-señales reportadas. El formulario no diagnostica ni crea una cita automática.
-El personal revisa la solicitud desde `/admin/atencion-oportuna` y la marca
-como **Contactada**.
-
-Si existe una emergencia que pone en riesgo la vida, se debe llamar a los
-servicios de emergencia; este formulario no sustituye atención médica.
-
-### Lista de espera
-
-En `/lista-de-espera`, una persona registra preferencias de servicio,
-tratamiento, fecha y franja horaria. Esto no confirma una cita. El personal
-revisa la solicitud y la marca como **Contactada** cuando realiza el contacto.
-
-Desde `/admin/atencion-oportuna`, las solicitudes contactadas o cerradas se
-pueden consultar en **Historial de seguimiento** y filtrar por estado y rango
-de fechas. Marcar una solicitud como contactada no crea una cita automática.
-
-## 7. Pacientes e historial clínico
+## 6. Pacientes e historial clínico
 
 Desde `/admin/pacientes`:
 
@@ -235,20 +226,14 @@ es visible para el administrador y no se incluye en el PDF descargable.
 Durante las pruebas se deben usar datos ficticios. No se deben subir imágenes,
 documentos ni datos médicos reales al entorno de desarrollo.
 
-## 7.1 Cuentas del personal
+## 6.1 Cuentas del personal
 
 En **Usuarios**, el administrador puede filtrar las cuentas por rol y estado,
 crear una cuenta para una asistente o administrador, editar sus datos y activar
 o desactivar el acceso. Los pacientes se gestionan desde **Pacientes**, en una
 sección distinta.
 
-## 8. Diferencia entre pendientes e historial
-
-Cuando una solicitud urgente o de lista de espera se marca como contactada,
-deja de aparecer en la lista de pendientes. No se elimina: conserva su estado,
-la persona que la contactó y la fecha del contacto.
-
-## 9. Reportes administrativos
+## 7. Reportes administrativos
 
 En **Reportes**, el administrador selecciona las fechas **Desde** y **Hasta**
 y pulsa **Filtrar**. El panel resume pacientes, citas por estado, tratamientos
@@ -264,7 +249,7 @@ Los botones permiten descargar un PDF o un libro de **Excel** (`.xlsx`). El
 libro incluye los indicadores y resúmenes en una hoja con etiquetas en español;
 se puede abrir y editar en Excel o LibreOffice Calc.
 
-## 10. Auditoría administrativa
+## 8. Auditoría administrativa
 
 El administrador puede abrir **Configuración → Auditoría** para consultar los
 cambios realizados por cuentas del administrador o de las asistentes. La vista
@@ -273,7 +258,7 @@ y posteriores. Es de solo lectura; las asistentes no tienen acceso. Las
 solicitudes iniciadas por pacientes desde el portal o Telegram no aparecen en
 la bitácora. Los registros anteriores de esos canales se conservan en la base
 de datos, pero no se muestran como cambios del personal. Se registran cambios
-de citas, pacientes e historial clínico, atención oportuna, usuarios, perfil,
+de citas, pacientes e historial clínico, usuarios, perfil,
 catálogo, contenido público, horarios y mensajes de contacto. No se guardan
 contraseñas ni notas clínicas; al editar un paciente, la auditoría indica qué
 campos cambiaron, pero no copia sus valores de teléfono o correo. Las consultas,
@@ -283,7 +268,8 @@ no se consideran cambios del personal.
 ## 11. Notificaciones internas
 
 Administradores y asistentes pueden abrir **Notificaciones** desde el ícono de
-campana. El contador muestra cuántos avisos siguen pendientes. La bandeja
+campana. El contador muestra cuántos avisos son **nuevos** desde la última vez
+que se abrió la campana; no equivale a los avisos pendientes de atender. La bandeja
 resume el total, separa avisos en **Todas**, **Pendientes** y **Leídas**, y
 permite cambiar un aviso leído de vuelta a pendiente. También permite marcar
 todas las pendientes como leídas. Cada aviso muestra su fecha, estado y acceso
@@ -295,6 +281,12 @@ inasistencia. Las solicitudes hechas desde el
 portal o Telegram también avisan al personal; estos avisos no se agregan a la
 auditoría como si los hubiera realizado un empleado. Cada persona ve sus
 propios avisos y puede marcarlos como leídos individualmente o todos a la vez.
+Al abrir la campana, los avisos se registran como **vistos** y el contador de
+novedades queda en cero, pero conservan su estado pendiente y su punto rosa
+hasta que se abra el aviso o se marque como leído. El centro completo agrupa los avisos por **Hoy**, **Ayer** y
+**Anteriores**, y etiqueta el tipo de cambio; cancelaciones e inasistencias se
+destacan para facilitar el seguimiento. Al abrir un aviso desde esa lista o desde el aviso emergente,
+el sistema lleva a la cita relacionada sin cerrar la sesión.
 Con la sesión abierta, la notificación aparece al instante en un aviso
 emergente y el contador se actualiza sin recargar la página. Si el canal en
 vivo se desconecta temporalmente, el sistema revisa novedades cada pocos
@@ -305,3 +297,18 @@ desde el mismo control.
 
 Los avisos son internos del sistema y no dependen de WhatsApp ni envían un
 mensaje externo al paciente.
+
+## 12. Experiencia visual y navegación boutique
+
+Dentissa cuenta con una interfaz visual unificada con paleta cálida (rosa `#d75078`, durazno `#f2b0a6`, fondo `#FAF6F6`, texto `#2D2526` y verde salvia `#4E8D72`), pensada para transmitir tranquilidad y profesionalismo tanto a los pacientes como al equipo de la clínica:
+
+1. **Navegación fluida y adaptativa:**
+   - En computadoras de escritorio, la barra superior permanece accesible con accesos directos claros a Inicio, Agenda, Asistente y a los menús agrupados de Gestión, Catálogo, Contenido y Configuración.
+   - En celulares y tablets, el botón de menú con ícono de tres líneas permite desplegar todas las secciones en un panel vertical accesible sin saturar la pantalla.
+2. **Tablas con desplazamiento lateral seguro:**
+   - En pantallas angostas, las listas de citas, pacientes, usuarios, testimonios y reportes conservan todas sus columnas e información legible mediante desplazamiento horizontal, evitando columnas comprimidas o textos cortados.
+3. **Formularios confortables y claros:**
+   - Los campos de captura cuentan con bordes suaves, enfoque en color rosa de marca y mensajes de ayuda legibles para evitar errores durante el registro de datos clínicos o citas.
+4. **Asistente flotante no invasivo:**
+   - El widget del asistente virtual se reposiciona dinámicamente para nunca tapar botones de acción, formularios ni tarjetas de selección.
+

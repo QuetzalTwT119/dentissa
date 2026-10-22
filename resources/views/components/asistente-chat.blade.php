@@ -135,7 +135,7 @@
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-semibold text-brand-700">Dentissa Asistente</h2>
-                    <p class="mt-1 text-sm text-gray-700">Dudas, horarios, urgencias y lista de espera.</p>
+                    <p class="mt-1 text-sm text-gray-700">Dudas del consultorio y consulta de horarios disponibles.</p>
                 </div>
                 <button type="button" @click="abierto = false" aria-label="Cerrar asistente" class="rounded-md px-2 py-1 text-xl text-gray-500 hover:bg-white hover:text-gray-800">×</button>
             </div>

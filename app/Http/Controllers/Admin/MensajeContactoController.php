@@ -20,7 +20,7 @@ class MensajeContactoController extends Controller
         $mensajes = MensajeContacto::when(
             $request->filled('leido'),
             fn ($q) => $q->where('leido', $validated['leido'])
-        )->orderByDesc('created_at')->get();
+        )->orderByDesc('created_at')->paginate($this->paginationPageSize($request))->withQueryString();
 
         return view('admin.mensajes-contacto.index', [
             'mensajes' => $mensajes,

@@ -43,7 +43,9 @@ class NotificacionInternaService
                     'evento' => $evento,
                     'titulo' => $titulo,
                     'mensaje' => "{$prefijo} {$fecha}.",
-                    'url' => route('citas.index'),
+                    // La ruta relativa conserva la sesión aunque se acceda por localhost,
+                    // IP local o un dominio de producción distinto.
+                    'url' => route('citas.index', [], false),
                 ]);
 
                 try {

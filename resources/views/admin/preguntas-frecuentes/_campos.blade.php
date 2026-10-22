@@ -5,23 +5,23 @@ $valor = fn (string $campo, $default = '') => old($campo, $pregunta?->{$campo} ?
 
 <div>
     <x-input-label for="pregunta" value="Pregunta" />
-    <x-text-input id="pregunta" name="pregunta" class="mt-1 block w-full" :value="$valor('pregunta')" maxlength="200" required autofocus />
+    <x-text-input id="pregunta" name="pregunta" class="mt-1.5 block w-full" :value="$valor('pregunta')" maxlength="200" required autofocus />
     <x-input-error :messages="$errors->get('pregunta')" class="mt-2" />
 </div>
 
 <div>
     <x-input-label for="respuesta" value="Respuesta" />
     <textarea id="respuesta" name="respuesta" rows="4" required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ $valor('respuesta') }}</textarea>
+              class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition placeholder:text-[#8A7A7D]/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('respuesta') }}</textarea>
     <x-input-error :messages="$errors->get('respuesta')" class="mt-2" />
 </div>
 
-<div>
-    <x-input-label for="variantes" value="Otras formas de preguntar (opcional)" />
+<div class="rounded-xl border border-[#e9dfdb] bg-[#FAF6F6]/50 p-4">
+    <x-input-label for="variantes" value="Otras formas de preguntar (opcional)" class="font-semibold text-[#2D2526]" />
     <textarea id="variantes" name="variantes" rows="4" maxlength="4000"
               aria-describedby="variantes-ayuda"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ $valor('variantes') }}</textarea>
-    <p id="variantes-ayuda" class="mt-1 text-sm text-gray-600">
+              class="mt-2 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('variantes') }}</textarea>
+    <p id="variantes-ayuda" class="mt-2 text-xs text-[#8A7A7D]">
         Escribe una forma alternativa por línea, por ejemplo sinónimos o maneras comunes de expresar la misma duda.
         No agregues aquí información nueva a la respuesta.
     </p>
@@ -30,11 +30,11 @@ $valor = fn (string $campo, $default = '') => old($campo, $pregunta?->{$campo} ?
 
 <div>
     <x-input-label for="orden" value="Orden (menor primero)" />
-    <x-text-input id="orden" name="orden" type="number" min="0" class="mt-1 block w-full" :value="$valor('orden', 0)" />
+    <x-text-input id="orden" name="orden" type="number" min="0" class="mt-1.5 block w-full" :value="$valor('orden', 0)" />
     <x-input-error :messages="$errors->get('orden')" class="mt-2" />
 </div>
 
-<div class="flex items-center">
+<div class="flex items-center pt-2">
     <x-checkbox id="activa" name="activa" value="1" :checked="$valor('activa', true)" />
-    <x-input-label for="activa" value="Visible en el sitio público" class="ml-2" />
+    <x-input-label for="activa" value="Visible en el sitio público" class="ml-2.5" />
 </div>

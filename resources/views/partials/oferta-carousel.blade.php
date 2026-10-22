@@ -17,21 +17,21 @@
                             : '$'.$oferta->valor_descuento.' de descuento';
                     }
                 @endphp
-                <div class="animate-carousel-fade-in w-[85%] shrink-0 snap-start overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)]"
+                <div class="animate-carousel-fade-in w-[85%] shrink-0 snap-start overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-soft transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-[#f2b0a6] sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)]"
                      style="animation-delay: {{ $index * 60 }}ms">
                     @if ($oferta->imagen)
                         <img src="/storage/{{ $oferta->imagen }}" alt="{{ $oferta->titulo }}" class="h-40 w-full object-cover">
                     @else
-                        <div class="flex h-40 w-full items-center justify-center bg-brand-100 text-sm text-brand-400">
-                            Sin imagen
+                        <div class="flex h-40 w-full items-center justify-center bg-brand-50 text-xs font-semibold text-brand-400">
+                            Pendiente de imagen
                         </div>
                     @endif
                     <div class="p-6">
-                        <h3 class="font-semibold text-gray-900">{{ $oferta->titulo }}</h3>
+                        <h3 class="font-semibold text-[#2D2526]">{{ $oferta->titulo }}</h3>
                         @if ($valor)
-                            <p class="mt-2 text-sm font-semibold text-brand-500">{{ $valor }}</p>
+                            <p class="mt-2 text-sm font-semibold text-brand-600">{{ $valor }}</p>
                         @endif
-                        <p class="mt-2 text-xs text-gray-400">
+                        <p class="mt-2 text-xs text-[#8A7A7D]">
                             Vigente hasta {{ \Illuminate\Support\Carbon::parse($oferta->fecha_fin)->translatedFormat('j \d\e F \d\e Y') }}
                         </p>
                     </div>

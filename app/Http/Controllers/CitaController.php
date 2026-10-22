@@ -27,15 +27,33 @@ class CitaController extends Controller
         $validated = $request->validate([
             'fecha' => ['nullable', 'date'],
             'estado' => ['nullable', Rule::enum(EstadoCita::class)],
+            'buscar' => ['nullable', 'string', 'max:100'],
         ]);
+
+        $terminos = preg_split('/\s+/', trim($validated['buscar'] ?? ''), -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
         $query = Cita::with(['paciente', 'servicio', 'tratamiento'])
             ->when($request->filled('fecha'), fn ($q) => $q->whereDate('fecha_hora', $validated['fecha']))
-            ->when($request->filled('estado'), fn ($q) => $q->where('estado', $validated['estado']));
+            ->when($request->filled('estado'), fn ($q) => $q->where('estado', $validated['estado']))
+            ->when($terminos !== [], function ($q) use ($terminos) {
+                foreach ($terminos as $termino) {
+                    $coincidencia = '%'.$termino.'%';
+
+                    $q->where(function ($buscar) use ($coincidencia) {
+                        $buscar->whereHas('paciente', fn ($paciente) => $paciente
+                            ->where('nombre', 'like', $coincidencia)
+                            ->orWhere('apellido', 'like', $coincidencia)
+                            ->orWhere('telefono', 'like', $coincidencia)
+                            ->orWhere('email', 'like', $coincidencia))
+                            ->orWhereHas('servicio', fn ($servicio) => $servicio->where('nombre', 'like', $coincidencia))
+                            ->orWhereHas('tratamiento', fn ($tratamiento) => $tratamiento->where('nombre', 'like', $coincidencia));
+                    });
+                }
+            });
 
         return view('citas.index', [
-            'citas' => $query->orderByDesc('fecha_hora')->get(),
-            'filtros' => $request->only(['fecha', 'estado']),
+            'citas' => $query->orderByDesc('fecha_hora')->paginate($this->paginationPageSize($request))->withQueryString(),
+            'filtros' => $request->only(['fecha', 'estado', 'buscar']),
         ]);
     }
 
@@ -87,6 +105,9 @@ class CitaController extends Controller
                 'fecha_hora' => $fechaHora,
                 'duracion_estimada' => $tratamiento->duracion_estimada,
                 'motivo' => $validated['motivo'] ?? null,
+                'estado' => EstadoCita::Confirmada,
+                'confirmada_por' => $request->user()->id,
+                'fecha_confirmacion' => now(),
             ]);
 
             $auditoria->registrar('cita.creada', $cita, datosNuevos: $this->datosAuditoria($cita, 'interna'), request: $request);
@@ -98,10 +119,10 @@ class CitaController extends Controller
             return back()->withErrors(['hora' => 'Ese horario ya no está disponible. Por favor elige otro.']);
         }
 
-        $notificaciones->citaAgendada($cita->load(['paciente', 'tratamiento']));
-        $notificacionesInternas->cambioCita($cita, 'agendada', $request->user()->id);
+        $notificaciones->citaConfirmada($cita->load(['paciente', 'tratamiento']));
+        $notificacionesInternas->cambioCita($cita, 'confirmada', $request->user()->id);
 
-        return Redirect::route('citas.index')->with('success', 'Cita agendada correctamente.');
+        return Redirect::route('citas.index')->with('success', 'Cita confirmada correctamente.');
     }
 
     public function edit(Cita $cita): View
@@ -136,12 +157,22 @@ class CitaController extends Controller
                 return false;
             }
 
-            $cita->update([
+            $datosActualizados = [
                 'fecha_hora' => $fechaHora,
-                'estado' => EstadoCita::Agendada,
-                'confirmada_por' => null,
-                'fecha_confirmacion' => null,
-            ]);
+            ];
+
+            // Una reserva ya confirmada conserva su confirmación al cambiar de
+            // horario. Las citas antiguas que siguen agendadas mantienen su
+            // flujo manual para no modificar su operación histórica.
+            if ($cita->estado === EstadoCita::Agendada) {
+                $datosActualizados += [
+                    'estado' => EstadoCita::Agendada,
+                    'confirmada_por' => null,
+                    'fecha_confirmacion' => null,
+                ];
+            }
+
+            $cita->update($datosActualizados);
 
             $auditoria->registrar('cita.reagendada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
 
@@ -275,9 +306,9 @@ class CitaController extends Controller
     private function datosAuditoria(Cita $cita, ?string $canal = null): array
     {
         $datos = [
-            // El modelo recién creado aún no trae los defaults aplicados por
-            // la base de datos; una cita nueva nace en estado agendada.
-            'estado' => $cita->estado?->value ?? EstadoCita::Agendada->value,
+            // El modelo recién creado aún no trae los defaults de la base;
+            // el flujo vigente crea las reservas nuevas ya confirmadas.
+            'estado' => $cita->estado?->value ?? EstadoCita::Confirmada->value,
             'fecha_hora' => $cita->fecha_hora->toIso8601String(),
         ];
 

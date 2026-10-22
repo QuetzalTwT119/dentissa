@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Redirect;
 
 class CasoController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         return view('admin.casos.index', [
-            'casos' => Caso::withCount('imagenes')->orderBy('orden')->get(),
+            'casos' => Caso::withCount('imagenes')->orderBy('orden')->paginate($this->paginationPageSize($request)),
         ]);
     }
 

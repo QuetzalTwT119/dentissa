@@ -32,7 +32,8 @@ class UsuarioController extends Controller
         $usuarios = User::when($request->filled('rol'), fn ($q) => $q->where('rol', $validated['rol']))
             ->when($request->filled('activo'), fn ($q) => $q->where('activo', $validated['activo']))
             ->orderBy('nombre')
-            ->get();
+            ->paginate($this->paginationPageSize($request))
+            ->withQueryString();
 
         return view('admin.usuarios.index', [
             'usuarios' => $usuarios,

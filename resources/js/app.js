@@ -137,7 +137,6 @@ const updatesUrl = notificationsBody.dataset.notificationsUpdatesUrl;
 if (updatesUrl) {
     let lastNotificationId = Number(notificationsBody.dataset.notificationsCursor || 0);
     let pollingNotifications = false;
-    let realtimeConnected = false;
     const soundPreferenceKey = `dentissa:notifications:sound:${notificationsBody.dataset.realtimeUserId}`;
     let notificationSoundEnabled = localStorage.getItem(soundPreferenceKey) === 'enabled';
     let notificationAudioContext;
@@ -252,13 +251,14 @@ if (updatesUrl) {
 
         const item = document.createElement('a');
         item.dataset.notificationPreview = String(notificationId);
+        item.dataset.notificationReadUrl = notification.leida_url || notificationsBody.dataset.notificationsReadUrl?.replace('__NOTIFICATION_ID__', String(notificationId)) || '';
         item.href = notification.url || '/notificaciones';
         item.className = 'flex gap-3 px-4 py-3.5 transition hover:bg-gray-50 focus:bg-gray-50 focus:outline-none';
 
         const dot = document.createElement('span');
         dot.dataset.notificationPreviewDot = '';
-        dot.className = 'mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-brand-primary';
-        dot.setAttribute('aria-hidden', 'true');
+        dot.className = 'mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-brand-600 ring-4 ring-brand-100 animate-pulse';
+        dot.setAttribute('aria-label', 'Notificación nueva');
 
         const content = document.createElement('span');
         content.className = 'min-w-0 flex-1';
@@ -292,6 +292,63 @@ if (updatesUrl) {
             list.lastElementChild.remove();
         }
     };
+
+    const marcarNotificacionLeida = async (url) => {
+        if (!url) {
+            return null;
+        }
+
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+            },
+            credentials: 'same-origin',
+            cache: 'no-store',
+        });
+
+        return response.ok ? response.json() : null;
+    };
+
+    document.querySelectorAll('[data-notification-preview-trigger]').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const url = notificationsBody.dataset.notificationsMarkSeenUrl;
+            if (!url) {
+                return;
+            }
+
+            try {
+                const data = await marcarNotificacionLeida(url);
+                if (data?.no_vistas !== undefined) {
+                    updateNotificationBadges(Number(data.no_vistas));
+                }
+            } catch (error) {
+                // La campana sigue abriendo la bandeja aunque falle temporalmente la red.
+            }
+        });
+    });
+
+    document.addEventListener('click', async (event) => {
+        const link = event.target.closest('[data-notification-read-url]');
+        if (!link || link.dataset.notificationReadInProgress === 'true') {
+            return;
+        }
+
+        event.preventDefault();
+        link.dataset.notificationReadInProgress = 'true';
+
+        try {
+            const data = await marcarNotificacionLeida(link.dataset.notificationReadUrl);
+            if (data?.no_vistas !== undefined) {
+                updateNotificationBadges(Number(data.no_vistas));
+            }
+        } catch (error) {
+            // La navegación continúa aunque la red impida actualizar el estado visual.
+        } finally {
+            window.location.assign(link.href);
+        }
+    });
 
     const showNotificationToast = (notification) => {
         let region = document.querySelector('[data-notification-toast-region]');
@@ -329,8 +386,8 @@ if (updatesUrl) {
         }
 
         lastNotificationId = notificationId;
-        if (notification.no_leidas !== undefined) {
-            updateNotificationBadges(Number(notification.no_leidas));
+        if (notification.no_vistas !== undefined) {
+            updateNotificationBadges(Number(notification.no_vistas));
         }
         updateNotificationPreview(notification);
         playNotificationSound();
@@ -338,7 +395,7 @@ if (updatesUrl) {
     };
 
     const refreshNotifications = async () => {
-        if (realtimeConnected || pollingNotifications || document.visibilityState === 'hidden') {
+        if (pollingNotifications || document.visibilityState === 'hidden') {
             return;
         }
 
@@ -359,11 +416,13 @@ if (updatesUrl) {
             }
 
             const data = await response.json();
-            updateNotificationBadges(Number(data.no_leidas || 0));
+            updateNotificationBadges(Number(data.no_vistas || 0));
 
             (data.notificaciones || []).forEach((notification) => {
                 receiveNotification(notification);
             });
+
+            lastNotificationId = Math.max(lastNotificationId, Number(data.ultima_id || 0));
         } catch (error) {
             // A temporary network failure is harmless; the next poll retries.
         } finally {
@@ -394,8 +453,7 @@ if (updatesUrl) {
                 .listen('.notificacion.creada', receiveNotification);
 
             echo.connector.pusher.connection.bind('state_change', ({ current }) => {
-                realtimeConnected = current === 'connected';
-                if (!realtimeConnected) {
+                if (current === 'connected') {
                     refreshNotifications();
                 }
             });

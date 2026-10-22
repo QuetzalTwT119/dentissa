@@ -21,7 +21,6 @@ class DashboardVisualTest extends TestCase
             ->assertSee('Panel de administración')
             ->assertSee('Accesos rápidos')
             ->assertSee('Agendar cita')
-            ->assertSee('Urgencias y espera')
             ->assertSee('Pacientes')
             ->assertSee('Gestión')
             ->assertSee('logo-rosa-transparente.png');

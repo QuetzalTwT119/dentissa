@@ -43,6 +43,67 @@ services:
       # El archivo .env nunca debe versionarse y permanece excluido por Git.
       - ./.env:/var/www/html/.env
       - ./storage:/var/www/html/storage
+      # Antigravity y el navegador comparten estas piezas visuales directamente.
+      # Al guardar portada o imágenes en Windows, Laravel las lee sin copiarlas.
+      - ./resources/views:/var/www/html/resources/views
+      - ./public/images:/var/www/html/public/images
+      # Solo en desarrollo: permite que /version lea el SHA y estado exactos
+      # del checkout del host. No se monta en producción.
+      - ./.git:/var/www/html/.git:ro
+    develop:
+      watch:
+        # El código PHP y las vistas se sincronizan al guardar, sin reconstruir
+        # toda la imagen por cada ajuste de interfaz o lógica.
+        - action: sync
+          path: ./app
+          target: /var/www/html/app
+        - action: sync
+          path: ./bootstrap
+          target: /var/www/html/bootstrap
+          ignore:
+            - cache/
+        - action: sync
+          path: ./config
+          target: /var/www/html/config
+        - action: sync
+          path: ./database
+          target: /var/www/html/database
+          ignore:
+            - backups/
+        - action: sync
+          path: ./lang
+          target: /var/www/html/lang
+        - action: sync
+          path: ./resources/views
+          target: /var/www/html/resources/views
+        - action: sync
+          path: ./routes
+          target: /var/www/html/routes
+        - action: sync
+          path: ./public/images
+          target: /var/www/html/public/images
+        # Los estilos y JavaScript se compilan dentro de la imagen con Vite.
+        # Dependencias o configuración frontend también requieren reconstruir.
+        - action: rebuild
+          path: ./resources/css
+        - action: rebuild
+          path: ./resources/js
+        - action: rebuild
+          path: ./Dockerfile.local
+        - action: rebuild
+          path: ./composer.json
+        - action: rebuild
+          path: ./composer.lock
+        - action: rebuild
+          path: ./package.json
+        - action: rebuild
+          path: ./package-lock.json
+        - action: rebuild
+          path: ./postcss.config.js
+        - action: rebuild
+          path: ./tailwind.config.js
+        - action: rebuild
+          path: ./vite.config.js
 
   reverb:
     build:
@@ -126,6 +187,39 @@ services:
     volumes:
       - ./.env:/var/www/html/.env
       - ./storage:/var/www/html/storage
+
+  # Valida una entrega visual antes de integrarla. Se ejecuta bajo demanda:
+  # docker compose --profile qa run --rm --build qa
+  # No publica puertos, no usa datos clínicos y termina al acabar las pruebas.
+  qa:
+    profiles: ["qa"]
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+      args:
+        INSTALL_DEV: "true"
+    environment:
+      APP_ENV: testing
+      # Clave exclusiva y desechable para cifrado durante pruebas aisladas.
+      # No sustituye ni expone la APP_KEY real del archivo .env.
+      APP_KEY: "base64:Q7QpjCBrJw1KhDxKDm9qXCz1a3dr72nFKxMXIYfmRBE="
+      CACHE_STORE: array
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ":memory:"
+      DENTISSA_ASISTENTE_IA_HABILITADA: "false"
+      MAIL_MAILER: array
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: array
+      # Credenciales ficticias y aisladas: permiten probar la autorización
+      # de canales privados sin usar ni necesitar el servidor Reverb local.
+      BROADCAST_CONNECTION: reverb
+      REVERB_APP_ID: dentissa-qa
+      REVERB_APP_KEY: dentissa-qa-key
+      REVERB_APP_SECRET: dentissa-qa-secret
+      REVERB_HOST: localhost
+      REVERB_PORT: 443
+      REVERB_SCHEME: https
+    command: ["sh", "/var/www/html/scripts/qa-frontend.sh"]
 
   mysql:
     image: mysql:8.4

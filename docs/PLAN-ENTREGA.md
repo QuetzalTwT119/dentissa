@@ -13,7 +13,7 @@ nuevas.
 ## Estado actual
 
 - Flujos principales implementados: citas públicas e internas, asistente,
-  pacientes, historial clínico, PDF, urgencias y lista de espera.
+  pacientes, historial clínico y PDF.
 - Datos demo reproducibles mediante seeders.
 - Entorno Docker documentado para Docker Desktop y WSL2; la aplicación local usa
   MySQL 8.4 y la suite puede correrse en SQLite o en un schema MySQL aislado.
@@ -66,8 +66,7 @@ histórica y no debe usarse para fijar la fecha actual de entrega.
 
 ### 2. Reglas, permisos y datos — 13 al 22 de octubre
 
-- Revisar permisos por rol para citas, pacientes, historial y atención
-  oportuna.
+- Revisar permisos por rol para citas, pacientes e historial.
 - Validar estados y transiciones de citas.
 - Revisar mensajes de validación y casos límite.
 - Confirmar que el entorno de prueba use únicamente datos ficticios.

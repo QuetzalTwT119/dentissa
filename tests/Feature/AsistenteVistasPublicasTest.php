@@ -14,8 +14,6 @@ class AsistenteVistasPublicasTest extends TestCase
         foreach ([
             'inicio' => url('/'),
             'agenda' => route('citas.publica.create'),
-            'atencion urgente' => route('atencion.urgencia'),
-            'lista de espera' => route('atencion.lista-espera'),
         ] as $vista => $url) {
             $respuesta = $this->get($url)->assertOk();
 
@@ -48,32 +46,6 @@ class AsistenteVistasPublicasTest extends TestCase
         $this->assertSame(1, substr_count($contenido, 'id="consulta-inicio"'));
     }
 
-    public function test_los_accesos_secundarios_de_urgencia_y_lista_de_espera_van_despues_de_la_agenda(): void
-    {
-        $contenido = $this->get(route('citas.publica.create'))->assertOk()->getContent();
-        $asistente = strpos($contenido, 'id="consulta-inicio"');
-        $agenda = strpos($contenido, '¿Qué tipo de atención necesitas?');
-        $panel = strpos($contenido, '<aside data-asistente-zona-reservada');
-        $urgencia = strpos($contenido, '¿Dolor intenso o urgencia?');
-        $listaEspera = strpos($contenido, '¿No encuentras horario?');
-        $panelCierre = $panel === false ? false : strpos($contenido, '</aside>', $panel);
-
-        $this->assertNotFalse($asistente);
-        $this->assertNotFalse($agenda);
-        $this->assertNotFalse($panel);
-        $this->assertNotFalse($urgencia);
-        $this->assertNotFalse($listaEspera);
-        $this->assertNotFalse($panelCierre);
-        $contenidoPanel = substr($contenido, $panel, $panelCierre - $panel);
-        $this->assertLessThan($agenda, $asistente, 'El asistente debe seguir disponible antes del flujo principal.');
-        $this->assertLessThan($urgencia, $agenda, 'La agenda debe presentarse antes de las opciones secundarias.');
-        $this->assertStringContainsString('¿Dolor intenso o urgencia?', $contenidoPanel, 'El acceso de urgencia debe quedar dentro del panel lateral.');
-        $this->assertStringContainsString('¿No encuentras horario?', $contenidoPanel, 'La lista de espera debe quedar dentro del panel lateral.');
-        $this->assertLessThan($listaEspera, $urgencia, 'Urgencia y lista de espera deben quedar juntas al final.');
-        $this->assertStringContainsString('max-w-6xl', $contenido, 'La agenda y las opciones secundarias deben aprovechar mejor el ancho disponible.');
-        $this->assertStringContainsString('sm:grid-cols-2', $contenido, 'Las opciones secundarias deben mostrarse en columnas en escritorio.');
-    }
-
     public function test_la_agenda_aprovecha_el_espacio_de_escritorio_con_un_resumen_responsivo(): void
     {
         $contenido = $this->get(route('citas.publica.create'))->assertOk()->getContent();
@@ -94,24 +66,4 @@ class AsistenteVistasPublicasTest extends TestCase
         $this->assertStringContainsString('data-asistente-zona-reservada', $contenido);
     }
 
-    public function test_el_asistente_no_cubre_tarjetas_ni_acciones_importantes_en_vistas_publicas(): void
-    {
-        foreach ([
-            url('/') => ['Agendar una cita', 1],
-            route('atencion.urgencia') => ['Enviar solicitud', 6],
-            route('atencion.lista-espera') => ['Unirme a la lista de espera', 9],
-        ] as $url => [$textoAccion, $zonasEsperadas]) {
-            $contenido = $this->get($url)->assertOk()->getContent();
-            $posicion = strpos($contenido, $textoAccion);
-
-            $this->assertNotFalse($posicion, "No se encontró la zona reservada de la vista {$url}.");
-            $inicioZona = strrpos(substr($contenido, 0, $posicion), 'data-asistente-zona-reservada');
-            $this->assertNotFalse($inicioZona, "La acción de la vista {$url} no protege su zona del asistente flotante.");
-            $this->assertGreaterThanOrEqual(
-                $zonasEsperadas,
-                substr_count($contenido, 'data-asistente-zona-reservada'),
-                "La vista {$url} debe proteger cada campo o acción que puede quedar bajo el botón flotante."
-            );
-        }
-    }
 }

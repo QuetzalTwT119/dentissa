@@ -67,6 +67,40 @@ class AuditoriaAdminTest extends TestCase
             ->assertDontSee('Agente de prueba privado');
     }
 
+    public function test_el_filtro_de_accion_solo_ofrece_eventos_visibles_en_la_bitacora(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        LogAuditoria::create([
+            'id_usuario' => $admin->id,
+            'actor_user_id' => $admin->id,
+            'actor_nombre' => 'Administradora',
+            'actor_rol' => 'admin',
+            'accion' => 'cita.confirmada',
+            'tabla' => 'citas',
+            'registro_id' => 41,
+            'fecha' => now(),
+        ]);
+
+        LogAuditoria::create([
+            'id_usuario' => null,
+            'actor_user_id' => null,
+            'actor_nombre' => 'Paciente del portal',
+            'actor_rol' => 'paciente',
+            'accion' => 'portal.solicitud_creada',
+            'tabla' => 'citas',
+            'registro_id' => 42,
+            'fecha' => now(),
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.auditoria.index'))
+            ->assertOk()
+            ->assertSee('value="cita.confirmada"', false)
+            ->assertDontSee('value="portal.solicitud_creada"', false)
+            ->assertDontSee('Paciente del portal');
+    }
+
     public function test_asistente_no_puede_consultar_la_auditoria(): void
     {
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);

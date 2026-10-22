@@ -1,9 +1,15 @@
 # Manual técnico de Dentissa
 
+## Entregas de frontend con Antigravity
+
+Antigravity trabaja directamente en `C:\laragon\www\dentissa`. Sus instrucciones de alcance están en `ANTIGRAVITY.md`: puede rediseñar todas las vistas y recursos de interfaz, pero no backend, rutas, base de datos, Docker ni credenciales.
+
+El servicio `app` monta `resources/views` y `public/images` desde la carpeta del proyecto. Por ello, al guardar una portada o imagen, Laravel usa ese mismo archivo sin una copia intermedia. `scripts/antigravity.ps1` ejecuta QA en Docker y reconstruye la aplicación sólo si la validación aprueba; `-ValidarSolo` omite la reconstrucción.
+
 ## 1. Propósito
 
 Dentissa es un sistema web para la gestión de una clínica dental. Permite
-administrar pacientes, servicios, tratamientos, citas, atención oportuna,
+administrar pacientes, servicios, tratamientos, citas,
 historial clínico, notificaciones y reportes.
 
 Este manual describe cómo levantar el proyecto, ejecutar las pruebas y
@@ -35,7 +41,7 @@ los comandos de `docker compose` son los mismos.
 
 
 
-La portada pública precarga su imagen principal y utiliza tipografías Figtree y Alex Brush servidas desde `public/fonts`, para no depender de un proveedor externo. Las imágenes del hero y servicios están configuradas en `config/dentissa.php`. El bloque de contacto se controla mediante `DENTISSA_MODO_DEMO`; debe permanecer activo mientras los valores sean ficticios y no debe abrirse el sitio a pacientes hasta configurar datos reales.
+La portada pública precarga su imagen principal y utiliza tipografías Figtree y Alex Brush servidas desde `public/fonts`, para no depender de un proveedor externo. Su composición editorial usa el nombre de la clínica como firma, describe el flujo real de agenda en línea y presenta un acceso directo a la agenda. Los servicios se renderizan como carrusel duplicado animado con CSS para permitir un bucle continuo; las tarjetas conservan altura e imagen uniformes, la animación se pausa al recibir foco y se desactiva con `prefers-reduced-motion`. Las imágenes del hero y servicios están configuradas en `config/dentissa.php`. El bloque de contacto se controla mediante `DENTISSA_MODO_DEMO`; debe permanecer activo mientras los valores sean ficticios y no debe abrirse el sitio a pacientes hasta configurar datos reales.
 
 ## 3. Arranque del proyecto
 
@@ -62,6 +68,43 @@ docker compose ps
 ```
 
 La aplicación queda disponible en <http://localhost:8000>.
+
+### Actualización automática durante desarrollo local
+
+Para evitar que el contenedor sirva una compilación anterior después de cambiar
+de rama o editar archivos, inicia el servicio con Compose Watch:
+
+```powershell
+docker compose up --build --watch app
+```
+
+Mantén la terminal abierta. Compose sincroniza al contenedor cambios de PHP,
+rutas, configuración y vistas. Los cambios de CSS, JavaScript, dependencias o
+configuración de Vite/Tailwind disparan una reconstrucción de la imagen, que
+vuelve a generar `public/build/manifest.json` y sus archivos versionados. La
+primera reconstrucción puede tardar; las siguientes aprovechan las capas de
+Docker. `Ctrl+C` detiene el modo de observación; los datos permanecen en el
+volumen MySQL y `storage/`.
+
+La ruta `/version` muestra el SHA actual del checkout local y si hay cambios
+sin commit. En Railway devuelve el SHA de `RAILWAY_GIT_COMMIT_SHA`. Para
+confirmar paridad, compara `commit` en ambos ambientes y exige
+`working_tree_clean: true` en local. Si el valor dice `false`, compara solo
+después de guardar los cambios en un commit y reiniciar Compose Watch.
+
+GitHub Actions también construye ambos Dockerfiles a partir del mismo commit y
+publica el check agregado `Tests / release-gate`. Para que producción no reciba
+un merge con pruebas fallidas, proteger `master` desde GitHub: requerir pull
+request y exigir `Tests / release-gate` como verificación aprobada. La regla
+de rama se configura una vez en GitHub (Settings > Branches o Rulesets); Railway
+debe seguir desplegando desde `master` después del merge aprobado.
+
+Si no se desea dejar una terminal observando cambios, puede iniciarse el modo
+normal; después de cambiar de rama o código se debe reconstruir manualmente:
+
+```powershell
+docker compose up -d --build app
+```
 
 Para reconstruir la imagen cuando cambian el `Dockerfile`, los seeders o los
 archivos que se copian durante la construcción:
@@ -111,6 +154,32 @@ puede comenzar vacío en una instalación nueva.
 
 ## 6. Pruebas automatizadas
 
+### Validación de entregas de frontend
+
+El servicio opcional `qa` ofrece una barrera local entre una entrega visual y
+su integración con Laravel. Se inicia bajo demanda y termina solo al finalizar:
+
+```powershell
+docker compose --profile qa run --rm --build qa
+```
+
+La imagen compila los recursos de Vite durante el build, compila las vistas
+Blade y ejecuta las pruebas de portada, imágenes públicas, PWA y responsividad
+con SQLite en memoria. No expone puertos, no utiliza la base MySQL de desarrollo
+y no sustituye la revisión visual manual ni la aprobación del contenido por la
+clínica.
+
+El perfil `qa` incluye claves ficticias de Reverb exclusivamente para que la
+suite pueda comprobar la autorización de canales privados de notificaciones.
+No se conecta a un servicio Reverb real ni utiliza credenciales del `.env`.
+Para probar lógica recién modificada dentro de una imagen limpia, sin depender
+de la copia que ya está ejecutándose en `app`, usar:
+
+```powershell
+docker compose --profile qa build qa
+docker compose --profile qa run --rm --no-deps --entrypoint php qa artisan test
+```
+
 Ejecutar la suite completa:
 
 ```bash
@@ -120,7 +189,7 @@ docker compose exec app php artisan test
 Las pruebas usan SQLite en memoria o el schema aislado `dentissa_test`; no
 deben modificar la base normal `dentissa`. La suite cubre reglas de catálogo,
 fechas futuras, ciclo de vida y concurrencia de citas, agenda pública,
-atención oportuna, permisos, historial clínico, auditoría, notificaciones
+permisos, historial clínico, auditoría, notificaciones
 internas y asistente. El 16/10/2026 se reconstruyó el servicio `app` con el
 código vigente y pasaron **143 pruebas/701 aserciones en SQLite** (1 omisión
 esperada porque SQLite no valida de forma representativa `lockForUpdate`) y
@@ -196,7 +265,7 @@ Revisa ambos jobs en la pestaña **Actions** antes de integrar un pull request.
 - **Modelos:** representan usuarios, pacientes, servicios, tratamientos,
   citas e historial.
 - **Servicios:** contienen reglas reutilizables como disponibilidad,
-  notificaciones y atención oportuna.
+  notificaciones.
 - **Vistas Blade/Alpine:** muestran formularios, estados y acciones.
 - **Base de datos:** conserva los datos mediante migraciones y MySQL; las
   pruebas pueden usar SQLite en memoria o un schema MySQL aislado.
@@ -242,8 +311,11 @@ La acción `citas.no-show` solo permite marcar una cita confirmada como
 se realiza en el servidor, por lo que también protege solicitudes directas que
 no provienen de la interfaz.
 
-La vista de agenda muestra **Más acciones** solo para citas `agendada` y
-`confirmada`, estados en los que se permite reagendar o cancelar. Una cita
+La vista de agenda muestra **Más acciones** solo para citas `agendada` (estado
+heredado de citas históricas) y `confirmada`, estados en los que se permite
+reagendar o cancelar. Las citas creadas por cualquier canal vigente nacen
+confirmadas; el control para confirmar manualmente se conserva para registros
+históricos pendientes. Una cita
 `en_curso` ofrece únicamente completar; las citas `completada`, `cancelada` o
 `no_asistio` se presentan sin acciones. La vista y las reglas del servidor se
 validan por separado para que un control oculto no sea la única barrera.
@@ -309,12 +381,7 @@ de `AsistenteIaLocalTest` la habilitan explícitamente y simulan las respuestas
 HTTP de Ollama. Así la suite no depende de que el modelo esté descargado o
 disponible y no envía consultas de prueba a un servicio real.
 
-## 11. Atención oportuna e historial
-
-Las solicitudes urgentes y de lista de espera se conservan en la base de
-datos. El panel administrativo muestra por separado los pendientes y el
-historial de seguimiento, con filtros de estado y fechas. La transición a
-**Contactada** o **Cerrada** no elimina datos.
+## 11. Historial y notificaciones
 
 Las notificaciones de cita guardan también `id_cita`, lo que permite enlazar
 un aviso con la cita que lo originó sin depender únicamente del texto del
@@ -338,10 +405,20 @@ revierte la cita y queda registrada en el log de aplicación.
 Laravel Reverb y Echo, por el canal privado `users.{id}`. La autorización del
 canal exige que la sesión pertenezca a la misma cuenta activa de admin o
 asistente; el evento solo transmite título, mensaje, vínculo y contador, nunca
-datos clínicos. Mientras la conexión WebSocket no está disponible, el
-navegador usa como respaldo `notificaciones.actualizaciones` cada 3 segundos;
-el endpoint filtra por la cuenta autenticada y no almacena la respuesta en
-caché. Docker inicia Reverb como servicio en el puerto 8080, sin costo de
+datos clínicos. Además del WebSocket, el navegador consulta
+`notificaciones.actualizaciones` cada 3 segundos: así un fallo de suscripción,
+una reconexión o un reinicio de Reverb no puede ocultar avisos nuevos. El
+endpoint filtra por la cuenta autenticada y no almacena la respuesta en caché.
+La tabla `notificaciones_sistema` separa `vista_en` de `leida_en`: al abrir la
+campana, el navegador registra los avisos como vistos, actualiza el contador de
+novedades y conserva el estado pendiente (punto rosa) hasta que cada aviso se
+lee individualmente. El
+centro de actividad agrupa el historial por día y clasifica visualmente cada
+evento; cancelaciones e inasistencias se consideran prioritarias. Las
+rutas guardadas para avisos internos son relativas (por ejemplo, `/citas`),
+por lo que funcionan igual desde `localhost`, una IP local o el dominio de
+producción, sin perder la sesión. Docker inicia
+Reverb como servicio en el puerto 8080, sin costo de
 proveedor externo ni cola adicional. El sonido opcional se genera mediante Web
 Audio API, sin archivos ni servicios externos, y su preferencia se almacena en
 `localStorage` separada por usuario. El control se muestra en la bandeja de
@@ -363,7 +440,7 @@ en `logs_auditoria`. Solo registra solicitudes autenticadas de usuarios con rol
 Telegram no se consideran cambios del personal y no se agregan a esta bitácora.
 Dentro de ese alcance se auditan las altas y transiciones internas de citas,
 los cambios del historial clínico, los adjuntos clínicos, los datos de contacto
-u oficiales del paciente y el seguimiento de atención oportuna. En la edición
+u oficiales del paciente. En la edición
 del paciente, los metadatos de auditoría enumeran campos modificados sin copiar
 correo ni teléfono. También se registran altas,
 ediciones, activaciones y bajas de cuentas; actualizaciones de perfil y
@@ -422,13 +499,40 @@ en SQLite en memoria y en MySQL 8.4 con el schema aislado `dentissa_test`.
 
 ## 14. Respaldos y recuperación
 
-La automatización cifrada de respaldos y restauración sigue pendiente. El archivo
-SQL existente en `storage/backups/` es una copia puntual de trabajo, no un
-procedimiento verificado ni una política de retención. No debe considerarse un
-respaldo operativo. Antes de usar datos reales hay que definir e implementar
-cifrado, retención, cobertura conjunta de MySQL y `storage/app`, verificación de
-integridad y recuperación ensayada en un destino aislado. No restaurar sobre la
-base activa durante QA.
+Los scripts `scripts/respaldo-dentissa.ps1` y
+`scripts/restaurar-prueba-dentissa.ps1` usan el repositorio Restic cifrado de
+`E:\DentissaBackups\restic-repo`. La contraseña se pide de forma interactiva,
+se conserva sólo durante la ejecución y no se guarda en Git ni en `.env`.
+
+En este equipo Docker Desktop no monta de forma fiable la unidad externa `E:`
+desde PowerShell. El respaldo operativo se ejecuta desde Ubuntu/WSL con
+`scripts/respaldo-dentissa-wsl.sh`, donde la unidad se usa como
+`/mnt/e/DentissaBackups/restic-repo`. Si la unidad no aparece en WSL, se monta
+una vez desde PowerShell con:
+
+```powershell
+wsl -d Ubuntu -u root -- mount -t drvfs E: /mnt/e
+```
+
+Después, desde Ubuntu, se ejecuta:
+
+```bash
+bash /mnt/c/laragon/www/dentissa/scripts/respaldo-dentissa-wsl.sh
+```
+
+El script inicializa el repositorio sólo cuando no existe y nunca elimina
+snapshots anteriores.
+
+El respaldo exporta MySQL con una transacción consistente, incluye `storage/app`
+y un manifiesto con el hash SHA-256 del dump. Después crea un snapshot cifrado y
+ejecuta `restic check --read-data-subset=1/10`. No borra snapshots ni aplica
+retención automática: ese proceso requiere una política de conservación
+aprobada para no eliminar copias históricas.
+
+La restauración de prueba sólo permite un destino que no exista bajo el disco
+externo; comprueba que se recuperen el manifiesto y el dump. No importa ni
+sobrescribe la base activa. El ensayo de importación a un schema MySQL aislado
+queda como siguiente paso antes de usar datos clínicos reales.
 
 ## 15. Widget público en móvil y acceso por LAN
 
@@ -452,7 +556,7 @@ el primer paso, elegir un servicio reemplaza esa lista por sus tratamientos y
 el recuadro del servicio seleccionado funciona como control para deseleccionarlo
 y volver a la lista, evitando un botón adicional y alargar el formulario. En móvil
 el resumen y sus accesos alternativos se apilan después del formulario; el panel
-lateral reúne progreso, selección, urgencia y lista de espera. La prueba
+lateral reúne progreso y selección. La prueba
 `AsistenteVistasPublicasTest` valida el resumen y la cuadrícula responsiva.
 La agenda reserva más espacio inferior en móvil para el botón flotante y solo
 un margen reducido en escritorio, evitando desbordamiento vertical cuando el
@@ -536,7 +640,7 @@ accesible, estado abierto/cerrado y relación con su panel. La vista previa de
 notificaciones se adapta a móvil/escritorio y comparte el estado entre ambas
 presentaciones. Las tablas
 
-El panel de administración reúne accesos rápidos para agenda, urgencias,
+El panel de administración reúne accesos rápidos para agenda,
 pacientes, servicios, contenido y usuarios; el panel de asistente mantiene sus
 accesos a citas y al asistente de agenda. El layout carga el manifiesto PWA y
 sus iconos; `public/sw.js` registra un caché básico y presenta `offline.html`
@@ -550,21 +654,12 @@ desde `sm`. Las vistas de cada módulo deben seguir validándose por separado;
 esta base no sustituye la revisión responsiva de tarjetas y flujos públicos.
 El scrollbar del documento se oculta globalmente con `scrollbar-width: none` y
   `::-webkit-scrollbar { display: none }`; no se aplica `overflow: hidden`, así que
-  el desplazamiento existente permanece operativo. En la vista de urgencias, el
-  asistente vuelve a comprobar los campos visibles al desplazarse y busca una
-  posición libre iterativamente para evitar cubrir varios controles seguidos. Esta
-  vista usa una cuadrícula informativa/formulario de dos columnas desde `lg`,
-  aprovecha el ancho disponible sin reservar una columna vacía para el widget;
-  el observador lo desplaza al detectar campos visibles. El acceso compartido se
+  el desplazamiento existente permanece operativo. El acceso compartido se
   representa como una cápsula horizontal compacta con el ícono dental y el
   nombre en una sola línea, tanto en móvil como en escritorio; el panel abre
-  justo encima con espaciado reducido. El botón de envío se limita en ancho. En móvil el contenido se apila,
-  reduce la proporción vertical de la imagen y compacta el espaciado, usa una sola
-  columna para señales y mantiene controles táctiles de al
-menos 44 px; `AtencionOportunaTest` protege estos puntos de quiebre.
+  justo encima con espaciado reducido.
 El inicio y los listados de ofertas/galería usan cuadrículas que crecen por
-breakpoint; urgencia y lista de espera mantienen formularios en una sola columna
-y protegen su acción principal de la superposición del asistente. El widget
+breakpoint; la agenda protege su acción principal de la superposición del asistente. El widget
 permanece visible: el observador comprueba el cruce real con cada zona protegida
 y eleva el botón flotante solo cuando coincide en horizontal y vertical.
 
@@ -578,3 +673,23 @@ SQLite 143 pruebas aprobadas/701 aserciones y una omisión esperada, y MySQL
 8.4 aislado 144 pruebas/706 aserciones. Vite construyó los assets durante la
 reconstrucción Docker; Pint pasó 183 archivos PHP. Falta aceptación visual en
 dispositivo real.
+
+## 19. Rediseño visual integral y sistema de diseño boutique
+
+Se completó el rediseño visual de todo el ecosistema de Dentissa (sitio público, autenticación y panel de administración) alineándolo a la identidad de marca cálida y boutique:
+
+- **Tokens de color y jerarquía visual:**
+  - Rosa de marca: `#d75078` (acciones primarias, estados destacados y acentos)
+  - Durazno cálido: `#f2b0a6` (fondos de selección, bordes activos y detalles suaves)
+  - Fondo base: `#FAF6F6` (lienzo unificado libre de contrastes fríos o grises clínicos duros)
+  - Texto principal: `#2D2526` (alto contraste y calidez para legibilidad óptima)
+  - Verde salvia: `#4E8D72` (confirmaciones, estados activos y badges de éxito clínico)
+  - Bordes neutros cálidos: `#e9dfdb` (separadores sutiles y tarjetas suaves)
+
+- **Componentes y arquitectura de interfaz:**
+  - Componentes atómicos en `resources/views/components/`: botones primarios (`bg-brand-600`, esquinas redondeadas `rounded-xl`, sombra suave), secundarios con borde cálido, inputs y selects consistentes, modales con desenfoque de fondo y alertas amigables.
+  - Vistas públicas (`welcome`, agenda pública wizard por pasos, galería, ofertas): tipografía Figtree y Alex Brush locales precargadas, carrusel de servicios optimizado y menú responsivo desplegable para móvil y tablet.
+  - Vistas de acceso (`guest`, `login`, recuperación de contraseña): tarjetas centradas de estilo boutique con fondo ambiental cálido y enlaces visibles.
+  - Panel administrativo (`layouts/app`, `navigation`, `dashboard`, citas, pacientes, historial clínico con fotos/radiografías, catálogo de servicios y tratamientos, horarios, usuarios, reportes, auditoría, mensajes, testimonios, casos y preguntas frecuentes): tablas con encabezados claros en `#FAF6F6`, badges de estado legibles, filtros organizados y scroll horizontal en móviles (`min-w-[760px]`).
+  - Total preservación de lógica de negocio, nombres de campos, CSRF, validaciones y roles. La suite de pruebas completa pasó con 158 pruebas aprobadas y 0 fallos.
+

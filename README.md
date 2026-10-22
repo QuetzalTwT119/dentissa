@@ -4,6 +4,34 @@ Sistema web de gestión para un consultorio dental, desarrollado con Laravel.
 Este repositorio corresponde al proyecto Dentissa; la información que aparece
 en los datos de demostración no es información oficial de una clínica.
 
+## Trabajo conjunto: Antigravity + Dentissa
+
+Antigravity trabaja directamente en `C:\laragon\www\dentissa`, la misma carpeta de Dentissa. Puede rediseñar las vistas y recursos de interfaz delimitados en `ANTIGRAVITY.md`; el backend, Docker y los datos clínicos quedan fuera de su alcance.
+
+Cuando Antigravity termine una propuesta, abre PowerShell en la carpeta del proyecto y ejecuta:
+
+```powershell
+.\scripts\antigravity.ps1
+```
+
+El comando valida el frontend en un contenedor aislado y, si aprueba, reconstruye la aplicación en `http://localhost:8000`. No se copian archivos entre carpetas. Para validar sin reconstruir, agrega `-ValidarSolo`.
+
+## Respaldos cifrados locales
+
+El disco externo `E:\DentissaBackups` contiene el repositorio cifrado de Restic. Para crear un respaldo de MySQL y `storage/app`, sin guardar la contraseña en archivos, ejecuta:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\respaldo-dentissa.ps1
+```
+
+La consola pide la contraseña de forma oculta, crea un snapshot cifrado y verifica una fracción de sus datos. No elimina copias anteriores. Para ensayar una recuperación fuera de la aplicación activa:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\restaurar-prueba-dentissa.ps1
+```
+
+La recuperación sólo crea una carpeta nueva bajo `E:\DentissaBackups\restauraciones-prueba`; nunca restaura sobre la base MySQL activa.
+
 ## Requisitos
 
 - Windows con Docker Desktop y backend WSL 2 habilitado, o Docker Engine y
@@ -39,6 +67,23 @@ docker compose up -d
 docker compose ps
 ```
 
+Para trabajar con actualización automática del contenedor local:
+
+```powershell
+docker compose up --build --watch app
+```
+
+Deja esa terminal abierta mientras desarrollas. Al guardar cambios PHP, rutas,
+configuración o vistas, Compose los sincroniza con el contenedor; al cambiar
+CSS, JavaScript o dependencias, reconstruye la imagen y los assets de Vite.
+Detén el modo de desarrollo con `Ctrl+C`. No borra la base de datos ni su
+volumen.
+
+Para comparar la versión local con producción, abre `/version` en ambos sitios.
+Solo son iguales cuando el campo `commit` coincide y `working_tree_clean` en
+local es `true`; si es `false`, hay cambios locales aún no incluidos en un
+commit.
+
 El bot de Telegram es opcional y se inicia cuando ya configuraste
 `DENTISSA_TELEGRAM_BOT_TOKEN` en `.env`, con
 `docker compose --profile telegram up -d`. Consulta la [guía de Telegram](docs/CONFIGURACION-TELEGRAM.md)
@@ -66,6 +111,17 @@ base de desarrollo:
 
 ```powershell
 docker compose exec -e DENTISSA_TEST_DB_CONNECTION=mysql -e DENTISSA_TEST_DB_DATABASE=dentissa_test app php artisan test --compact
+```
+
+### Validar una entrega de frontend
+
+Cuando se integre una propuesta visual externa, ejecuta este control antes de
+probarla manualmente. Construye los recursos de Vite, compila las vistas Blade y
+ejecuta pruebas de portada, imágenes, PWA y diseño responsivo con SQLite
+efímero; no modifica la base local ni publica servicios.
+
+```powershell
+docker compose --profile qa run --rm --build qa
 ```
 
 Última ejecución local registrada (14/10/2026): **95 pruebas y 379 aserciones

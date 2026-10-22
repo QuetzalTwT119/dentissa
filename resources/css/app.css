@@ -74,6 +74,194 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    :root {
+        --brand-pink: #d75078;
+        --brand-pink-hover: #bd3f64;
+        --brand-peach: #f2b0a6;
+        --brand-bg: #FAF6F6;
+        --brand-text: #2D2526;
+        --brand-muted: #8A7A7D;
+        --brand-salvia: #4E8D72;
+        --brand-border: #e9dfdb;
+    }
+
+    body {
+        font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #FAF6F6;
+        color: #2D2526;
+        letter-spacing: -0.011em;
+    }
+}
+
+@layer components {
+    /* Botones Boutique Dentissa */
+    .btn-brand {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.75rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #FFFFFF;
+        background: linear-gradient(135deg, #d75078 0%, #bd3f64 100%);
+        box-shadow: 0 4px 14px -2px rgba(215, 80, 120, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-brand:hover {
+        background: linear-gradient(135deg, #e05c84 0%, #a83054 100%);
+        box-shadow: 0 6px 20px -2px rgba(215, 80, 120, 0.45);
+        transform: translateY(-1px);
+    }
+    .btn-brand:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 6px -1px rgba(215, 80, 120, 0.3);
+    }
+    .btn-brand:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.75rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #382d31;
+        background-color: #FFFFFF;
+        border: 1px solid #e9dfdb;
+        box-shadow: 0 1px 3px 0 rgba(45, 37, 38, 0.04);
+        transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-secondary:hover {
+        background-color: #FAF6F6;
+        color: #d75078;
+        border-color: #f2b0a6;
+        box-shadow: 0 4px 12px -2px rgba(215, 80, 120, 0.1);
+        transform: translateY(-1px);
+    }
+    .btn-secondary:active {
+        transform: translateY(1px);
+    }
+
+    /* Tarjetas Boutique */
+    .card-boutique {
+        background-color: #FFFFFF;
+        border-radius: 1.25rem;
+        border: 1px solid #e9dfdb;
+        box-shadow: 0 10px 30px -5px rgba(215, 80, 120, 0.05), 0 4px 12px -2px rgba(45, 37, 38, 0.03);
+        transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-boutique:hover {
+        border-color: #f2b0a6;
+        box-shadow: 0 14px 35px -5px rgba(215, 80, 120, 0.09), 0 6px 16px -2px rgba(45, 37, 38, 0.04);
+    }
+
+    /* Inputs y Campos de Captura */
+    .input-boutique {
+        border-radius: 0.75rem;
+        border: 1px solid #e9dfdb;
+        background-color: #FFFFFF;
+        color: #2D2526;
+        font-size: 0.875rem;
+        padding: 0.625rem 0.875rem;
+        box-shadow: 0 1px 2px 0 rgba(45, 37, 38, 0.03);
+        transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .input-boutique:focus {
+        border-color: #d75078;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(215, 80, 120, 0.18);
+    }
+
+    /* Badges e Insignias de Estado */
+    .badge-success {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background-color: #EAF4EE;
+        color: #4E8D72;
+        border: 1px solid rgba(78, 141, 114, 0.25);
+    }
+
+    .badge-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background-color: #fdf1f4;
+        color: #a12a54;
+        border: 1px solid rgba(215, 80, 120, 0.25);
+    }
+
+    .badge-warning {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background-color: #FEF9EE;
+        color: #B45309;
+        border: 1px solid rgba(217, 119, 6, 0.25);
+    }
+
+    /* Contenedores de Tablas Profesionales */
+    .table-container-boutique {
+        overflow-x: auto;
+        border-radius: 1.25rem;
+        border: 1px solid #e9dfdb;
+        background-color: #FFFFFF;
+        box-shadow: 0 4px 20px -2px rgba(45, 37, 38, 0.03);
+    }
+
+    .table-boutique {
+        width: 100%;
+        text-align: left;
+        font-size: 0.875rem;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-boutique thead {
+        background-color: #FAF6F6;
+        color: #6b5e62;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #e9dfdb;
+    }
+
+    .table-boutique tbody tr {
+        border-bottom: 1px solid rgba(233, 223, 219, 0.6);
+        transition: background-color 150ms ease-in-out;
+    }
+
+    .table-boutique tbody tr:hover {
+        background-color: rgba(250, 246, 246, 0.65);
+    }
+}
+
 [x-cloak] {
     display: none !important;
 }
@@ -137,65 +325,8 @@ html::-webkit-scrollbar {
     will-change: transform;
 }
 
-@keyframes servicios-marquee {
-    to {
-        transform: translate3d(-50%, 0, 0);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .animate-carousel-fade-in {
-        animation: none;
-    }
-}
-
-
-[x-cloak] {
-    display: none !important;
-}
-
-html.agenda-publica {
-    scrollbar-color: #e5a1b8 #fff1f5;
-    scrollbar-width: thin;
-}
-
-html.agenda-publica::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-html.agenda-publica::-webkit-scrollbar-track {
-    background: #fff1f5;
-}
-
-html.agenda-publica::-webkit-scrollbar-thumb {
-    border: 2px solid #fff1f5;
-    border-radius: 999px;
-    background: #e5a1b8;
-}
-
-html.agenda-publica::-webkit-scrollbar-thumb:hover {
-    background: #d8668a;
-}
-
-@media (min-width: 640px) {
-    html.agenda-publica {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    html.agenda-publica::-webkit-scrollbar {
-        display: none;
-    }
-}
-.servicios-marquee-mask {
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-    mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-}
-
-.servicios-marquee-track {
-    animation: servicios-marquee 42s linear infinite;
-    will-change: transform;
+.servicios-marquee-mask:focus-within .servicios-marquee-track {
+    animation-play-state: paused;
 }
 
 @keyframes servicios-marquee {
@@ -203,10 +334,3 @@ html.agenda-publica::-webkit-scrollbar-thumb:hover {
         transform: translate3d(-50%, 0, 0);
     }
 }
-
-@media (prefers-reduced-motion: reduce) {
-    .animate-carousel-fade-in {
-        animation: none;
-    }
-}
-

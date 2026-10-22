@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\Redirect;
 
 class OfertaController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         return view('admin.ofertas.index', [
-            'ofertas' => Oferta::with('tratamiento:id,nombre')->orderByDesc('fecha_inicio')->get(),
+            'ofertas' => Oferta::with('tratamiento:id,nombre')->orderByDesc('fecha_inicio')->paginate($this->paginationPageSize($request)),
         ]);
     }
 

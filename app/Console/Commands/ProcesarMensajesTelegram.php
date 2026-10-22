@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Services\AgendaTelegramService;
 use App\Services\AsistentePacienteService;
-use App\Services\AtencionOportunaService;
 use App\Services\TelegramService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -17,7 +16,7 @@ class ProcesarMensajesTelegram extends Command
 
     protected $description = 'Responde mensajes privados de Telegram con información aprobada de Dentissa';
 
-    public function handle(TelegramService $telegram, AsistentePacienteService $asistente, AgendaTelegramService $agenda, AtencionOportunaService $atencion): int
+    public function handle(TelegramService $telegram, AsistentePacienteService $asistente, AgendaTelegramService $agenda): int
     {
         if (! $telegram->configurado()) {
             $this->error('Falta DENTISSA_TELEGRAM_BOT_TOKEN en el archivo .env local.');
@@ -56,7 +55,7 @@ class ProcesarMensajesTelegram extends Command
 
             foreach ($updates as $update) {
                 try {
-                    $this->procesarUpdate($update, $telegram, $asistente, $agenda, $atencion);
+                    $this->procesarUpdate($update, $telegram, $asistente, $agenda);
                 } catch (Throwable $e) {
                     Log::warning('No se pudo procesar una actualización de Telegram; se reintentará.', [
                         'update_id' => $update['update_id'] ?? null,
@@ -81,7 +80,7 @@ class ProcesarMensajesTelegram extends Command
     }
 
     /** @param array<string, mixed> $update */
-    private function procesarUpdate(array $update, TelegramService $telegram, AsistentePacienteService $asistente, AgendaTelegramService $agenda, AtencionOportunaService $atencion): void
+    private function procesarUpdate(array $update, TelegramService $telegram, AsistentePacienteService $asistente, AgendaTelegramService $agenda): void
     {
         $callback = $update['callback_query'] ?? null;
 
@@ -208,12 +207,9 @@ class ProcesarMensajesTelegram extends Command
         } else {
             $agendaEnCurso = $agenda->tieneConsultaEnCurso($chatId);
             $consulta = $asistente->responder($texto);
-            $orientacion = $agendaEnCurso ? null : $atencion->responder($texto);
-            $respuesta = $orientacion
-                ? $orientacion['respuesta']."\n\n".$orientacion['accion']['url']
-                : ((! $agendaEnCurso && ($consulta['encontrada'] || ($consulta['ambigua'] ?? false)))
-                    ? $consulta['respuesta']
-                    : ($agenda->responder($chatId, $texto) ?? $consulta['respuesta']));
+            $respuesta = (! $agendaEnCurso && ($consulta['encontrada'] || ($consulta['ambigua'] ?? false)))
+                ? $consulta['respuesta']
+                : ($agenda->responder($chatId, $texto) ?? $consulta['respuesta']);
         }
 
         $esReinicio = (bool) preg_match('/^\/start(?:@\w+)?(?:\s|$)/iu', $texto);

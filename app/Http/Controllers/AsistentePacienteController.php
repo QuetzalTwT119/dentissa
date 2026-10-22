@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Services\AsistenteAgendaService;
 use App\Services\AsistenteIaLocalService;
 use App\Services\AsistentePacienteService;
-use App\Services\AtencionOportunaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AsistentePacienteController extends Controller
 {
-    public function responder(Request $request, AsistentePacienteService $asistente, AsistenteIaLocalService $asistenteIa, AsistenteAgendaService $agenda, AtencionOportunaService $atencion): JsonResponse
+    public function responder(Request $request, AsistentePacienteService $asistente, AsistenteIaLocalService $asistenteIa, AsistenteAgendaService $agenda): JsonResponse
     {
         $validated = $request->validate([
             'consulta' => ['required', 'string', 'min:3', 'max:300'],
@@ -23,26 +22,24 @@ class AsistentePacienteController extends Controller
         $conversacion = 'web:'.$validated['conversacion_id'];
         $agendaEnCurso = $agenda->tieneConsultaEnCurso($conversacion);
         $consulta = $asistente->responder($validated['consulta']);
-        $orientacion = $agendaEnCurso ? null : $atencion->responder($validated['consulta']);
         $coincidenciaSegura = $consulta['encontrada'] || ($consulta['ambigua'] ?? false);
-        $respuestaAgenda = (! $orientacion && ($agendaEnCurso || ! $coincidenciaSegura))
+        $respuestaAgenda = ($agendaEnCurso || ! $coincidenciaSegura)
             ? $agenda->responder($conversacion, $validated['consulta'])
             : null;
-        $respuestaIa = (! $orientacion && ! $respuestaAgenda && ! $agendaEnCurso && ! $coincidenciaSegura)
+        $respuestaIa = (! $respuestaAgenda && ! $agendaEnCurso && ! $coincidenciaSegura)
             ? $asistenteIa->responder($validated['consulta'])
             : null;
-        $respuestaFaq = (! $orientacion && ! $agendaEnCurso && $consulta['encontrada'])
+        $respuestaFaq = (! $agendaEnCurso && $consulta['encontrada'])
             ? $consulta['respuesta']
             : null;
 
-        $respuesta = $orientacion['respuesta']
-            ?? ($respuestaAgenda ?? $respuestaFaq ?? $respuestaIa['respuesta'] ?? $consulta['respuesta']);
+        $respuesta = $respuestaAgenda ?? $respuestaFaq ?? $respuestaIa['respuesta'] ?? $consulta['respuesta'];
 
         return response()->json([
             'encontrada' => $respuestaFaq !== null || (bool) $respuestaIa,
             'respuesta' => $respuesta,
             'pregunta' => $respuestaFaq !== null ? $consulta['pregunta'] : ($respuestaIa['pregunta'] ?? null),
-            'accion' => $orientacion['accion'] ?? null,
+            'accion' => null,
         ]);
     }
 }

@@ -1,19 +1,27 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
-            Nuevo testimonio
-        </h2>
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-semibold leading-tight text-[#2D2526]">
+                    Nuevo testimonio
+                </h2>
+                <p class="mt-1 text-xs text-[#8A7A7D]">Registro y moderación de opinión de paciente.</p>
+            </div>
+            <a href="{{ route('admin.testimonios.index') }}" class="hidden sm:inline-block">
+                <x-secondary-button type="button">Volver al listado</x-secondary-button>
+            </a>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="mx-auto max-w-2xl sm:px-6 lg:px-8">
-            <div class="bg-white p-6 shadow-sm sm:rounded-lg">
+    <div class="py-8 sm:py-10">
+        <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+            <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft sm:p-8">
                 <form method="POST" action="{{ route('admin.testimonios.store') }}" class="space-y-6">
                     @csrf
 
                     @include('admin.testimonios._campos', ['testimonio' => null])
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 pt-4 border-t border-[#e9dfdb]">
                         <x-primary-button>Guardar</x-primary-button>
 
                         <a href="{{ route('admin.testimonios.index') }}">

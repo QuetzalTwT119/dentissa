@@ -67,6 +67,25 @@ class NotificacionesSistemaTest extends TestCase
         $this->assertNotNull($notificacion->fresh()->leida_en);
     }
 
+    public function test_abrir_un_aviso_lo_puede_marcar_como_leido_y_devuelve_el_total_actualizado(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $notificacion = NotificacionSistema::create([
+            'user_id' => $admin->id,
+            'evento' => 'agendada',
+            'titulo' => 'Nueva cita registrada',
+            'mensaje' => 'Se registró una cita.',
+        ]);
+
+        $this->actingAs($admin)
+            ->patchJson(route('notificaciones.leida', $notificacion))
+            ->assertOk()
+            ->assertJsonPath('no_leidas', 0)
+            ->assertJsonStructure(['leida_en']);
+
+        $this->assertNotNull($notificacion->fresh()->leida_en);
+    }
+
     public function test_la_campana_muestra_vista_previa_rapida_sin_exponer_avisos_de_otras_cuentas(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
@@ -78,6 +97,13 @@ class NotificacionesSistemaTest extends TestCase
             'titulo' => 'Vista previa propia',
             'mensaje' => 'Detalle breve de la cita.',
             'url' => route('citas.index'),
+        ]);
+        NotificacionSistema::create([
+            'user_id' => $admin->id,
+            'evento' => 'confirmada',
+            'titulo' => 'Vista previa leída',
+            'mensaje' => 'Debe conservarse en el historial corto.',
+            'leida_en' => now(),
         ]);
         NotificacionSistema::create([
             'user_id' => $asistente->id,
@@ -92,8 +118,53 @@ class NotificacionesSistemaTest extends TestCase
             ->assertSee('data-notification-preview-trigger', false)
             ->assertSee('data-notification-preview-panel', false)
             ->assertSee('Vista previa propia')
+            ->assertSee('Vista previa leída')
             ->assertDontSee('Aviso privado ajeno')
             ->assertSee('Ver todas las notificaciones');
+    }
+
+    public function test_abrir_la_campana_marca_los_avisos_como_vistos_sin_cerrar_los_pendientes(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $notificacion = NotificacionSistema::create([
+            'user_id' => $admin->id,
+            'evento' => 'agendada',
+            'titulo' => 'Aviso para la campana',
+            'mensaje' => 'Debe permanecer visible después de leerse.',
+        ]);
+
+        $this->actingAs($admin)
+            ->patchJson(route('notificaciones.vistas'))
+            ->assertOk()
+            ->assertJsonPath('vistas', 1)
+            ->assertJsonPath('no_vistas', 0);
+
+        $this->assertNotNull($notificacion->fresh()->vista_en);
+        $this->assertNull($notificacion->fresh()->leida_en);
+        $this->actingAs($admin)
+            ->get(route('citas.index'))
+            ->assertOk()
+            ->assertSee('Aviso para la campana')
+            ->assertSee('bg-brand-600', false);
+    }
+
+    public function test_el_centro_ordena_los_avisos_por_dia_y_muestra_su_tipo(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        NotificacionSistema::create([
+            'user_id' => $admin->id,
+            'evento' => 'cancelada',
+            'titulo' => 'Cita cancelada',
+            'mensaje' => 'La cita requiere seguimiento.',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('notificaciones.index'))
+            ->assertOk()
+            ->assertSee('Hoy')
+            ->assertSee('Cancelación')
+            ->assertSee('border-rose-200', false);
     }
 
     public function test_la_bandeja_filtra_notificaciones_pendientes_y_leidas_y_permite_restaurar_una(): void
@@ -154,10 +225,11 @@ class NotificacionesSistemaTest extends TestCase
         $this->actingAs($admin)
             ->getJson(route('notificaciones.actualizaciones', ['desde_id' => 0]))
             ->assertOk()
-            ->assertJsonPath('no_leidas', 1)
+            ->assertJsonPath('no_vistas', 1)
             ->assertJsonPath('ultima_id', $propia->id)
             ->assertJsonCount(1, 'notificaciones')
-            ->assertJsonPath('notificaciones.0.titulo', 'Aviso de prueba');
+            ->assertJsonPath('notificaciones.0.titulo', 'Aviso de prueba')
+            ->assertJsonPath('notificaciones.0.leida_url', route('notificaciones.leida', $propia, false));
     }
 
     public function test_el_canal_en_vivo_solo_autoriza_a_la_cuenta_propietaria(): void

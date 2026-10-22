@@ -16,10 +16,10 @@ use Illuminate\Validation\Rule;
 
 class ServicioController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         return view('admin.servicios.index', [
-            'servicios' => Servicio::withCount('tratamientos')->orderBy('orden')->get(),
+            'servicios' => Servicio::withCount('tratamientos')->orderBy('orden')->paginate($this->paginationPageSize($request)),
         ]);
     }
 

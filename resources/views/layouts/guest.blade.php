@@ -12,19 +12,19 @@
         <link rel="preload" href="/fonts/alex-brush-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased text-gray-900">
-        <main class="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-brand-50 via-white to-brand-100 px-4 py-8 sm:px-6 lg:py-12">
-            <div aria-hidden="true" class="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-brand-100/70 blur-3xl"></div>
-            <div aria-hidden="true" class="pointer-events-none absolute -bottom-40 -right-24 h-[28rem] w-[28rem] rounded-full bg-brand-100/60 blur-3xl"></div>
+    <body class="font-sans antialiased text-[#2D2526] selection:bg-[#f2b0a6] selection:text-[#2D2526]">
+        <main class="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-[#FAF6F6] px-4 py-8 sm:px-6 lg:py-12">
+            <div aria-hidden="true" class="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-[#f2b0a6]/25 blur-3xl"></div>
+            <div aria-hidden="true" class="pointer-events-none absolute -bottom-40 -right-24 h-[28rem] w-[28rem] rounded-full bg-[#d75078]/15 blur-3xl"></div>
 
-            <a href="/" class="absolute left-5 top-5 z-10 inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-medium text-gray-600 shadow-sm backdrop-blur transition hover:text-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:left-8 sm:top-8">
+            <a href="/" class="absolute left-5 top-5 z-10 inline-flex items-center gap-2 rounded-full border border-[#e9dfdb] bg-white/90 px-4 py-2 text-sm font-medium text-[#403539] shadow-sm backdrop-blur transition hover:text-brand-700 hover:border-brand-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:left-8 sm:top-8">
                 <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m15 18-6-6 6-6M9 12h12" />
                 </svg>
                 Volver al sitio
             </a>
 
-            <div class="relative grid w-full max-w-5xl overflow-hidden rounded-[1.75rem] border border-white/80 bg-white shadow-2xl shadow-brand-200/50 lg:grid-cols-[0.9fr_1.1fr]">
+            <div class="relative grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-[#e9dfdb] bg-white shadow-soft lg:grid-cols-[0.9fr_1.1fr]">
                 <aside class="relative flex min-h-56 flex-col justify-between overflow-hidden bg-gray-900 p-6 text-white sm:p-8 lg:min-h-[560px] lg:p-10">
                     <img src="/images/dentissa/hero-inicio.jpg" alt="Odontóloga conversando con una paciente en el consultorio" class="absolute inset-0 h-full w-full object-cover object-[62%_center]">
                     <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-gray-950/85 via-gray-950/35 to-gray-950/15"></div>

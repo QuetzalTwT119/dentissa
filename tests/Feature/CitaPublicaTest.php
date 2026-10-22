@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Enums\RolUsuario;
 use App\Enums\EstadoCita;
 use App\Models\Cita;
 use App\Models\Paciente;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
+use App\Models\User;
 use App\Services\DisponibilidadService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -83,14 +85,16 @@ class CitaPublicaTest extends TestCase
 
         $this->get(route('citas.publica.create'))
             ->assertOk()
-            ->assertSee('¡Listo! Tu cita quedó agendada. Te esperamos.')
+            ->assertSee('¡Listo! Tu cita quedó confirmada. Te esperamos.')
             ->assertSee('Volver al inicio');
 
         $paciente = Paciente::where('email', 'ana.publica@example.test')->firstOrFail();
         $this->assertSame('5555555555', $paciente->telefono);
         $cita = Cita::where('id_paciente', $paciente->id)->firstOrFail();
 
-        $this->assertSame(EstadoCita::Agendada, $cita->estado);
+        $this->assertSame(EstadoCita::Confirmada, $cita->estado);
+        $this->assertNull($cita->confirmada_por);
+        $this->assertNotNull($cita->fecha_confirmacion);
         $this->assertSame(
             $fecha->copy()->setTime(9, 0)->format('Y-m-d H:i:s'),
             $cita->fecha_hora->format('Y-m-d H:i:s'),
@@ -98,7 +102,7 @@ class CitaPublicaTest extends TestCase
         $this->assertDatabaseHas('notificaciones', [
             'id_paciente' => $paciente->id,
             'id_cita' => $cita->id,
-            'canal' => 'cita_agendada',
+            'canal' => 'cita_confirmada',
         ]);
 
         $this->assertDatabaseMissing('logs_auditoria', [
@@ -241,5 +245,61 @@ class CitaPublicaTest extends TestCase
 
         $this->assertDatabaseCount('pacientes', 0);
         $this->assertDatabaseCount('citas', 0);
+    }
+
+    public function test_la_consulta_publica_no_puede_excluir_una_cita_existente_del_calculo_de_horarios(): void
+    {
+        $cita = $this->crearCitaExistente();
+
+        $this->getJson(route('disponibilidad.index', [
+            'tratamiento_id' => $cita->id_tratamiento,
+            'fecha' => $cita->fecha_hora->toDateString(),
+            'exclude_cita_id' => $cita->id,
+        ]))->assertForbidden();
+    }
+
+    public function test_el_personal_puede_excluir_la_cita_que_esta_reagendando_del_calculo_de_horarios(): void
+    {
+        $cita = $this->crearCitaExistente();
+        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+
+        $this->actingAs($asistente)
+            ->getJson(route('disponibilidad.index', [
+                'tratamiento_id' => $cita->id_tratamiento,
+                'fecha' => $cita->fecha_hora->toDateString(),
+                'exclude_cita_id' => $cita->id,
+            ]))
+            ->assertOk()
+            ->assertJsonStructure(['horarios']);
+    }
+
+    private function crearCitaExistente(): Cita
+    {
+        $servicio = Servicio::create([
+            'nombre' => 'Odontología General',
+            'orden' => 1,
+            'activo' => true,
+        ]);
+        $tratamiento = Tratamiento::create([
+            'nombre' => 'Limpieza Dental',
+            'duracion_estimada' => 30,
+            'categoria' => 'Preventiva',
+            'activo' => true,
+        ]);
+        $servicio->tratamientos()->attach($tratamiento);
+        $paciente = Paciente::create([
+            'nombre' => 'Ana',
+            'apellido' => 'Prueba',
+            'telefono' => '5512345678',
+            'email' => fake()->unique()->safeEmail(),
+        ]);
+
+        return Cita::create([
+            'id_paciente' => $paciente->id,
+            'id_servicio' => $servicio->id,
+            'id_tratamiento' => $tratamiento->id,
+            'fecha_hora' => Carbon::tomorrow()->setTime(10, 0),
+            'duracion_estimada' => $tratamiento->duracion_estimada,
+        ]);
     }
 }
