@@ -99,8 +99,8 @@ Antes de generar un dominio público:
   `bootstrap/app.php`. Railway usa el healthcheck para validar la nueva versión
   durante el despliegue; no sustituye un monitor continuo.
 - Elegir almacenamiento persistente para `storage/app` y comprobar una
-  restauración. No exponer los archivos privados del historial mediante el
-  disco público.
+  restauración. Las fotos de perfil también se guardan de forma privada en
+  `storage/app/private/profile-photos`; no exponerlas mediante el disco público.
 - Dejar deshabilitada la IA local en Railway: el servicio Ollama de Docker
   Compose es un prototipo para desarrollo y no está incluido en el despliegue.
 - Probar con contenido ficticio y revisar autenticación, permisos por rol,

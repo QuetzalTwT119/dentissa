@@ -141,6 +141,13 @@ se conservan en `storage/`. El código de la aplicación se copia dentro de la
 imagen, por eso se debe reconstruir después de cambiar archivos de código que
 no estén montados como volumen.
 
+Las fotos de perfil se guardan en el disco privado de Laravel, dentro de
+`storage/app/private/profile-photos`; no se publica un enlace de `storage`.
+Las rutas de lectura requieren sesión y sirven únicamente la foto de la cuenta
+autenticada. Solo se aceptan JPG, PNG y WebP de hasta 5 MB y 3000 × 3000 px.
+La sustitución y eliminación actualizan el usuario y la bitácora; se limpia el
+archivo anterior solo después de guardar correctamente el cambio.
+
 La persistencia se verificó reiniciando MySQL: el conteo de usuarios demo fue
 2 antes y después. Durante el arranque MySQL puede tardar unos segundos en
 volver a aceptar conexiones; espera a que `docker compose ps` muestre `healthy`

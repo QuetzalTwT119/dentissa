@@ -41,6 +41,12 @@ desactivación de cuentas se administra desde **Gestión → Usuarios**; el perf
 no ofrece eliminar ni desactivar la propia cuenta, para proteger la continuidad
 de la clínica y sus registros.
 
+En la sección **Foto de perfil** puedes seleccionar una imagen JPG, PNG o WebP
+de hasta 5 MB y pulsar **Subir foto**. La imagen aparece en el resumen del
+perfil y junto al nombre del menú de usuario; **Quitar foto** la elimina y
+restaura las iniciales. Solo la cuenta que inició sesión puede consultar su
+imagen.
+
 El inicio del administrador reúne accesos rápidos para agendar citas,
 consultar pacientes, administrar servicios y
 contenido, y gestionar usuarios. Las cuentas de asistente ven un inicio más

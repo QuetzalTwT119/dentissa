@@ -149,6 +149,9 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/photo', [ProfileController::class, 'photo'])->name('profile.photo.show');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+    Route::delete('/profile/photo', [ProfileController::class, 'deletePhoto'])->name('profile.photo.delete');
 
     Route::get('/citas', [CitaController::class, 'index'])->name('citas.index');
     Route::get('/citas/crear', [CitaController::class, 'create'])->name('citas.create');

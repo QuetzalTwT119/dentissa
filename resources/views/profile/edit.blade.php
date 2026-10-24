@@ -14,8 +14,12 @@
         <div class="mx-auto max-w-6xl space-y-6 px-4 sm:px-6 lg:px-8">
             <section aria-label="Resumen de la cuenta" class="card-boutique overflow-hidden">
                 <div class="flex flex-col gap-5 bg-gradient-to-r from-white via-white to-brand-50/50 p-5 sm:flex-row sm:items-center sm:p-7">
-                    <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 via-[#e2698d] to-[#f2b0a6] text-xl font-bold text-white shadow-soft ring-4 ring-brand-50 sm:h-[4.5rem] sm:w-[4.5rem]">
-                        {{ strtoupper(substr(auth()->user()->nombre, 0, 1) . substr(auth()->user()->apellido, 0, 1)) }}
+                    <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-500 via-[#e2698d] to-[#f2b0a6] text-xl font-bold text-white shadow-soft ring-4 ring-brand-50 sm:h-[4.5rem] sm:w-[4.5rem]">
+                        @if (auth()->user()->foto_perfil)
+                            <img src="{{ route('profile.photo.show') }}" alt="Foto de perfil de {{ auth()->user()->nombre }}" class="h-full w-full object-cover">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->nombre, 0, 1) . substr(auth()->user()->apellido, 0, 1)) }}
+                        @endif
                     </div>
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2.5">
@@ -57,6 +61,9 @@
                 </nav>
 
                 <div class="min-w-0 space-y-6">
+                    <section class="card-boutique p-5 sm:p-7" aria-label="Foto de perfil">
+                        @include('profile.partials.update-profile-photo-form')
+                    </section>
                     <section id="profile-information" class="card-boutique scroll-mt-28 p-5 sm:p-7" aria-label="Información personal">
                         @include('profile.partials.update-profile-information-form')
                     </section>
