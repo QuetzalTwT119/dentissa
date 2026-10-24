@@ -41,6 +41,16 @@
     @endif
 
     <style>
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 6rem;
+        }
+        #inicio, #servicios, #nosotros, #galeria, #testimonios, #contacto {
+            scroll-margin-top: 6rem;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+        }
         body {
             font-family: 'Figtree', system-ui, -apple-system, sans-serif;
             background-color: #FAF6F6;
@@ -78,7 +88,7 @@
 
                 <!-- Menú de Escritorio (Visible en pantallas grandes >= 1024px) -->
                 <div class="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium text-[#2D2526]/80">
-                    <a href="{{ url('/') }}" class="text-[#d75078] font-bold hover:text-[#d75078] transition-colors">Inicio</a>
+                    <a href="#inicio" class="text-[#d75078] font-bold hover:text-[#d75078] transition-colors">Inicio</a>
                     <a href="#servicios" class="hover:text-[#d75078] transition-colors">Tratamientos</a>
                     <a href="#nosotros" class="hover:text-[#d75078] transition-colors">La Clínica</a>
                     <a href="#galeria" class="hover:text-[#d75078] transition-colors">Instalaciones</a>
@@ -142,7 +152,7 @@
              class="border-t border-[#e9dfdb] bg-white px-4 py-5 shadow-xl lg:hidden">
             
             <nav class="flex flex-col gap-1 text-sm font-semibold text-[#2D2526]" aria-label="Menú móvil">
-                <a href="{{ url('/') }}" @click="mobileMenuOpen = false" class="flex items-center justify-between rounded-xl px-4 py-3 text-[#d75078] bg-brand-50/60 transition-colors">
+                <a href="#inicio" @click="mobileMenuOpen = false" class="flex items-center justify-between rounded-xl px-4 py-3 text-[#d75078] bg-brand-50/60 transition-colors">
                     <span>Inicio</span>
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
@@ -748,5 +758,20 @@
         </div>
     </footer>
 
+    <script>
+        document.addEventListener('click', (event) => {
+            const clicked = event.target instanceof Element ? event.target : event.target.parentElement;
+            const link = clicked?.closest('a[href^="#"]');
+            if (!link) return;
+
+            const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+            if (!target) return;
+
+            event.preventDefault();
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+            history.pushState(null, '', link.hash);
+        });
+    </script>
 </body>
 </html>
