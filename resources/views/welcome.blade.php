@@ -774,7 +774,7 @@
             const start = window.scrollY;
             const destination = Math.max(0, target.getBoundingClientRect().top + start - offset);
             const distance = destination - start;
-            const animationDuration = Math.min(1250, Math.max(800, Math.abs(distance) * 0.55));
+            const animationDuration = Math.min(1900, Math.max(1450, Math.abs(distance) * 0.8));
 
             if (window.dentissaScrollFrame) {
                 cancelAnimationFrame(window.dentissaScrollFrame);
