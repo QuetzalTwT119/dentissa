@@ -1,60 +1,79 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200">
-                        <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                        Ajustes de Cuenta
-                    </span>
-                </div>
-                <h2 class="mt-1 text-2xl font-bold tracking-tight text-[#2D2526]">
-                    Perfil de Usuario
-                </h2>
-                <p class="mt-0.5 text-xs text-[#8A7A7D]">Administra tu información de contacto, credenciales y seguridad.</p>
-            </div>
+        <div>
+            <span class="badge-brand">
+                <span class="h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true"></span>
+                Ajustes de cuenta
+            </span>
+            <h2 class="mt-2 text-2xl font-bold tracking-tight text-[#2D2526]">Perfil de usuario</h2>
+            <p class="mt-1 text-sm text-[#8A7A7D]">Administra tu información de contacto, credenciales y seguridad.</p>
         </div>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            
-            <!-- Resumen de Usuario -->
-            <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft sm:p-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
-                <div class="flex items-center gap-4">
-                    <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#d75078] via-[#e2698d] to-[#f2b0a6] text-xl font-bold text-white shadow-soft">
+    <div class="py-7 sm:py-10">
+        <div class="mx-auto max-w-6xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <section aria-label="Resumen de la cuenta" class="card-boutique overflow-hidden">
+                <div class="flex flex-col gap-5 bg-gradient-to-r from-white via-white to-brand-50/50 p-5 sm:flex-row sm:items-center sm:p-7">
+                    <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 via-[#e2698d] to-[#f2b0a6] text-xl font-bold text-white shadow-soft ring-4 ring-brand-50 sm:h-[4.5rem] sm:w-[4.5rem]">
                         {{ strtoupper(substr(auth()->user()->nombre, 0, 1) . substr(auth()->user()->apellido, 0, 1)) }}
                     </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <h3 class="text-xl font-bold text-[#2D2526]">{{ auth()->user()->nombre }} {{ auth()->user()->apellido }}</h3>
-                            <span class="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200">
-                                {{ auth()->user()->rol->name ?? 'Usuario' }}
+                    <div class="min-w-0 flex-1">
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <h3 class="text-xl font-bold tracking-tight text-[#2D2526] sm:text-2xl">{{ auth()->user()->nombre }} {{ auth()->user()->apellido }}</h3>
+                            <span class="badge-brand">{{ auth()->user()->rol->name ?? 'Usuario' }}</span>
+                        </div>
+                        <div class="mt-2 flex flex-col gap-x-5 gap-y-1 text-sm text-[#6b5e62] sm:flex-row sm:flex-wrap">
+                            <span class="inline-flex min-w-0 items-center gap-2 break-all">
+                                <svg class="h-4 w-4 shrink-0 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75 12 12.5l8.25-5.75M5.25 5.25h13.5a1.5 1.5 0 0 1 1.5 1.5v10.5a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V6.75a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
+                                {{ auth()->user()->email }}
+                            </span>
+                            <span class="inline-flex items-center gap-2">
+                                <svg class="h-4 w-4 shrink-0 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 3.75h2.1c.6 0 1.12.41 1.26.99l.77 3.08a1.3 1.3 0 0 1-.47 1.36l-1.4 1.08a14.2 14.2 0 0 0 6.23 6.23l1.08-1.4a1.3 1.3 0 0 1 1.36-.47l3.08.77c.58.14.99.66.99 1.26v2.1c0 .72-.58 1.3-1.3 1.3C10.67 20.05 3.95 13.33 3.95 5.05c0-.72.58-1.3 1.3-1.3Z" /></svg>
+                                {{ auth()->user()->telefono ?? 'Sin teléfono registrado' }}
                             </span>
                         </div>
-                        <p class="text-sm text-[#6b5e62] mt-0.5">{{ auth()->user()->email }} &bull; {{ auth()->user()->telefono ?? 'Sin teléfono registrado' }}</p>
                     </div>
+                    <a href="#profile-information" class="btn-secondary min-h-11 shrink-0 self-start sm:self-center">Editar perfil</a>
                 </div>
-            </div>
+            </section>
 
-            <!-- Información del Perfil -->
-            <div class="p-6 sm:p-8 bg-white border border-[#e9dfdb] shadow-soft rounded-2xl">
-                <div class="max-w-2xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
+            <div class="grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
+                <nav aria-label="Secciones del perfil" class="card-boutique p-4 lg:sticky lg:top-28">
+                    <p class="px-3 pb-2 text-xs font-bold uppercase tracking-[0.12em] text-[#8A7A7D]">Tu cuenta</p>
+                    <div class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
+                        <a href="#profile-information" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-300 lg:w-full">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-brand-600 shadow-sm" aria-hidden="true">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /></svg>
+                            </span>
+                            Información personal
+                        </a>
+                        <a href="#profile-password" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#6b5e62] transition hover:bg-[#FAF6F6] hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 lg:w-full">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FAF6F6] text-[#8A7A7D]" aria-hidden="true">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4.5" y="10" width="15" height="10.5" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v2"/></svg>
+                            </span>
+                            Contraseña
+                        </a>
+                        <a href="#profile-delete" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#6b5e62] transition hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-300 lg:w-full">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600" aria-hidden="true">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 7.5h15m-13.5 0 .8 12h10.4l.8-12m-9.5 0V5.25h5.5V7.5m-4.5 4v4m3-4v4"/></svg>
+                            </span>
+                            Desactivar cuenta
+                        </a>
+                    </div>
+                </nav>
 
-            <!-- Actualizar Contraseña -->
-            <div class="p-6 sm:p-8 bg-white border border-[#e9dfdb] shadow-soft rounded-2xl">
-                <div class="max-w-2xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
+                <div class="min-w-0 space-y-6">
+                    <section id="profile-information" class="card-boutique scroll-mt-28 p-5 sm:p-7" aria-label="Información personal">
+                        @include('profile.partials.update-profile-information-form')
+                    </section>
 
-            <!-- Zona de Peligro: Eliminar Cuenta -->
-            <div class="p-6 sm:p-8 bg-white border border-rose-200/80 shadow-soft rounded-2xl">
-                <div class="max-w-2xl">
-                    @include('profile.partials.delete-user-form')
+                    <section id="profile-password" class="card-boutique scroll-mt-28 p-5 sm:p-7" aria-label="Cambiar contraseña">
+                        @include('profile.partials.update-password-form')
+                    </section>
+
+                    <section id="profile-delete" class="card-boutique scroll-mt-28 border-rose-200/80 p-5 sm:p-7" aria-label="Desactivar cuenta">
+                        @include('profile.partials.delete-user-form')
+                    </section>
                 </div>
             </div>
         </div>

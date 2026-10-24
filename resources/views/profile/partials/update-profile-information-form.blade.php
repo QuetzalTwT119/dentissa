@@ -1,19 +1,19 @@
 <section>
-    <header>
-        <h2 class="text-lg font-semibold text-[#2D2526]">
-            Información del perfil
-        </h2>
-
-        <p class="mt-1 text-sm text-[#6b5e62]">
-            Actualiza los datos de tu cuenta y tu correo electrónico.
-        </p>
+    <header class="flex items-start gap-3.5">
+        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-brand-100" aria-hidden="true">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /></svg>
+        </span>
+        <div>
+            <h2 class="text-lg font-bold tracking-tight text-[#2D2526]">Información personal</h2>
+            <p class="mt-1 text-sm leading-6 text-[#6b5e62]">Mantén actualizados tus datos de contacto y correo electrónico.</p>
+        </div>
     </header>
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2">
         @csrf
         @method('patch')
 
@@ -59,7 +59,7 @@
             @endif
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center gap-4 sm:col-span-2">
             <x-primary-button>Guardar</x-primary-button>
 
             @if (session('status') === 'profile-updated')
@@ -69,7 +69,8 @@
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-gray-600"
-                >Guardado.</p>
+                role="status"
+                >Cambios guardados.</p>
             @endif
         </div>
     </form>
