@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -42,7 +42,7 @@
 
     <style>
         html {
-            scroll-behavior: smooth;
+            scroll-behavior: auto;
             scroll-padding-top: 6rem;
         }
         #inicio, #servicios, #nosotros, #galeria, #testimonios, #contacto {
@@ -769,7 +769,39 @@
 
             event.preventDefault();
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+            const header = document.querySelector('header.sticky');
+            const offset = (header?.getBoundingClientRect().height ?? 0) + 12;
+            const start = window.scrollY;
+            const destination = Math.max(0, target.getBoundingClientRect().top + start - offset);
+            const distance = destination - start;
+            const animationDuration = Math.min(1250, Math.max(800, Math.abs(distance) * 0.55));
+
+            if (window.dentissaScrollFrame) {
+                cancelAnimationFrame(window.dentissaScrollFrame);
+            }
+
+            if (reduceMotion || Math.abs(distance) < 2) {
+                window.scrollTo({ top: destination, behavior: 'auto' });
+            } else {
+                const animationStart = performance.now();
+                const animateScroll = (now) => {
+                    const progress = Math.min((now - animationStart) / animationDuration, 1);
+                    const easedProgress = progress < 0.5
+                        ? 4 * progress * progress * progress
+                        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+                    window.scrollTo({ top: start + distance * easedProgress, behavior: 'auto' });
+
+                    if (progress < 1) {
+                        window.dentissaScrollFrame = requestAnimationFrame(animateScroll);
+                    } else {
+                        window.dentissaScrollFrame = null;
+                    }
+                };
+
+                window.dentissaScrollFrame = requestAnimationFrame(animateScroll);
+            }
+
             history.pushState(null, '', link.hash);
         });
     </script>
