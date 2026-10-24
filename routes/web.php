@@ -149,7 +149,6 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/citas', [CitaController::class, 'index'])->name('citas.index');
     Route::get('/citas/crear', [CitaController::class, 'create'])->name('citas.create');

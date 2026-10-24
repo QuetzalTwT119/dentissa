@@ -53,12 +53,6 @@
                             </span>
                             Contraseña
                         </a>
-                        <a href="#profile-delete" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[#6b5e62] transition hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-300 lg:w-full">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600" aria-hidden="true">
-                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 7.5h15m-13.5 0 .8 12h10.4l.8-12m-9.5 0V5.25h5.5V7.5m-4.5 4v4m3-4v4"/></svg>
-                            </span>
-                            Desactivar cuenta
-                        </a>
                     </div>
                 </nav>
 
@@ -69,10 +63,6 @@
 
                     <section id="profile-password" class="card-boutique scroll-mt-28 p-5 sm:p-7" aria-label="Cambiar contraseña">
                         @include('profile.partials.update-password-form')
-                    </section>
-
-                    <section id="profile-delete" class="card-boutique scroll-mt-28 border-rose-200/80 p-5 sm:p-7" aria-label="Desactivar cuenta">
-                        @include('profile.partials.delete-user-form')
                     </section>
                 </div>
             </div>

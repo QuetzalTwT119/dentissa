@@ -36,13 +36,10 @@ hay más resultados, al final aparecen los botones **Anterior**, los números de
 página y **Siguiente**; los filtros actuales se conservan al cambiar de página.
 
 Desde el menú de usuario abre **Perfil** para actualizar nombre, apellido,
-teléfono y correo, o para cambiar la contraseña confirmando la actual. La zona
-de seguridad permite **desactivar la propia cuenta** tras confirmar la
-contraseña: se cierra la sesión y esa cuenta ya no puede iniciar sesión, pero
-se conservan los datos clínicos y el registro de auditoría. Para volver a usar
-la cuenta, otro administrador activo debe reactivarla desde **Gestión →
-Usuarios**. La única cuenta administradora activa no se puede desactivar a sí
-misma.
+teléfono y correo, o para cambiar la contraseña confirmando la actual. La
+desactivación de cuentas se administra desde **Gestión → Usuarios**; el perfil
+no ofrece eliminar ni desactivar la propia cuenta, para proteger la continuidad
+de la clínica y sus registros.
 
 El inicio del administrador reúne accesos rápidos para agendar citas,
 consultar pacientes, administrar servicios y
