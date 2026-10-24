@@ -1,21 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-xl font-semibold leading-tight text-[#2D2526]">
-                    Editar usuario
-                </h2>
-                <p class="mt-1 text-xs text-[#8A7A7D]">Modificación de rol, contacto y credenciales de acceso.</p>
-            </div>
-            <a href="{{ route('admin.usuarios.index') }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al listado</x-secondary-button>
-            </a>
-        </div>
+        <x-admin.header
+            badge="Equipo y Accesos"
+            title="Editar usuario"
+            subtitle="Modificación de rol, contacto y credenciales de acceso."
+        >
+            <x-slot:actions>
+                <a href="{{ route('admin.usuarios.index') }}" class="hidden sm:inline-block">
+                    <x-secondary-button type="button">Volver al listado</x-secondary-button>
+                </a>
+            </x-slot:actions>
+        </x-admin.header>
     </x-slot>
 
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft sm:p-8">
+            <x-admin.card class="p-6 sm:p-8">
                 <form method="POST" action="{{ route('admin.usuarios.update', $usuario) }}" class="space-y-6">
                     @csrf
                     @method('put')
@@ -86,7 +86,7 @@
                         </a>
                     </div>
                 </form>
-            </div>
+            </x-admin.card>
         </div>
     </div>
 </x-app-layout>

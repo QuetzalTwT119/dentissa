@@ -18,94 +18,107 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h2 class="text-xl font-semibold leading-tight text-[#2D2526]">
-                    Reportes administrativos
-                </h2>
-                <p class="mt-1 text-xs text-[#8A7A7D]">Métricas operativas, ocupación, eficiencia clínica y demanda del consultorio.</p>
-            </div>
-            <div class="flex items-center gap-2">
+        <x-admin.header
+            badge="Métricas y Desempeño"
+            title="Reportes administrativos"
+            subtitle="Métricas operativas, ocupación, eficiencia clínica y demanda del consultorio."
+        >
+            <x-slot:actions>
                 <a href="{{ route('admin.reportes.pdf').$queryString }}">
-                    <x-secondary-button type="button">Descargar PDF</x-secondary-button>
+                    <x-secondary-button type="button" class="inline-flex items-center gap-1.5">
+                        <svg class="h-4 w-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Descargar PDF
+                    </x-secondary-button>
                 </a>
                 <a href="{{ route('admin.reportes.excel').$queryString }}">
-                    <x-secondary-button type="button">Descargar Excel</x-secondary-button>
+                    <x-secondary-button type="button" class="inline-flex items-center gap-1.5">
+                        <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Descargar Excel
+                    </x-secondary-button>
                 </a>
-            </div>
-        </div>
+            </x-slot:actions>
+        </x-admin.header>
     </x-slot>
 
     <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-6xl space-y-6 px-4 sm:px-6 lg:px-8">
-            <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft">
-                <form method="GET" action="{{ route('admin.reportes.index') }}" class="flex flex-wrap items-end gap-4">
-                    <div>
-                        <x-input-label for="fecha_inicio" value="Desde" />
-                        <x-text-input id="fecha_inicio" name="fecha_inicio" type="date" class="mt-1.5" max="{{ now()->toDateString() }}" value="{{ old('fecha_inicio', $reporte['rango']['fecha_inicio']) }}" />
-                        <x-input-error :messages="$errors->get('fecha_inicio')" class="mt-2" />
-                    </div>
-                    <div>
-                        <x-input-label for="fecha_fin" value="Hasta" />
-                        <x-text-input id="fecha_fin" name="fecha_fin" type="date" class="mt-1.5" max="{{ now()->toDateString() }}" value="{{ old('fecha_fin', $reporte['rango']['fecha_fin']) }}" />
-                        <x-input-error :messages="$errors->get('fecha_fin')" class="mt-2" />
-                    </div>
+        <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <!-- Tarjeta de Filtro de Fechas -->
+            <x-admin.card>
+                <div class="p-6 bg-gradient-to-r from-white via-white to-[#FAF6F6]/50">
+                    <form method="GET" action="{{ route('admin.reportes.index') }}" class="flex flex-wrap items-end gap-4">
+                        <div>
+                            <x-input-label for="fecha_inicio" value="Desde" class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]" />
+                            <x-text-input id="fecha_inicio" name="fecha_inicio" type="date" class="mt-1.5" max="{{ now()->toDateString() }}" value="{{ old('fecha_inicio', $reporte['rango']['fecha_inicio']) }}" />
+                            <x-input-error :messages="$errors->get('fecha_inicio')" class="mt-2" />
+                        </div>
+                        <div>
+                            <x-input-label for="fecha_fin" value="Hasta" class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]" />
+                            <x-text-input id="fecha_fin" name="fecha_fin" type="date" class="mt-1.5" max="{{ now()->toDateString() }}" value="{{ old('fecha_fin', $reporte['rango']['fecha_fin']) }}" />
+                            <x-input-error :messages="$errors->get('fecha_fin')" class="mt-2" />
+                        </div>
 
-                    <x-primary-button>Filtrar</x-primary-button>
+                        <x-primary-button>Filtrar</x-primary-button>
 
-                    <div class="ms-auto flex gap-3">
-                        <a href="{{ route('admin.reportes.pdf').$queryString }}">
-                            <x-secondary-button type="button">Descargar PDF</x-secondary-button>
-                        </a>
-                        <a href="{{ route('admin.reportes.excel').$queryString }}">
-                            <x-secondary-button type="button">Descargar Excel</x-secondary-button>
-                        </a>
-                    </div>
-                </form>
-            </div>
+                        <div class="ms-auto hidden sm:flex gap-3">
+                            <a href="{{ route('admin.reportes.pdf').$queryString }}">
+                                <x-secondary-button type="button">Descargar PDF</x-secondary-button>
+                            </a>
+                            <a href="{{ route('admin.reportes.excel').$queryString }}">
+                                <x-secondary-button type="button">Descargar Excel</x-secondary-button>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </x-admin.card>
 
+            <!-- Tarjetas de Métricas Clave (KPIs) -->
             <div class="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft">
+                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6]">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Tasa de ocupación</p>
                     <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['ocupacion']['tasa_ocupacion'] }}%</p>
                 </div>
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft">
+                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6]">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Tasa de inasistencia</p>
                     <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['citas']['tasa_inasistencia'] }}%</p>
                 </div>
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft">
+                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6]">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Eficiencia (citas/1.5h)</p>
                     <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['eficiencia']['eficiencia'] }}</p>
                 </div>
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft">
+                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6]">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Citas completadas por hora</p>
                     <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['eficiencia']['citas_por_hora'] }}</p>
                 </div>
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft">
+                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6]">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Satisfacción promedio</p>
                     <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['satisfaccion'] ?? 'Sin datos' }}</p>
                 </div>
             </div>
 
+            <!-- Detalle por Secciones -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft">
-                    <h3 class="mb-4 text-base font-semibold text-[#2D2526]">Pacientes</h3>
+                    <h3 class="mb-4 text-base font-bold text-[#2D2526]">Pacientes</h3>
                     <div class="space-y-3 rounded-xl border border-[#e9dfdb]/80 bg-[#FAF6F6]/50 p-4 text-sm">
-                        <p class="text-[#6b5e62]">Total histórico registrado: <span class="font-semibold text-[#2D2526]">{{ $reporte['pacientes']['total'] }}</span></p>
-                        <p class="text-[#6b5e62]">Nuevos en el período: <span class="font-semibold text-[#2D2526]">{{ $reporte['pacientes']['nuevos'] }}</span></p>
+                        <p class="text-[#6b5e62]">Total histórico registrado: <span class="font-bold text-[#2D2526]">{{ $reporte['pacientes']['total'] }}</span></p>
+                        <p class="text-[#6b5e62]">Nuevos en el período: <span class="font-bold text-[#2D2526]">{{ $reporte['pacientes']['nuevos'] }}</span></p>
                     </div>
                 </div>
 
                 <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft">
-                    <h3 class="mb-4 text-base font-semibold text-[#2D2526]">
+                    <h3 class="mb-4 text-base font-bold text-[#2D2526]">
                         Citas por estado ({{ $reporte['citas']['total'] }} en el período)
                     </h3>
                     <table class="w-full text-sm">
                         <tbody class="divide-y divide-[#e9dfdb]/60">
                             @foreach ($reporte['citas']['por_estado'] as $estado => $total)
-                                <tr>
+                                <tr class="transition hover:bg-[#FAF6F6]/60">
                                     <td class="py-2.5 text-[#6b5e62]">{{ $estadoLabel[$estado] ?? $estado }}</td>
-                                    <td class="py-2.5 text-right font-semibold text-[#2D2526]">{{ $total }}</td>
+                                    <td class="py-2.5 text-right font-bold text-[#2D2526]">{{ $total }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -113,13 +126,13 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                 </div>
 
                 <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft">
-                    <h3 class="mb-4 text-base font-semibold text-[#2D2526]">Tratamientos más solicitados</h3>
+                    <h3 class="mb-4 text-base font-bold text-[#2D2526]">Tratamientos más solicitados</h3>
                     <table class="w-full text-sm">
                         <tbody class="divide-y divide-[#e9dfdb]/60">
                             @forelse ($reporte['catalogo']['tratamientos_mas_solicitados'] as $fila)
-                                <tr>
+                                <tr class="transition hover:bg-[#FAF6F6]/60">
                                     <td class="py-2.5 text-[#6b5e62]">{{ $fila['nombre'] }}</td>
-                                    <td class="py-2.5 text-right font-semibold text-[#2D2526]">{{ $fila['total'] }}</td>
+                                    <td class="py-2.5 text-right font-bold text-[#2D2526]">{{ $fila['total'] }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -134,15 +147,15 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                 </div>
 
                 <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft">
-                    <h3 class="mb-4 text-base font-semibold text-[#2D2526]">
+                    <h3 class="mb-4 text-base font-bold text-[#2D2526]">
                         Historial clínico ({{ $reporte['historial']['total'] }} {{ $reporte['historial']['total'] === 1 ? 'consulta' : 'consultas' }})
                     </h3>
                     <table class="w-full text-sm">
                         <tbody class="divide-y divide-[#e9dfdb]/60">
                             @foreach ($reporte['historial']['por_tipo'] as $tipo => $total)
-                                <tr>
+                                <tr class="transition hover:bg-[#FAF6F6]/60">
                                     <td class="py-2.5 text-[#6b5e62]">{{ $tipoConsultaLabel[$tipo] ?? $tipo }}</td>
-                                    <td class="py-2.5 text-right font-semibold text-[#2D2526]">{{ $total }}</td>
+                                    <td class="py-2.5 text-right font-bold text-[#2D2526]">{{ $total }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

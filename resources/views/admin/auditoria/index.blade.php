@@ -71,27 +71,18 @@ $etiquetasTabla = [
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200">
-                        <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                        Seguridad y Control
-                    </span>
-                </div>
-                <h2 class="mt-1 text-2xl font-bold tracking-tight text-[#2D2526]">
-                    Auditoría
-                </h2>
-                <p class="mt-0.5 text-xs text-[#8A7A7D]">Trazabilidad de seguridad, cambios en datos clínicos y actividad del personal.</p>
-            </div>
-        </div>
+        <x-admin.header
+            badge="Seguridad y Control"
+            title="Auditoría"
+            subtitle="Trazabilidad de seguridad, cambios en datos clínicos y actividad del personal."
+        />
     </x-slot>
 
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             
             <!-- Contenedor Principal de la Bitácora (Estructura Unificada como en Directorio de Pacientes) -->
-            <div class="overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-soft">
+            <x-admin.card>
                 <!-- Barra superior con contexto y filtros integrados -->
                 <div class="border-b border-[#e9dfdb]/80 p-6 bg-gradient-to-r from-white via-white to-[#FAF6F6]/50">
                     <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -195,122 +186,113 @@ $etiquetasTabla = [
                 </div>
 
                 <!-- Tabla (Directamente integrada en el contenedor igual que Pacientes y Mensajes) -->
-                <div class="overflow-x-auto">
-                    <table class="w-full min-w-[850px] text-left text-sm">
-                        <thead class="border-b border-[#e9dfdb] bg-[#FAF6F6] text-xs font-semibold uppercase tracking-wider text-[#6b5e62]">
-                            <tr>
-                                <th class="px-6 py-4">Fecha y hora</th>
-                                <th class="px-6 py-4">Usuario</th>
-                                <th class="px-6 py-4">Acción</th>
-                                <th class="px-6 py-4">Registro</th>
-                                <th class="px-6 py-4">Detalles</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-[#e9dfdb]/60">
-                            @forelse ($registros as $registro)
-                                <tr class="transition-colors hover:bg-brand-50/20 group">
-                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-[#6b5e62]">
-                                        <p class="font-medium text-[#2D2526]">{{ $registro->fecha?->translatedFormat('d M Y') ?? '—' }}</p>
-                                        <p class="text-xs font-mono text-[#8A7A7D]">{{ $registro->fecha?->translatedFormat('H:i') ?? '' }} hrs</p>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center gap-3">
-                                            @php
-                                                $nombreUsuario = $registro->usuario ? $registro->usuario->nombre.' '.$registro->usuario->apellido : ($registro->actor_nombre ?? 'Usuario');
-                                                $partes = preg_split('/\s+/', trim($nombreUsuario));
-                                                $i1 = substr($partes[0] ?? '', 0, 1);
-                                                $i2 = substr($partes[1] ?? '', 0, 1);
-                                                $iniciales = strtoupper($i1 . $i2);
-                                            @endphp
-                                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-50 to-peach-100 text-xs font-bold text-brand-700 border border-brand-200/80 shadow-xs">
-                                                {{ $iniciales ?: 'U' }}
-                                            </div>
-                                            <div>
-                                                <p class="font-bold text-[#2D2526] group-hover:text-brand-700 transition-colors">
-                                                    {{ $registro->usuario ? $registro->usuario->nombre.' '.$registro->usuario->apellido : ($registro->actor_nombre ?? 'Usuario no disponible') }}
-                                                </p>
-                                                <p class="text-[11px] text-[#8A7A7D]">
-                                                    {{ $registro->actor_rol ? ucfirst($registro->actor_rol) : ($registro->usuario ? ucfirst($registro->usuario->rol?->value ?? 'Personal') : 'Personal') }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-brand-50 text-brand-800 border border-brand-200/70">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                                            {{ $etiquetasAccion[$registro->accion] ?? str_replace('.', ' · ', ucfirst($registro->accion ?? 'Evento')) }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <div class="inline-flex items-center gap-1.5 text-sm text-[#2D2526]">
-                                            <span class="font-medium">{{ $etiquetasTabla[$registro->tabla] ?? ucfirst(str_replace('_', ' ', $registro->tabla ?? 'Registro')) }}</span>
-                                            <span class="rounded-md bg-[#FAF6F6] px-1.5 py-0.5 text-xs font-mono font-semibold text-[#8A7A7D] border border-[#e9dfdb]">
-                                                #{{ $registro->registro_id ?? '—' }}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        @if ($registro->datos_anteriores || $registro->datos_nuevos)
-                                            <details class="group relative">
-                                                <summary aria-label="Ver cambios detallados del evento"
-                                                         class="inline-flex cursor-pointer list-none items-center gap-1 rounded-xl bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 border border-brand-200/60 transition hover:bg-brand-600 hover:text-white hover:border-brand-600 shadow-xs focus:outline-none focus:ring-2 focus:ring-[#d75078]/25 [&::-webkit-details-marker]:hidden">
-                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                    </svg>
-                                                    <span>Ver cambios</span>
-                                                    <svg class="h-3 w-3 transition-transform duration-200 group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 011.06 0L10 10.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 8.28a.75.75 0 010-1.06z" clip-rule="evenodd"/>
-                                                    </svg>
-                                                </summary>
-                                                <div class="mt-2.5 min-w-72 max-w-md space-y-2.5 rounded-2xl border border-[#e9dfdb] bg-white p-3.5 shadow-soft ring-1 ring-black/[0.03]">
-                                                    @foreach (['Antes' => $registro->datos_anteriores, 'Después' => $registro->datos_nuevos] as $titulo => $datos)
-                                                        @if ($datos)
-                                                            <div class="rounded-xl border {{ $titulo === 'Antes' ? 'border-amber-200/70 bg-amber-50/40' : 'border-[#4E8D72]/20 bg-[#EAF4EE]/40' }} p-2.5">
-                                                                <div class="flex items-center gap-1.5 mb-1.5">
-                                                                    <span class="h-1.5 w-1.5 rounded-full {{ $titulo === 'Antes' ? 'bg-amber-500' : 'bg-[#4E8D72]' }}"></span>
-                                                                    <h4 class="text-[10px] font-bold uppercase tracking-wider {{ $titulo === 'Antes' ? 'text-amber-800' : 'text-[#4E8D72]' }}">{{ $titulo }}</h4>
+                <x-admin.table minWidth="min-w-[850px]">
+                    <x-slot:head>
+                        <tr>
+                            <th class="px-6 py-4">Fecha y hora</th>
+                            <th class="px-6 py-4">Usuario</th>
+                            <th class="px-6 py-4">Acción</th>
+                            <th class="px-6 py-4">Registro</th>
+                            <th class="px-6 py-4">Detalles</th>
+                        </tr>
+                    </x-slot:head>
+
+                    @forelse ($registros as $registro)
+                        <tr class="transition-colors hover:bg-brand-50/20 group">
+                            <td class="whitespace-nowrap px-6 py-4 text-sm text-[#6b5e62]">
+                                <p class="font-medium text-[#2D2526]">{{ $registro->fecha?->translatedFormat('d M Y') ?? '—' }}</p>
+                                <p class="text-xs font-mono text-[#8A7A7D]">{{ $registro->fecha?->translatedFormat('H:i') ?? '' }} hrs</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    @php
+                                        $nombreUsuario = $registro->usuario ? $registro->usuario->nombre.' '.$registro->usuario->apellido : ($registro->actor_nombre ?? 'Usuario');
+                                    @endphp
+                                    <x-admin.user-avatar :name="$nombreUsuario" />
+                                    <div>
+                                        <p class="font-bold text-[#2D2526] group-hover:text-brand-700 transition-colors">
+                                            {{ $registro->usuario ? $registro->usuario->nombre.' '.$registro->usuario->apellido : ($registro->actor_nombre ?? 'Usuario no disponible') }}
+                                        </p>
+                                        <p class="text-[11px] text-[#8A7A7D]">
+                                            {{ $registro->actor_rol ? ucfirst($registro->actor_rol) : ($registro->usuario ? ucfirst($registro->usuario->rol?->value ?? 'Personal') : 'Personal') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-brand-50 text-brand-800 border border-brand-200/70">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
+                                    {{ $etiquetasAccion[$registro->accion] ?? str_replace('.', ' · ', ucfirst($registro->accion ?? 'Evento')) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="inline-flex items-center gap-1.5 text-sm text-[#2D2526]">
+                                    <span class="font-medium">{{ $etiquetasTabla[$registro->tabla] ?? ucfirst(str_replace('_', ' ', $registro->tabla ?? 'Registro')) }}</span>
+                                    <span class="rounded-md bg-[#FAF6F6] px-1.5 py-0.5 text-xs font-mono font-semibold text-[#8A7A7D] border border-[#e9dfdb]">
+                                        #{{ $registro->registro_id ?? '—' }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if ($registro->datos_anteriores || $registro->datos_nuevos)
+                                    <details class="group relative">
+                                        <summary aria-label="Ver cambios detallados del evento"
+                                                 class="inline-flex cursor-pointer list-none items-center gap-1 rounded-xl bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 border border-brand-200/60 transition hover:bg-brand-600 hover:text-white hover:border-brand-600 shadow-xs focus:outline-none focus:ring-2 focus:ring-[#d75078]/25 [&::-webkit-details-marker]:hidden">
+                                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                            <span>Ver cambios</span>
+                                            <svg class="h-3 w-3 transition-transform duration-200 group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 011.06 0L10 10.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 8.28a.75.75 0 010-1.06z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </summary>
+                                        <div class="mt-2.5 min-w-72 max-w-md space-y-2.5 rounded-2xl border border-[#e9dfdb] bg-white p-3.5 shadow-soft ring-1 ring-black/[0.03]">
+                                            @foreach (['Antes' => $registro->datos_anteriores, 'Después' => $registro->datos_nuevos] as $titulo => $datos)
+                                                @if ($datos)
+                                                    <div class="rounded-xl border {{ $titulo === 'Antes' ? 'border-amber-200/70 bg-amber-50/40' : 'border-[#4E8D72]/20 bg-[#EAF4EE]/40' }} p-2.5">
+                                                        <div class="flex items-center gap-1.5 mb-1.5">
+                                                            <span class="h-1.5 w-1.5 rounded-full {{ $titulo === 'Antes' ? 'bg-amber-500' : 'bg-[#4E8D72]' }}"></span>
+                                                            <h4 class="text-[10px] font-bold uppercase tracking-wider {{ $titulo === 'Antes' ? 'text-amber-800' : 'text-[#4E8D72]' }}">{{ $titulo }}</h4>
+                                                        </div>
+                                                        <dl class="space-y-1 text-xs">
+                                                            @foreach ($datos as $campo => $valor)
+                                                                <div class="grid grid-cols-[minmax(6.5rem,auto)_1fr] gap-2 py-0.5 border-b border-[#e9dfdb]/40 last:border-b-0">
+                                                                    <dt class="font-medium text-[#6b5e62]">{{ ucfirst(str_replace('_', ' ', $campo)) }}</dt>
+                                                                    <dd class="break-words font-mono text-[#2D2526] font-semibold">{{ is_scalar($valor) ? ($valor === '' ? '—' : $valor) : json_encode($valor, JSON_UNESCAPED_UNICODE) }}</dd>
                                                                 </div>
-                                                                <dl class="space-y-1 text-xs">
-                                                                    @foreach ($datos as $campo => $valor)
-                                                                        <div class="grid grid-cols-[minmax(6.5rem,auto)_1fr] gap-2 py-0.5 border-b border-[#e9dfdb]/40 last:border-b-0">
-                                                                            <dt class="font-medium text-[#6b5e62]">{{ ucfirst(str_replace('_', ' ', $campo)) }}</dt>
-                                                                            <dd class="break-words font-mono text-[#2D2526] font-semibold">{{ is_scalar($valor) ? ($valor === '' ? '—' : $valor) : json_encode($valor, JSON_UNESCAPED_UNICODE) }}</dd>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </dl>
-                                                            </div>
-                                                        @endif
-                                                    @endforeach
-                                                </div>
-                                            </details>
-                                        @else
-                                            <span class="text-xs text-[#8A7A7D]">Sin detalle</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-6 py-14 text-center">
-                                        <div class="mx-auto max-w-sm">
-                                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 border border-brand-200/50 mb-3 shadow-2xs">
-                                                <svg class="h-6 w-6 text-[#d75078]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                </svg>
-                                            </div>
-                                            <p class="font-semibold text-[#2D2526]">No se encontraron eventos</p>
-                                            <p class="mt-1 text-xs text-[#8A7A7D]">
-                                                No hay eventos de auditoría para los filtros seleccionados.
-                                            </p>
+                                                            @endforeach
+                                                        </dl>
+                                                    </div>
+                                                @endif
+                                            @endforeach
                                         </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                                    </details>
+                                @else
+                                    <span class="text-xs text-[#8A7A7D]">Sin detalle</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-14 text-center">
+                                <div class="mx-auto max-w-sm">
+                                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 border border-brand-200/50 mb-3 shadow-2xs">
+                                        <svg class="h-6 w-6 text-[#d75078]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                    </div>
+                                    <p class="font-semibold text-[#2D2526]">No se encontraron eventos</p>
+                                    <p class="mt-1 text-xs text-[#8A7A7D]">
+                                        No hay eventos de auditoría para los filtros seleccionados.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </x-admin.table>
                 <x-pagination-summary :items="$registros" label="eventos" />
-            </div>
+            </x-admin.card>
         </div>
     </div>
 </x-app-layout>

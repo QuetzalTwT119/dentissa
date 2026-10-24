@@ -31,19 +31,11 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-2">
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-2.5 py-0.5 rounded-full border border-brand-200/50">
-                        <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span> Control de Agenda
-                    </span>
-                </div>
-                <h1 class="mt-1 text-2xl font-bold tracking-tight text-[#2D2526] sm:text-3xl">
-                    {{ $esPersonal ? 'Citas' : 'Mis citas' }}
-                </h1>
-                <p class="mt-0.5 text-xs sm:text-sm text-[#8A7A7D]">Monitoreo de citas médicas, estados de atención y tiempos clínicos.</p>
-            </div>
-        </div>
+        <x-admin.header
+            badge="Control de Agenda"
+            :title="$esPersonal ? 'Citas' : 'Mis citas'"
+            subtitle="Monitoreo de citas médicas, estados de atención y tiempos clínicos."
+        />
     </x-slot>
 
     <div class="py-8 sm:py-10">

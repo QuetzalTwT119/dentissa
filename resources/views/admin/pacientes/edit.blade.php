@@ -1,23 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200">
-                        <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                        Expediente de Paciente
-                    </span>
-                </div>
-                <h2 class="mt-1 text-2xl font-bold tracking-tight text-[#2D2526]">
-                    Editar paciente — {{ $paciente->nombre }} {{ $paciente->apellido }}
-                </h2>
-                <p class="mt-0.5 text-xs text-[#8A7A7D]">Actualización de contacto y datos oficiales del expediente.</p>
-            </div>
-            <a href="{{ route('admin.pacientes.index') }}" class="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-[#e9dfdb] bg-white px-4 py-2 text-xs font-semibold text-[#403539] transition hover:bg-[#FAF6F6] hover:border-brand-300 hover:text-brand-700">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                Volver al listado
-            </a>
-        </div>
+        <x-admin.header
+            badge="Expediente de Paciente"
+            title="Editar paciente — {{ $paciente->nombre }} {{ $paciente->apellido }}"
+            subtitle="Actualización de contacto y datos oficiales del expediente."
+        >
+            <x-slot:actions>
+                <a href="{{ route('admin.pacientes.index') }}" class="hidden sm:inline-block">
+                    <x-secondary-button type="button" class="inline-flex items-center gap-1.5">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        Volver al listado
+                    </x-secondary-button>
+                </a>
+            </x-slot:actions>
+        </x-admin.header>
     </x-slot>
 
     <div class="py-8 sm:py-10">
