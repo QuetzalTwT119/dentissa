@@ -70,28 +70,29 @@ class AuditoriaCoberturaStaffTest extends TestCase
         $this->assertArrayNotHasKey('password', $evento->datos_nuevos);
     }
 
-    public function test_la_baja_de_cuenta_conserva_la_identidad_del_actor_en_la_bitacora(): void
+    public function test_la_baja_de_cuenta_conserva_la_identidad_del_actor_y_sus_datos(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        User::factory()->create(['rol' => RolUsuario::Admin]);
 
         $this->actingAs($admin)
             ->delete(route('profile.destroy'), ['password' => 'password'])
             ->assertRedirect('/');
 
-        $this->assertDatabaseMissing('users', ['id' => $admin->id]);
+        $this->assertDatabaseHas('users', ['id' => $admin->id, 'activo' => false]);
         $this->assertDatabaseHas('logs_auditoria', [
-            'id_usuario' => null,
+            'id_usuario' => $admin->id,
             'actor_user_id' => $admin->id,
             'actor_nombre' => trim($admin->nombre.' '.$admin->apellido),
             'actor_rol' => RolUsuario::Admin->value,
-            'accion' => 'usuario.cuenta_eliminada',
+            'accion' => 'usuario.desactivado_por_titular',
         ]);
 
         $otroAdmin = User::factory()->create(['rol' => RolUsuario::Admin]);
         $this->actingAs($otroAdmin)
             ->get(route('admin.auditoria.index', ['usuario_id' => $admin->id]))
             ->assertOk()
-            ->assertSee('Cuenta eliminada por su titular')
+            ->assertSee('Cuenta desactivada por su titular')
             ->assertSee($admin->nombre.' '.$admin->apellido);
     }
 }

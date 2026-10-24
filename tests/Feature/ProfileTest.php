@@ -67,9 +67,9 @@ class ProfileTest extends TestCase
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
 
-    public function test_user_can_delete_their_account(): void
+    public function test_user_can_deactivate_their_account_without_deleting_the_user_record(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['rol' => \App\Enums\RolUsuario::Asistente]);
 
         $response = $this
             ->actingAs($user)
@@ -82,10 +82,39 @@ class ProfileTest extends TestCase
             ->assertRedirect('/');
 
         $this->assertGuest();
-        $this->assertNull($user->fresh());
+        $this->assertNotNull($user->fresh());
+        $this->assertFalse($user->fresh()->activo);
+        $this->assertDatabaseHas('logs_auditoria', [
+            'id_usuario' => $user->id,
+            'actor_user_id' => $user->id,
+            'accion' => 'usuario.desactivado_por_titular',
+        ]);
     }
 
-    public function test_correct_password_must_be_provided_to_delete_account(): void
+    public function test_last_active_admin_cannot_deactivate_their_own_account(): void
+    {
+        $admin = User::factory()->create(['rol' => \App\Enums\RolUsuario::Admin]);
+
+        $response = $this
+            ->actingAs($admin)
+            ->from('/profile')
+            ->delete('/profile', [
+                'password' => 'password',
+            ]);
+
+        $response
+            ->assertSessionHasErrorsIn('userDeletion', 'password')
+            ->assertRedirect('/profile');
+
+        $this->assertAuthenticatedAs($admin);
+        $this->assertTrue($admin->fresh()->activo);
+        $this->assertDatabaseMissing('logs_auditoria', [
+            'registro_id' => $admin->id,
+            'accion' => 'usuario.desactivado_por_titular',
+        ]);
+    }
+
+    public function test_correct_password_must_be_provided_to_deactivate_account(): void
     {
         $user = User::factory()->create();
 

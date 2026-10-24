@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Enums\RolUsuario;
+use App\Models\User;
 use App\Services\AuditoriaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -61,22 +63,46 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        DB::transaction(function () use ($request, $auditoria, $user) {
-            $auditoria->registrar('usuario.cuenta_eliminada', $user, [
-                'nombre' => $user->nombre,
-                'apellido' => $user->apellido,
-                'email' => $user->email,
-                'rol' => $user->rol->value,
-            ], request: $request);
+        // El borrado físico de users puede eliminar pacientes e historiales
+        // clínicos por las claves foráneas con cascadeOnDelete(). La baja debe
+        // ser reversible y conservar la trazabilidad de la clínica. El bloqueo
+        // de filas mantiene atómico el límite de la última cuenta admin.
+        $desactivada = DB::transaction(function () use ($request, $auditoria, $user) {
+            if ($user->rol === RolUsuario::Admin) {
+                $administradoresActivos = User::query()
+                    ->where('rol', RolUsuario::Admin)
+                    ->lockForUpdate()
+                    ->get(['id', 'activo'])
+                    ->where('activo', true)
+                    ->count();
 
-            $user->newQuery()->whereKey($user->getKey())->delete();
+                if ($administradoresActivos <= 1) {
+                    return false;
+                }
+            }
+
+            $auditoria->registrarCambio(
+                $request,
+                'usuario.desactivado_por_titular',
+                $user,
+                ['activo'],
+                fn () => $user->update(['activo' => false]),
+            );
+
+            return true;
         });
+
+        if (! $desactivada) {
+            return Redirect::route('profile.edit')->withErrors([
+                'password' => 'No puedes desactivar la única cuenta administradora activa. Activa otra cuenta admin primero.',
+            ], 'userDeletion');
+        }
 
         Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return Redirect::to('/')->with('status', 'account-deactivated');
     }
 }

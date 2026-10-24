@@ -20,6 +20,7 @@ $etiquetasAccion = [
     'usuario.desactivado' => 'Cuenta desactivada',
     'usuario.password_actualizada' => 'Contraseña actualizada',
     'usuario.cuenta_eliminada' => 'Cuenta eliminada por su titular',
+    'usuario.desactivado_por_titular' => 'Cuenta desactivada por su titular',
     'perfil.actualizado' => 'Perfil actualizado',
     'servicio.creado' => 'Servicio creado',
     'servicio.actualizado' => 'Servicio actualizado',

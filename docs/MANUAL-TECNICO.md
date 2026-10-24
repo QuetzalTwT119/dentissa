@@ -458,8 +458,11 @@ del administrador, el rechazo al asistente y a visitantes, y el tipo de imagen.
 
 Cada entrada conserva el usuario autenticado, acción, tabla, registro, fecha,
 IP y agente de usuario, además de una copia del ID, nombre y rol del actor. La
-copia del actor permite conservar la identidad si la cuenta se elimina más
-adelante. Para proteger la privacidad, los cambios de historial
+opción de seguridad en el perfil desactiva la cuenta y cierra la sesión; no
+elimina usuarios porque las claves foráneas históricas podrían borrar pacientes
+e historiales clínicos. La última cuenta admin activa no puede desactivarse a
+sí misma. La copia del actor conserva su identidad aunque la cuenta llegara a
+eliminarse por una operación externa. Para proteger la privacidad, los cambios de historial
 guardan metadatos —por ejemplo paciente, cita, fecha y tipo de consulta—, pero
 no copian diagnóstico, medicamentos ni notas clínicas.
 
