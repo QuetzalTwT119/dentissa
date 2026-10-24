@@ -768,7 +768,6 @@
             if (!target) return;
 
             event.preventDefault();
-            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             const header = document.querySelector('header.sticky');
             const offset = (header?.getBoundingClientRect().height ?? 0) + 12;
             const start = window.scrollY;
@@ -780,7 +779,7 @@
                 cancelAnimationFrame(window.dentissaScrollFrame);
             }
 
-            if (reduceMotion || Math.abs(distance) < 2) {
+            if (Math.abs(distance) < 2) {
                 window.scrollTo({ top: destination, behavior: 'auto' });
             } else {
                 const animationStart = performance.now();
