@@ -80,7 +80,8 @@ datos oficiales. La clínica debe aprobar ese contenido antes de publicarlo.
 
 La navegación **Inicio**, **Tratamientos**, **La Clínica**, **Instalaciones**,
 **Testimonios** y **Contacto** se desplaza suavemente a su sección sin recargar
-la página; también funciona desde el menú móvil.
+la página; el enlace de la sección visible se resalta automáticamente en rosa.
+Esto también funciona desde el menú móvil.
 
 ## 2. Agendamiento público
 

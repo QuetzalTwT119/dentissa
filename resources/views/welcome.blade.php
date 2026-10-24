@@ -59,6 +59,14 @@
         .font-serif-luxury {
             font-family: Georgia, serif;
         }
+        .landing-nav-link.is-active {
+            color: #d75078;
+            font-weight: 700;
+        }
+        .landing-mobile-nav-link.is-active {
+            color: #d75078;
+            background-color: rgb(215 80 120 / 0.08);
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-[#f2b0a6] selection:text-[#2D2526] bg-[#FAF6F6] text-[#2D2526]">
@@ -88,12 +96,12 @@
 
                 <!-- Menú de Escritorio (Visible en pantallas grandes >= 1024px) -->
                 <div class="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium text-[#2D2526]/80">
-                    <a href="#inicio" class="text-[#d75078] font-bold hover:text-[#d75078] transition-colors">Inicio</a>
-                    <a href="#servicios" class="hover:text-[#d75078] transition-colors">Tratamientos</a>
-                    <a href="#nosotros" class="hover:text-[#d75078] transition-colors">La Clínica</a>
-                    <a href="#galeria" class="hover:text-[#d75078] transition-colors">Instalaciones</a>
-                    <a href="#testimonios" class="hover:text-[#d75078] transition-colors">Testimonios</a>
-                    <a href="#contacto" class="hover:text-[#d75078] transition-colors">Contacto</a>
+                    <a href="#inicio" data-scrollspy-link aria-current="location" class="landing-nav-link is-active transition-colors">Inicio</a>
+                    <a href="#servicios" data-scrollspy-link class="landing-nav-link transition-colors">Tratamientos</a>
+                    <a href="#nosotros" data-scrollspy-link class="landing-nav-link transition-colors">La Clínica</a>
+                    <a href="#galeria" data-scrollspy-link class="landing-nav-link transition-colors">Instalaciones</a>
+                    <a href="#testimonios" data-scrollspy-link class="landing-nav-link transition-colors">Testimonios</a>
+                    <a href="#contacto" data-scrollspy-link class="landing-nav-link transition-colors">Contacto</a>
                 </div>
 
                 <!-- Acciones de Cabecera (Desktop & Toggle Móvil) -->
@@ -152,27 +160,27 @@
              class="border-t border-[#e9dfdb] bg-white px-4 py-5 shadow-xl lg:hidden">
             
             <nav class="flex flex-col gap-1 text-sm font-semibold text-[#2D2526]" aria-label="Menú móvil">
-                <a href="#inicio" @click="mobileMenuOpen = false" class="flex items-center justify-between rounded-xl px-4 py-3 text-[#d75078] bg-brand-50/60 transition-colors">
+                <a href="#inicio" data-scrollspy-link aria-current="location" @click="mobileMenuOpen = false" class="landing-mobile-nav-link is-active flex items-center justify-between rounded-xl px-4 py-3 transition-colors">
                     <span>Inicio</span>
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#servicios" @click="mobileMenuOpen = false" class="flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
+                <a href="#servicios" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
                     <span>Tratamientos</span>
                     <svg class="h-4 w-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#nosotros" @click="mobileMenuOpen = false" class="flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
+                <a href="#nosotros" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
                     <span>La Clínica</span>
                     <svg class="h-4 w-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#galeria" @click="mobileMenuOpen = false" class="flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
+                <a href="#galeria" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
                     <span>Instalaciones</span>
                     <svg class="h-4 w-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#testimonios" @click="mobileMenuOpen = false" class="flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
+                <a href="#testimonios" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
                     <span>Testimonios</span>
                     <svg class="h-4 w-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#contacto" @click="mobileMenuOpen = false" class="flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
+                <a href="#contacto" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
                     <span>Contacto</span>
                     <svg class="h-4 w-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
@@ -759,6 +767,55 @@
     </footer>
 
     <script>
+        const scrollSpyLinks = [...document.querySelectorAll('[data-scrollspy-link]')];
+        const scrollSpySections = [...new Map(scrollSpyLinks.map((link) => {
+            const section = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+            return section ? [section.id, section] : null;
+        }).filter(Boolean)).values()];
+
+        const updateActiveNavigation = () => {
+            if (!scrollSpySections.length) return;
+
+            const headerBottom = document.querySelector('header.sticky')?.getBoundingClientRect().bottom ?? 0;
+            const activationLine = headerBottom + 32;
+            let activeSection = scrollSpySections[0];
+
+            for (const section of scrollSpySections) {
+                if (section.getBoundingClientRect().top <= activationLine) {
+                    activeSection = section;
+                } else {
+                    break;
+                }
+            }
+
+            const atPageEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+            if (atPageEnd) activeSection = scrollSpySections.at(-1);
+
+            for (const link of scrollSpyLinks) {
+                const isActive = decodeURIComponent(link.hash.slice(1)) === activeSection.id;
+                link.classList.toggle('is-active', isActive);
+                if (isActive) {
+                    link.setAttribute('aria-current', 'location');
+                } else {
+                    link.removeAttribute('aria-current');
+                }
+            }
+        };
+
+        let scrollSpyFrame = null;
+        const scheduleActiveNavigationUpdate = () => {
+            if (scrollSpyFrame !== null) return;
+            scrollSpyFrame = requestAnimationFrame(() => {
+                updateActiveNavigation();
+                scrollSpyFrame = null;
+            });
+        };
+
+        window.addEventListener('scroll', scheduleActiveNavigationUpdate, { passive: true });
+        window.addEventListener('resize', scheduleActiveNavigationUpdate);
+        window.addEventListener('hashchange', scheduleActiveNavigationUpdate);
+        updateActiveNavigation();
+
         document.addEventListener('click', (event) => {
             const clicked = event.target instanceof Element ? event.target : event.target.parentElement;
             const link = clicked?.closest('a[href^="#"]');
