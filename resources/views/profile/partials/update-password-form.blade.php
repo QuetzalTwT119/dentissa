@@ -1,15 +1,15 @@
 <section>
-    <header>
-        <h2 class="text-lg font-semibold text-[#2D2526]">
-            Actualizar contraseña
-        </h2>
-
-        <p class="mt-1 text-sm text-[#6b5e62]">
-            Asegúrate de usar una contraseña larga y aleatoria para mantener tu cuenta segura.
-        </p>
+    <header class="flex items-start gap-3.5">
+        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FAF6F6] text-brand-600 ring-1 ring-[#e9dfdb]" aria-hidden="true">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4.5" y="10" width="15" height="10.5" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v2"/></svg>
+        </span>
+        <div>
+            <h2 class="text-lg font-bold tracking-tight text-[#2D2526]">Actualizar contraseña</h2>
+            <p class="mt-1 text-sm leading-6 text-[#6b5e62]">Usa una contraseña larga y única para proteger el acceso a tu cuenta.</p>
+        </div>
     </header>
 
-    <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('password.update') }}" class="mt-6 grid grid-cols-1 gap-x-5 gap-y-5 md:grid-cols-2">
         @csrf
         @method('put')
 
@@ -31,7 +31,7 @@
             <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center gap-4 md:col-span-2">
             <x-primary-button>Guardar</x-primary-button>
 
             @if (session('status') === 'password-updated')
@@ -41,7 +41,8 @@
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-gray-600"
-                >Guardado.</p>
+                role="status"
+                >Contraseña actualizada.</p>
             @endif
         </div>
     </form>

@@ -76,24 +76,24 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
             </x-admin.card>
 
             <!-- Tarjetas de Métricas Clave (KPIs) -->
-            <div class="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6]">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-stretch">
+                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6] flex flex-col justify-between h-full">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Tasa de ocupación</p>
                     <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['ocupacion']['tasa_ocupacion'] }}%</p>
                 </div>
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6]">
+                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6] flex flex-col justify-between h-full">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Tasa de inasistencia</p>
                     <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['citas']['tasa_inasistencia'] }}%</p>
                 </div>
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6]">
+                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6] flex flex-col justify-between h-full">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Eficiencia (citas/1.5h)</p>
                     <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['eficiencia']['eficiencia'] }}</p>
                 </div>
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6]">
+                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6] flex flex-col justify-between h-full">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Citas completadas por hora</p>
                     <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['eficiencia']['citas_por_hora'] }}</p>
                 </div>
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6]">
+                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-soft transition hover:border-[#f2b0a6] flex flex-col justify-between h-full sm:col-span-2 lg:col-span-1">
                     <p class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Satisfacción promedio</p>
                     <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['satisfaccion'] ?? 'Sin datos' }}</p>
                 </div>

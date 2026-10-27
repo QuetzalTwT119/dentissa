@@ -73,7 +73,7 @@
                 </div>
 
                 <!-- Tira de Indicadores Clínicos Integrados -->
-                <div class="mt-8 grid grid-cols-2 gap-3 pt-6 border-t border-white/10 sm:grid-cols-3">
+                <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-white/10">
                     <a href="{{ route('citas.index') }}" class="rounded-2xl bg-white/5 p-3.5 backdrop-blur-xs transition hover:bg-white/10 border border-white/5 group">
                         <p class="text-[11px] font-bold uppercase tracking-wider text-peach-200">Agenda Activa</p>
                         <p class="text-sm font-bold text-white mt-0.5 flex items-center justify-between">
@@ -114,20 +114,22 @@
                     </a>
                 </div>
 
-                <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
                     
                     <!-- 1. Agendar cita -->
-                    <a href="{{ route('citas.create') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-brand-400 hover:shadow-xl">
-                        <div class="flex items-center justify-between">
-                            <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-50 to-peach-100 text-brand-700 border border-brand-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-brand-600 group-hover:text-white shadow-xs">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                            </span>
-                            <span class="rounded-full bg-brand-50 px-3 py-1 text-[11px] font-bold text-brand-700 border border-brand-200/60">Agenda rápida</span>
+                    <a href="{{ route('citas.create') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-brand-400 hover:shadow-xl flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-50 to-peach-100 text-brand-700 border border-brand-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-brand-600 group-hover:text-white shadow-xs">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </span>
+                                <span class="rounded-full bg-brand-50 px-3 py-1 text-[11px] font-bold text-brand-700 border border-brand-200/60">Agenda rápida</span>
+                            </div>
+                            <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-brand-700 transition-colors">Agendar cita</h3>
+                            <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Registra una nueva cita para un paciente.</p>
                         </div>
-                        <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-brand-700 transition-colors">Agendar cita</h3>
-                        <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Registra una nueva cita para un paciente.</p>
                         <div class="mt-4 flex items-center gap-1 text-xs font-bold text-brand-700 pt-3 border-t border-[#e9dfdb]/60">
                             <span>Abrir agenda</span>
                             <span class="transition-transform group-hover:translate-x-1">→</span>
@@ -135,17 +137,19 @@
                     </a>
 
                     <!-- 2. Pacientes -->
-                    <a href="{{ route('admin.pacientes.index') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-teal-400 hover:shadow-xl">
-                        <div class="flex items-center justify-between">
-                            <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-100 text-teal-700 border border-teal-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-teal-600 group-hover:text-white shadow-xs">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                </svg>
-                            </span>
-                            <span class="rounded-full bg-teal-50 px-3 py-1 text-[11px] font-bold text-teal-800 border border-teal-200/60">Expedientes</span>
+                    <a href="{{ route('admin.pacientes.index') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-teal-400 hover:shadow-xl flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-100 text-teal-700 border border-teal-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-teal-600 group-hover:text-white shadow-xs">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    </svg>
+                                </span>
+                                <span class="rounded-full bg-teal-50 px-3 py-1 text-[11px] font-bold text-teal-800 border border-teal-200/60">Expedientes</span>
+                            </div>
+                            <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-teal-700 transition-colors">Pacientes</h3>
+                            <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Consulta expedientes y datos de contacto.</p>
                         </div>
-                        <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-teal-700 transition-colors">Pacientes</h3>
-                        <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Consulta expedientes y datos de contacto.</p>
                         <div class="mt-4 flex items-center gap-1 text-xs font-bold text-teal-700 pt-3 border-t border-[#e9dfdb]/60">
                             <span>Ver directorio médico</span>
                             <span class="transition-transform group-hover:translate-x-1">→</span>
@@ -153,17 +157,19 @@
                     </a>
 
                     <!-- 4. Servicios -->
-                    <a href="{{ route('admin.servicios.index') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-purple-400 hover:shadow-xl">
-                        <div class="flex items-center justify-between">
-                            <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-50 to-fuchsia-100 text-purple-700 border border-purple-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-purple-600 group-hover:text-white shadow-xs">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
-                                </svg>
-                            </span>
-                            <span class="rounded-full bg-purple-50 px-3 py-1 text-[11px] font-bold text-purple-800 border border-purple-200/60">Catálogo</span>
+                    <a href="{{ route('admin.servicios.index') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-purple-400 hover:shadow-xl flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-50 to-fuchsia-100 text-purple-700 border border-purple-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-purple-600 group-hover:text-white shadow-xs">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                                    </svg>
+                                </span>
+                                <span class="rounded-full bg-purple-50 px-3 py-1 text-[11px] font-bold text-purple-800 border border-purple-200/60">Catálogo</span>
+                            </div>
+                            <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-purple-700 transition-colors">Servicios</h3>
+                            <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Actualiza el catálogo de la clínica.</p>
                         </div>
-                        <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-purple-700 transition-colors">Servicios</h3>
-                        <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Actualiza el catálogo de la clínica.</p>
                         <div class="mt-4 flex items-center gap-1 text-xs font-bold text-purple-700 pt-3 border-t border-[#e9dfdb]/60">
                             <span>Gestionar catálogo</span>
                             <span class="transition-transform group-hover:translate-x-1">→</span>
@@ -171,17 +177,19 @@
                     </a>
 
                     <!-- 5. Contenido clínico -->
-                    <a href="{{ route('admin.casos.index') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-amber-400 hover:shadow-xl">
-                        <div class="flex items-center justify-between">
-                            <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-50 to-orange-100 text-amber-700 border border-amber-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-amber-600 group-hover:text-white shadow-xs">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                            </span>
-                            <span class="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-bold text-amber-800 border border-amber-200/60">Difusión</span>
+                    <a href="{{ route('admin.casos.index') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-amber-400 hover:shadow-xl flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-50 to-orange-100 text-amber-700 border border-amber-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-amber-600 group-hover:text-white shadow-xs">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </span>
+                                <span class="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-bold text-amber-800 border border-amber-200/60">Difusión</span>
+                            </div>
+                            <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-amber-700 transition-colors">Contenido clínico</h3>
+                            <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Administra casos, galería y testimonios.</p>
                         </div>
-                        <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-amber-700 transition-colors">Contenido clínico</h3>
-                        <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Administra casos, galería y testimonios.</p>
                         <div class="mt-4 flex items-center gap-1 text-xs font-bold text-amber-700 pt-3 border-t border-[#e9dfdb]/60">
                             <span>Ver publicaciones</span>
                             <span class="transition-transform group-hover:translate-x-1">→</span>
@@ -189,17 +197,19 @@
                     </a>
 
                     <!-- 6. Usuarios -->
-                    <a href="{{ route('admin.usuarios.index') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-400 hover:shadow-xl">
-                        <div class="flex items-center justify-between">
-                            <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-700 border border-blue-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white shadow-xs">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                                </svg>
-                            </span>
-                            <span class="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-bold text-blue-800 border border-blue-200/60">Seguridad</span>
+                    <a href="{{ route('admin.usuarios.index') }}" class="group relative rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:border-blue-400 hover:shadow-xl flex flex-col justify-between h-full">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-700 border border-blue-200/70 transition-transform duration-300 group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white shadow-xs">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-7 w-7" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                </span>
+                                <span class="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-bold text-blue-800 border border-blue-200/60">Seguridad</span>
+                            </div>
+                            <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-blue-700 transition-colors">Usuarios</h3>
+                            <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Gestiona accesos y permisos del equipo.</p>
                         </div>
-                        <h3 class="mt-5 text-lg font-bold text-[#2D2526] group-hover:text-blue-700 transition-colors">Usuarios</h3>
-                        <p class="mt-1.5 text-sm leading-relaxed text-[#6b5e62]">Gestiona accesos y permisos del equipo.</p>
                         <div class="mt-4 flex items-center gap-1 text-xs font-bold text-blue-700 pt-3 border-t border-[#e9dfdb]/60">
                             <span>Gestionar equipo</span>
                             <span class="transition-transform group-hover:translate-x-1">→</span>

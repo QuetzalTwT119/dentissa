@@ -74,6 +74,11 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-6
 
             <div class="relative" x-data="{ profileOpen: false }" @click.outside="profileOpen = false" @keydown.escape.window="profileOpen = false">
                 <button type="button" @click="profileOpen = !profileOpen" :aria-expanded="profileOpen.toString()" class="inline-flex min-h-11 max-w-56 items-center gap-2 rounded-full border border-[#e9dfdb] bg-[#faf7f4] px-4 text-sm font-semibold text-[#382d31] transition hover:border-brand-300 hover:bg-brand-50/70 focus:outline-none focus:ring-2 focus:ring-brand-300">
+                    @if ($usuario->foto_perfil)
+                        <img src="{{ route('profile.photo.show') }}" alt="" class="h-7 w-7 shrink-0 rounded-full object-cover" width="28" height="28">
+                    @else
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700" aria-hidden="true">{{ strtoupper(substr($usuario->nombre, 0, 1).substr($usuario->apellido, 0, 1)) }}</span>
+                    @endif
                     <span class="truncate">{{ $usuario->nombre }} {{ $usuario->apellido }}</span>
                     <svg class="h-4 w-4 shrink-0 text-[#8A7A7D]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                 </button>
@@ -141,8 +146,17 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-6
             @endif
         </div>
         <div class="mt-3 border-t border-gray-100 pt-3">
-            <p class="px-3 text-sm font-semibold text-slate-800">{{ $usuario->nombre }} {{ $usuario->apellido }}</p>
-            <p class="px-3 text-xs text-slate-500">{{ $usuario->email }}</p>
+            <div class="flex items-center gap-3 px-3">
+                @if ($usuario->foto_perfil)
+                    <img src="{{ route('profile.photo.show') }}" alt="" class="h-10 w-10 shrink-0 rounded-full object-cover" width="40" height="40">
+                @else
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700" aria-hidden="true">{{ strtoupper(substr($usuario->nombre, 0, 1).substr($usuario->apellido, 0, 1)) }}</span>
+                @endif
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-semibold text-slate-800">{{ $usuario->nombre }} {{ $usuario->apellido }}</p>
+                    <p class="truncate text-xs text-slate-500">{{ $usuario->email }}</p>
+                </div>
+            </div>
             <div class="mt-2 grid gap-1 sm:grid-cols-2">
                 <x-responsive-nav-link :href="route('profile.edit')">Mi perfil</x-responsive-nav-link>
                 <form method="POST" action="{{ route('logout') }}">@csrf<x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">Cerrar sesión</x-responsive-nav-link></form>

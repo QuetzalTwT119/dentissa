@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
+    @include('partials.favicon')
     <title>Reporte administrativo</title>
     <style>
         body { font-family: sans-serif; font-size: 12px; color: #1f2937; }

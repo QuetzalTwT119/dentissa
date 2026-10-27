@@ -33,19 +33,23 @@
                 </x-admin.card-header>
 
                 <div class="p-6">
-                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-stretch">
                         @forelse ($imagenes as $imagen)
-                            <div class="overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-xs transition hover:border-[#f2b0a6] hover:shadow-soft group">
-                                <div class="relative h-44 w-full overflow-hidden bg-stone-100">
-                                    <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
-                                </div>
-                                <div class="p-4">
-                                    <h3 class="truncate text-sm font-bold text-[#2D2526]">{{ $imagen->titulo ?: 'Sin título' }}</h3>
-                                    <div class="mt-1.5 flex items-center justify-between text-xs text-[#8A7A7D]">
-                                        <span>Orden: <strong class="text-[#2D2526]">{{ $imagen->orden }}</strong></span>
-                                        <x-admin.status-badge :active="$imagen->activa" />
+                            <div class="overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-xs transition hover:border-[#f2b0a6] hover:shadow-soft group h-full flex flex-col justify-between">
+                                <div>
+                                    <div class="relative h-44 w-full overflow-hidden bg-stone-100">
+                                        <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
                                     </div>
-                                    <div class="mt-4 flex items-center justify-between border-t border-[#e9dfdb]/60 pt-3 text-xs font-semibold">
+                                    <div class="p-4 pb-2">
+                                        <h3 class="truncate text-sm font-bold text-[#2D2526]">{{ $imagen->titulo ?: 'Sin título' }}</h3>
+                                        <div class="mt-1.5 flex items-center justify-between text-xs text-[#8A7A7D]">
+                                            <span>Orden: <strong class="text-[#2D2526]">{{ $imagen->orden }}</strong></span>
+                                            <x-admin.status-badge :active="$imagen->activa" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4 pt-0">
+                                    <div class="flex items-center justify-between border-t border-[#e9dfdb]/60 pt-3 text-xs font-semibold">
                                         <a href="{{ route('admin.galeria.edit', $imagen) }}" class="text-brand-600 hover:text-brand-800 transition">Editar</a>
                                         <form method="POST" action="{{ route('admin.galeria.destroy', $imagen) }}"
                                               onsubmit="return confirm('¿Eliminar esta imagen de la galería? Esta acción no se puede deshacer.');">

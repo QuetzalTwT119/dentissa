@@ -35,6 +35,12 @@ fuentes y scripts tienen una duración larga y las imágenes se conservan un dí
 La portada también precarga su imagen principal para evitar que llegue después
 del texto.
 
+El ícono de la pestaña del navegador se define una sola vez en
+`resources/views/partials/favicon.blade.php` y usa el recurso de marca
+`public/images/brand/pwa-icon-192.png`. El layout autenticado ya lo hereda por
+`partials.pwa-meta`; los layouts y pantallas independientes también incluyen
+el parcial para conservar el mismo favicon en todo el sitio.
+
 En Windows el equipo puede usar Docker Desktop con la integración de WSL2
 activada. También es válido ejecutar Docker Engine directamente dentro de WSL;
 los comandos de `docker compose` son los mismos.
@@ -140,6 +146,13 @@ MySQL conserva los datos en el volumen Docker `mysql_data`; los archivos subidos
 se conservan en `storage/`. El código de la aplicación se copia dentro de la
 imagen, por eso se debe reconstruir después de cambiar archivos de código que
 no estén montados como volumen.
+
+Las fotos de perfil se guardan en el disco privado de Laravel, dentro de
+`storage/app/private/profile-photos`; no se publica un enlace de `storage`.
+Las rutas de lectura requieren sesión y sirven únicamente la foto de la cuenta
+autenticada. Solo se aceptan JPG, PNG y WebP de hasta 5 MB y 3000 × 3000 px.
+La sustitución y eliminación actualizan el usuario y la bitácora; se limpia el
+archivo anterior solo después de guardar correctamente el cambio.
 
 La persistencia se verificó reiniciando MySQL: el conteo de usuarios demo fue
 2 antes y después. Durante el arranque MySQL puede tardar unos segundos en
@@ -458,8 +471,11 @@ del administrador, el rechazo al asistente y a visitantes, y el tipo de imagen.
 
 Cada entrada conserva el usuario autenticado, acción, tabla, registro, fecha,
 IP y agente de usuario, además de una copia del ID, nombre y rol del actor. La
-copia del actor permite conservar la identidad si la cuenta se elimina más
-adelante. Para proteger la privacidad, los cambios de historial
+desactivación de cuentas se gestiona desde administración; el perfil no expone
+una acción para desactivar o borrar la propia cuenta. Se evita el borrado físico
+porque las claves foráneas históricas podrían eliminar pacientes e historiales
+clínicos. La copia del actor conserva su identidad aunque la cuenta llegara a
+eliminarse por una operación externa. Para proteger la privacidad, los cambios de historial
 guardan metadatos —por ejemplo paciente, cita, fecha y tipo de consulta—, pero
 no copian diagnóstico, medicamentos ni notas clínicas.
 
@@ -567,10 +583,20 @@ teléfono conectado a la misma red.
 ## 16. Preparación local para Railway
 
 Railway es el destino elegido para la demostración escolar. `Dockerfile.local`
-mantiene el entorno local de desarrollo/QA que utiliza `compose.yaml`; se
-separa del nombre `Dockerfile` para que Railway use Railpack y el runtime
-Laravel con PHP-FPM/Caddy. Railway no ejecuta el Compose local como un solo
-despliegue: la aplicación y MySQL serán servicios separados.
+mantiene el entorno local de desarrollo/QA que utiliza `compose.yaml`.
+La configuración observada en Railway el 27/10/2026 usa el `Dockerfile` raíz
+(builder Dockerfile) y no define un comando de inicio personalizado. Railway no
+ejecuta el Compose local como un solo despliegue; la aplicación y MySQL son
+servicios separados.
+
+El `Dockerfile` productivo inicia `scripts/start-production.sh`: primero aplica
+migraciones y después ejecuta Supervisor. Supervisor mantiene en el mismo
+contenedor el servidor web (en el puerto `PORT` de Railway) y el proceso
+`php artisan dentissa:telegram`. El bot solo puede autenticarse si
+`DENTISSA_TELEGRAM_BOT_TOKEN` está configurado como variable privada del servicio;
+no se debe poner el token en Git, el comando de inicio, capturas o logs. Cambiar
+el token en Telegram invalida el anterior; actualizar la variable requiere un
+nuevo despliegue. No se necesita crear un segundo servicio para el prototipo.
 
 Validación local después de cambiar esta separación:
 
@@ -581,10 +607,11 @@ docker compose exec app php artisan test
 ```
 
 Al configurar Railway se deberán definir las variables de producción en su
-panel (nunca en Git), validar la compilación Vite, ejecutar migraciones de
-forma controlada, mantener MySQL privado y usar `/up` como healthcheck. La
-demostración se limita a datos ficticios; Ollama, WhatsApp y Telegram no forman
-parte de la configuración web por defecto. Consultar
+panel (nunca en Git), validar la compilación Vite, mantener MySQL privado y usar
+`/up` como healthcheck. El arranque productivo aplica migraciones antes de
+levantar procesos. La demostración se limita a datos ficticios; Ollama y
+WhatsApp no forman parte de la configuración web por defecto. Telegram queda
+habilitado solo cuando su token privado está configurado. Consultar
 `docs/DESPLIEGUE-RAILWAY.md` para el orden y los pendientes.
 
 El 16/10/2026 se reconstruyeron desde el código vigente los servicios locales
@@ -630,6 +657,49 @@ con fotografía clínica, identidad visual y formulario; en escritorio presenta
 dos zonas y en móvil las apila. El login conserva las rutas, CSRF, autenticación, recuperación
 de contraseña y `remember`; `AuthenticationTest` valida el render, destino y
 presencia de estos controles.
+
+La solicitud de restablecimiento devuelve el mismo mensaje en español tanto
+para un correo registrado como para uno inexistente, evitando enumerar cuentas.
+`PasswordResetTest` comprueba la notificación para usuarios existentes, el
+mensaje genérico para correos desconocidos, el formulario con token y el cambio
+de contraseña. La entrega real depende del transporte de correo configurado en
+cada entorno; las pruebas usan notificaciones simuladas.
+
+### Correo Gmail API para prototipo local
+
+Existe un transporte opcional `gmail` para enviar correo mediante la API de
+Gmail. La cuenta emisora autoriza una vez a Dentissa; el destinatario sigue
+siendo el correo almacenado en la cuenta del usuario. Para conectarlo en local:
+
+1. En Google Cloud, habilitar Gmail API, configurar OAuth como aplicación
+   externa en modo de prueba, agregar la cuenta emisora como usuario de prueba
+   y crear un cliente OAuth de escritorio.
+2. Guardar el JSON del cliente como
+   `storage/app/private/google-oauth-client.json`. El directorio privado ya
+   está excluido de Git.
+3. Desde PowerShell, en la raíz del proyecto, ejecutar
+   `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\google-oauth.ps1`.
+   El script abre Google para autorizar `gmail.send` y guarda el refresh token
+   en `storage/app/private/google-oauth-token.json`; no debe copiarse a Git ni
+   compartirse.
+4. Configurar sólo en el `.env` local `MAIL_MAILER=gmail` y
+   `MAIL_FROM_ADDRESS` con la cuenta emisora; después ejecutar
+   `docker compose exec -T app php artisan config:clear`.
+
+`GmailApiTransportTest` simula el intercambio del token y el endpoint de envío;
+no manda correos reales. El envío real debe probarse solicitando un enlace de
+recuperación para una cuenta de prueba y verificando el mensaje en su buzón.
+Mientras la aplicación OAuth permanezca en modo de prueba, Google puede hacer
+que el refresh token caduque a los siete días; este flujo sirve para prototipos,
+no se considera configuración estable de producción. El proyecto puede volver
+a Resend cambiando `MAIL_MAILER` sin eliminar esta integración.
+
+El transporte también permite despliegues breves sin montar archivos JSON: se
+pueden definir `GMAIL_OAUTH_CLIENT_ID`, `GMAIL_OAUTH_CLIENT_SECRET` y
+`GMAIL_OAUTH_REFRESH_TOKEN` como secretos del proveedor de hosting. Si las tres
+variables no están presentes, se usa el par de archivos privados local; si sólo
+se configura una parte del conjunto de variables, el transporte falla con un
+error genérico de configuración y no registra sus valores.
 
 La navegación interna comparte la identidad visual de Dentissa en local y
 producción: marca, accesos a Inicio/Agenda/Asistente y grupos por función para
@@ -688,7 +758,7 @@ Se completó el rediseño visual de todo el ecosistema de Dentissa (sitio públi
 
 - **Componentes y arquitectura de interfaz:**
   - Componentes atómicos en `resources/views/components/`: botones primarios (`bg-brand-600`, esquinas redondeadas `rounded-xl`, sombra suave), secundarios con borde cálido, inputs y selects consistentes, modales con desenfoque de fondo y alertas amigables.
-  - Vistas públicas (`welcome`, agenda pública wizard por pasos, galería, ofertas): tipografía Figtree y Alex Brush locales precargadas, carrusel de servicios optimizado y menú responsivo desplegable para móvil y tablet.
+  - Vistas públicas (`welcome`, agenda pública wizard por pasos, galería, ofertas): tipografía Figtree y Alex Brush locales precargadas, carrusel de servicios optimizado y menú responsivo desplegable para móvil y tablet. En la portada, el scroll-spy de `welcome.blade.php` sincroniza enlaces de escritorio/móvil con la sección bajo el encabezado fijo mediante `aria-current="location"`; ese estado da el acento rosa únicamente al enlace activo y se actualiza en `requestAnimationFrame`.
   - Vistas de acceso (`guest`, `login`, recuperación de contraseña): tarjetas centradas de estilo boutique con fondo ambiental cálido y enlaces visibles.
   - Panel administrativo (`layouts/app`, `navigation`, `dashboard`, citas, pacientes, historial clínico con fotos/radiografías, catálogo de servicios y tratamientos, horarios, usuarios, reportes, auditoría, mensajes, testimonios, casos y preguntas frecuentes): tablas con encabezados claros en `#FAF6F6`, badges de estado legibles, filtros organizados y scroll horizontal en móviles (`min-w-[760px]`).
   - Total preservación de lógica de negocio, nombres de campos, CSRF, validaciones y roles. La suite de pruebas completa pasó con 158 pruebas aprobadas y 0 fallos.
