@@ -23,6 +23,7 @@
 /storage/*.key
 /storage/pail
 /storage/app/antigravity-respaldos/
+/storage/app/private/
 /storage/app/backup-staging/
 /.backup-staging/
 /vendor

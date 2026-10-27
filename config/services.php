@@ -22,6 +22,14 @@ return [
         'key' => env('RESEND_API_KEY'),
     ],
 
+    'gmail' => [
+        'client_id' => env('GMAIL_OAUTH_CLIENT_ID'),
+        'client_secret' => env('GMAIL_OAUTH_CLIENT_SECRET'),
+        'refresh_token' => env('GMAIL_OAUTH_REFRESH_TOKEN'),
+        'client_file' => env('GMAIL_OAUTH_CLIENT_FILE', storage_path('app/private/google-oauth-client.json')),
+        'token_file' => env('GMAIL_OAUTH_TOKEN_FILE', storage_path('app/private/google-oauth-token.json')),
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),

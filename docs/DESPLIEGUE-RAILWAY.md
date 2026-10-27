@@ -34,17 +34,47 @@ configurarse y probarse por separado.
 - depende del `.env` local montado por Compose.
 
 El repositorio conserva un `Dockerfile` de producción separado y
-`Dockerfile.local` para el entorno de desarrollo. Railway puede construir la
-imagen de producción desde el `Dockerfile` raíz cuando esa sea la estrategia
-configurada en el servicio; el `compose.yaml` local no se despliega como una
-unidad. Verifica el builder y el comando de inicio en Railway antes de cambiar
-la configuración del servicio.
+`Dockerfile.local` para el entorno de desarrollo. En el panel inspeccionado el
+27/10/2026, el servicio Railway usa el builder Dockerfile y no tiene comando de
+inicio personalizado; el `compose.yaml` local no se despliega como una unidad.
+El Dockerfile productivo inicia `scripts/start-production.sh`, que aplica las
+migraciones y ejecuta Supervisor para mantener juntos el servidor web y el
+proceso `php artisan dentissa:telegram`. Por eso, el token del bot debe existir
+como variable privada `DENTISSA_TELEGRAM_BOT_TOKEN` en el servicio `dentissa`.
+Nunca se incorpora al repositorio ni al comando de inicio. No se crea un segundo
+servicio para este prototipo.
 
-Railpack debe compilar los recursos Vite (`npm run build`) y usar la versión
-PHP compatible con `composer.json` (PHP 8.3 o superior, dentro de la línea
-soportada por Laravel). En los logs de build se comprobará la instalación de
-Composer y Node y la generación de `public/build/manifest.json`. No configurar
-un comando de inicio local como `php artisan serve`.
+El builder Dockerfile compila Vite y Composer desde el archivo raíz. El servidor
+web usa el puerto `PORT` provisto por Railway. Si cambia el builder o se añade
+un comando personalizado en Railway, volver a verificar que el arranque
+mantenga ambos procesos activos y que no se exponga el token.
+
+### Correo opcional mediante Gmail API
+
+El transporte `gmail` puede usar archivos privados locales o variables privadas
+del servicio. Para habilitarlo temporalmente en el prototipo de Railway, agrega
+en Variables del servicio `dentissa`:
+
+- `MAIL_MAILER=gmail`
+- `MAIL_FROM_ADDRESS` con la misma cuenta de Google que autorizó Gmail API
+- `MAIL_FROM_NAME=Dentissa`
+- `GMAIL_OAUTH_CLIENT_ID`, `GMAIL_OAUTH_CLIENT_SECRET` y
+  `GMAIL_OAUTH_REFRESH_TOKEN`, copiados de forma privada desde la credencial
+  OAuth de escritorio y el token de autorización local.
+
+No agregues los JSON ni los valores secretos al repositorio, al chat, al comando
+de inicio o a los logs. Mantén el emisor como usuario de prueba de Google OAuth.
+Mientras la audiencia externa siga en estado de prueba y solicite `gmail.send`,
+Google puede caducar la autorización (incluido el refresh token) a los siete
+días; habrá que volver a autorizarla. Por eso esta opción sirve para validar una
+demo breve, pero no es un correo estable para producción. Para una operación
+continua, conserva `MAIL_MAILER=resend` (o completa la publicación/verificación
+OAuth que corresponda antes de depender de Gmail).
+
+Después de guardar las variables privadas, Railway debe reconstruir o reiniciar
+el servicio para leerlas. Verifica el envío desde recuperación de contraseña y
+comprueba en el buzón que llegó el mensaje; nunca uses los logs para inspeccionar
+secretos.
 
 ## Checklist local previo a configurar Railway
 
