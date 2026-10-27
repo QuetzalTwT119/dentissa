@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @include('partials.favicon')
     <title>Dentissa — Odontología Integral | Dra. Melissa López N.</title>
 
     <!-- Tipografía Editorial Boutique Local -->
@@ -59,11 +60,11 @@
         .font-serif-luxury {
             font-family: Georgia, serif;
         }
-        .landing-nav-link.is-active {
+        .landing-nav-link[aria-current="location"] {
             color: #d75078;
             font-weight: 700;
         }
-        .landing-mobile-nav-link.is-active {
+        .landing-mobile-nav-link[aria-current="location"] {
             color: #d75078;
             background-color: rgb(215 80 120 / 0.08);
         }
@@ -71,14 +72,6 @@
 </head>
 <body class="antialiased selection:bg-[#f2b0a6] selection:text-[#2D2526] bg-[#FAF6F6] text-[#2D2526]">
     <x-asistente-chat />
-
-    <!-- Barra de Anuncio Superior -->
-    <div class="bg-gradient-to-r from-[#d75078] via-[#bd3f64] to-[#a12a54] text-white text-xs py-2 px-4 text-center font-medium tracking-wide flex items-center justify-center gap-2">
-        <span class="inline-block w-2 h-2 rounded-full bg-[#f2b0a6] animate-pulse"></span>
-        <span>Atención odontológica personalizada &bull; Consulta con previa cita</span>
-        <span class="hidden md:inline text-white/60">|</span>
-        <a href="#contacto" class="hidden md:inline font-semibold underline underline-offset-2 hover:text-[#f2b0a6] transition-colors">Horarios de consulta</a>
-    </div>
 
     <!-- Navegación Principal de Escritorio & Móvil -->
     <header x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#e9dfdb]/80 shadow-xs">
@@ -96,12 +89,12 @@
 
                 <!-- Menú de Escritorio (Visible en pantallas grandes >= 1024px) -->
                 <div class="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium text-[#2D2526]/80">
-                    <a href="#inicio" data-scrollspy-link aria-current="location" class="landing-nav-link is-active transition-colors">Inicio</a>
-                    <a href="#servicios" data-scrollspy-link class="landing-nav-link transition-colors">Tratamientos</a>
-                    <a href="#nosotros" data-scrollspy-link class="landing-nav-link transition-colors">La Clínica</a>
-                    <a href="#galeria" data-scrollspy-link class="landing-nav-link transition-colors">Instalaciones</a>
-                    <a href="#testimonios" data-scrollspy-link class="landing-nav-link transition-colors">Testimonios</a>
-                    <a href="#contacto" data-scrollspy-link class="landing-nav-link transition-colors">Contacto</a>
+                    <a href="#inicio" data-scrollspy-link aria-current="location" class="landing-nav-link transition-colors hover:text-[#2D2526]">Inicio</a>
+                    <a href="#servicios" data-scrollspy-link class="landing-nav-link transition-colors hover:text-[#2D2526]">Tratamientos</a>
+                    <a href="#nosotros" data-scrollspy-link class="landing-nav-link transition-colors hover:text-[#2D2526]">La Clínica</a>
+                    <a href="#galeria" data-scrollspy-link class="landing-nav-link transition-colors hover:text-[#2D2526]">Instalaciones</a>
+                    <a href="#testimonios" data-scrollspy-link class="landing-nav-link transition-colors hover:text-[#2D2526]">Testimonios</a>
+                    <a href="#contacto" data-scrollspy-link class="landing-nav-link transition-colors hover:text-[#2D2526]">Contacto</a>
                 </div>
 
                 <!-- Acciones de Cabecera (Desktop & Toggle Móvil) -->
@@ -160,27 +153,27 @@
              class="border-t border-[#e9dfdb] bg-white px-4 py-5 shadow-xl lg:hidden">
             
             <nav class="flex flex-col gap-1 text-sm font-semibold text-[#2D2526]" aria-label="Menú móvil">
-                <a href="#inicio" data-scrollspy-link aria-current="location" @click="mobileMenuOpen = false" class="landing-mobile-nav-link is-active flex items-center justify-between rounded-xl px-4 py-3 transition-colors">
+                <a href="#inicio" data-scrollspy-link aria-current="location" @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-[#FAF6F6] hover:text-[#2D2526] transition-colors">
                     <span>Inicio</span>
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#servicios" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
+                <a href="#servicios" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-[#FAF6F6] hover:text-[#2D2526] transition-colors">
                     <span>Tratamientos</span>
                     <svg class="h-4 w-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#nosotros" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
+                <a href="#nosotros" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-[#FAF6F6] hover:text-[#2D2526] transition-colors">
                     <span>La Clínica</span>
                     <svg class="h-4 w-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#galeria" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
+                <a href="#galeria" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-[#FAF6F6] hover:text-[#2D2526] transition-colors">
                     <span>Instalaciones</span>
                     <svg class="h-4 w-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#testimonios" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
+                <a href="#testimonios" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-[#FAF6F6] hover:text-[#2D2526] transition-colors">
                     <span>Testimonios</span>
                     <svg class="h-4 w-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
-                <a href="#contacto" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-brand-50 hover:text-[#d75078] transition-colors">
+                <a href="#contacto" data-scrollspy-link @click="mobileMenuOpen = false" class="landing-mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-[#403539] hover:bg-[#FAF6F6] hover:text-[#2D2526] transition-colors">
                     <span>Contacto</span>
                     <svg class="h-4 w-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
@@ -304,15 +297,15 @@
     <!-- Beneficios Clínicos -->
     <section class="py-12 bg-white border-y border-[#e9dfdb]/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-stretch">
 
-                <div class="flex items-start gap-4 p-5 rounded-2xl bg-[#FAF6F6]/60 border border-[#e9dfdb]/70">
-                    <div class="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center shrink-0 text-[#d75078] border border-brand-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-start gap-3.5 sm:gap-4 p-5 sm:p-6 rounded-2xl bg-[#FAF6F6]/60 border border-[#e9dfdb]/70 h-full transition-all duration-200 hover:border-brand-200 hover:bg-white hover:shadow-soft">
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-brand-50 flex items-center justify-center shrink-0 text-[#d75078] border border-brand-200">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                         </svg>
                     </div>
-                    <div>
+                    <div class="min-w-0 flex-1">
                         <h3 class="font-serif-luxury text-base font-bold text-[#2D2526]">Atención Humana y Sin Prisas</h3>
                         <p class="text-xs text-[#6b5e62] mt-1 leading-relaxed">
                             Cada consulta está programada con el tiempo exacto para escucharte, resolver dudas y atenderte con calma.
@@ -320,13 +313,13 @@
                     </div>
                 </div>
 
-                <div class="flex items-start gap-4 p-5 rounded-2xl bg-[#FAF6F6]/60 border border-[#e9dfdb]/70">
-                    <div class="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center shrink-0 text-[#d75078] border border-brand-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-start gap-3.5 sm:gap-4 p-5 sm:p-6 rounded-2xl bg-[#FAF6F6]/60 border border-[#e9dfdb]/70 h-full transition-all duration-200 hover:border-brand-200 hover:bg-white hover:shadow-soft">
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-brand-50 flex items-center justify-center shrink-0 text-[#d75078] border border-brand-200">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                         </svg>
                     </div>
-                    <div>
+                    <div class="min-w-0 flex-1">
                         <h3 class="font-serif-luxury text-base font-bold text-[#2D2526]">Instrumental Estéril & Preciso</h3>
                         <p class="text-xs text-[#6b5e62] mt-1 leading-relaxed">
                             Bioseguridad de nivel clínico con instrumental empaquetado y tecnología para procedimientos cómodos.
@@ -334,13 +327,13 @@
                     </div>
                 </div>
 
-                <div class="flex items-start gap-4 p-5 rounded-2xl bg-[#FAF6F6]/60 border border-[#e9dfdb]/70">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0 text-[#4E8D72] border border-emerald-200">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-start gap-3.5 sm:gap-4 p-5 sm:p-6 rounded-2xl bg-[#FAF6F6]/60 border border-[#e9dfdb]/70 h-full transition-all duration-200 hover:border-brand-200 hover:bg-white hover:shadow-soft">
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0 text-[#4E8D72] border border-emerald-200">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                         </svg>
                     </div>
-                    <div>
+                    <div class="min-w-0 flex-1">
                         <h3 class="font-serif-luxury text-base font-bold text-[#2D2526]">Diagnóstico Transparente</h3>
                         <p class="text-xs text-[#6b5e62] mt-1 leading-relaxed">
                             Explicación clara con tu expediente clínico digital, sin tratamientos innecesarios ni costos ocultos.
@@ -364,9 +357,9 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6 items-stretch">
             <!-- 01 Valoración -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-[#e9dfdb] shadow-soft relative flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white rounded-3xl p-5 sm:p-6 lg:p-7 border border-[#e9dfdb] shadow-soft relative flex flex-col justify-between h-full hover:-translate-y-1 transition-all duration-300">
                 <div>
                     <div class="flex items-center justify-between mb-4">
                         <span class="w-10 h-10 rounded-2xl bg-[#FAF6F6] text-[#d75078] flex items-center justify-center font-serif-luxury font-bold text-lg border border-[#e9dfdb]">01</span>
@@ -392,7 +385,7 @@
             </div>
 
             <!-- 02 Limpieza -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-[#e9dfdb] shadow-soft relative flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white rounded-3xl p-5 sm:p-6 lg:p-7 border border-[#e9dfdb] shadow-soft relative flex flex-col justify-between h-full hover:-translate-y-1 transition-all duration-300">
                 <div>
                     <div class="flex items-center justify-between mb-4">
                         <span class="w-10 h-10 rounded-2xl bg-[#FAF6F6] text-[#d75078] flex items-center justify-center font-serif-luxury font-bold text-lg border border-[#e9dfdb]">02</span>
@@ -418,7 +411,7 @@
             </div>
 
             <!-- 03 Blanqueamiento Destacado -->
-            <div class="bg-gradient-to-br from-white to-[#FAF6F6] rounded-3xl p-6 sm:p-7 border-2 border-brand-300 shadow-soft relative flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-gradient-to-br from-white to-[#FAF6F6] rounded-3xl p-5 sm:p-6 lg:p-7 border-2 border-brand-300 shadow-soft relative flex flex-col justify-between h-full hover:-translate-y-1 transition-all duration-300">
                 <span class="absolute -top-3 right-6 bg-[#d75078] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-xs">
                     Más solicitado
                 </span>
@@ -447,7 +440,7 @@
             </div>
 
             <!-- 04 Resinas -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-[#e9dfdb] shadow-soft relative flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white rounded-3xl p-5 sm:p-6 lg:p-7 border border-[#e9dfdb] shadow-soft relative flex flex-col justify-between h-full hover:-translate-y-1 transition-all duration-300">
                 <div>
                     <div class="flex items-center justify-between mb-4">
                         <span class="w-10 h-10 rounded-2xl bg-[#FAF6F6] text-[#d75078] flex items-center justify-center font-serif-luxury font-bold text-lg border border-[#e9dfdb]">04</span>
@@ -473,7 +466,7 @@
             </div>
 
             <!-- 05 Extracción -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-[#e9dfdb] shadow-soft relative flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
+            <div class="bg-white rounded-3xl p-5 sm:p-6 lg:p-7 border border-[#e9dfdb] shadow-soft relative flex flex-col justify-between h-full hover:-translate-y-1 transition-all duration-300">
                 <div>
                     <div class="flex items-center justify-between mb-4">
                         <span class="w-10 h-10 rounded-2xl bg-[#FAF6F6] text-[#d75078] flex items-center justify-center font-serif-luxury font-bold text-lg border border-[#e9dfdb]">05</span>
@@ -499,7 +492,7 @@
             </div>
 
             <!-- 06 Instrumental Real 3.jpg -->
-            <div class="relative rounded-3xl overflow-hidden shadow-soft border border-[#e9dfdb] group flex flex-col justify-end p-6 sm:p-7 min-h-[300px]">
+            <div class="relative rounded-3xl overflow-hidden shadow-soft border border-[#e9dfdb] group flex flex-col justify-end p-5 sm:p-6 lg:p-7 min-h-[290px] sm:min-h-[310px] h-full">
                 <img src="{{ asset('images/3.jpg') }}" alt="Instrumental Dental de Precisión" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent"></div>
 
@@ -552,26 +545,26 @@
                         En Dentissa rediseñamos la consulta dental para que olvides el estrés: iluminación cálida, instrumental suave y, sobre todo, una comunicación honesta y pausada en cada paso.
                     </p>
 
-                    <div class="space-y-4 pt-2">
-                        <div class="flex items-start gap-3.5">
+                    <div class="space-y-3 pt-2">
+                        <div class="flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-[#FAF6F6]/70 border border-[#e9dfdb]/70 transition-colors hover:bg-white hover:border-brand-200">
                             <div class="w-6 h-6 rounded-full bg-[#4E8D72]/20 text-[#4E8D72] flex items-center justify-center shrink-0 mt-0.5">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                             </div>
-                            <p class="text-xs text-[#2D2526]"><strong class="font-bold">Historial clínico digital:</strong> Información gestionada de forma confidencial dentro del sistema de la clínica.</p>
+                            <p class="text-xs text-[#2D2526] leading-relaxed"><strong class="font-bold text-[#2D2526]">Historial clínico digital:</strong> Información gestionada de forma confidencial dentro del sistema de la clínica.</p>
                         </div>
 
-                        <div class="flex items-start gap-3.5">
+                        <div class="flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-[#FAF6F6]/70 border border-[#e9dfdb]/70 transition-colors hover:bg-white hover:border-brand-200">
                             <div class="w-6 h-6 rounded-full bg-[#4E8D72]/20 text-[#4E8D72] flex items-center justify-center shrink-0 mt-0.5">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                             </div>
-                            <p class="text-xs text-[#2D2526]"><strong class="font-bold">Bioseguridad y esterilización de grado clínico:</strong> Instrumental empacado y esterilizado individualmente, abierto siempre ante tu presencia.</p>
+                            <p class="text-xs text-[#2D2526] leading-relaxed"><strong class="font-bold text-[#2D2526]">Bioseguridad y esterilización de grado clínico:</strong> Instrumental empacado y esterilizado individualmente, abierto siempre ante tu presencia.</p>
                         </div>
 
-                        <div class="flex items-start gap-3.5">
+                        <div class="flex items-start gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-[#FAF6F6]/70 border border-[#e9dfdb]/70 transition-colors hover:bg-white hover:border-brand-200">
                             <div class="w-6 h-6 rounded-full bg-[#4E8D72]/20 text-[#4E8D72] flex items-center justify-center shrink-0 mt-0.5">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                             </div>
-                            <p class="text-xs text-[#2D2526]"><strong class="font-bold">Puntualidad en tu agenda:</strong> Bloqueo dinámico de horarios para evitar esperas innecesarias en sala de recepción.</p>
+                            <p class="text-xs text-[#2D2526] leading-relaxed"><strong class="font-bold text-[#2D2526]">Puntualidad en tu agenda:</strong> Bloqueo dinámico de horarios para evitar esperas innecesarias en sala de recepción.</p>
                         </div>
                     </div>
                 </div>
@@ -589,23 +582,25 @@
             </h2>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="rounded-3xl overflow-hidden shadow-soft border border-[#e9dfdb] aspect-[16/10] relative group">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+            <div class="rounded-3xl overflow-hidden shadow-soft border border-[#e9dfdb] aspect-[4/3] sm:aspect-[16/10] min-h-[240px] sm:min-h-[280px] relative group bg-stone-100">
                 <img src="{{ asset('images/6.jpg') }}" alt="Detalles del consultorio" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent flex items-end p-6 text-white">
-                    <div>
-                        <h4 class="font-serif-luxury text-xl font-bold">Calidez y Hospitalidad</h4>
-                        <p class="text-xs text-white/80 mt-1">Disfruta de una sala relajante y una atención pensada para tu total tranquilidad.</p>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex items-end p-5 sm:p-6 text-white">
+                    <div class="w-full">
+                        <span class="inline-block text-[10px] font-bold uppercase tracking-wider text-[#f2b0a6] mb-1">Espacios Diseñados para Ti</span>
+                        <h4 class="font-serif-luxury text-lg sm:text-xl font-bold">Calidez y Hospitalidad</h4>
+                        <p class="text-xs text-white/85 mt-1 leading-relaxed max-w-md">Disfruta de una sala relajante y una atención pensada para tu total tranquilidad.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="rounded-3xl overflow-hidden shadow-soft border border-[#e9dfdb] aspect-[16/10] relative group">
+            <div class="rounded-3xl overflow-hidden shadow-soft border border-[#e9dfdb] aspect-[4/3] sm:aspect-[16/10] min-h-[240px] sm:min-h-[280px] relative group bg-stone-100">
                 <img src="{{ asset('images/2.jpg') }}" alt="Identidad de marca Dentissa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent flex items-end p-6 text-white">
-                    <div>
-                        <h4 class="font-serif-luxury text-xl font-bold">Paleta de Marca Relajante</h4>
-                        <p class="text-xs text-white/80 mt-1">Colores rosa y durazno cálidos que transmiten serenidad, confianza y bienestar.</p>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex items-end p-5 sm:p-6 text-white">
+                    <div class="w-full">
+                        <span class="inline-block text-[10px] font-bold uppercase tracking-wider text-[#f2b0a6] mb-1">Armonía & Estética</span>
+                        <h4 class="font-serif-luxury text-lg sm:text-xl font-bold">Paleta de Marca Relajante</h4>
+                        <p class="text-xs text-white/85 mt-1 leading-relaxed max-w-md">Colores rosa y durazno cálidos que transmiten serenidad, confianza y bienestar.</p>
                     </div>
                 </div>
             </div>
@@ -625,57 +620,57 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-[#FAF6F6] rounded-3xl p-6 border border-[#e9dfdb] shadow-xs flex flex-col justify-between">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6 items-stretch">
+                <div class="bg-[#FAF6F6] rounded-3xl p-5 sm:p-6 border border-[#e9dfdb] shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:border-brand-200 hover:bg-white hover:shadow-soft">
                     <div>
-                        <div class="flex text-amber-400 text-xs mb-3">★★★★★</div>
-                        <p class="text-xs text-[#2D2526] leading-relaxed italic">
+                        <div class="flex text-amber-400 text-xs mb-3" aria-label="5 estrellas">★★★★★</div>
+                        <p class="text-xs sm:text-sm text-[#2D2526] leading-relaxed italic">
                             “Testimonio pendiente de autorización para publicación.”
                         </p>
                     </div>
-                    <div class="pt-4 mt-4 border-t border-[#e9dfdb]/70 flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-brand-100 text-[#d75078] font-bold text-xs flex items-center justify-center">
+                    <div class="pt-4 mt-5 border-t border-[#e9dfdb]/70 flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-brand-100 text-[#d75078] font-bold text-xs flex items-center justify-center shrink-0 border border-brand-200">
                             MC
                         </div>
-                        <div>
-                            <h5 class="text-xs font-bold text-[#2D2526]">Testimonio pendiente</h5>
-                            <span class="text-[11px] text-[#8A7A7D]">Información por confirmar</span>
+                        <div class="min-w-0 flex-1">
+                            <h5 class="text-xs font-bold text-[#2D2526] truncate">Testimonio pendiente</h5>
+                            <span class="text-[11px] text-[#8A7A7D] block truncate">Información por confirmar</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-[#FAF6F6] rounded-3xl p-6 border border-[#e9dfdb] shadow-xs flex flex-col justify-between">
+                <div class="bg-[#FAF6F6] rounded-3xl p-5 sm:p-6 border border-[#e9dfdb] shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:border-brand-200 hover:bg-white hover:shadow-soft">
                     <div>
-                        <div class="flex text-amber-400 text-xs mb-3">★★★★★</div>
-                        <p class="text-xs text-[#2D2526] leading-relaxed italic">
+                        <div class="flex text-amber-400 text-xs mb-3" aria-label="5 estrellas">★★★★★</div>
+                        <p class="text-xs sm:text-sm text-[#2D2526] leading-relaxed italic">
                             “Testimonio pendiente de autorización para publicación.”
                         </p>
                     </div>
-                    <div class="pt-4 mt-4 border-t border-[#e9dfdb]/70 flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-brand-100 text-[#d75078] font-bold text-xs flex items-center justify-center">
+                    <div class="pt-4 mt-5 border-t border-[#e9dfdb]/70 flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-brand-100 text-[#d75078] font-bold text-xs flex items-center justify-center shrink-0 border border-brand-200">
                             RG
                         </div>
-                        <div>
-                            <h5 class="text-xs font-bold text-[#2D2526]">Testimonio pendiente</h5>
-                            <span class="text-[11px] text-[#8A7A7D]">Blanqueamiento Dental</span>
+                        <div class="min-w-0 flex-1">
+                            <h5 class="text-xs font-bold text-[#2D2526] truncate">Testimonio pendiente</h5>
+                            <span class="text-[11px] text-[#8A7A7D] block truncate">Blanqueamiento Dental</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-[#FAF6F6] rounded-3xl p-6 border border-[#e9dfdb] shadow-xs flex flex-col justify-between">
+                <div class="bg-[#FAF6F6] rounded-3xl p-5 sm:p-6 border border-[#e9dfdb] shadow-xs flex flex-col justify-between h-full transition-all duration-200 hover:border-brand-200 hover:bg-white hover:shadow-soft sm:col-span-2 sm:max-w-sm sm:justify-self-center xl:col-span-1 xl:max-w-none xl:justify-self-stretch">
                     <div>
-                        <div class="flex text-amber-400 text-xs mb-3">★★★★★</div>
-                        <p class="text-xs text-[#2D2526] leading-relaxed italic">
+                        <div class="flex text-amber-400 text-xs mb-3" aria-label="5 estrellas">★★★★★</div>
+                        <p class="text-xs sm:text-sm text-[#2D2526] leading-relaxed italic">
                             “Testimonio pendiente de autorización para publicación.”
                         </p>
                     </div>
-                    <div class="pt-4 mt-4 border-t border-[#e9dfdb]/70 flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-brand-100 text-[#d75078] font-bold text-xs flex items-center justify-center">
+                    <div class="pt-4 mt-5 border-t border-[#e9dfdb]/70 flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-brand-100 text-[#d75078] font-bold text-xs flex items-center justify-center shrink-0 border border-brand-200">
                             SV
                         </div>
-                        <div>
-                            <h5 class="text-xs font-bold text-[#2D2526]">Testimonio pendiente</h5>
-                            <span class="text-[11px] text-[#8A7A7D]">Información por confirmar</span>
+                        <div class="min-w-0 flex-1">
+                            <h5 class="text-xs font-bold text-[#2D2526] truncate">Testimonio pendiente</h5>
+                            <span class="text-[11px] text-[#8A7A7D] block truncate">Información por confirmar</span>
                         </div>
                     </div>
                 </div>
@@ -684,22 +679,22 @@
     </section>
 
     <!-- Módulo: Llamada a Agendar Cita -->
-    <section id="agendar" class="py-16 lg:py-20 bg-gradient-to-b from-[#FAF6F6] to-white relative">
+    <section id="agendar" class="py-14 sm:py-16 lg:py-20 bg-gradient-to-b from-[#FAF6F6] to-white relative">
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
-            <div class="bg-white rounded-3xl p-8 sm:p-10 border border-[#e9dfdb] shadow-xl text-center">
+            <div class="bg-white rounded-3xl p-6 sm:p-8 lg:p-12 border border-[#e9dfdb] shadow-xl text-center">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-[#d75078] text-xs font-bold border border-brand-200">
                     ✦ Reserva Fácil & Rápida
                 </span>
-                <h2 class="font-serif-luxury text-3xl sm:text-4xl font-bold text-[#2D2526] mt-3">
+                <h2 class="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl font-bold text-[#2D2526] mt-3">
                     Comienza tu camino hacia una mejor sonrisa
                 </h2>
-                <p class="text-xs sm:text-sm text-[#6b5e62] mt-2 max-w-lg mx-auto">
+                <p class="text-xs sm:text-sm text-[#6b5e62] mt-2 max-w-lg mx-auto leading-relaxed">
                     Elige el tratamiento, la fecha y el horario que mejor se adapten a tu día para tu valoración en Dentissa.
                 </p>
 
-                <div class="mt-8 flex justify-center">
-                    <a href="{{ route('citas.publica.create') }}" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#d75078] to-[#bd3f64] px-8 py-4 text-sm font-bold text-white shadow-soft transition-all duration-200 hover:from-[#bd3f64] hover:to-[#a12a54] hover:shadow-md hover:-translate-y-0.5">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <div class="mt-7 sm:mt-8 flex justify-center">
+                    <a href="{{ route('citas.publica.create') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#d75078] to-[#bd3f64] px-7 py-3.5 sm:px-8 sm:py-4 text-xs sm:text-sm font-bold text-white shadow-soft transition-all duration-200 hover:from-[#bd3f64] hover:to-[#a12a54] hover:shadow-md hover:-translate-y-0.5">
+                        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
                         <span>Elegir fecha y horario</span>
@@ -712,17 +707,17 @@
     <!-- Footer Elegante -->
     <footer id="contacto" class="bg-[#2D2526] text-white pt-14 pb-10 border-t border-[#8A7A7D]/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-white/10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-white/10">
 
-                <div class="md:col-span-1 space-y-3">
+                <div class="sm:col-span-2 lg:col-span-1 space-y-3">
                     <div class="flex items-center gap-3">
-                        <img src="{{ asset('images/9.jpg') }}" alt="Logo Dentissa" class="w-10 h-10 object-contain rounded-full bg-white p-0.5">
+                        <img src="{{ asset('images/9.jpg') }}" alt="Logo Dentissa" class="w-10 h-10 object-contain rounded-full bg-white p-0.5 shrink-0">
                         <div>
                             <span class="font-serif-luxury font-bold text-lg text-white block leading-none">Dentissa</span>
                             <span class="text-[10px] text-[#f2b0a6] tracking-wider uppercase font-semibold">Dra. Melissa López</span>
                         </div>
                     </div>
-                    <p class="text-xs text-white/70 leading-relaxed">
+                    <p class="text-xs text-white/70 leading-relaxed max-w-sm">
                         Atención odontológica integral, estética y preventiva en un ambiente cálido y seguro.
                     </p>
                 </div>
@@ -759,7 +754,7 @@
 
             </div>
 
-            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-white/40 gap-3">
+            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-white/40 gap-3 text-center sm:text-left">
                 <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
                 <p>Atención con previa cita.</p>
             </div>
@@ -793,7 +788,6 @@
 
             for (const link of scrollSpyLinks) {
                 const isActive = decodeURIComponent(link.hash.slice(1)) === activeSection.id;
-                link.classList.toggle('is-active', isActive);
                 if (isActive) {
                     link.setAttribute('aria-current', 'location');
                 } else {

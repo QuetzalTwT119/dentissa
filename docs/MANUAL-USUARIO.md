@@ -18,6 +18,14 @@ identidad de la clínica, el formulario de inicio de sesión y un enlace para
 volver al sitio público. Usa **Recuérdame**
 solo en un dispositivo de confianza; si no recuerdas la contraseña, abre
 **¿Olvidaste tu contraseña?** para solicitar un enlace de recuperación.
+Escribe el correo asociado a tu cuenta y revisa también la carpeta de correo no
+deseado. La confirmación es genérica por seguridad; si el mensaje no llega,
+comprueba que sea el correo registrado y solicita un nuevo enlace después de
+unos minutos.
+
+El enlace se envía a la dirección asociada a esa cuenta de Dentissa. En el
+prototipo, la clínica puede usar Gmail API como canal emisor; eso no cambia el
+destinatario ni requiere que cada usuario conecte su propio Google.
 
 La navegación interna muestra la marca Dentissa, un acceso a **Inicio**, otro a
 la **Agenda** y otro al **Asistente**. En administración, **Gestión** agrupa
@@ -65,6 +73,10 @@ su rol. Para el recorrido público se puede agendar una cita con datos
 completamente ficticios. El paciente precargado es «Paciente Demostración» y no
 tiene historial clínico.
 
+El asistente de Telegram solo responde mientras el proceso del bot esté activo
+en el entorno. Si no responde, utiliza el portal web y no compartas ni solicites
+el token del bot; es una credencial privada de configuración.
+
 Los nombres, teléfonos, correos y precios del catálogo demo son de prueba. No
 son datos ni tarifas de una clínica real. Al terminar la exposición, el equipo
 debe apagar o eliminar el servicio de Railway desde el panel.
@@ -80,8 +92,8 @@ datos oficiales. La clínica debe aprobar ese contenido antes de publicarlo.
 
 La navegación **Inicio**, **Tratamientos**, **La Clínica**, **Instalaciones**,
 **Testimonios** y **Contacto** se desplaza suavemente a su sección sin recargar
-la página; el enlace de la sección visible se resalta automáticamente en rosa.
-Esto también funciona desde el menú móvil.
+la página; el enlace de la sección actual se resalta automáticamente en rosa,
+tanto en escritorio como en el menú móvil.
 
 ## 2. Agendamiento público
 
@@ -249,6 +261,14 @@ En **Usuarios**, el administrador puede filtrar las cuentas por rol y estado,
 crear una cuenta para una asistente o administrador, editar sus datos y activar
 o desactivar el acceso. Los pacientes se gestionan desde **Pacientes**, en una
 sección distinta.
+
+Para cambiar el correo de la cuenta actual, abre **Perfil** desde el menú de
+usuario, edita **Correo electrónico** en **Información personal** y guarda.
+Para crear otra cuenta administrativa, entra a **Gestión → Usuarios → Nuevo
+usuario**, captura los datos, selecciona **Admin**, escribe una contraseña
+segura y guarda. El correo debe ser único. También puedes cambiar el rol de una
+cuenta existente desde **Editar**; conserva tu cuenta actual hasta confirmar
+que puedes iniciar sesión con la nueva.
 
 ## 7. Reportes administrativos
 

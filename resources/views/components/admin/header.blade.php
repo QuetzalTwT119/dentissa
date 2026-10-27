@@ -28,7 +28,7 @@
     </div>
 
     @if (isset($actions) && $actions->isNotEmpty())
-        <div class="flex items-center gap-2.5 self-start sm:self-auto">
+        <div class="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
             {{ $actions }}
         </div>
     @endif

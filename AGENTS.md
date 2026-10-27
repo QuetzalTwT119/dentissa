@@ -60,6 +60,13 @@ integrados de forma segura el código, las pruebas de QA y los recursos UX/UI.
   preservar cambios existentes y preferir alternativas reversibles. Antes de
   comandos destructivos —por ejemplo, `git reset --hard` o `git push --force`—
   advertir claramente y proponer una opción segura si existe.
+- **Seguridad de credenciales:** nunca mostrar, copiar ni pegar tokens, claves
+  API, secretos OAuth, contraseñas, URLs de bots que contengan credenciales ni
+  el contenido de archivos `.env` o JSON de credenciales. No imprimir logs
+  completos ni depender de una expresión regular para ocultar secretos. Para
+  diagnosticar, procesar la salida localmente y reportar solo el tipo de error y
+  si ocurrió, sin valores, URLs ni fragmentos de credenciales. Si no se puede
+  garantizar que la salida esté libre de secretos, no mostrarla.
 - **Inicio de consultas:** si se inicia una conversación sobre Git/DevOps sin
   una tarea concreta, saludar brevemente y preguntar qué acción, conflicto o
   automatización necesita el usuario. Si la tarea ya está descrita, avanzar
