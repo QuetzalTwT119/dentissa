@@ -25,9 +25,25 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $response = $this->post('/forgot-password', ['email' => $user->email]);
 
         Notification::assertSentTo($user, ResetPassword::class);
+        $response->assertSessionHas('status', $this->mensajeGenericoDeRecuperacion());
+    }
+
+    public function test_unknown_email_gets_the_same_generic_recovery_confirmation(): void
+    {
+        Notification::fake();
+
+        $response = $this->post('/forgot-password', [
+            'email' => 'no-registrado@example.test',
+        ]);
+
+        $response
+            ->assertSessionHas('status', $this->mensajeGenericoDeRecuperacion())
+            ->assertSessionHasNoErrors();
+
+        Notification::assertNothingSent();
     }
 
     public function test_reset_password_screen_can_be_rendered(): void
@@ -69,5 +85,10 @@ class PasswordResetTest extends TestCase
 
             return true;
         });
+    }
+
+    private function mensajeGenericoDeRecuperacion(): string
+    {
+        return 'Si el correo está asociado a una cuenta, recibirás un enlace para restablecer la contraseña. Revisa también la carpeta de correo no deseado; si ya solicitaste uno hace poco, espera unos minutos antes de intentarlo de nuevo.';
     }
 }

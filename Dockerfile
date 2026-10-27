@@ -23,6 +23,7 @@ RUN apt-get update \
         libxml2-dev \
         libzip-dev \
         libsqlite3-dev \
+        supervisor \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" bcmath gd intl mbstring pdo_mysql pdo_sqlite xml zip \
     && rm -rf /var/lib/apt/lists/*
@@ -42,6 +43,7 @@ RUN if [ "$INSTALL_DEV" = "true" ]; then \
 
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
+COPY docker/supervisord-dentissa.conf /etc/supervisor/conf.d/dentissa.conf
 
 RUN if [ "$INSTALL_DEV" = "true" ]; then \
         composer dump-autoload --optimize; \
@@ -55,4 +57,4 @@ RUN if [ "$INSTALL_DEV" = "true" ]; then \
 
 EXPOSE 8000
 
-CMD ["sh", "-lc", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
+CMD ["sh", "/var/www/html/scripts/start-production.sh"]

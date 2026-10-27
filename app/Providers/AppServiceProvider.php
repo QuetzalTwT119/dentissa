@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Mail\Transport\GmailApiTransport;
 use App\Models\Caso;
 use App\Models\Cita;
 use App\Models\HistorialClinico;
@@ -17,6 +18,7 @@ use App\Models\Tratamiento;
 use App\Models\User;
 use App\Observers\AuditoriaObserver;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Mail;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Mail::extend('gmail-api', fn () => new GmailApiTransport);
+
         foreach ([
             Cita::class, Paciente::class, HistorialClinico::class, HorarioAtencion::class,
             Servicio::class, Tratamiento::class, User::class, Oferta::class, Testimonio::class,
