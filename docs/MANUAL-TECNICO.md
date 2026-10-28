@@ -381,12 +381,21 @@ memoria. `DENTISSA_OLLAMA_TIMEOUT` permite ajustar el límite de espera; el
 valor predeterminado es 60 segundos para cubrir ese arranque en equipos de
 desarrollo. Si se supera el límite, el chat usa la respuesta de respaldo.
 
-El modelo se guarda en el volumen Docker `ollama_data`, no en Git. Esta
-integración es un prototipo de desarrollo: un modelo ejecutándose en la PC no
-queda disponible automáticamente para una aplicación desplegada en Railway. La
-aplicación en producción debe mantener la IA apagada hasta decidir y validar un
-alojamiento privado adecuado. No configurar una URL pública de inferencia sin
-revisar antes privacidad, consentimiento y retención de datos.
+El modelo se guarda en el volumen Docker `ollama_data`, no en Git. Para la
+prueba de prototipo en Railway, ejecuta Ollama como servicio privado del mismo
+proyecto y entorno que `dentissa`, con un volumen montado en `/root/.ollama`.
+Configura `DENTISSA_OLLAMA_BASE_URL=http://ollama.railway.internal:11434` en
+`dentissa`; la aplicación solo acepta HTTP en hosts locales o bajo
+`.railway.internal`, puerto 11434, y rechaza endpoints públicos. Ollama no debe
+tener un dominio público. `DENTISSA_OLLAMA_MODELO` debe coincidir con el modelo
+descargado, por ejemplo `granite3.3:2b`; habilita
+`DENTISSA_ASISTENTE_IA_HABILITADA=true` solo después de comprobar la conexión.
+
+Serverless puede reducir el consumo mientras Ollama está inactivo. La primera
+solicitud posterior al reposo puede tardar o fallar temporalmente durante el
+arranque. Vigila Usage y Metrics de Railway: el límite de cómputo detiene los
+servicios del workspace al alcanzarse. Un despliegue exitoso por sí solo no
+confirma que una respuesta del modelo llegó a Dentissa.
 
 Las pruebas automatizadas fuerzan la IA apagada en `phpunit.xml` y en
 `tests/TestCase.php`, incluso si el `.env` local la tiene encendida. Las pruebas
