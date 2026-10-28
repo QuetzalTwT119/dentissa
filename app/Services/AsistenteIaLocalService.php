@@ -205,14 +205,23 @@ class AsistenteIaLocalService
         $url = (string) config('dentissa.asistente_ia.ollama_url');
         $partes = parse_url($url);
 
-        return is_array($partes)
-            && ($partes['scheme'] ?? null) === 'http'
-            && in_array(strtolower($partes['host'] ?? ''), [
-                'ollama',
-                'localhost',
-                '127.0.0.1',
-                'host.docker.internal',
-            ], true)
+        if (! is_array($partes)) {
+            return false;
+        }
+
+        $host = strtolower($partes['host'] ?? '');
+        $hostsLocales = [
+            'ollama',
+            'localhost',
+            '127.0.0.1',
+            'host.docker.internal',
+        ];
+        $hostPrivadoRailway = str_ends_with($host, '.railway.internal')
+            && $host !== 'railway.internal';
+
+        return ($partes['scheme'] ?? null) === 'http'
+            && (in_array($host, $hostsLocales, true) || $hostPrivadoRailway)
+            && (! isset($partes['port']) || $partes['port'] === 11434)
             && ! isset($partes['user'])
             && ! isset($partes['pass']);
     }

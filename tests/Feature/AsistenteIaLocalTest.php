@@ -289,6 +289,32 @@ class AsistenteIaLocalTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_puede_usar_ollama_por_el_dominio_privado_de_railway(): void
+    {
+        $fuente = PreguntaFrecuente::create([
+            'pregunta' => '¿Cuál es la dirección del consultorio?',
+            'respuesta' => 'El consultorio está en Avenida Ejemplo 123.',
+            'activa' => true,
+        ]);
+        config([
+            'dentissa.asistente_ia.habilitada' => true,
+            'dentissa.asistente_ia.ollama_url' => 'http://ollama.railway.internal:11434',
+        ]);
+
+        Http::fake([
+            'ollama.railway.internal:11434/api/chat' => Http::response([
+                'message' => [
+                    'content' => json_encode(['fuente_id' => 'faq:'.$fuente->id], JSON_UNESCAPED_UNICODE),
+                ],
+            ]),
+        ]);
+
+        $resultado = app(AsistenteIaLocalService::class)->responder('¿Cuál es la dirección del consultorio?');
+
+        $this->assertSame('El consultorio está en Avenida Ejemplo 123.', $resultado['respuesta'] ?? null);
+        Http::assertSent(fn (Request $request) => $request->url() === 'http://ollama.railway.internal:11434/api/chat');
+    }
+
     public function test_no_envia_consultas_a_un_endpoint_de_ia_publico(): void
     {
         PreguntaFrecuente::create([

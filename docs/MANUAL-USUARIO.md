@@ -186,9 +186,11 @@ futuras; las fechas pasadas se rechazan también en el servidor.
 ## 5. Asistente para pacientes y preguntas frecuentes
 
 El asistente flotante responde con preguntas frecuentes activas y sus respuestas
-aprobadas. En desarrollo se puede habilitar un modelo de IA local para reconocer
-otras formas de preguntar y elegir una FAQ o un servicio del catálogo. La
-aplicación muestra el texto aprobado original; el modelo no redacta la respuesta.
+aprobadas. En desarrollo o en la prueba de prototipo, se puede habilitar un
+modelo de IA privado para reconocer otras formas de preguntar y elegir una FAQ
+o un servicio del catálogo. La aplicación muestra el texto aprobado original;
+el modelo no redacta la respuesta. El bot de Telegram es independiente del
+asistente web.
 Para precios sin una FAQ que hable de ellos, síntomas, medicamentos y
 diagnósticos, el chat pide reformular la duda o contactar al consultorio.
 En todas las pantallas, el asistente permanece disponible en una cápsula
@@ -231,10 +233,10 @@ tratamientos activos del catálogo, sin que el personal tenga que volver a
 capturarlos en preguntas frecuentes.
 
 Antes de publicar cambios, probar preguntas directas, paráfrasis, errores leves,
-temas sin información disponible y consultas clínicas. La IA local solo está
-disponible cuando el equipo de desarrollo la habilita en Docker; su activación no
-significa que el modelo esté disponible en el sitio desplegado. Si no puede
-apoyarse en una respuesta activa, debe mostrar el mensaje de respaldo.
+temas sin información disponible y consultas clínicas. En el prototipo de
+Railway, Ollama puede dormir por inactividad; la primera pregunta puede tardar
+mientras despierta. Si el modelo no responde o no puede apoyarse en una respuesta
+activa, el chat conserva su mensaje de respaldo.
 
 ## 6. Pacientes e historial clínico
 
