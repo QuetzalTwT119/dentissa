@@ -93,20 +93,20 @@ class AsistenteAgendaService
             'tratamiento_id' => $tratamiento->id,
         ], now()->addMinutes(15));
 
-        return '¿Para qué fecha lo buscas? Escríbela con este formato: AAAA-MM-DD.';
+        return '¿Para qué fecha lo buscas? Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.';
     }
 
     /** @param array<string, mixed> $estado */
     private function buscarHorarios(int|string $conversacion, string $texto, array $estado): string
     {
-        try {
-            $fecha = Carbon::createFromFormat('Y-m-d', trim($texto))->startOfDay();
-        } catch (\Throwable) {
-            return 'No pude leer la fecha. Escríbela así: AAAA-MM-DD.';
+        $fecha = $this->interpretarFecha($texto);
+
+        if (! $fecha) {
+            return 'No reconocí la fecha. Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.';
         }
 
         if ($fecha->lt(today())) {
-            return 'La fecha debe ser hoy o posterior. Escríbela así: AAAA-MM-DD.';
+            return 'La fecha debe ser hoy o posterior. Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.';
         }
 
         $tratamiento = Tratamiento::find($estado['tratamiento_id'] ?? null);
@@ -137,6 +137,37 @@ class AsistenteAgendaService
     private function esSolicitudDeAgenda(string $texto): bool
     {
         return Str::contains($this->normalizar($texto), ['cita', 'horario', 'disponib', 'agendar', 'reservar']);
+    }
+
+    private function interpretarFecha(string $texto): ?Carbon
+    {
+        $texto = trim($texto);
+        $textoNormalizado = $this->normalizar($texto);
+
+        if (in_array($textoNormalizado, ['hoy', 'para hoy'], true)) {
+            return today();
+        }
+
+        if (in_array($textoNormalizado, ['manana', 'para manana'], true)) {
+            return today()->addDay();
+        }
+
+        foreach (['Y-m-d', 'd/m/Y', 'd-m-Y'] as $formato) {
+            try {
+                $fecha = Carbon::createFromFormat('!'.$formato, $texto);
+                $errores = Carbon::getLastErrors();
+
+                if ($fecha
+                    && ($errores === false || ($errores['warning_count'] === 0 && $errores['error_count'] === 0))
+                    && $fecha->format($formato) === $texto) {
+                    return $fecha->startOfDay();
+                }
+            } catch (\Throwable) {
+                // Un formato inválido se trata como una fecha no reconocida.
+            }
+        }
+
+        return null;
     }
 
     private function normalizar(string $texto): string

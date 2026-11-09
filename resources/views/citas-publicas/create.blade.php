@@ -15,6 +15,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased text-[#2D2526] selection:bg-[#f2b0a6] selection:text-[#2D2526] bg-[#FAF6F6] min-h-screen">
+        <x-asistente-chat />
+
         @if (session('success'))
             <div class="flex min-h-screen items-center justify-center bg-[#FAF6F6] px-6">
                 <div class="max-w-md w-full rounded-3xl border border-[#e9dfdb] bg-white p-10 text-center shadow-xl">
@@ -95,8 +97,6 @@
                     },
                  }"
             >
-                <x-asistente-chat />
-
                 <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 pt-2 sm:px-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.8fr)] lg:gap-8">
                     <!-- Contenedor Principal de Pasos -->
                     <div class="w-full overflow-hidden bg-white shadow-xl rounded-3xl border border-[#e9dfdb]/90 transition-all">
@@ -423,7 +423,7 @@
                     </div>
 
                     <!-- Ficha Resumen / Ticket Boutique (Columna Derecha) -->
-                    <aside data-asistente-zona-reservada class="w-full rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-xl sm:p-7 lg:sticky lg:top-20">
+                    <aside class="w-full self-start rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-xl sm:p-7 lg:sticky lg:top-24">
                         <div class="flex items-center justify-between pb-4 border-b border-[#e9dfdb]">
                             <div>
                                 <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-brand-700 border border-brand-200">

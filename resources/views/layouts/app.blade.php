@@ -37,5 +37,6 @@
             </main>
 
         </div>
+        <x-asistente-chat />
     </body>
 </html>

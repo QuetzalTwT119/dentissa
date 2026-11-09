@@ -363,6 +363,13 @@ comprende todos los sinónimos, puede ser conservador y devolver el fallback
 cuando la pregunta y la fuente usan palabras distintas; el paciente puede
 reformular su duda. No sustituye una evaluación más amplia antes de producción.
 
+`AsistenteAgendaService` es un flujo separado del modelo de IA. En el widget
+web consulta disponibilidad por servicio, tratamiento y fecha; no crea ni
+confirma citas. Acepta `hoy`, `mañana` y fechas estrictas `DD/MM/AAAA`,
+`DD-MM-AAAA` o `AAAA-MM-DD`. Rechaza fechas mal formadas y fechas pasadas antes
+de consultar `DisponibilidadService`; para reservar, la persona continúa en
+`/agendar-cita`.
+
 La integración usa Ollama local con el modelo `granite3.3:2b` (1.5 GB de
 descarga aproximada, licencia Apache 2.0 y soporte declarado para español). No
 se arranca por defecto: la variable `DENTISSA_ASISTENTE_IA_HABILITADA` vale
