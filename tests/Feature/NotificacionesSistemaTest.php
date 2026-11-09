@@ -234,7 +234,16 @@ class NotificacionesSistemaTest extends TestCase
 
     public function test_el_canal_en_vivo_solo_autoriza_a_la_cuenta_propietaria(): void
     {
-        config(['broadcasting.default' => 'reverb']);
+        // Credenciales ficticias: la prueba no debe depender del .env local.
+        config([
+            'broadcasting.default' => 'reverb',
+            'broadcasting.connections.reverb.key' => 'clave-prueba',
+            'broadcasting.connections.reverb.secret' => 'secreto-prueba',
+            'broadcasting.connections.reverb.app_id' => 'app-prueba',
+        ]);
+        // Los canales se registraron al arrancar en el broadcaster "null";
+        // se vuelven a registrar en el broadcaster Reverb recién activado.
+        require base_path('routes/channels.php');
 
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
