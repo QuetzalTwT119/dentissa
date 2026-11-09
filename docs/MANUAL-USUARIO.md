@@ -191,10 +191,16 @@ otras formas de preguntar y elegir una FAQ o un servicio del catálogo. La
 aplicación muestra el texto aprobado original; el modelo no redacta la respuesta.
 Para precios sin una FAQ que hable de ellos, síntomas, medicamentos y
 diagnósticos, el chat pide reformular la duda o contactar al consultorio.
-En todas las pantallas, el asistente permanece disponible en una cápsula
-horizontal compacta, con un ícono dental y su nombre en la esquina inferior
-derecha. Al abrirlo, el panel aparece cerca, justo encima del acceso.
-En la agenda pública, el flujo principal se presenta primero.
+En la portada, al agendar una cita y en las páginas del portal, el acceso queda
+fijo en la esquina inferior derecha. Plegado muestra el diente; al pasar el
+cursor o enfocarlo con teclado aparece el nombre **Dentissa Asistente**. En
+pantallas táctiles, tócalo para abrir el chat. El panel se despliega encima del
+acceso. En la agenda pública, el flujo principal se presenta primero.
+
+El chat también puede consultar horarios: escribe que buscas una cita, elige el
+servicio y tratamiento tal como aparecen en las listas y proporciona una fecha.
+Acepta `hoy`, `mañana`, `DD/MM/AAAA`, `DD-MM-AAAA` o `AAAA-MM-DD`. Muestra los
+horarios disponibles, pero la reserva se confirma en **Agendar cita**.
 
 El inicio, las ofertas, la galería y la agenda pública se adaptan al
 ancho de la pantalla: las tarjetas pasan a una o varias columnas según el
@@ -231,10 +237,12 @@ tratamientos activos del catálogo, sin que el personal tenga que volver a
 capturarlos en preguntas frecuentes.
 
 Antes de publicar cambios, probar preguntas directas, paráfrasis, errores leves,
-temas sin información disponible y consultas clínicas. La IA local solo está
-disponible cuando el equipo de desarrollo la habilita en Docker; su activación no
-significa que el modelo esté disponible en el sitio desplegado. Si no puede
-apoyarse en una respuesta activa, debe mostrar el mensaje de respaldo.
+temas sin información disponible y consultas clínicas. Para el prototipo se
+puede conectar el chat web con Ollama mediante la red privada de Railway; esto
+no conecta ni modifica el bot de Telegram. Si Railway duerme Ollama por
+inactividad, la primera consulta puede tardar o mostrar una respuesta de
+respaldo mientras el servicio despierta. Si el modelo no responde o no puede
+apoyarse en una respuesta activa, el chat conserva su mensaje de respaldo.
 
 ## 6. Pacientes e historial clínico
 

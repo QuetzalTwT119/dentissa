@@ -231,7 +231,7 @@
                     </p>
 
                     <!-- Acciones del Hero -->
-                    <div data-asistente-zona-reservada class="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                    <div class="pt-2 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                         <a href="{{ route('citas.publica.create') }}" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[#d75078] hover:bg-[#bd3f64] text-white font-bold text-sm shadow-soft hover:shadow-md hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2 group">
                             <span>Reservar mi valoración</span>
                             <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

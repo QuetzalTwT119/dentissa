@@ -363,6 +363,13 @@ comprende todos los sinónimos, puede ser conservador y devolver el fallback
 cuando la pregunta y la fuente usan palabras distintas; el paciente puede
 reformular su duda. No sustituye una evaluación más amplia antes de producción.
 
+`AsistenteAgendaService` es un flujo separado del modelo de IA. En el widget
+web consulta disponibilidad por servicio, tratamiento y fecha; no crea ni
+confirma citas. Acepta `hoy`, `mañana` y fechas estrictas `DD/MM/AAAA`,
+`DD-MM-AAAA` o `AAAA-MM-DD`. Rechaza fechas mal formadas y fechas pasadas antes
+de consultar `DisponibilidadService`; para reservar, la persona continúa en
+`/agendar-cita`.
+
 La integración usa Ollama local con el modelo `granite3.3:2b` (1.5 GB de
 descarga aproximada, licencia Apache 2.0 y soporte declarado para español). No
 se arranca por defecto: la variable `DENTISSA_ASISTENTE_IA_HABILITADA` vale
@@ -381,12 +388,22 @@ memoria. `DENTISSA_OLLAMA_TIMEOUT` permite ajustar el límite de espera; el
 valor predeterminado es 60 segundos para cubrir ese arranque en equipos de
 desarrollo. Si se supera el límite, el chat usa la respuesta de respaldo.
 
-El modelo se guarda en el volumen Docker `ollama_data`, no en Git. Esta
-integración es un prototipo de desarrollo: un modelo ejecutándose en la PC no
-queda disponible automáticamente para una aplicación desplegada en Railway. La
-aplicación en producción debe mantener la IA apagada hasta decidir y validar un
-alojamiento privado adecuado. No configurar una URL pública de inferencia sin
-revisar antes privacidad, consentimiento y retención de datos.
+El modelo se guarda en el volumen Docker `ollama_data`, no en Git. Un Ollama
+local no queda disponible automáticamente para Railway. Para una prueba de
+prototipo en Railway, despliega Ollama como un servicio del mismo proyecto y
+entorno, guárdalo en un volumen montado en `/root/.ollama` y conéctalo usando
+su dominio privado, por ejemplo `http://ollama.railway.internal:11434`. No
+asignes dominio público a Ollama. La aplicación solo acepta HTTP hacia hosts
+locales o el sufijo privado `.railway.internal` en el puerto 11434; rechaza
+endpoints de inferencia públicos. Habilita `DENTISSA_ASISTENTE_IA_HABILITADA`
+solo en el servicio `dentissa` después de que el servicio Ollama esté listo.
+
+Serverless puede reducir el consumo inactivo durante una prueba, pero la
+primera consulta después de dormir puede demorarse o devolver 502 mientras
+Ollama despierta. Railway mide recursos del workspace en conjunto; el límite
+duro detiene todos los servicios al alcanzarse. Vigila Usage y Metrics, y no
+interpretes un despliegue activo como prueba de que el modelo ya contestó una
+consulta real.
 
 Las pruebas automatizadas fuerzan la IA apagada en `phpunit.xml` y en
 `tests/TestCase.php`, incluso si el `.env` local la tiene encendida. Las pruebas

@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\DisponibilidadService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class AsistenteAgendaTest extends TestCase
@@ -141,5 +142,80 @@ class AsistenteAgendaTest extends TestCase
         ])
             ->assertOk();
         $this->assertStringContainsString('Limpieza web', $servicioElegido->json('respuesta'));
+    }
+
+    /** @return array<string, array{0: callable(): string, 1: callable(): string}> */
+    public static function fechasAceptadas(): array
+    {
+        return [
+            'hoy' => [fn () => 'hoy', fn () => today()->toDateString()],
+            'mañana con acento' => [fn () => 'Mañana', fn () => today()->addDay()->toDateString()],
+            'DD/MM/AAAA' => [fn () => today()->addDays(3)->format('d/m/Y'), fn () => today()->addDays(3)->toDateString()],
+            'DD-MM-AAAA' => [fn () => today()->addDays(3)->format('d-m-Y'), fn () => today()->addDays(3)->toDateString()],
+            'AAAA-MM-DD' => [fn () => today()->addDays(3)->format('Y-m-d'), fn () => today()->addDays(3)->toDateString()],
+        ];
+    }
+
+    #[DataProvider('fechasAceptadas')]
+    public function test_el_chat_interpreta_formatos_de_fecha_aceptados(callable $entrada, callable $esperada): void
+    {
+        $tratamiento = $this->prepararConversacionHastaLaFecha('00000000-0000-4000-8000-000000000003');
+        $disponibilidad = \Mockery::mock(DisponibilidadService::class);
+        $disponibilidad->shouldReceive('horariosDisponibles')
+            ->once()
+            ->with($esperada(), \Mockery::on(fn ($recibido) => $recibido->is($tratamiento)))
+            ->andReturn(['10:00']);
+        $this->instance(DisponibilidadService::class, $disponibilidad);
+
+        $respuesta = $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => $entrada(),
+            'conversacion_id' => '00000000-0000-4000-8000-000000000003',
+        ])->assertOk()->json('respuesta');
+
+        $this->assertStringContainsString('Horarios disponibles para Limpieza web', $respuesta);
+        $this->assertStringContainsString('• 10:00', $respuesta);
+    }
+
+    /** @return array<string, array{0: string}> */
+    public static function fechasRechazadas(): array
+    {
+        return [
+            'día inexistente' => ['31/02/2030'],
+            'mes inexistente' => ['2030-13-01'],
+            'sin ceros a la izquierda' => ['5/3/2030'],
+            'texto libre' => ['pasado mañana'],
+        ];
+    }
+
+    #[DataProvider('fechasRechazadas')]
+    public function test_el_chat_rechaza_fechas_mal_formadas_sin_consultar_disponibilidad(string $entrada): void
+    {
+        $this->prepararConversacionHastaLaFecha('00000000-0000-4000-8000-000000000004');
+        $disponibilidad = \Mockery::mock(DisponibilidadService::class);
+        $disponibilidad->shouldNotReceive('horariosDisponibles');
+        $this->instance(DisponibilidadService::class, $disponibilidad);
+
+        $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => $entrada,
+            'conversacion_id' => '00000000-0000-4000-8000-000000000004',
+        ])
+            ->assertOk()
+            ->assertJsonPath('respuesta', 'No reconocí la fecha. Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.');
+    }
+
+    private function prepararConversacionHastaLaFecha(string $conversacion): Tratamiento
+    {
+        $servicio = Servicio::create(['nombre' => 'Consulta web', 'activo' => true]);
+        $tratamiento = Tratamiento::create(['nombre' => 'Limpieza web', 'duracion_estimada' => 30, 'categoria' => 'Preventiva', 'activo' => true]);
+        $servicio->tratamientos()->attach($tratamiento);
+
+        foreach (['Quiero una cita', 'Consulta web', 'Limpieza web'] as $mensaje) {
+            $this->postJson(route('asistente-paciente.responder'), [
+                'consulta' => $mensaje,
+                'conversacion_id' => $conversacion,
+            ])->assertOk();
+        }
+
+        return $tratamiento;
     }
 }
