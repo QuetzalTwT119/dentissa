@@ -186,9 +186,11 @@ futuras; las fechas pasadas se rechazan también en el servidor.
 ## 5. Asistente para pacientes y preguntas frecuentes
 
 El asistente flotante responde con preguntas frecuentes activas y sus respuestas
-aprobadas. En desarrollo se puede habilitar un modelo de IA local para reconocer
-otras formas de preguntar y elegir una FAQ o un servicio del catálogo. La
-aplicación muestra el texto aprobado original; el modelo no redacta la respuesta.
+aprobadas. En desarrollo o en la prueba de prototipo, se puede habilitar un
+modelo de IA privado para reconocer otras formas de preguntar y elegir una FAQ
+o un servicio del catálogo. La aplicación muestra el texto aprobado original;
+el modelo no redacta la respuesta. El bot de Telegram es independiente del
+asistente web.
 Para precios sin una FAQ que hable de ellos, síntomas, medicamentos y
 diagnósticos, el chat pide reformular la duda o contactar al consultorio.
 En la portada, al agendar una cita y en las páginas del portal, el acceso queda

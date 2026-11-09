@@ -388,22 +388,21 @@ memoria. `DENTISSA_OLLAMA_TIMEOUT` permite ajustar el límite de espera; el
 valor predeterminado es 60 segundos para cubrir ese arranque en equipos de
 desarrollo. Si se supera el límite, el chat usa la respuesta de respaldo.
 
-El modelo se guarda en el volumen Docker `ollama_data`, no en Git. Un Ollama
-local no queda disponible automáticamente para Railway. Para una prueba de
-prototipo en Railway, despliega Ollama como un servicio del mismo proyecto y
-entorno, guárdalo en un volumen montado en `/root/.ollama` y conéctalo usando
-su dominio privado, por ejemplo `http://ollama.railway.internal:11434`. No
-asignes dominio público a Ollama. La aplicación solo acepta HTTP hacia hosts
-locales o el sufijo privado `.railway.internal` en el puerto 11434; rechaza
-endpoints de inferencia públicos. Habilita `DENTISSA_ASISTENTE_IA_HABILITADA`
-solo en el servicio `dentissa` después de que el servicio Ollama esté listo.
+El modelo se guarda en el volumen Docker `ollama_data`, no en Git. Para la
+prueba de prototipo en Railway, ejecuta Ollama como servicio privado del mismo
+proyecto y entorno que `dentissa`, con un volumen montado en `/root/.ollama`.
+Configura `DENTISSA_OLLAMA_BASE_URL=http://ollama.railway.internal:11434` en
+`dentissa`; la aplicación solo acepta HTTP en hosts locales o bajo
+`.railway.internal`, puerto 11434, y rechaza endpoints públicos. Ollama no debe
+tener un dominio público. `DENTISSA_OLLAMA_MODELO` debe coincidir con el modelo
+descargado, por ejemplo `granite3.3:2b`; habilita
+`DENTISSA_ASISTENTE_IA_HABILITADA=true` solo después de comprobar la conexión.
 
-Serverless puede reducir el consumo inactivo durante una prueba, pero la
-primera consulta después de dormir puede demorarse o devolver 502 mientras
-Ollama despierta. Railway mide recursos del workspace en conjunto; el límite
-duro detiene todos los servicios al alcanzarse. Vigila Usage y Metrics, y no
-interpretes un despliegue activo como prueba de que el modelo ya contestó una
-consulta real.
+Serverless puede reducir el consumo mientras Ollama está inactivo. La primera
+solicitud posterior al reposo puede tardar o fallar temporalmente durante el
+arranque. Vigila Usage y Metrics de Railway: el límite de cómputo detiene los
+servicios del workspace al alcanzarse. Un despliegue exitoso por sí solo no
+confirma que una respuesta del modelo llegó a Dentissa.
 
 Las pruebas automatizadas fuerzan la IA apagada en `phpunit.xml` y en
 `tests/TestCase.php`, incluso si el `.env` local la tiene encendida. Las pruebas
