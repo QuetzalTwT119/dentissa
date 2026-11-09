@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Enums\RolUsuario;
 use App\Enums\EstadoCita;
+use App\Enums\RolUsuario;
 use App\Models\Cita;
 use App\Models\Paciente;
 use App\Models\Servicio;

@@ -17,8 +17,8 @@ use App\Models\Testimonio;
 use App\Models\Tratamiento;
 use App\Models\User;
 use App\Observers\AuditoriaObserver;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

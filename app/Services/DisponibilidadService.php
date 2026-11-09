@@ -120,4 +120,3 @@ class DisponibilidadService
         return config('dentissa.asistente_agenda.margen_minutos');
     }
 }
-
