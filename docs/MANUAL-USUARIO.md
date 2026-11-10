@@ -208,6 +208,9 @@ El chat también puede consultar horarios: escribe que buscas una cita, elige el
 servicio y tratamiento tal como aparecen en las listas y proporciona una fecha.
 Acepta `hoy`, `mañana`, `DD/MM/AAAA`, `DD-MM-AAAA` o `AAAA-MM-DD`. Muestra los
 horarios disponibles, pero la reserva se confirma en **Agendar cita**.
+Si solo preguntas por el horario de atención (por ejemplo, "¿a qué hora
+abren?"), el chat responde con el horario configurado sin iniciar una reserva;
+una pregunta frecuente aprobada sobre el horario tiene prioridad.
 
 El inicio, las ofertas, la galería y la agenda pública se adaptan al
 ancho de la pantalla: las tarjetas pasan a una o varias columnas según el

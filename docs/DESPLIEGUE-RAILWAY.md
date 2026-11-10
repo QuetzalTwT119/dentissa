@@ -1,8 +1,10 @@
 # Despliegue escolar en Railway
 
 **Destino:** Railway, para una demostración escolar breve con datos ficticios.
-**Estado:** el dominio de producción existente respondió correctamente en `/up`
-y `/login` el 17 de octubre de 2026. La configuración interna de Railway no se
+**URL pública:** https://dentissa-production-11db.up.railway.app/
+**Estado:** el 10 de noviembre de 2026 `/up` respondió 200 y `/version` reportó
+el commit `e7f08ab` (merge del PR #29). El chat de la portada respondió en
+producción después de corregir su token CSRF. La configuración interna de Railway no se
 ha inspeccionado desde este repositorio; confirma variables, respaldos y
 almacenamiento persistente desde el panel antes de usar datos reales.
 

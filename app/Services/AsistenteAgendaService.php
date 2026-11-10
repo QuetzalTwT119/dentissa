@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\HorarioAtencion;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
 use Carbon\Carbon;
@@ -29,6 +30,12 @@ class AsistenteAgendaService
         $estado = Cache::get($this->clave($conversacion));
 
         if (! $estado) {
+            // "¿Cuál es el horario de atención?" pide información, no una reserva.
+            if ($this->preguntaPorHorarioDeAtencion($texto)) {
+                return 'Nuestro horario de atención: '.HorarioAtencion::resumenSemanal()
+                    ."\n\nSi quieres buscar una cita, escribe \"quiero una cita\".";
+            }
+
             if (! $this->esSolicitudDeAgenda($texto)) {
                 return null;
             }
@@ -137,6 +144,26 @@ class AsistenteAgendaService
     private function esSolicitudDeAgenda(string $texto): bool
     {
         return Str::contains($this->normalizar($texto), ['cita', 'horario', 'disponib', 'agendar', 'reservar']);
+    }
+
+    private function preguntaPorHorarioDeAtencion(string $texto): bool
+    {
+        $texto = $this->normalizar($texto);
+
+        if (Str::contains($texto, ['cita', 'disponib', 'agendar', 'reservar', 'turno'])) {
+            return false;
+        }
+
+        return Str::contains($texto, [
+            'horario de atencion',
+            'horarios de atencion',
+            'a que hora abren',
+            'a que hora cierran',
+            'hasta que hora',
+            'que dias abren',
+            'que dias atienden',
+            'estan abiertos',
+        ]);
     }
 
     private function interpretarFecha(string $texto): ?Carbon
