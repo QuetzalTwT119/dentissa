@@ -102,7 +102,8 @@ tanto en escritorio como en el menú móvil.
 3. La lista de servicios se sustituye por los tratamientos disponibles. Si
    cambias de opinión, pulsa el recuadro del servicio seleccionado para volver
    a la lista.
-4. Elige una fecha futura.
+4. Elige una fecha futura. Debajo del calendario aparece el horario regular,
+   tomado de la configuración de **Horarios** del consultorio.
 5. Selecciona un horario disponible.
 6. Escribe nombre, apellido, teléfono y correo.
 7. Pulsa **Agendar cita**.
@@ -115,8 +116,10 @@ los tratamientos para conservar el contexto; el mismo recuadro permite volver
 a elegir otro servicio.
 
 El sistema crea o reutiliza el paciente por correo, bloquea el horario y crea
-la cita en estado **Confirmada**. La pantalla muestra la confirmación; no hace
-falta que el personal pulse una segunda vez **Confirmar**.
+la cita en estado **Confirmada**. La pantalla muestra la confirmación con el
+tratamiento, la fecha y la hora, para que el paciente pueda guardarlos; no hace
+falta que el personal pulse una segunda vez **Confirmar**. El sistema todavía
+no envía recordatorios automáticos antes de la cita.
 
 ## 3. Gestión interna de citas
 

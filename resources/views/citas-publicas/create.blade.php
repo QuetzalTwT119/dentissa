@@ -27,7 +27,19 @@
                     </div>
                     <p class="font-cursive text-3xl text-brand-600">Melissa López N.</p>
                     <h1 class="mt-4 text-2xl font-bold tracking-tight text-[#2D2526]">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
-                    <p class="mt-2 text-sm text-[#8A7A7D]">Tu solicitud ha sido registrada correctamente en el consultorio. Te enviaremos un recordatorio previo a tu cita.</p>
+                    @if ($resumen = session('cita_resumen'))
+                        <dl class="mt-6 space-y-3 rounded-2xl border border-[#e9dfdb] bg-[#FAF6F6] p-5 text-left text-sm">
+                            <div>
+                                <dt class="text-xs font-bold uppercase tracking-wider text-brand-700">Tratamiento</dt>
+                                <dd class="mt-0.5 font-semibold text-[#2D2526]">{{ $resumen['tratamiento'] }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs font-bold uppercase tracking-wider text-brand-700">Fecha y hora</dt>
+                                <dd class="mt-0.5 font-semibold text-[#2D2526]">{{ ucfirst($resumen['fecha']) }} · {{ $resumen['hora'] }} hrs</dd>
+                            </div>
+                        </dl>
+                    @endif
+                    <p class="mt-4 text-sm text-[#8A7A7D]">Tu cita quedó registrada en el consultorio. Guarda estos datos o toma una captura; si necesitas cambiarla, comunícate con el consultorio.</p>
                     <a href="/" class="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-7 py-3.5 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5">
                         Volver al inicio
                     </a>
@@ -231,7 +243,7 @@
                                         <input id="fecha-picker" type="date" :min="new Date().toISOString().split('T')[0]"
                                                x-model="fecha" @change="cargarHorarios()"
                                                class="block w-full rounded-2xl border border-[#e9dfdb] bg-white p-3.5 text-base font-semibold text-[#2D2526] shadow-xs focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
-                                        <p class="mt-2 text-xs text-[#8A7A7D]">Horario regular: Lunes a Viernes de 9:00 a 19:00 hrs &bull; Sábados de 9:00 a 14:00 hrs.</p>
+                                        <p class="mt-2 text-xs text-[#8A7A7D]">Horario regular: {{ $horarioRegular }}</p>
                                     </div>
 
                                     <div class="flex gap-3">
