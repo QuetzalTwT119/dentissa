@@ -2,10 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Enums\EstadoCita;
 use App\Enums\RolUsuario;
 use App\Events\NotificacionSistemaCreada;
 use App\Models\Cita;
 use App\Models\NotificacionSistema;
+use App\Models\Paciente;
+use App\Models\Servicio;
+use App\Models\Tratamiento;
 use App\Models\User;
 use App\Services\NotificacionInternaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -283,5 +287,40 @@ class NotificacionesSistemaTest extends TestCase
             ->assertNotFound();
 
         $this->assertNull($notificacion->fresh()->leida_en);
+    }
+
+    public function test_el_sondeo_de_notificaciones_no_consume_el_mensaje_de_la_accion_previa(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $paciente = Paciente::create([
+            'nombre' => 'Paciente',
+            'apellido' => 'Ficticio',
+            'telefono' => '5512345678',
+            'email' => 'paciente@ejemplo.test',
+        ]);
+        $servicio = Servicio::create(['nombre' => 'Consulta de prueba', 'activo' => true]);
+        $tratamiento = Tratamiento::create(['nombre' => 'Limpieza de prueba', 'duracion_estimada' => 30, 'categoria' => 'Preventiva', 'activo' => true]);
+        $servicio->tratamientos()->attach($tratamiento);
+        $cita = Cita::create([
+            'id_paciente' => $paciente->id,
+            'id_servicio' => $servicio->id,
+            'id_tratamiento' => $tratamiento->id,
+            'fecha_hora' => now()->addDays(2)->setTime(10, 0),
+            'duracion_estimada' => 30,
+            'estado' => EstadoCita::Agendada,
+        ]);
+
+        $this->actingAs($admin)
+            ->patch(route('citas.confirm', $cita))
+            ->assertSessionHas('success', 'Cita confirmada correctamente.');
+
+        // El sondeo en segundo plano llega antes que la página a la que se redirige.
+        $this->getJson(route('notificaciones.actualizaciones', ['desde_id' => 0]))->assertOk();
+
+        $this->get(route('citas.index'))->assertSee('Cita confirmada correctamente.');
+
+        // Una vez mostrado, el mensaje no reaparece en la siguiente navegación.
+        $this->getJson(route('notificaciones.actualizaciones', ['desde_id' => 0]))->assertOk();
+        $this->get(route('citas.index'))->assertDontSee('Cita confirmada correctamente.');
     }
 }
