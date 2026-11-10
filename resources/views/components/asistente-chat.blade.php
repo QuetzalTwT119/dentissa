@@ -48,7 +48,8 @@
                         headers: {
                             'Accept': 'application/json',
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                            // El token viaja con el componente: no depende de que la página incluya la meta csrf-token.
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         },
                         body: JSON.stringify({ consulta: texto, conversacion_id: this.conversacionId }),
                     });

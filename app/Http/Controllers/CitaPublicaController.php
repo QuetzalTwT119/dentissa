@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HorarioAtencion;
 use App\Models\Servicio;
 use App\Services\CrearCitaService;
 use App\Services\NotificacionService;
@@ -21,6 +22,7 @@ class CitaPublicaController extends Controller
 
         return view('citas-publicas.create', [
             'servicios' => $servicios,
+            'horarioRegular' => HorarioAtencion::resumenSemanal(),
         ]);
     }
 
@@ -56,7 +58,15 @@ class CitaPublicaController extends Controller
             $notificaciones->citaConfirmada($cita->load(['paciente', 'tratamiento']));
         }
 
+        $cita->loadMissing('tratamiento');
+        $fechaHora = $cita->fecha_hora->copy()->locale('es');
+
         return Redirect::route('citas.publica.create')
-            ->with('success', 'Tu cita quedó confirmada. Te esperamos.');
+            ->with('success', 'Tu cita quedó confirmada. Te esperamos.')
+            ->with('cita_resumen', [
+                'tratamiento' => $cita->tratamiento?->nombre,
+                'fecha' => $fechaHora->translatedFormat('l j \d\e F \d\e Y'),
+                'hora' => $fechaHora->format('H:i'),
+            ]);
     }
 }

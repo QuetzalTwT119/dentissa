@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\EstadoCita;
 use App\Enums\RolUsuario;
 use App\Models\Cita;
+use App\Models\HorarioAtencion;
 use App\Models\Paciente;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
@@ -86,6 +87,9 @@ class CitaPublicaTest extends TestCase
         $this->get(route('citas.publica.create'))
             ->assertOk()
             ->assertSee('¡Listo! Tu cita quedó confirmada. Te esperamos.')
+            ->assertSee('Limpieza Dental')
+            ->assertSee(ucfirst($fecha->copy()->locale('es')->translatedFormat('l j \d\e F \d\e Y')).' · 09:00 hrs')
+            ->assertDontSee('Te enviaremos un recordatorio')
             ->assertSee('Volver al inicio');
 
         $paciente = Paciente::where('email', 'ana.publica@example.test')->firstOrFail();
@@ -301,5 +305,26 @@ class CitaPublicaTest extends TestCase
             'fecha_hora' => Carbon::tomorrow()->setTime(10, 0),
             'duracion_estimada' => $tratamiento->duracion_estimada,
         ]);
+    }
+
+    public function test_la_agenda_publica_muestra_el_horario_configurado_y_no_un_texto_fijo(): void
+    {
+        HorarioAtencion::query()->update(['abierto' => false]);
+        HorarioAtencion::whereIn('dia_semana', [1, 2, 3, 4, 5])->update(['abierto' => true, 'hora_apertura' => 8, 'hora_cierre' => 18]);
+        HorarioAtencion::where('dia_semana', 6)->update(['abierto' => true, 'hora_apertura' => 9, 'hora_cierre' => 14]);
+
+        $this->get(route('citas.publica.create'))
+            ->assertOk()
+            ->assertSee('Horario regular: Lunes a viernes de 8:00 a 18:00 hrs • Sábado de 9:00 a 14:00 hrs.')
+            ->assertDontSee('9:00 a 19:00');
+
+        HorarioAtencion::where('dia_semana', 3)->update(['abierto' => false]);
+        $this->assertSame(
+            'Lunes a martes de 8:00 a 18:00 hrs • Jueves a viernes de 8:00 a 18:00 hrs • Sábado de 9:00 a 14:00 hrs.',
+            HorarioAtencion::resumenSemanal(),
+        );
+
+        HorarioAtencion::query()->update(['abierto' => false]);
+        $this->assertSame('Consulta la disponibilidad al elegir el día.', HorarioAtencion::resumenSemanal());
     }
 }

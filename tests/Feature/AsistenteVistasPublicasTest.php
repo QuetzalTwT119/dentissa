@@ -19,6 +19,9 @@ class AsistenteVistasPublicasTest extends TestCase
 
             $this->assertStringContainsString('Dentissa Asistente', $respuesta->getContent(), "Falta el asistente en la vista de {$vista}.");
             $this->assertSame(1, substr_count($respuesta->getContent(), 'id="consulta-inicio"'), "La vista de {$vista} debe incluir exactamente un chat.");
+            // Regresión: la portada no tiene <meta name="csrf-token">; el chat debe llevar su propio token.
+            $this->assertStringContainsString("'X-CSRF-TOKEN': '".csrf_token()."'", $respuesta->getContent(), "El chat de {$vista} debe incluir su token CSRF.");
+            $this->assertStringNotContainsString('meta[name=csrf-token]', $respuesta->getContent(), "El chat de {$vista} no debe depender de la meta csrf-token.");
         }
     }
 
