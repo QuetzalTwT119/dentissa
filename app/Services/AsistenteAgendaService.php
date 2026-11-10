@@ -12,6 +12,9 @@ use Illuminate\Support\Str;
 /** Flujo de consulta de horarios del widget web (no crea ni reserva citas). */
 class AsistenteAgendaService
 {
+    /** Se agrega a cada paso del flujo para que la persona sepa cómo salir. */
+    private const AYUDA_SALIR = "\n\nSi quieres salir, escribe \"cancelar\".";
+
     public function __construct(private readonly DisponibilidadService $disponibilidad) {}
 
     public function tieneConsultaEnCurso(int|string $conversacion): bool
@@ -21,21 +24,28 @@ class AsistenteAgendaService
 
     public function responder(int|string $conversacion, string $texto): ?string
     {
-        if (mb_strtolower(trim($texto)) === '/cancelar') {
+        $estado = Cache::get($this->clave($conversacion));
+        $comando = $this->normalizar($texto);
+
+        // "/cancelar" funciona siempre; "cancelar" y "salir" solo con una búsqueda abierta,
+        // para no interceptar mensajes de quien no está en el flujo.
+        if ($comando === '/cancelar' || ($estado && in_array($comando, ['cancelar', 'salir'], true))) {
             Cache::forget($this->clave($conversacion));
 
             return 'Cancelé la consulta de horarios. Cuando quieras, escribe que buscas una cita.';
         }
 
-        $estado = Cache::get($this->clave($conversacion));
+        // "¿Cuál es el horario de atención?" pide información, no una reserva; si hay
+        // una búsqueda abierta, se responde sin perderla.
+        if ($this->preguntaPorHorarioDeAtencion($texto)) {
+            $horario = 'Nuestro horario de atención: '.HorarioAtencion::resumenSemanal();
+
+            return $estado
+                ? $horario."\n\nSeguimos con tu búsqueda de horarios: responde la pregunta anterior o escribe \"cancelar\" para salir."
+                : $horario."\n\nSi quieres buscar una cita, escribe \"quiero una cita\".";
+        }
 
         if (! $estado) {
-            // "¿Cuál es el horario de atención?" pide información, no una reserva.
-            if ($this->preguntaPorHorarioDeAtencion($texto)) {
-                return 'Nuestro horario de atención: '.HorarioAtencion::resumenSemanal()
-                    ."\n\nSi quieres buscar una cita, escribe \"quiero una cita\".";
-            }
-
             if (! $this->esSolicitudDeAgenda($texto)) {
                 return null;
             }
@@ -55,7 +65,7 @@ class AsistenteAgendaService
     {
         Cache::put($this->clave($conversacion), ['paso' => 'servicio'], now()->addMinutes(15));
 
-        return "Claro. ¿Qué tipo de atención necesitas?\n\n".$this->listaServicios();
+        return "Claro. ¿Qué tipo de atención necesitas?\n\n".$this->listaServicios().self::AYUDA_SALIR;
     }
 
     private function elegirServicio(int|string $conversacion, string $texto): string
@@ -64,7 +74,7 @@ class AsistenteAgendaService
             ->first(fn (Servicio $item) => $this->normalizar($item->nombre) === $this->normalizar($texto));
 
         if (! $servicio) {
-            return "No identifiqué ese tipo de atención. Escríbelo tal como aparece aquí:\n\n".$this->listaServicios();
+            return "No identifiqué ese tipo de atención. Escríbelo tal como aparece aquí:\n\n".$this->listaServicios().self::AYUDA_SALIR;
         }
 
         $tratamientos = $servicio->tratamientos()->where('activo', true)->orderBy('nombre')->get();
@@ -80,7 +90,7 @@ class AsistenteAgendaService
             'servicio_id' => $servicio->id,
         ], now()->addMinutes(15));
 
-        return "Perfecto. Elige el tratamiento escribiendo su nombre:\n\n".$tratamientos->pluck('nombre')->map(fn ($nombre) => "• {$nombre}")->join("\n");
+        return "Perfecto. Elige el tratamiento escribiendo su nombre:\n\n".$tratamientos->pluck('nombre')->map(fn ($nombre) => "• {$nombre}")->join("\n").self::AYUDA_SALIR;
     }
 
     /** @param array<string, mixed> $estado */
@@ -91,7 +101,7 @@ class AsistenteAgendaService
         $tratamiento = $tratamientos->first(fn (Tratamiento $item) => $this->normalizar($item->nombre) === $this->normalizar($texto));
 
         if (! $tratamiento) {
-            return "No identifiqué ese tratamiento. Escríbelo tal como aparece aquí:\n\n".$tratamientos->pluck('nombre')->map(fn ($nombre) => "• {$nombre}")->join("\n");
+            return "No identifiqué ese tratamiento. Escríbelo tal como aparece aquí:\n\n".$tratamientos->pluck('nombre')->map(fn ($nombre) => "• {$nombre}")->join("\n").self::AYUDA_SALIR;
         }
 
         Cache::put($this->clave($conversacion), [
@@ -100,7 +110,7 @@ class AsistenteAgendaService
             'tratamiento_id' => $tratamiento->id,
         ], now()->addMinutes(15));
 
-        return '¿Para qué fecha lo buscas? Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.';
+        return '¿Para qué fecha lo buscas? Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.'.self::AYUDA_SALIR;
     }
 
     /** @param array<string, mixed> $estado */
@@ -109,11 +119,11 @@ class AsistenteAgendaService
         $fecha = $this->interpretarFecha($texto);
 
         if (! $fecha) {
-            return 'No reconocí la fecha. Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.';
+            return 'No reconocí la fecha. Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.'.self::AYUDA_SALIR;
         }
 
         if ($fecha->lt(today())) {
-            return 'La fecha debe ser hoy o posterior. Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.';
+            return 'La fecha debe ser hoy o posterior. Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.'.self::AYUDA_SALIR;
         }
 
         $tratamiento = Tratamiento::find($estado['tratamiento_id'] ?? null);
