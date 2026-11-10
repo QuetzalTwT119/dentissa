@@ -426,7 +426,8 @@ class CitaReglasTest extends TestCase
             ->assertSee('Cita confirmada correctamente.')
             ->assertSee('Confirmada')
             ->assertSee('Iniciar')
-            ->assertSee(route('citas.no-show', $cita), false);
+            ->assertSee(route('citas.no-show', $cita), false)
+            ->assertSee('¿Marcar esta cita como no asistida? Esta acción no se puede deshacer.', false);
 
         $cita->refresh();
 

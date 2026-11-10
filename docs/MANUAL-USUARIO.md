@@ -163,6 +163,8 @@ presentan alineados en una misma línea para ubicarlos rápidamente. Una cita **
 curso** muestra únicamente **Completar**, y los estados finales muestran **Sin
 acciones**.
 La inasistencia no se puede registrar antes de la fecha y hora programadas.
+Antes de marcarla, el sistema pide confirmación porque el cambio no se puede
+deshacer; cancelar también solicita un motivo opcional y confirmación.
 Después de una acción válida, la agenda muestra el estado actualizado y un
 aviso de confirmación; si la operación no procede, muestra el motivo del error.
 En pantallas angostas, la tabla conserva las acciones en una sola línea y permite

@@ -42,6 +42,11 @@ class NotificacionSistemaController extends Controller
 
     public function actualizaciones(Request $request): JsonResponse
     {
+        // Este sondeo corre en segundo plano cada pocos segundos. Si llega entre
+        // una redirección y la página siguiente, consumiría los mensajes flash
+        // ("Cita confirmada…", errores) sin mostrarlos; se conservan para la página.
+        $request->session()->reflash();
+
         $validated = $request->validate([
             'desde_id' => ['nullable', 'integer', 'min:0'],
         ]);
