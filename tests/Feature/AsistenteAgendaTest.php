@@ -203,6 +203,78 @@ class AsistenteAgendaTest extends TestCase
             ->assertJsonPath('respuesta', 'No reconocí la fecha. Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.');
     }
 
+    /** @return array<string, array{0: string}> */
+    public static function preguntasDeHorarioDeAtencion(): array
+    {
+        return [
+            'horario de atención' => ['¿Cuál es el horario de atención?'],
+            'a qué hora abren' => ['¿A qué hora abren?'],
+            'qué días atienden' => ['¿Qué días atienden?'],
+        ];
+    }
+
+    #[DataProvider('preguntasDeHorarioDeAtencion')]
+    public function test_preguntar_el_horario_de_atencion_responde_el_horario_sin_iniciar_una_reserva(string $pregunta): void
+    {
+        Servicio::create(['nombre' => 'Consulta web', 'activo' => true]);
+        HorarioAtencion::query()->update(['abierto' => false]);
+        HorarioAtencion::whereIn('dia_semana', [1, 2, 3, 4, 5])->update(['abierto' => true, 'hora_apertura' => 8, 'hora_cierre' => 18]);
+        $conversacion = '00000000-0000-4000-8000-000000000005';
+
+        $respuesta = $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => $pregunta,
+            'conversacion_id' => $conversacion,
+        ])->assertOk()->json('respuesta');
+
+        $this->assertStringContainsString('Nuestro horario de atención: Lunes a viernes de 8:00 a 18:00 hrs.', $respuesta);
+        $this->assertStringNotContainsString('¿Qué tipo de atención necesitas?', $respuesta);
+
+        // No quedó un flujo de reserva abierto: el siguiente mensaje no se toma como servicio.
+        $siguiente = $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => 'Consulta web',
+            'conversacion_id' => $conversacion,
+        ])->assertOk()->json('respuesta');
+        $this->assertStringNotContainsString('Elige el tratamiento', $siguiente);
+    }
+
+    /** @return array<string, array{0: string}> */
+    public static function preguntasDeReserva(): array
+    {
+        return [
+            'horarios disponibles' => ['¿Qué horarios disponibles tienen?'],
+            'cita y hora de apertura' => ['Quiero una cita, ¿a qué hora abren?'],
+        ];
+    }
+
+    #[DataProvider('preguntasDeReserva')]
+    public function test_pedir_horarios_disponibles_o_una_cita_inicia_la_busqueda_de_turnos(string $pregunta): void
+    {
+        Servicio::create(['nombre' => 'Consulta web', 'activo' => true]);
+
+        $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => $pregunta,
+            'conversacion_id' => '00000000-0000-4000-8000-000000000006',
+        ])
+            ->assertOk()
+            ->assertJsonPath('respuesta', fn (string $respuesta) => str_contains($respuesta, '¿Qué tipo de atención necesitas?'));
+    }
+
+    public function test_una_pregunta_frecuente_aprobada_sobre_el_horario_tiene_prioridad(): void
+    {
+        PreguntaFrecuente::create([
+            'pregunta' => '¿Cuál es el horario de atención?',
+            'respuesta' => 'Respuesta aprobada por la clínica.',
+            'activa' => true,
+        ]);
+
+        $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => '¿Cuál es el horario de atención?',
+            'conversacion_id' => '00000000-0000-4000-8000-000000000007',
+        ])
+            ->assertOk()
+            ->assertJsonPath('respuesta', 'Respuesta aprobada por la clínica.');
+    }
+
     private function prepararConversacionHastaLaFecha(string $conversacion): Tratamiento
     {
         $servicio = Servicio::create(['nombre' => 'Consulta web', 'activo' => true]);
