@@ -77,8 +77,10 @@ El asistente de Telegram solo responde mientras el proceso del bot esté activo
 en el entorno. Si no responde, utiliza el portal web y no compartas ni solicites
 el token del bot; es una credencial privada de configuración.
 
-Los nombres, teléfonos, correos y precios del catálogo demo son de prueba. No
-son datos ni tarifas de una clínica real. Al terminar la exposición, el equipo
+Los nombres, teléfonos y correos del paciente demo son de prueba. El catálogo
+demo usa los tratamientos y duraciones reales de la clínica (Valoración 30 min,
+Limpieza Dental, Retiro de Caries y Extracción Dental 1 hora, y Blanqueamiento
+Dental 1 hora y media), pero sin precios, porque la clínica aún no los confirma. Al terminar la exposición, el equipo
 debe apagar o eliminar el servicio de Railway desde el panel.
 
 

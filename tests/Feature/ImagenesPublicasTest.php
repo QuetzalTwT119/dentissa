@@ -28,4 +28,18 @@ class ImagenesPublicasTest extends TestCase
             ->assertSee('Valoración Integral')
             ->assertSee('/images/3.jpg');
     }
+
+    public function test_la_portada_y_la_agenda_describen_los_tratamientos_reales_de_la_clinica(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSeeInOrder(['Blanqueamiento Dental', 'Retiro de Caries &amp; Resinas', '1 hora', 'Extracción Cuidadosa'], false)
+            ->assertDontSee('Hasta 2 horas')
+            ->assertDontSee('Información por confirmar</h3>', false);
+
+        $this->get(route('citas.publica.create'))
+            ->assertOk()
+            ->assertSee('Valoración, limpieza dental, retiro de caries y extracciones para toda la familia.')
+            ->assertDontSee('carillas estéticas');
+    }
 }

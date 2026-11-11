@@ -84,8 +84,8 @@
                     horarios: [],
                     loadingHorarios: false,
                     descripciones: {
-                        'Odontología General': 'Prevención, profilaxis profunda, resinas y valoración integral para toda la familia.',
-                        'Odontología Estética': 'Diseño de sonrisa, carillas estéticas y blanqueamiento clínico de alta gama.',
+                        'Odontología General': 'Valoración, limpieza dental, retiro de caries y extracciones para toda la familia.',
+                        'Odontología Estética': 'Blanqueamiento dental para devolver la luminosidad natural a tu sonrisa.',
                         'Ortodoncia': 'Alineación dental con brackets estéticos y alineadores invisibles de precisión.',
                         'Implantología': 'Rehabilitación y reposición de piezas con implantes dentales de titanio.',
                         'Periodoncia': 'Tratamiento especializado de encías, hueso de soporte y salud bucal.',
