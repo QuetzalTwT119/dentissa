@@ -215,7 +215,11 @@ Acepta `hoy`, `mañana`, `DD/MM/AAAA`, `DD-MM-AAAA` o `AAAA-MM-DD`. Muestra los
 horarios disponibles, pero la reserva se confirma en **Agendar cita**.
 Si solo preguntas por el horario de atención (por ejemplo, "¿a qué hora
 abren?"), el chat responde con el horario configurado sin iniciar una reserva;
-una pregunta frecuente aprobada sobre el horario tiene prioridad.
+una pregunta frecuente aprobada sobre el horario tiene prioridad. Durante la
+búsqueda de horarios, cada paso indica que se puede escribir **cancelar** (o
+**salir**) para terminarla; si en medio de la búsqueda se pregunta por el
+horario de atención, el chat lo responde y conserva el paso actual. La búsqueda
+vence sola a los 15 minutos sin actividad.
 
 El inicio, las ofertas, la galería y la agenda pública se adaptan al
 ancho de la pantalla: las tarjetas pasan a una o varias columnas según el
