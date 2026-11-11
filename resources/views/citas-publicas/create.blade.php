@@ -425,6 +425,10 @@
                                         <p class="text-xs text-rose-600 font-medium">{{ $message }}</p>
                                     @enderror
 
+                                    @error('envios')
+                                        <p role="alert" class="text-xs text-rose-600 font-medium">{{ $message }}</p>
+                                    @enderror
+
                                     <div class="flex gap-3 pt-2">
                                         <button type="button" @click="anterior()" class="w-1/3 rounded-2xl border border-[#e9dfdb] bg-white px-4 py-3.5 text-sm font-bold text-[#51464a] hover:bg-[#FAF6F6] hover:text-brand-700 transition">Atrás</button>
                                         <button type="submit" class="w-2/3 rounded-2xl bg-brand-600 px-6 py-3.5 text-sm font-bold text-white shadow-soft transition hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 disabled:opacity-50">Agendar cita</button>

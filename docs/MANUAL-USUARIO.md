@@ -108,6 +108,11 @@ tanto en escritorio como en el menú móvil.
 6. Escribe nombre, apellido, teléfono y correo.
 7. Pulsa **Agendar cita**.
 
+Para evitar citas falsas, el formulario acepta hasta 5 envíos por minuto y 20
+por hora desde la misma conexión. Si se supera, aparece el aviso **"Recibimos
+varios intentos seguidos. Espera un minuto e inténtalo de nuevo."** y los datos
+escritos se conservan; basta esperar y volver a pulsar **Agendar cita**.
+
 En pantallas amplias, junto al formulario aparece un indicador compacto del paso
 actual y un resumen que se actualiza con el servicio, tratamiento, fecha y hora
 seleccionados. En móvil, ese panel se acomoda debajo del formulario para mantener

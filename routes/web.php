@@ -88,7 +88,9 @@ Route::get('/version', function () {
 })->name('version');
 
 Route::get('/agendar-cita', [CitaPublicaController::class, 'create'])->name('citas.publica.create');
-Route::post('/agendar-cita', [CitaPublicaController::class, 'store'])->name('citas.publica.store');
+Route::post('/agendar-cita', [CitaPublicaController::class, 'store'])
+    ->middleware('throttle:agendar-cita')
+    ->name('citas.publica.store');
 Route::get('/disponibilidad', [DisponibilidadController::class, 'index'])->name('disponibilidad.index');
 Route::post('/asistente-paciente/responder', [AsistentePacienteController::class, 'responder'])
     ->middleware('throttle:30,1')
