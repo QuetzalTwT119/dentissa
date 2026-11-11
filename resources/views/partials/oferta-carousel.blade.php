@@ -17,7 +17,7 @@
                             : '$'.$oferta->valor_descuento.' de descuento';
                     }
                 @endphp
-                <div class="animate-carousel-fade-in w-[85%] shrink-0 snap-start overflow-hidden rounded-2xl border border-[#e9dfdb] bg-white shadow-soft transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-[#f2b0a6] sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)]"
+                <div class="animate-carousel-fade-in w-[85%] shrink-0 snap-start overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-peach-300 sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)]"
                      style="animation-delay: {{ $index * 60 }}ms">
                     @if ($oferta->imagen)
                         <img src="/storage/{{ $oferta->imagen }}" alt="{{ $oferta->titulo }}" class="h-40 w-full object-cover">
@@ -27,11 +27,11 @@
                         </div>
                     @endif
                     <div class="p-6">
-                        <h3 class="font-semibold text-[#2D2526]">{{ $oferta->titulo }}</h3>
+                        <h3 class="font-semibold text-ink">{{ $oferta->titulo }}</h3>
                         @if ($valor)
                             <p class="mt-2 text-sm font-semibold text-brand-600">{{ $valor }}</p>
                         @endif
-                        <p class="mt-2 text-xs text-[#8A7A7D]">
+                        <p class="mt-2 text-xs text-muted">
                             Vigente hasta {{ \Illuminate\Support\Carbon::parse($oferta->fecha_fin)->translatedFormat('j \d\e F \d\e Y') }}
                         </p>
                     </div>

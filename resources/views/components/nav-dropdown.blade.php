@@ -2,8 +2,8 @@
 
 @php
 $classes = $active
-            ? 'inline-flex min-h-11 items-center rounded-full bg-brand-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:ring-offset-2'
-            : 'inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-[#5c4f53] transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300';
+            ? 'inline-flex min-h-11 items-center rounded-full bg-brand-50 px-4 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-brand-200/70 transition-colors duration-150 hover:bg-brand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400'
+            : 'inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-ink-soft transition-colors duration-150 hover:bg-white hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300';
 @endphp
 
 <div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
@@ -16,16 +16,16 @@ $classes = $active
     </button>
 
     <div x-show="open"
-            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter="transition ease-out duration-150"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-75"
+            x-transition:leave="transition ease-out duration-100"
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
-            class="absolute start-0 z-50 mt-2 w-56 rounded-2xl border border-[#e9dfdb] shadow-xl ltr:origin-top-left rtl:origin-top-right"
+            class="absolute start-0 z-50 mt-2 w-56 rounded-2xl border border-line shadow-lift ltr:origin-top-left rtl:origin-top-right"
             style="display: none;"
             @click="open = false">
-        <div class="rounded-2xl bg-white py-1.5 ring-1 ring-black/5">
+        <div class="rounded-2xl bg-white p-1.5">
             {{ $slot }}
         </div>
     </div>

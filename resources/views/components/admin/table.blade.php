@@ -4,10 +4,10 @@
 
 <div class="overflow-x-auto">
     <table {{ $attributes->merge(['class' => "w-full text-left text-sm {$minWidth}"]) }}>
-        <thead class="border-b border-[#e9dfdb] bg-[#FAF6F6] text-xs font-semibold uppercase tracking-wider text-[#6b5e62]">
+        <thead class="border-b border-line bg-shell/50 text-[0.72rem] font-semibold uppercase tracking-[0.06em] text-ink-soft">
             {{ $head }}
         </thead>
-        <tbody class="divide-y divide-[#e9dfdb]/60">
+        <tbody class="divide-y divide-line/70">
             {{ $slot }}
         </tbody>
     </table>

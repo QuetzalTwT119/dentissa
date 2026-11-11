@@ -22,9 +22,9 @@
                 >
                     <x-slot:actions>
                         <form method="GET" action="{{ route('admin.mensajes.index') }}" class="flex items-center gap-2.5">
-                            <label for="filtro_leido" class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Filtrar:</label>
+                            <label for="filtro_leido" class="text-xs font-semibold uppercase tracking-wider text-muted">Filtrar:</label>
                             <select id="filtro_leido" name="leido" onchange="this.form.submit()" aria-label="Filtrar por estado del mensaje"
-                                    class="rounded-xl border border-[#e9dfdb] bg-white px-3 py-1.5 text-sm text-[#2D2526] shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                    class="rounded-xl border border-line bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                 <option value="">Todos</option>
                                 <option value="0" @selected(($filtros['leido'] ?? '') === '0')>Sin leer</option>
                                 <option value="1" @selected(($filtros['leido'] ?? '') === '1')>Leídos</option>
@@ -47,12 +47,12 @@
                     </x-slot:head>
 
                     @forelse ($mensajes as $mensaje)
-                        <tr class="transition hover:bg-[#FAF6F6]/60">
-                            <td class="px-6 py-4 text-[#6b5e62] whitespace-nowrap">{{ $mensaje->created_at->translatedFormat('d M Y') }}</td>
-                            <td class="px-6 py-4 font-semibold text-[#2D2526] whitespace-nowrap">{{ $mensaje->nombre }}</td>
-                            <td class="px-6 py-4 text-[#6b5e62]">{{ $mensaje->email }}</td>
-                            <td class="px-6 py-4 text-[#6b5e62] whitespace-nowrap">{{ $mensaje->telefono ?? '—' }}</td>
-                            <td class="max-w-xs truncate px-6 py-4 text-[#2D2526]" title="{{ $mensaje->mensaje }}">{{ $mensaje->mensaje }}</td>
+                        <tr class="transition hover:bg-cream/60">
+                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $mensaje->created_at->translatedFormat('d M Y') }}</td>
+                            <td class="px-6 py-4 font-semibold text-ink whitespace-nowrap">{{ $mensaje->nombre }}</td>
+                            <td class="px-6 py-4 text-ink-soft">{{ $mensaje->email }}</td>
+                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $mensaje->telefono ?? '—' }}</td>
+                            <td class="max-w-xs truncate px-6 py-4 text-ink" title="{{ $mensaje->mensaje }}">{{ $mensaje->mensaje }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <x-admin.status-badge
                                     :active="$mensaje->leido"
@@ -66,7 +66,7 @@
                                         @csrf
                                         @method('patch')
                                         <button type="submit" title="{{ $mensaje->leido ? 'Marcar como sin leer' : 'Marcar como leído' }}" aria-label="{{ $mensaje->leido ? 'Marcar como sin leer' : 'Marcar como leído' }}"
-                                                class="rounded-xl p-2 text-emerald-600 transition hover:bg-emerald-50 hover:text-emerald-800">
+                                                class="rounded-xl p-2 text-sage-600 transition hover:bg-sage-50 hover:text-sage-700">
                                             <x-icon name="check" />
                                         </button>
                                     </form>

@@ -2,80 +2,91 @@
 <html lang="es" class="agenda-publica">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="theme-color" content="#fbf7f3">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         @include('partials.favicon')
 
         <title>Agendar cita — Dentissa Odontología Integral</title>
 
         <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="/fonts/figtree-latin-ext-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="/fonts/alex-brush-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased text-[#2D2526] selection:bg-[#f2b0a6] selection:text-[#2D2526] bg-[#FAF6F6] min-h-screen">
+    <body class="min-h-[100dvh] bg-cream font-sans text-ink antialiased">
         <x-asistente-chat />
 
+        @php
+            // Clases compartidas del formulario (se definen una vez y se reutilizan).
+            $claseCampo = 'block w-full min-h-12 rounded-xl border-line bg-white px-3.5 text-[0.95rem] text-ink shadow-2xs placeholder:text-muted/70 transition-[border-color,box-shadow] duration-150 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-rose-400';
+            $claseEtiqueta = 'mb-1.5 block text-sm font-semibold text-ink';
+            $claseError = 'mt-1.5 text-xs font-medium text-rose-700';
+            $claseAtras = 'btn-secondary flex-1 py-3 sm:flex-none sm:px-6';
+            $claseSiguiente = 'btn-brand flex-[2] py-3 sm:flex-none sm:px-8';
+        @endphp
+
         @if (session('success'))
-            <div class="flex min-h-screen items-center justify-center bg-[#FAF6F6] px-6">
-                <div class="max-w-md w-full rounded-3xl border border-[#e9dfdb] bg-white p-10 text-center shadow-xl">
-                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-peach-100 text-brand-600 mb-6 shadow-soft">
-                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+            <main class="flex min-h-[100dvh] items-center justify-center px-4 py-10">
+                <div class="w-full max-w-md rounded-4xl border border-line bg-white p-8 text-center shadow-lift sm:p-10">
+                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sage-50 text-sage-600 ring-8 ring-sage-50/60">
+                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <p class="font-cursive text-3xl text-brand-600">Melissa López N.</p>
-                    <h1 class="mt-4 text-2xl font-bold tracking-tight text-[#2D2526]">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
+                    <p class="mt-6 font-cursive text-3xl text-brand-600">Melissa López N.</p>
+                    <h1 class="mt-3 text-[1.75rem] leading-tight text-ink">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
                     @if ($resumen = session('cita_resumen'))
-                        <dl class="mt-6 space-y-3 rounded-2xl border border-[#e9dfdb] bg-[#FAF6F6] p-5 text-left text-sm">
-                            <div>
-                                <dt class="text-xs font-bold uppercase tracking-wider text-brand-700">Tratamiento</dt>
-                                <dd class="mt-0.5 font-semibold text-[#2D2526]">{{ $resumen['tratamiento'] }}</dd>
+                        <dl class="mt-6 divide-y divide-line/80 rounded-2xl border border-line bg-cream text-left text-sm">
+                            <div class="px-5 py-3.5">
+                                <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Tratamiento</dt>
+                                <dd class="mt-1 font-semibold text-ink">{{ $resumen['tratamiento'] }}</dd>
                             </div>
-                            <div>
-                                <dt class="text-xs font-bold uppercase tracking-wider text-brand-700">Fecha y hora</dt>
-                                <dd class="mt-0.5 font-semibold text-[#2D2526]">{{ ucfirst($resumen['fecha']) }} · {{ $resumen['hora'] }} hrs</dd>
+                            <div class="px-5 py-3.5">
+                                <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Fecha y hora</dt>
+                                <dd class="mt-1 font-semibold text-brand-700">{{ ucfirst($resumen['fecha']) }} · {{ $resumen['hora'] }} hrs</dd>
                             </div>
                         </dl>
                     @endif
-                    <p class="mt-4 text-sm text-[#8A7A7D]">Tu cita quedó registrada en el consultorio. Guarda estos datos o toma una captura; si necesitas cambiarla, comunícate con el consultorio.</p>
-                    <a href="/" class="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-7 py-3.5 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5">
+                    <p class="mt-5 text-sm leading-6 text-muted">Tu cita quedó registrada en el consultorio. Guarda estos datos o toma una captura; si necesitas cambiarla, comunícate con el consultorio.</p>
+                    <a href="/" class="btn-brand mt-8 w-full py-3 sm:w-auto sm:px-8">
                         Volver al inicio
                     </a>
                 </div>
-            </div>
+            </main>
         @else
-            <!-- Barra superior boutique -->
-            <header class="border-b border-[#e9dfdb]/80 bg-white/90 backdrop-blur-md sticky top-0 z-20">
-                <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-                    <a href="{{ url('/') }}" class="inline-flex items-center gap-3 group" aria-label="Volver al inicio">
-                        <img src="/images/brand/logo-rosa-transparente.png" alt="Dentissa" class="h-10 w-auto object-contain transition group-hover:scale-105">
-                        <div class="hidden sm:block">
-                            <p class="text-sm font-bold text-[#2D2526] leading-none">Dra. Melissa López N.</p>
-                            <p class="text-[11px] font-medium text-[#8A7A7D] mt-0.5">Odontología Integral & Armonización</p>
-                        </div>
+            <!-- Barra superior -->
+            <header class="sticky top-0 z-20 border-b border-line/70 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
+                <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+                    <a href="{{ url('/') }}" class="flex min-w-0 items-center gap-3 rounded-full" aria-label="Volver al inicio">
+                        <img src="/images/brand/logo-rosa-transparente.png" alt="Dentissa" class="h-10 w-10 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-peach-200">
+                        <span class="min-w-0 leading-none">
+                            <span class="block truncate font-cursive text-[1.45rem] leading-none text-brand-700 sm:text-[1.6rem]">Dra. Melissa López N.</span>
+                            <span class="mt-1 hidden text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-muted sm:block">Odontología Integral & Armonización</span>
+                        </span>
                     </a>
 
-                    <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">
-                            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Citas en línea 24/7
-                        </span>
-                        <a href="{{ url('/') }}" class="inline-flex items-center gap-1.5 rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-1.5 text-xs font-semibold text-[#403539] transition hover:bg-[#FAF6F6] hover:text-brand-700" aria-label="Volver al inicio">
-                            <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                            <span>Inicio</span>
-                        </a>
-                    </div>
+                    <a href="{{ url('/') }}" class="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full border border-line bg-white px-3 text-sm sm:px-4 font-semibold text-ink transition-colors hover:border-peach-300 hover:text-brand-700" aria-label="Volver al inicio">
+                        <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        <span class="hidden sm:inline">Inicio</span>
+                    </a>
                 </div>
             </header>
 
-            <div class="min-h-screen bg-[#FAF6F6] pb-24 sm:pb-0 pt-6"
+            <main class="pt-6 pb-28 sm:pb-16 sm:pt-10"
                  x-data="{
                     paso: {{ $errors->any() ? 4 : 0 }},
                     pasos: ['Tipo de atención', 'Fecha', 'Hora', 'Resumen', 'Datos'],
+                    encabezados: [
+                        { etiqueta: 'Selección clínica', titulo: '¿Qué tipo de atención necesitas?', texto: 'Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.' },
+                        { etiqueta: 'Calendario', titulo: 'Seleccionar una fecha', texto: 'Elige el día en el que deseas programar tu valoración en Dentissa.' },
+                        { etiqueta: 'Horario', titulo: 'Elige una hora', texto: 'Turnos confirmados en tiempo real con la agenda del consultorio.' },
+                        { etiqueta: 'Confirmación', titulo: 'Resumen de la cita', texto: 'Revisa el tratamiento, la fecha y la hora antes de continuar' },
+                        { etiqueta: 'Datos de contacto', titulo: 'Datos para agendar', texto: 'Los usamos para confirmar tu cita médica y enviarte recordatorios.' },
+                    ],
                     servicios: @js($servicios),
                     idServicio: @js(old('id_servicio', '')),
                     idTratamiento: @js(old('id_tratamiento', '')),
@@ -108,395 +119,297 @@
                         this.loadingHorarios = false;
                     },
                  }"
+                 x-init="$watch('paso', () => { if ($refs.tarjeta.getBoundingClientRect().top < 0) $refs.tarjeta.scrollIntoView({ block: 'start' }) })"
             >
-                <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 pt-2 sm:px-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.8fr)] lg:gap-8">
-                    <!-- Contenedor Principal de Pasos -->
-                    <div class="w-full overflow-hidden bg-white shadow-xl rounded-3xl border border-[#e9dfdb]/90 transition-all">
-                        
+                <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.75fr)] lg:gap-8">
+
+                    <!-- Tarjeta principal con los pasos -->
+                    <section x-ref="tarjeta" class="w-full scroll-mt-20 overflow-hidden rounded-4xl border border-line bg-white shadow-soft">
+
+                        <!-- Encabezado del paso actual (uno solo para los 5 pasos) -->
+                        <div class="border-b border-line/80 bg-gradient-to-b from-peach-50 to-white px-5 pb-6 pt-6 sm:px-8 sm:pt-8">
+                            <p class="eyebrow">
+                                <span x-text="`Paso ${paso + 1} de ${pasos.length}`">Paso 1 de 5</span>
+                                <span aria-hidden="true">·</span>
+                                <span x-text="encabezados[paso].etiqueta">Selección clínica</span>
+                            </p>
+                            <h1 class="mt-3 text-[1.75rem] leading-tight text-ink sm:text-[2.1rem]"
+                                x-text="paso === 0 && servicioSeleccionado ? 'Elige un tratamiento' : encabezados[paso].titulo">¿Qué tipo de atención necesitas?</h1>
+                            <p class="mt-2 max-w-lg text-sm leading-6 text-muted" x-text="encabezados[paso].texto">Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.</p>
+
+                            <div class="mt-5 flex gap-1.5" aria-hidden="true">
+                                <template x-for="(p, i) in pasos" :key="i">
+                                    <span class="h-1.5 flex-1 rounded-full transition-colors duration-300"
+                                          :class="i < paso ? 'bg-sage-500' : (i === paso ? 'bg-brand-500' : 'bg-line')"></span>
+                                </template>
+                            </div>
+                        </div>
+
                         <!-- PASO 0: SERVICIO Y TRATAMIENTO -->
                         <template x-if="paso === 0">
-                            <div>
-                                <!-- Banner Superior Elegante -->
-                                <div class="relative overflow-hidden bg-gradient-to-br from-[#2D2526] via-[#3a2029] to-[#d75078] px-6 py-8 text-center text-white sm:px-8 sm:py-10">
-                                    <div class="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
-                                    <div class="absolute -left-8 -bottom-8 h-40 w-40 rounded-full bg-[#f2b0a6]/20 blur-xl pointer-events-none"></div>
-                                    
-                                    <div class="relative">
-                                        <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-peach-200 backdrop-blur-xs mb-2">
-                                            Paso 1 de 5 &bull; Selección Clínica
-                                        </span>
-                                        <h1 class="text-2xl font-bold tracking-tight sm:text-3xl text-white" x-text="servicioSeleccionado ? 'Elige un tratamiento' : '¿Qué tipo de atención necesitas?'">¿Qué tipo de atención necesitas?</h1>
-                                        <p class="mt-2 text-xs sm:text-sm text-white/85 max-w-md mx-auto">Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.</p>
-                                        
-                                        <!-- Indicadores de paso -->
-                                        <div class="mt-5 flex items-center justify-center gap-2">
-                                            <template x-for="(p, i) in pasos" :key="i">
-                                                <span class="h-2 rounded-full transition-all duration-300" 
-                                                      :class="i === paso ? 'w-6 bg-white' : (i < paso ? 'w-2 bg-emerald-400' : 'w-2 bg-white/30')"></span>
-                                            </template>
-                                        </div>
+                            <div class="p-5 sm:p-8">
+                                <!-- Especialidades -->
+                                <template x-if="!servicioSeleccionado">
+                                    <div class="grid gap-3">
+                                        <template x-for="servicio in servicios" :key="servicio.id">
+                                            <button type="button"
+                                                    @click="idServicio = servicio.id; idTratamiento = ''"
+                                                    class="group flex w-full items-center gap-4 rounded-2xl border border-line bg-white p-4 text-left transition-[border-color,background-color,transform] duration-150 ease-out hover:border-peach-300 hover:bg-peach-50/50 active:scale-[0.99] sm:p-5">
+                                                <span class="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200 transition-colors group-hover:bg-white sm:flex">
+                                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </span>
+                                                <span class="min-w-0 flex-1">
+                                                    <span class="block font-serif text-lg leading-snug text-ink" x-text="servicio.nombre"></span>
+                                                    <span class="mt-0.5 block text-sm leading-5 text-muted line-clamp-2" x-text="descripciones[servicio.nombre] || 'Atención personalizada y diagnóstico oportuno'"></span>
+                                                </span>
+                                                <svg class="h-5 w-5 shrink-0 text-muted transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                            </button>
+                                        </template>
                                     </div>
-                                </div>
+                                </template>
 
-                                <div class="space-y-4 p-6 sm:p-8">
-                                    <!-- Si aún no se elige servicio: Cuadrícula de Especialidades -->
-                                    <template x-if="!servicioSeleccionado">
-                                        <div class="space-y-3">
-                                            <template x-for="servicio in servicios" :key="servicio.id">
+                                <!-- Tratamientos de la especialidad elegida -->
+                                <template x-if="servicioSeleccionado">
+                                    <div>
+                                        <div class="mb-6 flex items-center justify-between gap-3 rounded-2xl bg-cream p-3 pl-4 ring-1 ring-inset ring-line">
+                                            <div class="min-w-0">
+                                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Especialidad elegida</p>
+                                                <p class="font-serif text-lg leading-snug text-ink" x-text="servicioSeleccionado.nombre"></p>
+                                            </div>
+                                            <button type="button"
+                                                    @click="idServicio = ''; idTratamiento = ''"
+                                                    class="inline-flex min-h-11 shrink-0 items-center rounded-full bg-white px-4 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-line transition-colors hover:ring-peach-300">
+                                                Cambiar
+                                            </button>
+                                        </div>
+
+                                        <p id="titulo-tratamientos" class="mb-3 text-sm font-semibold text-ink">Selecciona el procedimiento específico</p>
+
+                                        <div class="grid gap-2.5" role="radiogroup" aria-labelledby="titulo-tratamientos">
+                                            <template x-for="tratamiento in servicioSeleccionado.tratamientos" :key="tratamiento.id">
                                                 <button type="button"
-                                                        @click="idServicio = servicio.id; idTratamiento = ''"
-                                                        class="group flex w-full items-center justify-between rounded-2xl border border-[#e9dfdb] bg-white p-4 sm:p-5 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-400 hover:shadow-md hover:bg-gradient-to-r hover:from-white hover:to-brand-50/20">
-                                                    <div class="flex items-center gap-4">
-                                                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-50 to-peach-100 text-brand-600 border border-brand-200/60 shadow-xs transition group-hover:scale-105 group-hover:bg-brand-600 group-hover:text-white">
-                                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                            </svg>
-                                                        </div>
-                                                        <div>
-                                                            <h3 class="text-base font-bold text-[#2D2526] group-hover:text-brand-700 transition-colors" x-text="servicio.nombre"></h3>
-                                                            <p class="text-xs text-[#8A7A7D] mt-0.5 line-clamp-1" x-text="descripciones[servicio.nombre] || 'Atención personalizada y diagnóstico oportuno'"></p>
-                                                        </div>
-                                                    </div>
-                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FAF6F6] text-[#8A7A7D] transition group-hover:bg-brand-600 group-hover:text-white">
-                                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                                        role="radio"
+                                                        :aria-checked="(Number(idTratamiento) === tratamiento.id).toString()"
+                                                        @click="idTratamiento = tratamiento.id"
+                                                        class="flex w-full items-center justify-between gap-3 rounded-2xl border p-4 text-left transition-[border-color,background-color] duration-150"
+                                                        :class="Number(idTratamiento) === tratamiento.id
+                                                            ? 'border-brand-400 bg-brand-50/60 ring-1 ring-brand-400'
+                                                            : 'border-line bg-white hover:border-peach-300'">
+                                                    <span class="flex min-w-0 items-center gap-3">
+                                                        <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors"
+                                                              :class="Number(idTratamiento) === tratamiento.id ? 'border-brand-600 bg-brand-600' : 'border-line bg-white'">
+                                                            <span class="h-1.5 w-1.5 rounded-full bg-white" x-show="Number(idTratamiento) === tratamiento.id"></span>
+                                                        </span>
+                                                        <span class="text-[0.95rem] font-semibold text-ink" x-text="tratamiento.nombre"></span>
+                                                    </span>
+                                                    <span class="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-muted">
+                                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                        <span x-text="tratamiento.duracion_estimada + ' min'"></span>
                                                     </span>
                                                 </button>
                                             </template>
                                         </div>
-                                    </template>
 
-                                    <!-- Si ya se eligió servicio: Lista de Tratamientos con duraciones -->
-                                    <template x-if="servicioSeleccionado">
-                                        <div>
-                                            <div class="mb-5 flex items-center justify-between rounded-2xl border border-brand-200 bg-brand-50/60 p-4">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white font-bold">✓</span>
-                                                    <div>
-                                                        <p class="text-[11px] font-bold uppercase tracking-wider text-brand-700">Especialidad elegida</p>
-                                                        <p class="text-base font-bold text-[#2D2526]" x-text="servicioSeleccionado.nombre"></p>
-                                                    </div>
-                                                </div>
-                                                <button type="button"
-                                                        @click="idServicio = ''; idTratamiento = ''"
-                                                        class="rounded-xl border border-brand-200 bg-white px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-50 transition">
-                                                    Cambiar
-                                                </button>
-                                            </div>
-
-                                            <p class="mb-3 text-xs font-bold uppercase tracking-wider text-[#8A7A7D]">Selecciona el procedimiento específico</p>
-                                            
-                                            <div class="space-y-2.5">
-                                                <template x-for="tratamiento in servicioSeleccionado.tratamientos" :key="tratamiento.id">
-                                                    <button type="button"
-                                                            @click="idTratamiento = tratamiento.id"
-                                                            class="group flex w-full items-center justify-between rounded-2xl border p-4 text-left transition-all duration-200"
-                                                            :class="Number(idTratamiento) === tratamiento.id 
-                                                                ? 'border-brand-500 bg-brand-50/70 text-brand-900 shadow-sm ring-1 ring-brand-400' 
-                                                                : 'border-[#e9dfdb] bg-white text-[#2D2526] hover:border-brand-300 hover:bg-[#FAF6F6]'">
-                                                        <div class="flex items-center gap-3">
-                                                            <span class="flex h-5 w-5 items-center justify-center rounded-full border transition"
-                                                                  :class="Number(idTratamiento) === tratamiento.id ? 'border-brand-600 bg-brand-600' : 'border-[#d4c6c9] bg-white'">
-                                                                <span class="h-2 w-2 rounded-full bg-white" x-show="Number(idTratamiento) === tratamiento.id"></span>
-                                                            </span>
-                                                            <span class="font-bold text-sm" x-text="tratamiento.nombre"></span>
-                                                        </div>
-                                                        <span class="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-[#8A7A7D] border border-[#e9dfdb]">
-                                                            <svg class="h-3.5 w-3.5 text-[#8A7A7D]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                            <span x-text="tratamiento.duracion_estimada + ' min'"></span>
-                                                        </span>
-                                                    </button>
-                                                </template>
-                                            </div>
-
-                                            <button type="button" :disabled="!idTratamiento" @click="siguiente()"
-                                                    class="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-600 px-6 py-4 text-sm font-bold text-white shadow-soft transition-all duration-200 hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 disabled:opacity-40 disabled:pointer-events-none">
+                                        <div class="mt-6 flex">
+                                            <button type="button" :disabled="!idTratamiento" @click="siguiente()" class="btn-brand w-full py-3 sm:ml-auto sm:w-auto sm:px-8">
                                                 <span>Continuar a fecha y horario</span>
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
                                             </button>
                                         </div>
-                                    </template>
-                                </div>
+                                    </div>
+                                </template>
                             </div>
                         </template>
 
                         <!-- PASO 1: SELECCIONAR FECHA -->
                         <template x-if="paso === 1">
-                            <div>
-                                <div class="relative overflow-hidden bg-gradient-to-br from-[#2D2526] via-[#3a2029] to-[#d75078] px-6 py-8 text-center text-white sm:px-8 sm:py-10">
-                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-peach-200 backdrop-blur-xs mb-2">
-                                        Paso 2 de 5 &bull; Calendario
-                                    </span>
-                                    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Seleccionar una fecha</h1>
-                                    <p class="mt-2 text-xs sm:text-sm text-white/85 max-w-md mx-auto">Elige el día en el que deseas programar tu valoración en Dentissa.</p>
-                                    
-                                    <div class="mt-5 flex items-center justify-center gap-2">
-                                        <template x-for="(p, i) in pasos" :key="i">
-                                            <span class="h-2 rounded-full transition-all duration-300" 
-                                                  :class="i === paso ? 'w-6 bg-white' : (i < paso ? 'w-2 bg-emerald-400' : 'w-2 bg-white/30')"></span>
-                                        </template>
-                                    </div>
+                            <div class="space-y-6 p-5 sm:p-8">
+                                <div>
+                                    <label for="fecha-picker" class="{{ $claseEtiqueta }}">Selecciona el día</label>
+                                    <input id="fecha-picker" type="date" :min="new Date().toISOString().split('T')[0]"
+                                           x-model="fecha" @change="cargarHorarios()"
+                                           class="{{ $claseCampo }} font-semibold">
+                                    <p class="mt-2 text-sm text-muted">Horario regular: {{ $horarioRegular }}</p>
                                 </div>
 
-                                <div class="p-6 sm:p-8 space-y-6">
-                                    <div class="rounded-2xl border border-brand-100 bg-[#FAF6F6]/80 p-5">
-                                        <label for="fecha-picker" class="block text-xs font-bold uppercase tracking-wider text-brand-700 mb-2">Selecciona el día</label>
-                                        <input id="fecha-picker" type="date" :min="new Date().toISOString().split('T')[0]"
-                                               x-model="fecha" @change="cargarHorarios()"
-                                               class="block w-full rounded-2xl border border-[#e9dfdb] bg-white p-3.5 text-base font-semibold text-[#2D2526] shadow-xs focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
-                                        <p class="mt-2 text-xs text-[#8A7A7D]">Horario regular: {{ $horarioRegular }}</p>
-                                    </div>
-
-                                    <div class="flex gap-3">
-                                        <button type="button" @click="anterior()" class="w-1/3 rounded-2xl border border-[#e9dfdb] bg-white px-4 py-3.5 text-sm font-bold text-[#51464a] hover:bg-[#FAF6F6] hover:text-brand-700 transition">Atrás</button>
-                                        <button type="button" :disabled="!fecha" @click="siguiente()" class="w-2/3 rounded-2xl bg-brand-600 px-6 py-3.5 text-sm font-bold text-white shadow-soft transition hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 disabled:opacity-40">Continuar a horario</button>
-                                    </div>
+                                <div class="flex gap-3 sm:justify-between">
+                                    <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
+                                    <button type="button" :disabled="!fecha" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a horario</button>
                                 </div>
                             </div>
                         </template>
 
                         <!-- PASO 2: ELEGIR HORA -->
                         <template x-if="paso === 2">
-                            <div>
-                                <div class="relative overflow-hidden bg-gradient-to-br from-[#2D2526] via-[#3a2029] to-[#d75078] px-6 py-8 text-center text-white sm:px-8 sm:py-10">
-                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-peach-200 backdrop-blur-xs mb-2">
-                                        Paso 3 de 5 &bull; Horario
-                                    </span>
-                                    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Elige una hora</h1>
-                                    <p class="mt-2 text-xs sm:text-sm text-white/85 max-w-md mx-auto">Turnos confirmados en tiempo real con la agenda del consultorio.</p>
-                                    
-                                    <div class="mt-5 flex items-center justify-center gap-2">
-                                        <template x-for="(p, i) in pasos" :key="i">
-                                            <span class="h-2 rounded-full transition-all duration-300" 
-                                                  :class="i === paso ? 'w-6 bg-white' : (i < paso ? 'w-2 bg-emerald-400' : 'w-2 bg-white/30')"></span>
-                                        </template>
-                                    </div>
+                            <div class="space-y-6 p-5 sm:p-8">
+                                <div>
+                                    <p class="mb-3 text-sm font-semibold text-ink">Horarios disponibles para el día seleccionado</p>
+                                    @include('partials.disponibilidad-picker')
                                 </div>
 
-                                <div class="p-6 sm:p-8 space-y-6">
-                                    <div class="rounded-2xl border border-[#e9dfdb] bg-white p-5 shadow-xs">
-                                        <p class="text-xs font-bold uppercase tracking-wider text-brand-700 mb-3">Horarios disponibles para el día seleccionado</p>
-                                        @include('partials.disponibilidad-picker')
-                                    </div>
-
-                                    <div class="flex gap-3">
-                                        <button type="button" @click="anterior()" class="w-1/3 rounded-2xl border border-[#e9dfdb] bg-white px-4 py-3.5 text-sm font-bold text-[#51464a] hover:bg-[#FAF6F6] hover:text-brand-700 transition">Atrás</button>
-                                        <button type="button" :disabled="!hora" @click="siguiente()" class="w-2/3 rounded-2xl bg-brand-600 px-6 py-3.5 text-sm font-bold text-white shadow-soft transition hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 disabled:opacity-40">Revisar resumen</button>
-                                    </div>
+                                <div class="flex gap-3 sm:justify-between">
+                                    <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
+                                    <button type="button" :disabled="!hora" @click="siguiente()" class="{{ $claseSiguiente }}">Revisar resumen</button>
                                 </div>
                             </div>
                         </template>
 
                         <!-- PASO 3: RESUMEN DE LA CITA -->
                         <template x-if="paso === 3">
-                            <div>
-                                <div class="relative overflow-hidden bg-gradient-to-br from-[#2D2526] via-[#3a2029] to-[#d75078] px-6 py-8 text-center text-white sm:px-8 sm:py-10">
-                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-peach-200 backdrop-blur-xs mb-2">
-                                        Paso 4 de 5 &bull; Confirmación
-                                    </span>
-                                    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Resumen de la cita</h1>
-                                    <p class="mt-2 text-xs sm:text-sm text-white/85 max-w-md mx-auto">Revisa el tratamiento, la fecha y la hora antes de continuar</p>
-                                    
-                                    <div class="mt-5 flex items-center justify-center gap-2">
-                                        <template x-for="(p, i) in pasos" :key="i">
-                                            <span class="h-2 rounded-full transition-all duration-300" 
-                                                  :class="i === paso ? 'w-6 bg-white' : (i < paso ? 'w-2 bg-emerald-400' : 'w-2 bg-white/30')"></span>
-                                        </template>
+                            <div class="space-y-6 p-5 sm:p-8">
+                                <div class="overflow-hidden rounded-3xl border border-line">
+                                    <div class="bg-cream px-5 py-4">
+                                        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Consulta en Dentissa</p>
+                                        <h3 class="mt-1 font-serif text-xl text-ink" x-text="tratamientoSeleccionado?.nombre"></h3>
                                     </div>
+                                    <dl class="grid grid-cols-1 divide-y divide-line/80 border-t border-line sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+                                        <div class="px-5 py-4">
+                                            <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Especialidad</dt>
+                                            <dd class="mt-1 font-semibold text-ink" x-text="servicioSeleccionado?.nombre"></dd>
+                                        </div>
+                                        <div class="px-5 py-4">
+                                            <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Fecha y hora</dt>
+                                            <dd class="mt-1 font-semibold text-brand-700" x-text="fecha + ' — ' + hora + ' hrs'"></dd>
+                                        </div>
+                                    </dl>
                                 </div>
 
-                                <div class="space-y-4 p-6 sm:p-8">
-                                    <div class="rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50/40 via-white to-peach-50/40 p-6 shadow-xs">
-                                        <div class="flex items-center gap-3 pb-4 border-b border-brand-100">
-                                            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-600 text-white font-bold text-lg">
-                                                ★
-                                            </div>
-                                            <div>
-                                                <p class="text-xs font-bold uppercase tracking-wider text-brand-700">Consulta en Dentissa</p>
-                                                <h3 class="text-lg font-bold text-[#2D2526]" x-text="tratamientoSeleccionado?.nombre"></h3>
-                                            </div>
-                                        </div>
-
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-                                            <div class="rounded-xl bg-white p-3 border border-[#e9dfdb]">
-                                                <p class="text-[11px] font-bold uppercase text-[#8A7A7D]">Especialidad</p>
-                                                <p class="text-sm font-bold text-[#2D2526] mt-0.5" x-text="servicioSeleccionado?.nombre"></p>
-                                            </div>
-                                            <div class="rounded-xl bg-white p-3 border border-[#e9dfdb]">
-                                                <p class="text-[11px] font-bold uppercase text-[#8A7A7D]">Fecha y hora</p>
-                                                <p class="text-sm font-bold text-brand-700 mt-0.5" x-text="fecha + ' — ' + hora + ' hrs'"></p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex gap-3 pt-2">
-                                        <button type="button" @click="anterior()" class="w-1/3 rounded-2xl border border-[#e9dfdb] bg-white px-4 py-3.5 text-sm font-bold text-[#51464a] hover:bg-[#FAF6F6] hover:text-brand-700 transition">Atrás</button>
-                                        <button type="button" @click="siguiente()" class="w-2/3 rounded-2xl bg-brand-600 px-6 py-3.5 text-sm font-bold text-white shadow-soft transition hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5">Continuar a mis datos</button>
-                                    </div>
+                                <div class="flex gap-3 sm:justify-between">
+                                    <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
+                                    <button type="button" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a mis datos</button>
                                 </div>
                             </div>
                         </template>
 
                         <!-- PASO 4: DATOS DEL PACIENTE -->
                         <template x-if="paso === 4">
-                            <div>
-                                <div class="relative overflow-hidden bg-gradient-to-br from-[#2D2526] via-[#3a2029] to-[#d75078] px-6 py-8 text-center text-white sm:px-8 sm:py-10">
-                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-peach-200 backdrop-blur-xs mb-2">
-                                        Paso 5 de 5 &bull; Datos de Contacto
-                                    </span>
-                                    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Datos para agendar</h1>
-                                    <p class="mt-2 text-xs sm:text-sm text-white/85 max-w-md mx-auto">Los usamos para confirmar tu cita médica y enviarte recordatorios.</p>
-                                    
-                                    <div class="mt-5 flex items-center justify-center gap-2">
-                                        <template x-for="(p, i) in pasos" :key="i">
-                                            <span class="h-2 rounded-full transition-all duration-300" 
-                                                  :class="i === paso ? 'w-6 bg-white' : 'w-2 bg-emerald-400'"></span>
-                                        </template>
+                            <form method="POST" action="{{ route('citas.publica.store') }}" class="space-y-5 p-5 sm:p-8">
+                                @csrf
+                                <input type="hidden" name="id_servicio" :value="idServicio">
+                                <input type="hidden" name="id_tratamiento" :value="idTratamiento">
+                                <input type="hidden" name="fecha" :value="fecha">
+                                <input type="hidden" name="hora" :value="hora">
+
+                                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                                    <div>
+                                        <label for="nombre" class="{{ $claseEtiqueta }}">Nombre <span class="text-brand-600" aria-hidden="true">*</span></label>
+                                        <input id="nombre" type="text" name="nombre" autocomplete="given-name" maxlength="100" required
+                                               placeholder="Ej. Ana" value="{{ old('nombre') }}"
+                                               aria-invalid="{{ $errors->has('nombre') ? 'true' : 'false' }}"
+                                               @if ($errors->has('nombre')) aria-describedby="nombre-error" @endif
+                                               class="{{ $claseCampo }}">
+                                        @error('nombre')
+                                            <p id="nombre-error" role="alert" class="{{ $claseError }}">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="apellido" class="{{ $claseEtiqueta }}">Apellido <span class="text-brand-600" aria-hidden="true">*</span></label>
+                                        <input id="apellido" type="text" name="apellido" autocomplete="family-name" maxlength="100" required
+                                               placeholder="Ej. Pérez" value="{{ old('apellido') }}"
+                                               aria-invalid="{{ $errors->has('apellido') ? 'true' : 'false' }}"
+                                               @if ($errors->has('apellido')) aria-describedby="apellido-error" @endif
+                                               class="{{ $claseCampo }}">
+                                        @error('apellido')
+                                            <p id="apellido-error" role="alert" class="{{ $claseError }}">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="telefono" class="{{ $claseEtiqueta }}">Teléfono <span class="text-brand-600" aria-hidden="true">*</span></label>
+                                        <input id="telefono" type="tel" name="telefono" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="Ingresa exactamente 10 dígitos numéricos." required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                                               placeholder="Ej. 5512345678" value="{{ old('telefono') }}"
+                                               aria-invalid="{{ $errors->has('telefono') ? 'true' : 'false' }}"
+                                               @if ($errors->has('telefono')) aria-describedby="telefono-error" @endif
+                                               class="{{ $claseCampo }}">
+                                        @error('telefono')
+                                            <p id="telefono-error" role="alert" class="{{ $claseError }}">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="email" class="{{ $claseEtiqueta }}">Correo electrónico <span class="text-brand-600" aria-hidden="true">*</span></label>
+                                        <input id="email" type="email" name="email" autocomplete="email" maxlength="100" required
+                                               placeholder="Ej. ana@correo.com" value="{{ old('email') }}"
+                                               aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
+                                               @if ($errors->has('email')) aria-describedby="email-error" @endif
+                                               class="{{ $claseCampo }}">
+                                        @error('email')
+                                            <p id="email-error" role="alert" class="{{ $claseError }}">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
 
-                                <form method="POST" action="{{ route('citas.publica.store') }}" class="space-y-4 p-6 sm:p-8">
-                                    @csrf
-                                    <input type="hidden" name="id_servicio" :value="idServicio">
-                                    <input type="hidden" name="id_tratamiento" :value="idTratamiento">
-                                    <input type="hidden" name="fecha" :value="fecha">
-                                    <input type="hidden" name="hora" :value="hora">
+                                <div>
+                                    <label for="motivo" class="{{ $claseEtiqueta }}">Motivo de la visita <span class="font-normal text-muted">(opcional)</span></label>
+                                    <textarea id="motivo" name="motivo" placeholder="Cuéntanos brevemente si tienes alguna molestia o si es revisión de rutina..." rows="3"
+                                              class="{{ $claseCampo }} py-3">{{ old('motivo') }}</textarea>
+                                </div>
 
-                                    <div class="rounded-2xl border border-brand-100 bg-[#FAF6F6]/60 p-4 sm:p-5 space-y-4">
-                                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                            <div>
-                                                <label for="nombre" class="mb-1 block text-xs font-bold uppercase tracking-wider text-[#382d31]">Nombre *</label>
-                                                <input id="nombre" type="text" name="nombre" autocomplete="given-name" maxlength="100" required
-                                                       placeholder="Ej. Ana" value="{{ old('nombre') }}"
-                                                       aria-invalid="{{ $errors->has('nombre') ? 'true' : 'false' }}"
-                                                       @if ($errors->has('nombre')) aria-describedby="nombre-error" @endif
-                                                       class="block w-full rounded-xl border border-[#e9dfdb] bg-white p-3 text-sm font-medium text-[#2D2526] shadow-xs focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
-                                                @error('nombre')
-                                                    <p id="nombre-error" role="alert" class="mt-1 text-xs text-rose-600 font-medium">{{ $message }}</p>
-                                                @enderror
-                                            </div>
+                                @error('hora')
+                                    <p role="alert" class="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{{ $message }}</p>
+                                @enderror
 
-                                            <div>
-                                                <label for="apellido" class="mb-1 block text-xs font-bold uppercase tracking-wider text-[#382d31]">Apellido *</label>
-                                                <input id="apellido" type="text" name="apellido" autocomplete="family-name" maxlength="100" required
-                                                       placeholder="Ej. Pérez" value="{{ old('apellido') }}"
-                                                       aria-invalid="{{ $errors->has('apellido') ? 'true' : 'false' }}"
-                                                       @if ($errors->has('apellido')) aria-describedby="apellido-error" @endif
-                                                       class="block w-full rounded-xl border border-[#e9dfdb] bg-white p-3 text-sm font-medium text-[#2D2526] shadow-xs focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
-                                                @error('apellido')
-                                                    <p id="apellido-error" role="alert" class="mt-1 text-xs text-rose-600 font-medium">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                            <div>
-                                                <label for="telefono" class="mb-1 block text-xs font-bold uppercase tracking-wider text-[#382d31]">Teléfono *</label>
-                                                <input id="telefono" type="tel" name="telefono" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="Ingresa exactamente 10 dígitos numéricos." required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
-                                                       placeholder="Ej. 5512345678" value="{{ old('telefono') }}"
-                                                       aria-invalid="{{ $errors->has('telefono') ? 'true' : 'false' }}"
-                                                       @if ($errors->has('telefono')) aria-describedby="telefono-error" @endif
-                                                       class="block w-full rounded-xl border border-[#e9dfdb] bg-white p-3 text-sm font-medium text-[#2D2526] shadow-xs focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
-                                                @error('telefono')
-                                                    <p id="telefono-error" role="alert" class="mt-1 text-xs text-rose-600 font-medium">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-
-                                            <div>
-                                                <label for="email" class="mb-1 block text-xs font-bold uppercase tracking-wider text-[#382d31]">Correo electrónico *</label>
-                                                <input id="email" type="email" name="email" autocomplete="email" maxlength="100" required
-                                                       placeholder="Ej. ana@correo.com" value="{{ old('email') }}"
-                                                       aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
-                                                       @if ($errors->has('email')) aria-describedby="email-error" @endif
-                                                       class="block w-full rounded-xl border border-[#e9dfdb] bg-white p-3 text-sm font-medium text-[#2D2526] shadow-xs focus:border-brand-500 focus:ring-2 focus:ring-brand-200">
-                                                @error('email')
-                                                    <p id="email-error" role="alert" class="mt-1 text-xs text-rose-600 font-medium">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label for="motivo" class="mb-1 block text-xs font-bold uppercase tracking-wider text-[#382d31]">Motivo de la visita (opcional)</label>
-                                            <textarea id="motivo" name="motivo" placeholder="Cuéntanos brevemente si tienes alguna molestia o si es revisión de rutina..." rows="2"
-                                                      class="block w-full rounded-xl border border-[#e9dfdb] bg-white p-3 text-sm font-medium text-[#2D2526] shadow-xs focus:border-brand-500 focus:ring-2 focus:ring-brand-200">{{ old('motivo') }}</textarea>
-                                        </div>
-                                    </div>
-
-                                    @error('hora')
-                                        <p class="text-xs text-rose-600 font-medium">{{ $message }}</p>
-                                    @enderror
-
-                                    <div class="flex gap-3 pt-2">
-                                        <button type="button" @click="anterior()" class="w-1/3 rounded-2xl border border-[#e9dfdb] bg-white px-4 py-3.5 text-sm font-bold text-[#51464a] hover:bg-[#FAF6F6] hover:text-brand-700 transition">Atrás</button>
-                                        <button type="submit" class="w-2/3 rounded-2xl bg-brand-600 px-6 py-3.5 text-sm font-bold text-white shadow-soft transition hover:bg-brand-700 hover:shadow-md hover:-translate-y-0.5 disabled:opacity-50">Agendar cita</button>
-                                    </div>
-                                </form>
-                            </div>
+                                <div class="flex gap-3 pt-1 sm:justify-between">
+                                    <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
+                                    <button type="submit" class="{{ $claseSiguiente }}">Agendar cita</button>
+                                </div>
+                            </form>
                         </template>
-                    </div>
+                    </section>
 
-                    <!-- Ficha Resumen / Ticket Boutique (Columna Derecha) -->
-                    <aside class="w-full self-start rounded-3xl border border-[#e9dfdb] bg-white p-6 shadow-xl sm:p-7 lg:sticky lg:top-24">
-                        <div class="flex items-center justify-between pb-4 border-b border-[#e9dfdb]">
+                    <!-- Resumen lateral (ticket) -->
+                    <aside class="w-full self-start rounded-4xl border border-line bg-white p-5 shadow-soft sm:p-7 lg:sticky lg:top-24">
+                        <div class="flex items-start justify-between gap-4">
                             <div>
-                                <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-brand-700 border border-brand-200">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                                    Agenda en línea
-                                </span>
-                                <h2 class="mt-2 text-xl font-bold tracking-tight text-[#2D2526]">Tu cita, paso a paso</h2>
+                                <p class="eyebrow">Agenda en línea</p>
+                                <h2 class="mt-2 text-2xl text-ink">Tu cita, paso a paso</h2>
                             </div>
-                            <div class="h-11 w-11 rounded-2xl bg-gradient-to-br from-brand-100 to-peach-100 flex items-center justify-center text-brand-700 shadow-xs">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            </div>
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </span>
                         </div>
 
-                        <p class="mt-3 text-xs leading-5 text-[#6b5e62]">Elige lo que necesitas y revisa la disponibilidad antes de confirmar.</p>
+                        <p class="mt-2 text-sm leading-6 text-muted">Elige lo que necesitas y revisa la disponibilidad antes de confirmar.</p>
 
-                        <!-- Barra de progreso -->
-                        <div class="mt-5 rounded-2xl bg-[#FAF6F6] p-4 border border-[#e9dfdb]/80" role="progressbar" aria-label="Progreso de la cita" aria-valuemin="1" :aria-valuemax="pasos.length" :aria-valuenow="paso + 1">
-                            <div class="flex items-center justify-between gap-3 text-xs font-bold">
-                                <span class="text-[#8A7A7D]">Paso actual</span>
+                        <!-- Progreso -->
+                        <div class="mt-5 hidden rounded-2xl bg-cream p-4 lg:block" role="progressbar" aria-label="Progreso de la cita" aria-valuemin="1" :aria-valuemax="pasos.length" :aria-valuenow="paso + 1">
+                            <div class="flex items-center justify-between gap-3 text-xs font-semibold">
+                                <span class="text-muted">Paso actual</span>
                                 <span class="text-brand-700" x-text="`Paso ${paso + 1} de ${pasos.length}`"></span>
                             </div>
-                            <p class="mt-1 text-sm font-bold text-[#2D2526]" x-text="pasos[paso]"></p>
-                            <div class="mt-2 flex gap-1" aria-hidden="true">
-                                <template x-for="(etapa, indice) in pasos" :key="etapa">
-                                    <span class="h-1.5 flex-1 rounded-full transition-all duration-300"
-                                          :class="indice <= paso ? 'bg-brand-500' : 'bg-[#e9dfdb]'"></span>
-                                </template>
-                            </div>
+                            <p class="mt-1 text-sm font-semibold text-ink" x-text="pasos[paso]"></p>
                         </div>
 
-                        <!-- Ticket con datos seleccionados -->
-                        <div class="mt-5 rounded-2xl border border-brand-200/80 bg-gradient-to-b from-white to-[#FAF6F6] p-5 shadow-xs" aria-live="polite">
-                            <p class="text-xs font-bold uppercase tracking-wider text-brand-700 flex items-center gap-1.5">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Resumen de la cita
-                            </p>
-                            
-                            <dl class="mt-3 divide-y divide-[#e9dfdb]/70 text-xs">
-                                <div class="flex justify-between py-2">
-                                    <dt class="text-[#8A7A7D] font-medium">Servicio</dt>
-                                    <dd class="text-right font-bold text-[#2D2526]" x-text="servicioSeleccionado?.nombre ?? 'Pendiente'"></dd>
+                        <!-- Datos seleccionados -->
+                        <div class="mt-5 rounded-2xl border border-dashed border-peach-300 p-4" aria-live="polite">
+                            <p class="text-xs font-semibold uppercase tracking-[0.12em] text-brand-700">Resumen de la cita</p>
+                            <dl class="mt-2 divide-y divide-line/80 text-sm">
+                                <div class="flex justify-between gap-4 py-2.5">
+                                    <dt class="shrink-0 text-muted">Servicio</dt>
+                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!servicioSeleccionado && 'font-normal text-muted/80'" x-text="servicioSeleccionado?.nombre ?? 'Pendiente'"></dd>
                                 </div>
-                                <div class="flex justify-between py-2">
-                                    <dt class="text-[#8A7A7D] font-medium">Tratamiento</dt>
-                                    <dd class="text-right font-bold text-[#2D2526]" x-text="tratamientoSeleccionado?.nombre ?? 'Pendiente'"></dd>
+                                <div class="flex justify-between gap-4 py-2.5">
+                                    <dt class="shrink-0 text-muted">Tratamiento</dt>
+                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!tratamientoSeleccionado && 'font-normal text-muted/80'" x-text="tratamientoSeleccionado?.nombre ?? 'Pendiente'"></dd>
                                 </div>
-                                <div class="flex justify-between py-2">
-                                    <dt class="text-[#8A7A7D] font-medium">Fecha</dt>
-                                    <dd class="text-right font-bold text-[#2D2526]" x-text="fecha || 'Pendiente'"></dd>
+                                <div class="flex justify-between gap-4 py-2.5">
+                                    <dt class="shrink-0 text-muted">Fecha</dt>
+                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!fecha && 'font-normal text-muted/80'" x-text="fecha || 'Pendiente'"></dd>
                                 </div>
-                                <div class="flex justify-between py-2">
-                                    <dt class="text-[#8A7A7D] font-medium">Hora</dt>
-                                    <dd class="text-right font-bold text-brand-700" x-text="hora || 'Pendiente'"></dd>
+                                <div class="flex justify-between gap-4 py-2.5">
+                                    <dt class="shrink-0 text-muted">Hora</dt>
+                                    <dd class="min-w-0 text-right font-semibold text-brand-700" :class="!hora && 'font-normal text-muted/80'" x-text="hora || 'Pendiente'"></dd>
                                 </div>
                             </dl>
                         </div>
 
-                        <p class="mt-4 text-[11px] leading-relaxed text-[#8A7A7D] text-center">Elige un horario disponible y completa tus datos para reservar tu cita.</p>
+                        <p class="mt-4 text-center text-xs leading-5 text-muted">Elige un horario disponible y completa tus datos para reservar tu cita.</p>
                     </aside>
                 </div>
-            </div>
+            </main>
         @endif
     </body>
 </html>

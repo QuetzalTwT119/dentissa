@@ -43,13 +43,13 @@ $rolClase = [
                     <x-slot:actions>
                         <form method="GET" action="{{ route('admin.usuarios.index') }}" class="flex flex-wrap items-center gap-2.5">
                             <select name="rol" aria-label="Filtrar por rol" onchange="this.form.submit()"
-                                    class="rounded-xl border border-[#e9dfdb] bg-white px-3 py-1.5 text-sm text-[#2D2526] shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                    class="rounded-xl border border-line bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                 <option value="">Todos los roles</option>
                                 <option value="asistente" @selected(($filtros['rol'] ?? '') === 'asistente')>Asistente</option>
                                 <option value="admin" @selected(($filtros['rol'] ?? '') === 'admin')>Admin</option>
                             </select>
                             <select name="activo" aria-label="Filtrar por estado" onchange="this.form.submit()"
-                                    class="rounded-xl border border-[#e9dfdb] bg-white px-3 py-1.5 text-sm text-[#2D2526] shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                    class="rounded-xl border border-line bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                 <option value="">Todos los estados</option>
                                 <option value="1" @selected(($filtros['activo'] ?? '') === '1')>Activos</option>
                                 <option value="0" @selected(($filtros['activo'] ?? '') === '0')>Inactivos</option>
@@ -75,17 +75,17 @@ $rolClase = [
                     </x-slot:head>
 
                     @forelse ($usuarios as $usuario)
-                        <tr class="transition hover:bg-[#FAF6F6]/60">
-                            <td class="px-6 py-4 font-semibold text-[#2D2526] whitespace-nowrap">
+                        <tr class="transition hover:bg-cream/60">
+                            <td class="px-6 py-4 font-semibold text-ink whitespace-nowrap">
                                 <div class="flex items-center gap-3">
                                     <x-admin.user-avatar :name="$usuario->nombre . ' ' . $usuario->apellido" />
                                     <span>{{ $usuario->nombre }} {{ $usuario->apellido }}</span>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-[#6b5e62]">{{ $usuario->email }}</td>
-                            <td class="px-6 py-4 text-[#6b5e62] whitespace-nowrap">{{ $usuario->telefono ?? '—' }}</td>
+                            <td class="px-6 py-4 text-ink-soft">{{ $usuario->email }}</td>
+                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $usuario->telefono ?? '—' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $rolClase[$usuario->rol->value] ?? 'bg-gray-100 text-gray-700' }}">
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $rolClase[$usuario->rol->value] ?? 'bg-shell text-ink' }}">
                                     {{ $rolLabel[$usuario->rol->value] ?? $usuario->rol->value }}
                                 </span>
                             </td>
@@ -103,7 +103,7 @@ $rolClase = [
                                         @csrf
                                         @method('patch')
                                         <button type="submit" title="{{ $usuario->activo ? 'Desactivar' : 'Activar' }}" aria-label="{{ $usuario->activo ? 'Desactivar usuario' : 'Activar usuario' }}"
-                                                class="rounded-xl p-2 transition {{ $usuario->activo ? 'text-rose-600 hover:bg-rose-50 hover:text-rose-800' : 'text-emerald-600 hover:bg-emerald-50 hover:text-emerald-800' }}">
+                                                class="rounded-xl p-2 transition {{ $usuario->activo ? 'text-rose-600 hover:bg-rose-50 hover:text-rose-800' : 'text-sage-600 hover:bg-sage-50 hover:text-sage-700' }}">
                                             <x-icon name="power" />
                                         </button>
                                     </form>

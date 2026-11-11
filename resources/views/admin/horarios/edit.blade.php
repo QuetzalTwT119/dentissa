@@ -35,8 +35,8 @@ $diaLabel = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 =
                         </x-slot:head>
 
                         @foreach ($horarios as $indice => $horario)
-                            <tr class="transition hover:bg-[#FAF6F6]/40" x-data="{ abierto: {{ old("dias.$indice.abierto", $horario->abierto) ? 'true' : 'false' }} }">
-                                <td class="px-5 py-3.5 font-semibold text-[#2D2526]">{{ $diaLabel[$horario->dia_semana] }}</td>
+                            <tr class="transition hover:bg-cream/40" x-data="{ abierto: {{ old("dias.$indice.abierto", $horario->abierto) ? 'true' : 'false' }} }">
+                                <td class="px-5 py-3.5 font-semibold text-ink">{{ $diaLabel[$horario->dia_semana] }}</td>
                                 <td class="px-5 py-3.5">
                                     <input type="hidden" name="dias[{{ $indice }}][dia_semana]" value="{{ $horario->dia_semana }}">
                                     <x-checkbox name="dias[{{ $indice }}][abierto]" value="1" x-model="abierto" />
@@ -44,29 +44,29 @@ $diaLabel = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 =
                                 <td class="px-5 py-3.5">
                                     <x-text-input type="number" min="0" max="23" class="w-24 text-center"
                                                   name="dias[{{ $indice }}][hora_apertura]"
-                                                  value="{{ old("dias.$indice.hora_apertura", $horario->hora_apertura) }}"
-                                                  x-bind:class="{ 'opacity-40 pointer-events-none bg-gray-50': !abierto }" />
+                                                  :value="old('dias.'.$indice.'.hora_apertura', $horario->hora_apertura)"
+                                                  x-bind:class="{ 'opacity-40 pointer-events-none bg-cream': !abierto }" />
                                 </td>
                                 <td class="px-5 py-3.5">
                                     <x-text-input type="number" min="0" max="23" class="w-24 text-center"
                                                   name="dias[{{ $indice }}][hora_cierre]"
-                                                  value="{{ old("dias.$indice.hora_cierre", $horario->hora_cierre) }}"
-                                                  x-bind:class="{ 'opacity-40 pointer-events-none bg-gray-50': !abierto }" />
+                                                  :value="old('dias.'.$indice.'.hora_cierre', $horario->hora_cierre)"
+                                                  x-bind:class="{ 'opacity-40 pointer-events-none bg-cream': !abierto }" />
                                 </td>
                                 <td class="px-5 py-3.5">
                                     <x-text-input type="number" min="1" class="w-24 text-center"
                                                   name="dias[{{ $indice }}][capacidad_simultanea]"
-                                                  value="{{ old("dias.$indice.capacidad_simultanea", $horario->capacidad_simultanea) }}"
-                                                  x-bind:class="{ 'opacity-40 pointer-events-none bg-gray-50': !abierto }" />
+                                                  :value="old('dias.'.$indice.'.capacidad_simultanea', $horario->capacidad_simultanea)"
+                                                  x-bind:class="{ 'opacity-40 pointer-events-none bg-cream': !abierto }" />
                                 </td>
                             </tr>
                         @endforeach
                     </x-admin.table>
 
-                    <div class="flex items-center gap-4 p-6 border-t border-[#e9dfdb] bg-gradient-to-r from-white via-white to-[#FAF6F6]/50">
+                    <div class="flex items-center gap-4 p-6 border-t border-line bg-gradient-to-r from-white via-white to-cream/50">
                         <x-primary-button>Guardar horarios</x-primary-button>
                         @if (session('status') === 'horarios-actualizados')
-                            <p class="text-sm font-semibold text-emerald-700">Guardado correctamente.</p>
+                            <p class="text-sm font-semibold text-sage-700">Guardado correctamente.</p>
                         @endif
                     </div>
                 </form>

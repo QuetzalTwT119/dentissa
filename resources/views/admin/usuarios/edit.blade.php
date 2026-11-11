@@ -49,7 +49,7 @@
                     <div>
                         <x-input-label for="rol" value="Rol" />
                         <select id="rol" name="rol"
-                                class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="asistente" @selected(old('rol', $usuario->rol->value) === 'asistente')>Asistente</option>
                             <option value="admin" @selected(old('rol', $usuario->rol->value) === 'admin')>Admin</option>
                         </select>
@@ -58,16 +58,16 @@
 
                     <div class="relative py-2">
                         <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                            <div class="w-full border-t border-[#e9dfdb]"></div>
+                            <div class="w-full border-t border-line"></div>
                         </div>
                         <div class="relative flex justify-start">
-                            <span class="bg-white pr-3 text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Cambio de contraseña (opcional)</span>
+                            <span class="bg-white pr-3 text-xs font-semibold uppercase tracking-wider text-muted">Cambio de contraseña (opcional)</span>
                         </div>
                     </div>
 
                     <div>
                         <x-input-label for="password" value="Nueva contraseña" />
-                        <p class="mb-1 text-xs text-[#8A7A7D]">Déjalo en blanco para mantener la contraseña actual.</p>
+                        <p class="mb-1 text-xs text-muted">Déjalo en blanco para mantener la contraseña actual.</p>
                         <x-text-input id="password" name="password" type="password" class="mt-1.5 block w-full" />
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
                     </div>
@@ -78,7 +78,7 @@
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                     </div>
 
-                    <div class="flex items-center gap-4 pt-4 border-t border-[#e9dfdb]">
+                    <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button>Guardar cambios</x-primary-button>
 
                         <a href="{{ route('admin.usuarios.index') }}">

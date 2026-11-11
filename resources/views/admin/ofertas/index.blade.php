@@ -54,17 +54,17 @@ $tipoLabel = [
                     </x-slot:head>
 
                     @forelse ($ofertas as $oferta)
-                        <tr class="transition hover:bg-[#FAF6F6]/60">
-                            <td class="px-6 py-4 font-semibold text-[#2D2526] whitespace-nowrap">{{ $oferta->titulo }}</td>
-                            <td class="px-6 py-4 text-[#6b5e62] whitespace-nowrap">
+                        <tr class="transition hover:bg-cream/60">
+                            <td class="px-6 py-4 font-semibold text-ink whitespace-nowrap">{{ $oferta->titulo }}</td>
+                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">
                                 <span class="inline-flex items-center rounded-full bg-peach-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 border border-peach-200">
                                     {{ $tipoLabel[$oferta->tipo->value] ?? $oferta->tipo->value }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-[#6b5e62] whitespace-nowrap">{{ $oferta->tratamiento->nombre ?? '—' }}</td>
-                            <td class="px-6 py-4 text-[#6b5e62] whitespace-nowrap">{{ $oferta->fecha_inicio }} al {{ $oferta->fecha_fin }}</td>
+                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $oferta->tratamiento->nombre ?? '—' }}</td>
+                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $oferta->fecha_inicio }} al {{ $oferta->fecha_fin }}</td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center rounded-full bg-[#FAF6F6] px-2.5 py-0.5 text-xs font-semibold text-[#2D2526] border border-[#e9dfdb]">
+                                <span class="inline-flex items-center rounded-full bg-cream px-2.5 py-0.5 text-xs font-semibold text-ink border border-line">
                                     {{ $oferta->cupo_total > 0 ? $oferta->cupos_utilizados.'/'.$oferta->cupo_total : 'Sin límite' }}
                                 </span>
                             </td>

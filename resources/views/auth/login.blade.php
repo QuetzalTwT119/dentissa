@@ -1,11 +1,8 @@
 <x-guest-layout>
     <div class="mb-8">
-        <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-700 border border-brand-200">
-            <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-            Acceso profesional
-        </span>
-        <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-[#2D2526] sm:text-4xl">Iniciar sesión</h2>
-        <p class="mt-2 text-sm leading-relaxed text-[#6b5e62]">Entra con tu cuenta para continuar con la gestión del consultorio.</p>
+        <p class="eyebrow">Acceso profesional</p>
+        <h2 class="mt-3 text-[2rem] leading-tight text-ink sm:text-[2.5rem]">Hola de nuevo</h2>
+        <p class="mt-2 text-sm leading-6 text-muted">Entra con tu cuenta para continuar con la gestión del consultorio.</p>
     </div>
 
     <!-- Session Status -->
@@ -16,58 +13,46 @@
 
         <!-- Email Address -->
         <div>
-            <x-input-label for="email" value="Correo electrónico" class="text-xs font-bold uppercase tracking-wider text-[#382d31]" />
-            <div class="relative mt-1.5">
-                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8A7A7D]">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206" />
-                    </svg>
-                </span>
-                <input id="email" class="block w-full rounded-2xl border border-[#e9dfdb] bg-white pl-10 pr-4 py-3 text-sm font-medium text-[#2D2526] shadow-xs placeholder:text-[#8A7A7D]/60 focus:border-brand-500 focus:ring-2 focus:ring-brand-200" 
-                       type="email" name="email" value="{{ old('email') }}" placeholder="nombre@consultorio.com" required autofocus autocomplete="username" />
-            </div>
-            <x-input-error :messages="$errors->get('email')" class="mt-1.5 text-xs text-rose-600 font-medium" />
+            <x-input-label for="email" value="Correo electrónico" />
+            <x-text-input id="email" class="mt-2 block w-full" type="email" name="email" :value="old('email')" placeholder="nombre@consultorio.com" required autofocus autocomplete="username" inputmode="email" />
+            <x-input-error :messages="$errors->get('email')" />
         </div>
 
         <!-- Password -->
-        <div>
-            <x-input-label for="password" value="Contraseña" class="text-xs font-bold uppercase tracking-wider text-[#382d31]" />
-            <div class="relative mt-1.5">
-                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#8A7A7D]">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                </span>
-                <input id="password" class="block w-full rounded-2xl border border-[#e9dfdb] bg-white pl-10 pr-4 py-3 text-sm font-medium text-[#2D2526] shadow-xs placeholder:text-[#8A7A7D]/60 focus:border-brand-500 focus:ring-2 focus:ring-brand-200"
-                       type="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
+        <div x-data="{ visible: false }">
+            <div class="flex items-center justify-between gap-3">
+                <x-input-label for="password" value="Contraseña" />
+                @if (Route::has('password.request'))
+                    <a class="rounded text-sm font-semibold text-brand-700 underline-offset-4 transition-colors hover:text-brand-800 hover:underline" href="{{ route('password.request') }}">¿La olvidaste?</a>
+                @endif
             </div>
-            <x-input-error :messages="$errors->get('password')" class="mt-1.5 text-xs text-rose-600 font-medium" />
+            <div class="relative mt-2">
+                <x-text-input id="password" class="block w-full pr-12" ::type="visible ? 'text' : 'password'" type="password" name="password" required autocomplete="current-password" />
+                <button type="button" @click="visible = !visible" class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-xl text-muted transition-colors hover:text-ink" :aria-label="visible ? 'Ocultar contraseña' : 'Mostrar contraseña'" aria-controls="password">
+                    <svg x-show="!visible" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.04 12.32a1 1 0 0 1 0-.64C3.42 7.51 7.36 4.5 12 4.5c4.64 0 8.57 3 9.96 7.18.07.2.07.43 0 .64C20.58 16.49 16.64 19.5 12 19.5c-4.64 0-8.57-3-9.96-7.18Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                    <svg x-show="visible" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.22A10.48 10.48 0 0 0 2.04 12c1.29 4.34 5.31 7.5 10.07 7.5.99 0 1.95-.14 2.86-.4M6.23 6.23A10.45 10.45 0 0 1 12 4.5c4.76 0 8.77 3.16 10.07 7.5a10.52 10.52 0 0 1-4.29 5.77M6.23 6.23 3 3m3.23 3.23 3.65 3.65m7.89 7.89L21 21m-3.23-3.23-3.65-3.65m0 0a3 3 0 1 0-4.24-4.24m4.24 4.24L9.88 9.88" /></svg>
+                </button>
+            </div>
+            <x-input-error :messages="$errors->get('password')" />
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
-            <label for="remember_me" class="inline-flex cursor-pointer items-center gap-2.5">
-                <input id="remember_me" type="checkbox" class="h-4 w-4 rounded-md border-[#e9dfdb] text-brand-600 shadow-xs focus:ring-brand-400" name="remember">
-                <span class="text-xs font-medium text-[#5c4f53]">Recuérdame</span>
-            </label>
-            @if (Route::has('password.request'))
-                <a class="text-xs font-bold text-brand-700 hover:text-brand-800 transition underline-offset-4 hover:underline" href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
-            @endif
-        </div>
+        <label for="remember_me" class="inline-flex min-h-11 cursor-pointer items-center gap-3">
+            <x-checkbox id="remember_me" name="remember" />
+            <span class="text-sm text-ink-soft">Mantener la sesión iniciada</span>
+        </label>
 
-        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#d75078] to-[#bd3f64] px-6 py-4 text-sm font-bold text-white shadow-soft transition-all duration-200 hover:from-[#bd3f64] hover:to-[#a12a54] hover:shadow-md hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
-            <span>Iniciar sesión</span>
+        <button type="submit" class="btn-brand w-full py-3">
+            Iniciar sesión
             <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
             </svg>
         </button>
     </form>
 
-    <div class="mt-8 border-t border-[#e9dfdb]/80 pt-5 text-center">
-        <p class="inline-flex items-center gap-1.5 text-xs text-[#8A7A7D]">
-            <svg class="h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            Tu información está protegida y solo es visible para usuarios autorizados.
-        </p>
-    </div>
+    <p class="mt-8 flex items-start gap-2 border-t border-line/80 pt-5 text-xs leading-5 text-muted">
+        <svg class="mt-0.5 h-4 w-4 shrink-0 text-sage-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        Tu información está protegida y solo es visible para usuarios autorizados.
+    </p>
 </x-guest-layout>

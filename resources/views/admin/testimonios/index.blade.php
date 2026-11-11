@@ -2,7 +2,7 @@
 $estadoLabel = ['pendiente' => 'Pendiente', 'aprobado' => 'Aprobado', 'rechazado' => 'Rechazado'];
 $estadoClase = [
     'pendiente' => 'bg-amber-50 text-amber-800 border border-amber-200/60',
-    'aprobado' => 'bg-[#EAF4EE] text-[#4E8D72] border border-[#4E8D72]/20',
+    'aprobado' => 'bg-sage-50 text-sage-500 border border-sage-500/20',
     'rechazado' => 'bg-rose-50 text-rose-800 border border-rose-200/60',
 ];
 @endphp
@@ -36,11 +36,11 @@ $estadoClase = [
             @endif
 
             <x-admin.card>
-                <div class="flex flex-col items-stretch gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6 border-b border-[#e9dfdb]/80 bg-gradient-to-r from-white via-white to-[#FAF6F6]/50">
+                <div class="flex flex-col items-stretch gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6 border-b border-line/80 bg-gradient-to-r from-white via-white to-cream/50">
                     <form method="GET" action="{{ route('admin.testimonios.index') }}" class="flex flex-wrap items-center gap-3">
-                        <label for="filtro_estado" class="text-xs font-semibold uppercase tracking-wider text-[#8A7A7D]">Filtrar por estado:</label>
+                        <label for="filtro_estado" class="text-xs font-semibold uppercase tracking-wider text-muted">Filtrar por estado:</label>
                         <select id="filtro_estado" name="estado" onchange="this.form.submit()"
-                                class="rounded-xl border border-[#e9dfdb] bg-white px-3 py-1.5 text-sm text-[#2D2526] shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                class="rounded-xl border border-line bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="">Todos</option>
                             <option value="pendiente" @selected(($filtros['estado'] ?? '') === 'pendiente')>Pendiente</option>
                             <option value="aprobado" @selected(($filtros['estado'] ?? '') === 'aprobado')>Aprobado</option>
@@ -65,17 +65,17 @@ $estadoClase = [
                     </x-slot:head>
 
                     @forelse ($testimonios as $testimonio)
-                        <tr class="transition hover:bg-[#FAF6F6]/60">
-                            <td class="px-6 py-4 font-semibold text-[#2D2526] whitespace-nowrap">
+                        <tr class="transition hover:bg-cream/60">
+                            <td class="px-6 py-4 font-semibold text-ink whitespace-nowrap">
                                 <div class="flex items-center gap-3">
                                     <x-admin.user-avatar :name="$testimonio->paciente->nombre . ' ' . $testimonio->paciente->apellido" />
                                     <span>{{ $testimonio->paciente->nombre }} {{ $testimonio->paciente->apellido }}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-amber-400 tracking-wider font-bold whitespace-nowrap">{{ str_repeat('★', $testimonio->calificacion) }}</td>
-                            <td class="max-w-sm truncate px-6 py-4 text-[#2D2526]" title="{{ $testimonio->comentario }}">{{ $testimonio->comentario }}</td>
+                            <td class="max-w-sm truncate px-6 py-4 text-ink" title="{{ $testimonio->comentario }}">{{ $testimonio->comentario }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $estadoClase[$testimonio->estado->value] ?? 'bg-gray-100 text-gray-700' }}">
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $estadoClase[$testimonio->estado->value] ?? 'bg-shell text-ink' }}">
                                     {{ $estadoLabel[$testimonio->estado->value] ?? $testimonio->estado->value }}
                                 </span>
                             </td>
@@ -90,7 +90,7 @@ $estadoClase = [
                                             @csrf
                                             @method('patch')
                                             <button type="submit" title="Aprobar" aria-label="Aprobar testimonio"
-                                                    class="rounded-xl p-2 text-emerald-600 transition hover:bg-emerald-50 hover:text-emerald-800">
+                                                    class="rounded-xl p-2 text-sage-600 transition hover:bg-sage-50 hover:text-sage-700">
                                                 <x-icon name="check" />
                                             </button>
                                         </form>

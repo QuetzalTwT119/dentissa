@@ -52,13 +52,13 @@
                     </x-slot:head>
 
                     @forelse ($tratamientos as $tratamiento)
-                        <tr class="transition hover:bg-[#FAF6F6]/60">
-                            <td class="px-6 py-4 font-semibold text-[#2D2526] whitespace-nowrap">{{ $tratamiento->nombre }}</td>
-                            <td class="px-6 py-4 text-[#6b5e62] whitespace-nowrap">{{ $tratamiento->categoria ?? '—' }}</td>
-                            <td class="px-6 py-4 text-[#6b5e62] whitespace-nowrap">{{ $tratamiento->duracion_estimada ? $tratamiento->duracion_estimada.' min' : '—' }}</td>
-                            <td class="px-6 py-4 font-medium text-[#2D2526] whitespace-nowrap">{{ $tratamiento->precio_referencia ? '$'.$tratamiento->precio_referencia : '—' }}</td>
+                        <tr class="transition hover:bg-cream/60">
+                            <td class="px-6 py-4 font-semibold text-ink whitespace-nowrap">{{ $tratamiento->nombre }}</td>
+                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $tratamiento->categoria ?? '—' }}</td>
+                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $tratamiento->duracion_estimada ? $tratamiento->duracion_estimada.' min' : '—' }}</td>
+                            <td class="px-6 py-4 font-medium text-ink whitespace-nowrap">{{ $tratamiento->precio_referencia ? '$'.$tratamiento->precio_referencia : '—' }}</td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center rounded-full bg-[#FAF6F6] px-2.5 py-0.5 text-xs font-semibold text-[#2D2526] border border-[#e9dfdb]">
+                                <span class="inline-flex items-center rounded-full bg-cream px-2.5 py-0.5 text-xs font-semibold text-ink border border-line">
                                     {{ $tratamiento->servicios_count }}
                                 </span>
                             </td>

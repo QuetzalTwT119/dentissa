@@ -148,7 +148,7 @@ class CitaReglasTest extends TestCase
             ->assertOk()
             ->assertSee('Mostrando')
             ->assertSee('1–20', false)
-            ->assertSee('de <strong class="font-semibold text-[#2D2526]">21</strong> citas', false)
+            ->assertSee('de <strong class="font-semibold text-ink">21</strong> citas', false)
             ->assertSee('<option value="20" selected>20</option>', false);
 
         $this->actingAs($admin)

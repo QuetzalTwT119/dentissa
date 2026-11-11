@@ -4,8 +4,8 @@
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /></svg>
         </span>
         <div>
-            <h2 class="text-lg font-bold tracking-tight text-[#2D2526]">Información personal</h2>
-            <p class="mt-1 text-sm leading-6 text-[#6b5e62]">Mantén actualizados tus datos de contacto y correo electrónico.</p>
+            <h2 class="text-xl text-ink">Información personal</h2>
+            <p class="mt-1 text-sm leading-6 text-ink-soft">Mantén actualizados tus datos de contacto y correo electrónico.</p>
         </div>
     </header>
 
@@ -42,10 +42,10 @@
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
-                    <p class="text-sm mt-2 text-gray-800">
+                    <p class="text-sm mt-2 text-ink">
                         Tu correo electrónico no está verificado.
 
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button form="send-verification" class="underline text-sm text-ink-soft hover:text-ink rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-400">
                             Haz clic aquí para reenviar el correo de verificación.
                         </button>
                     </p>
@@ -68,7 +68,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
+                    class="text-sm text-ink-soft"
                 role="status"
                 >Cambios guardados.</p>
             @endif

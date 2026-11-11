@@ -2,15 +2,16 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     @include('partials.favicon')
     <title>Acceso no autorizado — Dentissa</title>
     <style>
+        @font-face { font-family: "Fraunces"; font-weight: 500; font-display: swap; src: url("/fonts/fraunces-latin-500-normal.woff2") format("woff2"); }
         body {
             margin: 0;
             padding: 2rem;
-            color: #2D2526;
-            background: #FAF6F6;
+            color: #2B2224;
+            background: #FBF7F3;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             display: flex;
             align-items: center;
@@ -23,8 +24,8 @@
             width: 100%;
             padding: 2.5rem;
             background: white;
-            border-radius: 1.5rem;
-            border: 1px solid #e9dfdb;
+            border-radius: 2rem;
+            border: 1px solid #ECE0DA;
             box-shadow: 0 10px 25px -5px rgba(45, 37, 38, 0.05);
             text-align: center;
         }
@@ -53,9 +54,11 @@
         }
         h1 {
             margin: 0 0 0.75rem;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #2D2526;
+            font-family: "Fraunces", Georgia, serif;
+            font-weight: 500;
+            font-size: 1.85rem;
+            line-height: 1.2;
+            color: #2B2224;
         }
         p {
             margin: 0 0 1.25rem;
@@ -75,9 +78,9 @@
             justify-content: center;
             padding: 0.75rem 1.5rem;
             border: 0;
-            border-radius: 0.75rem;
+            border-radius: 9999px;
             color: white;
-            background: #d75078;
+            background: #c13866;
             font-size: 0.875rem;
             font-weight: 600;
             text-decoration: none;
@@ -85,15 +88,15 @@
             transition: background 0.2s;
         }
         .btn-primary:hover {
-            background: #bd3f64;
+            background: #a12a54;
         }
         .btn-secondary {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             padding: 0.75rem 1.5rem;
-            border: 1px solid #e9dfdb;
-            border-radius: 0.75rem;
+            border: 1px solid #ECE0DA;
+            border-radius: 9999px;
             color: #403539;
             background: white;
             font-size: 0.875rem;
@@ -103,7 +106,7 @@
             transition: background 0.2s;
         }
         .btn-secondary:hover {
-            background: #FAF6F6;
+            background: #FBF7F3;
         }
     </style>
 </head>
