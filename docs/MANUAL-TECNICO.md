@@ -779,3 +779,46 @@ Se completó el rediseño visual de todo el ecosistema de Dentissa (sitio públi
   - Panel administrativo (`layouts/app`, `navigation`, `dashboard`, citas, pacientes, historial clínico con fotos/radiografías, catálogo de servicios y tratamientos, horarios, usuarios, reportes, auditoría, mensajes, testimonios, casos y preguntas frecuentes): tablas con encabezados claros en `#FAF6F6`, badges de estado legibles, filtros organizados y scroll horizontal en móviles (`min-w-[760px]`).
   - Total preservación de lógica de negocio, nombres de campos, CSRF, validaciones y roles. La suite de pruebas completa pasó con 158 pruebas aprobadas y 0 fallos.
 
+
+## 20. Decisión de diseño: el paciente agenda sin cuenta
+
+**Estado:** aceptada.
+
+**Contexto.** La versión inicial del SRS (RF01 y RF02), el pizarrón y las
+diapositivas de requerimientos proponían que el paciente se registrara e
+iniciara sesión para agendar, consultar, reprogramar y cancelar sus citas.
+
+**Decisión.** El paciente no tiene cuenta. Agenda desde el sitio público
+(`/agendar-cita`) eligiendo servicio, tratamiento, fecha y hora disponible, y
+captura nombre, apellido, teléfono y correo. El administrador y el asistente
+gestionan reprogramaciones y cancelaciones desde el panel (`/citas`).
+
+**Motivos.**
+
+1. **Menos fricción:** el paciente agenda en pocos pasos, sin crear una cuenta
+   ni recordar una contraseña. Muchos pacientes agendan una o dos veces al año.
+2. **Menos riesgo de seguridad:** no se guardan contraseñas de pacientes y no
+   existe un acceso público a información clínica.
+3. **Privacidad del historial:** el historial clínico solo se consulta desde el
+   panel con rol `admin`, como piden los requerimientos.
+4. **Control de la agenda:** los cambios pasan por el personal, lo que evita
+   empalmes y reprogramaciones sin revisión.
+
+**Consecuencias.**
+
+- El RF01 aplica solo al personal (`admin` y `asistente`) y el RF02 se
+  redefine como agendado público.
+- El paciente no puede consultar, reprogramar ni cancelar por su cuenta; lo
+  solicita a la clínica. El canal oficial (teléfono, WhatsApp o ambos) está
+  pendiente de confirmar por el equipo.
+- Los datos del paciente se vinculan por teléfono y correo, y el formulario
+  público valida los campos.
+- Pendiente: limitar la frecuencia de envíos del formulario `/agendar-cita`;
+  hoy solo la ruta del asistente de chat usa `throttle`.
+
+**Alternativas descartadas.**
+
+- *Cuenta obligatoria para el paciente:* más pasos para el paciente y más datos
+  sensibles que proteger.
+- *Enlace de gestión por correo o WhatsApp, sin contraseña:* se deja como
+  posible mejora futura si la clínica la necesita.
