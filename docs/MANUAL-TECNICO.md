@@ -135,6 +135,24 @@ su propio `.env` local.
 Los seeders crean usuarios, un paciente, servicios, tratamientos y sus
 relaciones. Son repetibles: ejecutarlos no duplica los registros conocidos.
 
+`ServiciosTratamientosSeeder` carga el catálogo real de la clínica, tomado de la
+libreta de la doctora:
+
+| Servicio | Tratamiento | Categoría | Duración |
+|---|---|---|---|
+| Odontología General | Valoración | Diagnóstico | 30 min |
+| Odontología General | Limpieza Dental | Preventiva | 60 min |
+| Odontología General | Retiro de Caries | Restauradora | 60 min |
+| Odontología General | Extracción Dental | Quirúrgica | 60 min |
+| Odontología Estética | Blanqueamiento Dental | Estética | 90 min |
+
+Los precios quedan vacíos hasta que la clínica los confirme. La categoría
+`Quirúrgica` suma el margen de preparación entre citas (sección 9). El seeder
+desactiva, sin borrarlos, los servicios y tratamientos del catálogo de ejemplo
+anterior (por ejemplo `Implante Dental` o `Implantología`), para conservar el
+historial de citas; lo creado desde el panel no se modifica. Lo cubre
+`ServiciosTratamientosSeederTest`.
+
 ```bash
 docker compose exec app php artisan db:seed
 ```

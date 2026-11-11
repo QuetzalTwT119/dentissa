@@ -423,7 +423,7 @@
                             1.5 horas
                         </span>
                     </div>
-                    <h3 class="font-serif-luxury text-xl font-bold text-[#2D2526]">Información por confirmar</h3>
+                    <h3 class="font-serif-luxury text-xl font-bold text-[#2D2526]">Blanqueamiento Dental</h3>
                     <p class="text-xs text-[#6b5e62] mt-2 leading-relaxed">
                         Tecnología aclarante de alta eficacia para devolver la luminosidad natural a tus dientes sin desgastar el esmalte.
                     </p>
@@ -472,7 +472,7 @@
                         <span class="w-10 h-10 rounded-2xl bg-[#FAF6F6] text-[#d75078] flex items-center justify-center font-serif-luxury font-bold text-lg border border-[#e9dfdb]">05</span>
                         <span class="text-[11px] font-bold text-[#8A7A7D] bg-[#FAF6F6] px-3 py-1 rounded-full border border-[#e9dfdb] flex items-center gap-1">
                             <svg class="w-3.5 h-3.5 text-[#d75078]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Hasta 2 horas
+                            1 hora
                         </span>
                     </div>
                     <h3 class="font-serif-luxury text-xl font-bold text-[#2D2526]">Extracción Cuidadosa</h3>

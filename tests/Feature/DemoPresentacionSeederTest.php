@@ -57,7 +57,7 @@ class DemoPresentacionSeederTest extends TestCase
         $this->assertDatabaseCount('pacientes', 1);
         $this->assertDatabaseHas('pacientes', ['email' => 'paciente.demo@example.invalid']);
         $this->assertGreaterThan(0, Servicio::count());
-        $this->assertDatabaseCount('tratamientos', 8);
+        $this->assertDatabaseCount('tratamientos', 5);
     }
 
     public function test_seeder_rechaza_credenciales_de_reserva_o_reutilizadas(): void
