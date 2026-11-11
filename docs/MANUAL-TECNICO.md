@@ -813,8 +813,12 @@ gestionan reprogramaciones y cancelaciones desde el panel (`/citas`).
   pendiente de confirmar por el equipo.
 - Los datos del paciente se vinculan por teléfono y correo, y el formulario
   público valida los campos.
-- Pendiente: limitar la frecuencia de envíos del formulario `/agendar-cita`;
-  hoy solo la ruta del asistente de chat usa `throttle`.
+- Como el formulario es público, `POST /agendar-cita` usa el limitador
+  `agendar-cita` (definido en `AppServiceProvider`): 5 envíos por minuto y 20
+  por hora por IP. Al superarlo, el paciente vuelve al formulario con sus
+  datos capturados y el aviso "Recibimos varios intentos seguidos…" en vez de
+  una página de error 429. Lo cubre
+  `CitaPublicaTest::test_la_agenda_publica_limita_los_envios_repetidos_desde_la_misma_ip`.
 
 **Alternativas descartadas.**
 

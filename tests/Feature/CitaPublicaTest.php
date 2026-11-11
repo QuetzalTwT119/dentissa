@@ -12,6 +12,7 @@ use App\Models\Tratamiento;
 use App\Models\User;
 use App\Services\DisponibilidadService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
@@ -166,6 +167,41 @@ class CitaPublicaTest extends TestCase
         $this->assertDatabaseCount('citas', 0);
     }
 
+    public function test_la_agenda_publica_limita_los_envios_repetidos_desde_la_misma_ip(): void
+    {
+        $datosIncompletos = ['hora' => '09:00'];
+        $ipAbusiva = ['REMOTE_ADDR' => '203.0.113.10'];
+
+        // Los primeros cinco envíos por minuto se procesan (aquí fallan por validación).
+        for ($intento = 1; $intento <= 5; $intento++) {
+            $this->withServerVariables($ipAbusiva)
+                ->post(route('citas.publica.store'), $datosIncompletos)
+                ->assertSessionHasErrors('nombre')
+                ->assertSessionDoesntHaveErrors('envios');
+        }
+
+        // El sexto se bloquea con un mensaje amable y conserva lo capturado.
+        $this->withServerVariables($ipAbusiva)
+            ->post(route('citas.publica.store'), $datosIncompletos)
+            ->assertRedirect(route('citas.publica.create'))
+            ->assertSessionHasErrors('envios')
+            ->assertSessionHasInput('hora', '09:00');
+
+        // Al volver al formulario, el paciente ve el aviso en el paso de sus datos.
+        $this->withServerVariables($ipAbusiva)
+            ->followingRedirects()
+            ->post(route('citas.publica.store'), $datosIncompletos)
+            ->assertOk()
+            ->assertSee('Recibimos varios intentos seguidos. Espera un minuto e inténtalo de nuevo.');
+
+        // Otra IP no queda afectada por el bloqueo anterior.
+        $this->withServerVariables(['REMOTE_ADDR' => '198.51.100.20'])
+            ->post(route('citas.publica.store'), $datosIncompletos)
+            ->assertSessionDoesntHaveErrors('envios');
+
+        $this->assertDatabaseCount('citas', 0);
+    }
+
     public function test_la_agenda_publica_rechaza_telefonos_con_longitud_o_caracteres_invalidos(): void
     {
         $servicio = Servicio::create([
@@ -185,6 +221,9 @@ class CitaPublicaTest extends TestCase
         while ($fecha->isSunday()) {
             $fecha->addDay();
         }
+
+        // Esta prueba revisa la validación del teléfono, no el límite de envíos.
+        $this->withoutMiddleware(ThrottleRequests::class);
 
         foreach (['123456789', '12345678901', '521234567890', '+5555555555', 'abc1234567', '7551131833333333333'] as $telefono) {
             $this->post(route('citas.publica.store'), [
