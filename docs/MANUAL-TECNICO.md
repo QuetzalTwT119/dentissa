@@ -851,3 +851,27 @@ gestionan reprogramaciones y cancelaciones desde el panel (`/citas`).
   sensibles que proteger.
 - *Enlace de gestión por correo o WhatsApp, sin contraseña:* se deja como
   posible mejora futura si la clínica la necesita.
+
+## 21. Vista semanal de la agenda (RF03)
+
+`GET /citas?vista=semana&semana=AAAA-MM-DD` muestra la agenda de la semana; sin
+`vista` se conserva la lista con filtros. Ambas vistas comparten el selector
+`citas/partials/selector-vista.blade.php`.
+
+- **Controlador:** `CitaController::index` delega en `semana()` cuando
+  `vista=semana`. `lunesDeLaSemana()` normaliza cualquier día a su lunes y, si
+  `semana` no es una fecha `Y-m-d` válida (por ejemplo `2030-02-30`), usa la
+  semana actual en lugar de responder con error.
+- **Consulta:** una sola consulta entre el lunes y el domingo de la semana, con
+  `paciente` y `tratamiento` precargados (sin N+1), agrupada por día.
+- **Días:** lunes a sábado siempre; el domingo solo si `HorarioAtencion` lo marca
+  abierto o tiene citas. Cada día muestra su horario o **Cerrado**. "Hoy" se
+  calcula con la zona horaria de la aplicación (`America/Mexico_City`).
+- **Estados:** `EstadoCita::etiqueta()`, `claseInsignia()` y `esInactiva()`
+  centralizan textos y colores; la lista y la semana los comparten.
+- **Vista:** `citas/semana.blade.php`, sin librerías de calendario. En escritorio
+  usa una columna por día; en celular, Alpine muestra un día a la vez y, sin
+  JavaScript, los días quedan apilados.
+- **Pruebas:** `AgendaSemanalTest` cubre acceso, rango de la semana, orden por
+  hora, datos de cada cita, navegación, fecha inválida, días cerrados y que la
+  lista siga siendo la vista predeterminada.

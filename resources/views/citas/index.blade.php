@@ -1,20 +1,6 @@
 @php
-$estadoLabel = [
-    'agendada' => 'Agendada',
-    'confirmada' => 'Confirmada',
-    'en_curso' => 'En curso',
-    'completada' => 'Completada',
-    'cancelada' => 'Cancelada',
-    'no_asistio' => 'No asistió',
-];
-$estadoClase = [
-    'agendada' => 'bg-amber-50 text-amber-800 border border-amber-200/70',
-    'confirmada' => 'bg-sky-50 text-sky-800 border border-sky-200/70',
-    'en_curso' => 'bg-brand-50 text-brand-800 border border-brand-200/70',
-    'completada' => 'bg-sage-50 text-sage-500 border border-sage-500/25',
-    'cancelada' => 'bg-shell text-muted border border-line/70',
-    'no_asistio' => 'bg-rose-50 text-rose-800 border border-rose-200/70',
-];
+$estadoLabel = collect(\App\Enums\EstadoCita::cases())->mapWithKeys(fn ($estado) => [$estado->value => $estado->etiqueta()])->all();
+$estadoClase = collect(\App\Enums\EstadoCita::cases())->mapWithKeys(fn ($estado) => [$estado->value => $estado->claseInsignia()])->all();
 $estadoDot = [
     'agendada' => 'bg-amber-500',
     'confirmada' => 'bg-sky-500',
@@ -58,6 +44,8 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                     {{ $errors->first() }}
                 </div>
             @endif
+
+            @include('citas.partials.selector-vista', ['vistaActual' => 'lista'])
 
             <!-- Filtros y Barra de Acciones Superior -->
             <div class="rounded-3xl border border-line bg-white p-4 shadow-soft sm:p-6">

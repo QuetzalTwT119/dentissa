@@ -134,6 +134,20 @@ no envía recordatorios automáticos antes de la cita.
 
 ## 3. Gestión interna de citas
 
+### Vista de lista o de semana
+
+Arriba de `/citas` hay un selector **Lista | Semana**:
+
+- **Lista** (predeterminada): tabla con búsqueda y filtros por fecha y estado.
+- **Semana**: agenda de lunes a sábado. Cada día muestra su horario de atención
+  (o **Cerrado**) y sus citas ordenadas por hora, con paciente, tratamiento y
+  estado en su color. Las canceladas y las inasistencias se ven atenuadas y
+  tachadas. El día de hoy aparece resaltado.
+  - Usa **←**, **Hoy** y **→** para cambiar de semana. El enlace de la página
+    conserva la semana, así que se puede recargar o compartir.
+  - Al tocar una cita se abre su edición, donde están las acciones.
+  - En celular se ve un día a la vez; cambia de día con las flechas.
+
 Desde `/citas`, el personal puede:
 
 - crear una cita seleccionando paciente, servicio, tratamiento, fecha y hora;
