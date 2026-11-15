@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\EstadoCita;
 use App\Models\Cita;
+use App\Models\HorarioAtencion;
 use App\Models\Paciente;
 use App\Models\Servicio;
 use App\Services\AuditoriaService;
@@ -24,6 +25,10 @@ class CitaController extends Controller
 {
     public function index(Request $request): View
     {
+        if ($request->query('vista') === 'semana') {
+            return $this->semana($request);
+        }
+
         $validated = $request->validate([
             'fecha' => ['nullable', 'date'],
             'estado' => ['nullable', Rule::enum(EstadoCita::class)],
@@ -55,6 +60,69 @@ class CitaController extends Controller
             'citas' => $query->orderByDesc('fecha_hora')->paginate($this->paginationPageSize($request))->withQueryString(),
             'filtros' => $request->only(['fecha', 'estado', 'buscar']),
         ]);
+    }
+
+    /**
+     * Agenda de lunes a sábado (domingo solo si abre o tiene citas).
+     *
+     * La semana viaja en ?semana=AAAA-MM-DD; cualquier día se normaliza a su
+     * lunes y un valor inválido muestra la semana actual en vez de un error.
+     */
+    private function semana(Request $request): View
+    {
+        $lunes = $this->lunesDeLaSemana((string) $request->query('semana', ''));
+        $domingo = $lunes->copy()->addDays(6);
+
+        // Una sola consulta para toda la semana, con sus relaciones (evita N+1).
+        $citasPorDia = Cita::with(['paciente', 'tratamiento'])
+            ->whereBetween('fecha_hora', [$lunes, $domingo->copy()->endOfDay()])
+            ->orderBy('fecha_hora')
+            ->get()
+            ->groupBy(fn (Cita $cita) => $cita->fecha_hora->toDateString());
+
+        $horarios = HorarioAtencion::all()->keyBy('dia_semana');
+
+        $dias = collect(range(0, 6))
+            ->map(fn (int $desplazamiento) => $lunes->copy()->addDays($desplazamiento))
+            ->filter(fn (Carbon $dia) => ! $dia->isSunday()
+                || $horarios->get(0)?->abierto
+                || $citasPorDia->has($dia->toDateString()))
+            ->map(function (Carbon $dia) use ($horarios, $citasPorDia) {
+                $horario = $horarios->get($dia->dayOfWeek);
+
+                return [
+                    'fecha' => $dia,
+                    'esHoy' => $dia->isToday(),
+                    'abierto' => (bool) $horario?->abierto,
+                    'horario' => $horario?->abierto ? "{$horario->hora_apertura}:00 – {$horario->hora_cierre}:00" : null,
+                    'citas' => $citasPorDia->get($dia->toDateString(), collect()),
+                ];
+            })
+            ->values();
+
+        return view('citas.semana', [
+            'lunes' => $lunes,
+            'dias' => $dias,
+            'semanaAnterior' => $lunes->copy()->subWeek()->toDateString(),
+            'semanaSiguiente' => $lunes->copy()->addWeek()->toDateString(),
+        ]);
+    }
+
+    private function lunesDeLaSemana(string $valor): Carbon
+    {
+        $fecha = null;
+
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $valor) === 1) {
+            try {
+                $fecha = Carbon::createFromFormat('!Y-m-d', $valor);
+                // createFromFormat acepta 2030-02-30 desbordándolo; se rechaza.
+                $fecha = $fecha->format('Y-m-d') === $valor ? $fecha : null;
+            } catch (\Throwable) {
+                $fecha = null;
+            }
+        }
+
+        return ($fecha ?? Carbon::today())->startOfWeek(Carbon::MONDAY);
     }
 
     public function create(): View
