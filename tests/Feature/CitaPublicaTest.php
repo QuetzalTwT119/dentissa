@@ -346,6 +346,23 @@ class CitaPublicaTest extends TestCase
         ]);
     }
 
+    public function test_el_calendario_usa_la_fecha_de_la_clinica_y_el_resumen_una_fecha_legible(): void
+    {
+        // 23:30 en Ciudad de México ya es el día siguiente en UTC; el mínimo debe seguir siendo hoy.
+        Carbon::setTestNow(Carbon::parse('2030-01-09 23:30:00', 'America/Mexico_City'));
+
+        try {
+            $this->get(route('citas.publica.create'))
+                ->assertOk()
+                ->assertSee('min="2030-01-09"', false)
+                ->assertDontSee('toISOString', false)
+                ->assertSee('get fechaLegible()', false)
+                ->assertSee('x-text="fechaLegible || \'Pendiente\'"', false);
+        } finally {
+            Carbon::setTestNow();
+        }
+    }
+
     public function test_la_agenda_publica_muestra_el_horario_configurado_y_no_un_texto_fijo(): void
     {
         HorarioAtencion::query()->update(['abierto' => false]);
