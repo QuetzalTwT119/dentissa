@@ -95,8 +95,8 @@
                     horarios: [],
                     loadingHorarios: false,
                     descripciones: {
-                        'Odontología General': 'Prevención, profilaxis profunda, resinas y valoración integral para toda la familia.',
-                        'Odontología Estética': 'Diseño de sonrisa, carillas estéticas y blanqueamiento clínico de alta gama.',
+                        'Odontología General': 'Valoración, limpieza dental, retiro de caries y extracciones para toda la familia.',
+                        'Odontología Estética': 'Blanqueamiento dental para devolver la luminosidad natural a tu sonrisa.',
                         'Ortodoncia': 'Alineación dental con brackets estéticos y alineadores invisibles de precisión.',
                         'Implantología': 'Rehabilitación y reposición de piezas con implantes dentales de titanio.',
                         'Periodoncia': 'Tratamiento especializado de encías, hueso de soporte y salud bucal.',
@@ -349,6 +349,10 @@
                                 </div>
 
                                 @error('hora')
+                                    <p role="alert" class="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{{ $message }}</p>
+                                @enderror
+
+                                @error('envios')
                                     <p role="alert" class="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{{ $message }}</p>
                                 @enderror
 

@@ -125,8 +125,10 @@ Antes de generar un dominio público:
   ```
 
   Después cambiar el indicador a `false` y quitar las variables de contraseña.
-  No copiar credenciales al README, al chat ni a Git. Los valores de tratamientos
-  que inserta el catálogo son ficticios; no representan precios reales.
+  No copiar credenciales al README, al chat ni a Git. El catálogo que inserta usa
+  los tratamientos y duraciones reales de la clínica, sin precios. Si se vuelve a
+  ejecutar sobre una base existente, desactiva (no borra) el catálogo de ejemplo
+  anterior y no toca lo creado desde el panel.
 - Configurar `/up` como healthcheck: Laravel ya registra esa ruta en
   `bootstrap/app.php`. Railway usa el healthcheck para validar la nueva versión
   durante el despliegue; no sustituye un monitor continuo.

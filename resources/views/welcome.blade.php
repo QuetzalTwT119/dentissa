@@ -81,9 +81,9 @@
         $tratamientos = [
             ['01', 'Valoración Integral', 'Revisión clínica completa, exploración intraoral y diagnóstico personalizado con un enfoque preventivo y cuidadoso.', '30 min', 'Enfoque', 'Diagnóstico claro', false],
             ['02', 'Limpieza Dental Profunda', 'Eliminación de sarro y placa mediante ultrasonido suave, profilaxis y pulido para encías sanas y aliento fresco.', '1 hora', 'Frecuencia', 'Cada 6 meses', false],
-            ['03', 'Información por confirmar', 'Tecnología aclarante de alta eficacia para devolver la luminosidad natural a tus dientes sin desgastar el esmalte.', '1.5 horas', 'Resultados', 'Desde 1 sesión', true],
+            ['03', 'Blanqueamiento Dental', 'Tecnología aclarante de alta eficacia para devolver la luminosidad natural a tus dientes sin desgastar el esmalte.', '1.5 horas', 'Resultados', 'Desde 1 sesión', true],
             ['04', 'Retiro de Caries & Resinas', 'Restauraciones estéticas y biocompatibles del color exacto de tu diente, devolviendo forma y funcionalidad.', '1 hora', 'Materiales', 'Resina estética', false],
-            ['05', 'Extracción Cuidadosa', 'Procedimiento mínimamente invasivo con anestesia precisa para una recuperación rápida, cómoda y segura.', 'Hasta 2 horas', 'Enfoque', 'Sin dolor', false],
+            ['05', 'Extracción Cuidadosa', 'Procedimiento mínimamente invasivo con anestesia precisa para una recuperación rápida, cómoda y segura.', '1 hora', 'Enfoque', 'Sin dolor', false],
         ];
 
         $compromisos = [

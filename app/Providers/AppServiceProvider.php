@@ -17,7 +17,10 @@ use App\Models\Testimonio;
 use App\Models\Tratamiento;
 use App\Models\User;
 use App\Observers\AuditoriaObserver;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -44,5 +47,26 @@ class AppServiceProvider extends ServiceProvider
         ] as $modelo) {
             $modelo::observe(AuditoriaObserver::class);
         }
+
+        $this->configurarLimiteAgendaPublica();
+    }
+
+    /**
+     * El formulario público no pide cuenta, así que se limita por IP para
+     * evitar citas falsas en masa sin estorbar a un paciente real.
+     */
+    private function configurarLimiteAgendaPublica(): void
+    {
+        RateLimiter::for('agendar-cita', function (Request $request) {
+            $avisar = fn (Request $request) => redirect()
+                ->route('citas.publica.create')
+                ->withInput($request->except('_token'))
+                ->withErrors(['envios' => 'Recibimos varios intentos seguidos. Espera un minuto e inténtalo de nuevo.']);
+
+            return [
+                Limit::perMinute(5)->by('minuto|'.$request->ip())->response($avisar),
+                Limit::perHour(20)->by('hora|'.$request->ip())->response($avisar),
+            ];
+        });
     }
 }

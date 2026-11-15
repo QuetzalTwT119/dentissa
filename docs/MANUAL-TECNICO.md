@@ -135,6 +135,24 @@ su propio `.env` local.
 Los seeders crean usuarios, un paciente, servicios, tratamientos y sus
 relaciones. Son repetibles: ejecutarlos no duplica los registros conocidos.
 
+`ServiciosTratamientosSeeder` carga el catálogo real de la clínica, tomado de la
+libreta de la doctora:
+
+| Servicio | Tratamiento | Categoría | Duración |
+|---|---|---|---|
+| Odontología General | Valoración | Diagnóstico | 30 min |
+| Odontología General | Limpieza Dental | Preventiva | 60 min |
+| Odontología General | Retiro de Caries | Restauradora | 60 min |
+| Odontología General | Extracción Dental | Quirúrgica | 60 min |
+| Odontología Estética | Blanqueamiento Dental | Estética | 90 min |
+
+Los precios quedan vacíos hasta que la clínica los confirme. La categoría
+`Quirúrgica` suma el margen de preparación entre citas (sección 9). El seeder
+desactiva, sin borrarlos, los servicios y tratamientos del catálogo de ejemplo
+anterior (por ejemplo `Implante Dental` o `Implantología`), para conservar el
+historial de citas; lo creado desde el panel no se modifica. Lo cubre
+`ServiciosTratamientosSeederTest`.
+
 ```bash
 docker compose exec app php artisan db:seed
 ```
@@ -779,3 +797,50 @@ Se completó el rediseño visual de todo el ecosistema de Dentissa (sitio públi
   - Panel administrativo (`layouts/app`, `navigation`, `dashboard`, citas, pacientes, historial clínico con fotos/radiografías, catálogo de servicios y tratamientos, horarios, usuarios, reportes, auditoría, mensajes, testimonios, casos y preguntas frecuentes): tablas con encabezados claros en `#FAF6F6`, badges de estado legibles, filtros organizados y scroll horizontal en móviles (`min-w-[760px]`).
   - Total preservación de lógica de negocio, nombres de campos, CSRF, validaciones y roles. La suite de pruebas completa pasó con 158 pruebas aprobadas y 0 fallos.
 
+
+## 20. Decisión de diseño: el paciente agenda sin cuenta
+
+**Estado:** aceptada.
+
+**Contexto.** La versión inicial del SRS (RF01 y RF02), el pizarrón y las
+diapositivas de requerimientos proponían que el paciente se registrara e
+iniciara sesión para agendar, consultar, reprogramar y cancelar sus citas.
+
+**Decisión.** El paciente no tiene cuenta. Agenda desde el sitio público
+(`/agendar-cita`) eligiendo servicio, tratamiento, fecha y hora disponible, y
+captura nombre, apellido, teléfono y correo. El administrador y el asistente
+gestionan reprogramaciones y cancelaciones desde el panel (`/citas`).
+
+**Motivos.**
+
+1. **Menos fricción:** el paciente agenda en pocos pasos, sin crear una cuenta
+   ni recordar una contraseña. Muchos pacientes agendan una o dos veces al año.
+2. **Menos riesgo de seguridad:** no se guardan contraseñas de pacientes y no
+   existe un acceso público a información clínica.
+3. **Privacidad del historial:** el historial clínico solo se consulta desde el
+   panel con rol `admin`, como piden los requerimientos.
+4. **Control de la agenda:** los cambios pasan por el personal, lo que evita
+   empalmes y reprogramaciones sin revisión.
+
+**Consecuencias.**
+
+- El RF01 aplica solo al personal (`admin` y `asistente`) y el RF02 se
+  redefine como agendado público.
+- El paciente no puede consultar, reprogramar ni cancelar por su cuenta; lo
+  solicita a la clínica. El canal oficial (teléfono, WhatsApp o ambos) está
+  pendiente de confirmar por el equipo.
+- Los datos del paciente se vinculan por teléfono y correo, y el formulario
+  público valida los campos.
+- Como el formulario es público, `POST /agendar-cita` usa el limitador
+  `agendar-cita` (definido en `AppServiceProvider`): 5 envíos por minuto y 20
+  por hora por IP. Al superarlo, el paciente vuelve al formulario con sus
+  datos capturados y el aviso "Recibimos varios intentos seguidos…" en vez de
+  una página de error 429. Lo cubre
+  `CitaPublicaTest::test_la_agenda_publica_limita_los_envios_repetidos_desde_la_misma_ip`.
+
+**Alternativas descartadas.**
+
+- *Cuenta obligatoria para el paciente:* más pasos para el paciente y más datos
+  sensibles que proteger.
+- *Enlace de gestión por correo o WhatsApp, sin contraseña:* se deja como
+  posible mejora futura si la clínica la necesita.

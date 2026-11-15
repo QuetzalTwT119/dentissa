@@ -200,7 +200,70 @@ class AsistenteAgendaTest extends TestCase
             'conversacion_id' => '00000000-0000-4000-8000-000000000004',
         ])
             ->assertOk()
-            ->assertJsonPath('respuesta', 'No reconocí la fecha. Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.');
+            ->assertJsonPath('respuesta', "No reconocí la fecha. Puedes escribir hoy, mañana, DD/MM/AAAA o AAAA-MM-DD.\n\nSi quieres salir, escribe \"cancelar\".");
+    }
+
+    /** @return array<string, array{0: string}> */
+    public static function palabrasParaSalir(): array
+    {
+        return [
+            'cancelar' => ['cancelar'],
+            'Salir con mayúscula' => ['Salir'],
+            'comando con barra' => ['/cancelar'],
+        ];
+    }
+
+    #[DataProvider('palabrasParaSalir')]
+    public function test_cada_paso_explica_como_salir_y_cancelar_cierra_la_busqueda(string $salida): void
+    {
+        Servicio::create(['nombre' => 'Consulta web', 'activo' => true]);
+        $conversacion = '00000000-0000-4000-8000-000000000008';
+
+        $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => 'Quiero una cita',
+            'conversacion_id' => $conversacion,
+        ])->assertOk()->assertJsonPath('respuesta', fn (string $r) => str_ends_with($r, 'Si quieres salir, escribe "cancelar".'));
+
+        $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => $salida,
+            'conversacion_id' => $conversacion,
+        ])->assertOk()->assertJsonPath('respuesta', 'Cancelé la consulta de horarios. Cuando quieras, escribe que buscas una cita.');
+
+        $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => 'Consulta web',
+            'conversacion_id' => $conversacion,
+        ])->assertOk()->assertJsonPath('respuesta', fn (string $r) => ! str_contains($r, 'tratamiento') && ! str_contains($r, 'No identifiqué'));
+    }
+
+    public function test_cancelar_sin_una_busqueda_abierta_no_se_intercepta(): void
+    {
+        $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => 'cancelar',
+            'conversacion_id' => '00000000-0000-4000-8000-000000000009',
+        ])->assertOk()->assertJsonPath('respuesta', fn (string $r) => ! str_contains($r, 'Cancelé la consulta'));
+    }
+
+    public function test_preguntar_el_horario_a_mitad_de_la_busqueda_lo_responde_sin_perder_el_paso(): void
+    {
+        $servicio = Servicio::create(['nombre' => 'Consulta web', 'activo' => true]);
+        $servicio->tratamientos()->attach(Tratamiento::create(['nombre' => 'Limpieza web', 'duracion_estimada' => 30, 'categoria' => 'Preventiva', 'activo' => true]));
+        $conversacion = '00000000-0000-4000-8000-000000000010';
+
+        $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => 'Quiero una cita',
+            'conversacion_id' => $conversacion,
+        ])->assertOk();
+
+        $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => '¿A qué hora abren?',
+            'conversacion_id' => $conversacion,
+        ])->assertOk()->assertJsonPath('respuesta', fn (string $r) => str_starts_with($r, 'Nuestro horario de atención:')
+            && str_contains($r, 'Seguimos con tu búsqueda de horarios'));
+
+        $this->postJson(route('asistente-paciente.responder'), [
+            'consulta' => 'Consulta web',
+            'conversacion_id' => $conversacion,
+        ])->assertOk()->assertJsonPath('respuesta', fn (string $r) => str_contains($r, 'Elige el tratamiento') && str_contains($r, 'Limpieza web'));
     }
 
     /** @return array<string, array{0: string}> */

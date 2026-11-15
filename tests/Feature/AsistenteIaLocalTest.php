@@ -256,7 +256,7 @@ class AsistenteIaLocalTest extends TestCase
         ])->assertOk()
             ->assertJsonPath('encontrada', false)
             ->assertJsonPath('accion', null)
-            ->assertJsonFragment(['respuesta' => "Claro. ¿Qué tipo de atención necesitas?\n\n"]);
+            ->assertJsonFragment(['respuesta' => "Claro. ¿Qué tipo de atención necesitas?\n\n\n\nSi quieres salir, escribe \"cancelar\"."]);
 
         Http::assertNothingSent();
     }
@@ -284,7 +284,7 @@ class AsistenteIaLocalTest extends TestCase
             'consulta' => '¿Cuál es la dirección del consultorio?',
             'conversacion_id' => $conversacion,
         ])->assertOk()
-            ->assertJsonFragment(['respuesta' => "No identifiqué ese tipo de atención. Escríbelo tal como aparece aquí:\n\n"]);
+            ->assertJsonFragment(['respuesta' => "No identifiqué ese tipo de atención. Escríbelo tal como aparece aquí:\n\n\n\nSi quieres salir, escribe \"cancelar\"."]);
 
         Http::assertNothingSent();
     }

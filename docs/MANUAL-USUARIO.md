@@ -77,8 +77,10 @@ El asistente de Telegram solo responde mientras el proceso del bot esté activo
 en el entorno. Si no responde, utiliza el portal web y no compartas ni solicites
 el token del bot; es una credencial privada de configuración.
 
-Los nombres, teléfonos, correos y precios del catálogo demo son de prueba. No
-son datos ni tarifas de una clínica real. Al terminar la exposición, el equipo
+Los nombres, teléfonos y correos del paciente demo son de prueba. El catálogo
+demo usa los tratamientos y duraciones reales de la clínica (Valoración 30 min,
+Limpieza Dental, Retiro de Caries y Extracción Dental 1 hora, y Blanqueamiento
+Dental 1 hora y media), pero sin precios, porque la clínica aún no los confirma. Al terminar la exposición, el equipo
 debe apagar o eliminar el servicio de Railway desde el panel.
 
 
@@ -107,6 +109,11 @@ tanto en escritorio como en el menú móvil.
 5. Selecciona un horario disponible.
 6. Escribe nombre, apellido, teléfono y correo.
 7. Pulsa **Agendar cita**.
+
+Para evitar citas falsas, el formulario acepta hasta 5 envíos por minuto y 20
+por hora desde la misma conexión. Si se supera, aparece el aviso **"Recibimos
+varios intentos seguidos. Espera un minuto e inténtalo de nuevo."** y los datos
+escritos se conservan; basta esperar y volver a pulsar **Agendar cita**.
 
 En pantallas amplias, junto al formulario aparece un indicador compacto del paso
 actual y un resumen que se actualiza con el servicio, tratamiento, fecha y hora
@@ -210,7 +217,11 @@ Acepta `hoy`, `mañana`, `DD/MM/AAAA`, `DD-MM-AAAA` o `AAAA-MM-DD`. Muestra los
 horarios disponibles, pero la reserva se confirma en **Agendar cita**.
 Si solo preguntas por el horario de atención (por ejemplo, "¿a qué hora
 abren?"), el chat responde con el horario configurado sin iniciar una reserva;
-una pregunta frecuente aprobada sobre el horario tiene prioridad.
+una pregunta frecuente aprobada sobre el horario tiene prioridad. Durante la
+búsqueda de horarios, cada paso indica que se puede escribir **cancelar** (o
+**salir**) para terminarla; si en medio de la búsqueda se pregunta por el
+horario de atención, el chat lo responde y conserva el paso actual. La búsqueda
+vence sola a los 15 minutos sin actividad.
 
 El inicio, las ofertas, la galería y la agenda pública se adaptan al
 ancho de la pantalla: las tarjetas pasan a una o varias columnas según el
