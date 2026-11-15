@@ -147,7 +147,14 @@ libreta de la doctora:
 | Odontología Estética | Blanqueamiento Dental | Estética | 90 min |
 
 Los precios quedan vacíos hasta que la clínica los confirme. La categoría
-`Quirúrgica` suma el margen de preparación entre citas (sección 9). El seeder
+`Quirúrgica` suma el margen de preparación entre citas (sección 9). Las
+categorías válidas viven en `Tratamiento::CATEGORIAS`; el formulario del panel y
+el seeder usan esa misma lista, así que editar un tratamiento no borra su
+categoría. La tabla `servicios_tratamientos` tiene `created_at` (lo llena la
+base) pero no `updated_at`; por eso el pivote `ServicioTratamiento` sobrescribe
+`getUpdatedAtColumn()` para devolver `null`. Sin eso, reordenar una asignación
+existente (por ejemplo, al volver a ejecutar el seeder sobre una base con
+datos) fallaba con `no such column: updated_at`. El seeder
 desactiva, sin borrarlos, los servicios y tratamientos del catálogo de ejemplo
 anterior (por ejemplo `Implante Dental` o `Implantología`), para conservar el
 historial de citas; lo creado desde el panel no se modifica. Lo cubre
