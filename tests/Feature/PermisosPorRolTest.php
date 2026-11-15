@@ -45,6 +45,21 @@ class PermisosPorRolTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_horarios_muestra_campos_editables_de_apertura_cierre_y_capacidad(): void
+    {
+        // Regresión: comillas dobles anidadas en old("...") impedían que Blade
+        // compilara <x-text-input> y los campos no aparecían en pantalla.
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.horarios.edit'))
+            ->assertOk()
+            ->assertDontSee('<x-text-input', false)
+            ->assertSee('name="dias[0][hora_apertura]"', false)
+            ->assertSee('name="dias[0][hora_cierre]"', false)
+            ->assertSee('name="dias[0][capacidad_simultanea]"', false);
+    }
+
     public function test_lista_de_usuarios_tiene_contexto_correcto_y_filtros_accesibles(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);

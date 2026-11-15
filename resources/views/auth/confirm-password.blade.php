@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="mb-6">
-        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Área protegida</p>
-        <h2 class="mt-2 text-2xl font-semibold tracking-tight text-[#2D2526] sm:text-3xl">Confirmar contraseña</h2>
-        <p class="mt-2 text-sm leading-6 text-[#6b5e62]">
+        <p class="eyebrow">Área protegida</p>
+        <h2 class="mt-3 text-[2rem] leading-tight text-ink sm:text-[2.4rem]">Confirmar contraseña</h2>
+        <p class="mt-2 text-sm leading-6 text-muted">
             Esta es un área segura de la aplicación. Confirma tu contraseña antes de continuar.
         </p>
     </div>
@@ -12,7 +12,7 @@
 
         <!-- Password -->
         <div>
-            <x-input-label for="password" value="Contraseña" class="text-[#382d31]" />
+            <x-input-label for="password" value="Contraseña" class="text-ink" />
 
             <x-text-input id="password" class="block mt-1.5 w-full"
                             type="password"

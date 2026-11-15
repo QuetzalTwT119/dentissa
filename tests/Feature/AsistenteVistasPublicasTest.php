@@ -38,8 +38,8 @@ class AsistenteVistasPublicasTest extends TestCase
         $this->assertStringNotContainsString('shadow-brand-100', $contenido, 'El acceso no debe tener resplandor ni sombra coloreada.');
         $this->assertStringContainsString('hover || enfocado', $contenido, 'El botón debe desplegar su nombre al pasar el cursor o enfocar con teclado.');
         $this->assertStringContainsString('whitespace-nowrap', $contenido);
-        $this->assertStringContainsString('pb-24 sm:pb-0', $contenido);
-        $this->assertStringContainsString('px-4 pt-2 sm:px-6', $contenido);
+        $this->assertStringContainsString('pb-28 sm:pb-16', $contenido);
+        $this->assertStringContainsString('gap-6 px-4 sm:px-6', $contenido);
         $this->assertStringNotContainsString('<div class="pt-6">', $contenido, 'El asistente fijo no debe reservar espacio vertical en la página.');
         $this->assertStringNotContainsString('recalcularPosicion()', $contenido, 'El asistente permanece fijo sin recalcular posición en scroll.');
         $this->assertStringNotContainsString('desplazamientoBoton', $contenido, 'El botón permanece estable sin desplazarse con el scroll.');
@@ -51,7 +51,7 @@ class AsistenteVistasPublicasTest extends TestCase
     {
         $contenido = $this->get(route('citas.publica.create'))->assertOk()->getContent();
 
-        $this->assertStringContainsString('lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.8fr)]', $contenido);
+        $this->assertStringContainsString('lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.75fr)]', $contenido);
         $this->assertStringContainsString('Tu cita, paso a paso', $contenido);
         $this->assertStringContainsString('aria-label="Volver al inicio"', $contenido);
         $this->assertStringContainsString('Inicio', $contenido);

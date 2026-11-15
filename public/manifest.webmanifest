@@ -4,8 +4,8 @@
   "description": "Agenda y consulta información de Dentissa.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fff7f9",
-  "theme_color": "#d64d7c",
+  "background_color": "#fbf7f3",
+  "theme_color": "#fbf7f3",
   "lang": "es-MX",
   "icons": [
     {

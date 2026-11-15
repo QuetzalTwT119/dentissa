@@ -9,21 +9,16 @@
     $desc = $description ?? $subtitle;
 @endphp
 
-<div {{ $attributes->merge(['class' => 'flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between']) }}>
+<div {{ $attributes->merge(['class' => 'flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between']) }}>
     <div>
         @if ($badge)
-            <div class="flex items-center gap-2">
-                <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200">
-                    <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                    {{ $badge }}
-                </span>
-            </div>
+            <p class="eyebrow">{{ $badge }}</p>
         @endif
-        <h2 class="mt-1 text-2xl font-bold tracking-tight text-[#2D2526]">
+        <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
             {{ $title }}
         </h2>
         @if ($desc)
-            <p class="mt-0.5 text-xs text-[#8A7A7D]">{{ $desc }}</p>
+            <p class="mt-1 max-w-2xl text-sm text-muted">{{ $desc }}</p>
         @endif
     </div>
 

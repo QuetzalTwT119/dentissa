@@ -45,15 +45,15 @@
                     </x-slot:head>
 
                     @forelse ($casos as $caso)
-                        <tr class="transition hover:bg-[#FAF6F6]/60">
-                            <td class="px-6 py-4 font-semibold text-[#2D2526] whitespace-nowrap">{{ $caso->titulo }}</td>
-                            <td class="max-w-sm truncate px-6 py-4 text-[#6b5e62]" title="{{ $caso->descripcion }}">{{ $caso->descripcion ?? '—' }}</td>
+                        <tr class="transition hover:bg-cream/60">
+                            <td class="px-6 py-4 font-semibold text-ink whitespace-nowrap">{{ $caso->titulo }}</td>
+                            <td class="max-w-sm truncate px-6 py-4 text-ink-soft" title="{{ $caso->descripcion }}">{{ $caso->descripcion ?? '—' }}</td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center rounded-full bg-[#FAF6F6] px-2.5 py-0.5 text-xs font-semibold text-[#2D2526] border border-[#e9dfdb]">
+                                <span class="inline-flex items-center rounded-full bg-cream px-2.5 py-0.5 text-xs font-semibold text-ink border border-line">
                                     {{ $caso->imagenes_count }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-center text-[#6b5e62] font-semibold whitespace-nowrap">{{ $caso->orden }}</td>
+                            <td class="px-6 py-4 text-center text-ink-soft font-semibold whitespace-nowrap">{{ $caso->orden }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <x-admin.status-badge :active="$caso->activo" />
                             </td>

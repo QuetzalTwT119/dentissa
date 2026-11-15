@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="text-xl font-semibold leading-tight text-[#2D2526]">
+                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
                     Nuevo tratamiento
                 </h2>
-                <p class="mt-1 text-xs text-[#8A7A7D]">Creación de procedimiento clínico y parámetros de reserva.</p>
+                <p class="mt-1 max-w-2xl text-sm text-muted">Creación de procedimiento clínico y parámetros de reserva.</p>
             </div>
             <a href="{{ route('admin.tratamientos.index') }}" class="hidden sm:inline-block">
                 <x-secondary-button type="button">Volver al listado</x-secondary-button>
@@ -15,7 +15,7 @@
 
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft sm:p-8">
+            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
                 <form method="POST" action="{{ route('admin.tratamientos.store') }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
@@ -28,14 +28,14 @@
                     <div>
                         <x-input-label for="descripcion" value="Descripción" />
                         <textarea id="descripcion" name="descripcion" rows="3"
-                                  class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition placeholder:text-[#8A7A7D]/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion') }}</textarea>
+                                  class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion') }}</textarea>
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 
                     <div>
                         <x-input-label for="categoria" value="Categoría" />
                         <select id="categoria" name="categoria"
-                                class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="">Sin categoría</option>
                             @foreach (\App\Models\Tratamiento::CATEGORIAS as $categoria)
                                 <option value="{{ $categoria }}" @selected(old('categoria') === $categoria)>{{ $categoria }}</option>
@@ -66,7 +66,7 @@
 
                     <div>
                         <x-input-label for="imagen" value="Imagen explicativa" />
-                        <input id="imagen" name="imagen" type="file" accept="image/*" class="mt-1.5 block w-full text-sm text-[#2D2526] file:mr-3 file:rounded-xl file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-brand-700 hover:file:bg-brand-100">
+                        <input id="imagen" name="imagen" type="file" accept="image/*" class="mt-1.5 block w-full text-sm text-ink file:mr-3 file:rounded-xl file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-brand-700 hover:file:bg-brand-100">
                         <x-input-error :messages="$errors->get('imagen')" class="mt-2" />
                     </div>
 
@@ -82,7 +82,7 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-4 pt-4 border-t border-[#e9dfdb]">
+                    <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button>Guardar</x-primary-button>
 
                         <a href="{{ route('admin.tratamientos.index') }}">

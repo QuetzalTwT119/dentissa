@@ -43,9 +43,9 @@
                     </x-slot:head>
 
                     @forelse ($preguntas as $pregunta)
-                        <tr class="transition hover:bg-[#FAF6F6]/60">
-                            <td class="px-6 py-4 text-center text-[#6b5e62] font-semibold whitespace-nowrap">{{ $pregunta->orden }}</td>
-                            <td class="px-6 py-4 font-semibold text-[#2D2526]">{{ $pregunta->pregunta }}</td>
+                        <tr class="transition hover:bg-cream/60">
+                            <td class="px-6 py-4 text-center text-ink-soft font-semibold whitespace-nowrap">{{ $pregunta->orden }}</td>
+                            <td class="px-6 py-4 font-semibold text-ink">{{ $pregunta->pregunta }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <x-admin.status-badge
                                     :active="$pregunta->activa"

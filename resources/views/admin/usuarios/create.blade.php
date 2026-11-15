@@ -48,7 +48,7 @@
                     <div>
                         <x-input-label for="rol" value="Rol" />
                         <select id="rol" name="rol"
-                                class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="asistente" @selected(old('rol', 'asistente') === 'asistente')>Asistente</option>
                             <option value="admin" @selected(old('rol') === 'admin')>Admin</option>
                         </select>
@@ -67,7 +67,7 @@
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                     </div>
 
-                    <div class="flex items-center gap-4 pt-4 border-t border-[#e9dfdb]">
+                    <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button>Guardar</x-primary-button>
 
                         <a href="{{ route('admin.usuarios.index') }}">

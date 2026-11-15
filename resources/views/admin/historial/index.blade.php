@@ -46,7 +46,7 @@ $tipoConsultaLabel = [
                         </a>
                     @else
                         <x-secondary-button type="button" disabled title="Disponible después de registrar una consulta" class="opacity-50 cursor-not-allowed inline-flex items-center gap-2">
-                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="h-4 w-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             Descargar PDF
@@ -71,32 +71,32 @@ $tipoConsultaLabel = [
 
             <div class="space-y-4">
                 @forelse ($consultas as $consulta)
-                    <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft transition hover:border-[#f2b0a6]">
+                    <div class="rounded-2xl border border-line bg-white p-6 shadow-soft transition hover:border-peach-300">
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div class="min-w-0 flex-1">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span class="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200/50">
                                         {{ $tipoConsultaLabel[$consulta->tipo_consulta->value] ?? $consulta->tipo_consulta->value }}
                                     </span>
-                                    <p class="text-xs text-[#8A7A7D]">
+                                    <p class="text-xs text-muted">
                                         {{ \Illuminate\Support\Carbon::parse($consulta->fecha_consulta)->translatedFormat('d M Y') }}
                                     </p>
                                 </div>
-                                <h3 class="mt-2 text-base font-bold text-[#2D2526]">{{ $consulta->motivo_consulta }}</h3>
+                                <h3 class="mt-2 text-base font-bold text-ink">{{ $consulta->motivo_consulta }}</h3>
                                 @if ($consulta->diagnostico)
-                                    <p class="mt-1 text-sm text-[#6b5e62]">
-                                        <span class="font-semibold text-[#2D2526]">Diagnóstico:</span> {{ $consulta->diagnostico }}
+                                    <p class="mt-1 text-sm text-ink-soft">
+                                        <span class="font-semibold text-ink">Diagnóstico:</span> {{ $consulta->diagnostico }}
                                     </p>
                                 @endif
-                                <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-[#8A7A7D]">
-                                    <span>Doctor: <strong class="text-[#2D2526] font-medium">{{ $consulta->doctor->nombre ?? '' }} {{ $consulta->doctor->apellido ?? '' }}</strong></span>
+                                <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted">
+                                    <span>Doctor: <strong class="text-ink font-medium">{{ $consulta->doctor->nombre ?? '' }} {{ $consulta->doctor->apellido ?? '' }}</strong></span>
                                     @if ($consulta->imagenes->isNotEmpty())
-                                        <span>· <strong class="text-[#2D2526] font-medium">{{ $consulta->imagenes->count() }}</strong> adjunto(s)</span>
+                                        <span>· <strong class="text-ink font-medium">{{ $consulta->imagenes->count() }}</strong> adjunto(s)</span>
                                     @endif
                                 </div>
                             </div>
 
-                            <div class="flex shrink-0 items-center gap-2 pt-2 sm:pt-0 border-t border-[#e9dfdb]/60 sm:border-0">
+                            <div class="flex shrink-0 items-center gap-2 pt-2 sm:pt-0 border-t border-line/60 sm:border-0">
                                 <a href="{{ route('admin.pacientes.historial.edit', [$paciente, $consulta]) }}" class="rounded-xl px-3 py-1.5 text-sm font-semibold text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
                                     Editar
                                 </a>
@@ -110,8 +110,8 @@ $tipoConsultaLabel = [
                         </div>
                     </div>
                 @empty
-                    <div class="rounded-2xl border border-dashed border-[#e9dfdb] bg-white p-10 text-center text-sm text-[#8A7A7D] shadow-soft">
-                        <p class="font-bold text-[#2D2526]">Este paciente todavía no tiene consultas registradas.</p>
+                    <div class="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-sm text-muted shadow-soft">
+                        <p class="font-bold text-ink">Este paciente todavía no tiene consultas registradas.</p>
                         <p class="mt-1">El PDF estará disponible cuando registres la primera consulta.</p>
                     </div>
                 @endforelse

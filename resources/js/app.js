@@ -12,6 +12,34 @@ if ('serviceWorker' in navigator && window.isSecureContext) {
     });
 }
 
+// Entrada suave de secciones marcadas con [data-reveal] (ver app.css).
+// Cada sección se anima una sola vez: al volver a subir ya no se repite.
+function iniciarRevelado() {
+    const elementos = document.querySelectorAll('[data-reveal]');
+
+    if (!('IntersectionObserver' in window)) {
+        elementos.forEach((el) => el.classList.add('is-visible'));
+        return;
+    }
+
+    const observer = new IntersectionObserver((entradas) => {
+        entradas.forEach((entrada) => {
+            if (entrada.isIntersecting) {
+                entrada.target.classList.add('is-visible');
+                observer.unobserve(entrada.target);
+            }
+        });
+    }, { rootMargin: '0px 0px -8% 0px' });
+
+    elementos.forEach((el) => observer.observe(el));
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciarRevelado);
+} else {
+    iniciarRevelado();
+}
+
 window.cargarHorariosDisponibles = async function (tratamientoId, fecha, excludeCitaId) {
     if (!tratamientoId || !fecha) {
         return [];
@@ -253,11 +281,11 @@ if (updatesUrl) {
         item.dataset.notificationPreview = String(notificationId);
         item.dataset.notificationReadUrl = notification.leida_url || notificationsBody.dataset.notificationsReadUrl?.replace('__NOTIFICATION_ID__', String(notificationId)) || '';
         item.href = notification.url || '/notificaciones';
-        item.className = 'flex gap-3 px-4 py-3.5 transition hover:bg-gray-50 focus:bg-gray-50 focus:outline-none';
+        item.className = 'flex gap-3 px-4 py-3.5 transition hover:bg-cream focus:bg-cream focus:outline-none';
 
         const dot = document.createElement('span');
         dot.dataset.notificationPreviewDot = '';
-        dot.className = 'mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-brand-600 ring-4 ring-brand-100 animate-pulse';
+        dot.className = 'mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-brand-600 ring-4 ring-brand-100';
         dot.setAttribute('aria-label', 'Notificación nueva');
 
         const content = document.createElement('span');
@@ -268,11 +296,11 @@ if (updatesUrl) {
 
         const title = document.createElement('span');
         title.dataset.notificationPreviewTitle = '';
-        title.className = 'notification-preview-title text-sm font-semibold text-gray-900';
+        title.className = 'notification-preview-title text-sm font-semibold text-ink';
         title.textContent = notification.titulo || 'Nueva notificación';
 
         const time = document.createElement('time');
-        time.className = 'shrink-0 text-xs text-gray-400';
+        time.className = 'shrink-0 text-xs text-muted';
         if (notification.creada) {
             time.dateTime = notification.creada;
         }
@@ -280,7 +308,7 @@ if (updatesUrl) {
 
         const message = document.createElement('span');
         message.dataset.notificationPreviewMessage = '';
-        message.className = 'notification-preview-message mt-1 text-sm leading-5 text-gray-600';
+        message.className = 'notification-preview-message mt-1 text-sm leading-5 text-ink-soft';
         message.textContent = notification.mensaje || '';
 
         heading.append(title, time);
@@ -358,20 +386,20 @@ if (updatesUrl) {
             region.dataset.notificationToastRegion = '';
             region.setAttribute('aria-live', 'polite');
             region.setAttribute('aria-relevant', 'additions');
-            region.className = 'fixed right-4 top-20 z-50 flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3';
+            region.className = 'fixed right-4 top-[4.75rem] z-50 flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3';
             document.body.append(region);
         }
 
         const toast = document.createElement('a');
         toast.href = notification.url || '/notificaciones';
-        toast.className = 'block rounded-xl border border-rose-100 bg-white p-4 text-left shadow-lg ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-xl';
+        toast.className = 'block rounded-2xl border border-line bg-white p-4 text-left shadow-lift transition-colors hover:border-peach-300';
 
         const title = document.createElement('span');
-        title.className = 'block font-semibold text-gray-900';
+        title.className = 'block font-semibold text-ink';
         title.textContent = notification.titulo;
 
         const message = document.createElement('span');
-        message.className = 'mt-1 block text-sm text-gray-600';
+        message.className = 'mt-1 block text-sm text-ink-soft';
         message.textContent = notification.mensaje;
 
         toast.append(title, message);

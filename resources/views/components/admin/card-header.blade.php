@@ -3,15 +3,15 @@
     'description' => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'border-b border-[#e9dfdb]/80 p-6 bg-gradient-to-r from-white via-white to-[#FAF6F6]/50']) }}>
+<div {{ $attributes->merge(['class' => 'border-b border-line/80 px-5 py-5 sm:px-6']) }}>
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         @if ($title || $description)
             <div>
                 @if ($title)
-                    <h3 class="text-base font-bold text-[#2D2526]">{{ $title }}</h3>
+                    <h3 class="text-base font-semibold text-ink">{{ $title }}</h3>
                 @endif
                 @if ($description)
-                    <p class="text-sm text-[#6b5e62]">{{ $description }}</p>
+                    <p class="mt-0.5 text-sm text-muted">{{ $description }}</p>
                 @endif
             </div>
         @endif
@@ -26,7 +26,7 @@
     </div>
 
     @if (isset($extra))
-        <div class="mt-5 pt-4 border-t border-[#e9dfdb]/70">
+        <div class="mt-5 pt-4 border-t border-line/70">
             {{ $extra }}
         </div>
     @endif

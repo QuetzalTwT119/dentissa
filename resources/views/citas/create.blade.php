@@ -2,18 +2,13 @@
     <x-slot name="header">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200">
-                        <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                        Gestión de Agenda
-                    </span>
-                </div>
-                <h2 class="mt-1 text-2xl font-bold tracking-tight text-[#2D2526]">
+                <p class="eyebrow">Gestión de Agenda</p>
+                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
                     Agendar cita en consultorio
                 </h2>
-                <p class="mt-0.5 text-xs text-[#8A7A7D]">Registro directo de consulta médica para pacientes registrados.</p>
+                <p class="mt-1 max-w-2xl text-sm text-muted">Registro directo de consulta médica para pacientes registrados.</p>
             </div>
-            <a href="{{ route('citas.index') }}" class="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-[#e9dfdb] bg-white px-4 py-2 text-xs font-semibold text-[#403539] transition hover:bg-[#FAF6F6] hover:border-brand-300 hover:text-brand-700">
+            <a href="{{ route('citas.index') }}" class="btn-secondary hidden sm:inline-flex">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 Volver a la agenda
             </a>
@@ -22,7 +17,7 @@
 
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft sm:p-8"
+            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8"
                  x-data="{
                     idServicio: @js(old('id_servicio', '')),
                     idTratamiento: @js(old('id_tratamiento', '')),
@@ -47,7 +42,7 @@
                     @csrf
 
                     <!-- Paso 1: Paciente -->
-                    <div class="rounded-xl bg-[#FAF6F6]/60 p-4 sm:p-5 border border-[#e9dfdb]/70 space-y-4">
+                    <div class="rounded-xl bg-cream/60 p-4 sm:p-5 border border-line/70 space-y-4">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1.5">
                                 <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">1</span>
@@ -59,7 +54,7 @@
                             <div>
                                 <x-input-label for="id_paciente" value="Paciente" />
                                 <select id="id_paciente" name="id_paciente" required
-                                        class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                        class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                     <option value="">Selecciona un paciente</option>
                                     @foreach ($pacientes as $paciente)
                                         <option value="{{ $paciente['id'] }}" @selected(old('id_paciente') == $paciente['id'])>{{ $paciente['nombre'] }}</option>
@@ -71,7 +66,7 @@
                     </div>
 
                     <!-- Paso 2: Servicio y Tratamiento -->
-                    <div class="rounded-xl bg-white p-4 sm:p-5 border border-[#e9dfdb]/70 space-y-4">
+                    <div class="rounded-xl bg-white p-4 sm:p-5 border border-line/70 space-y-4">
                         <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1.5">
                             <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">2</span>
                             Servicio y Procedimiento
@@ -82,7 +77,7 @@
                                 <x-input-label for="id_servicio" value="Servicio" />
                                 <select id="id_servicio" name="id_servicio" required
                                         x-model="idServicio" @change="idTratamiento = ''"
-                                        class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                        class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                     <option value="">Selecciona un servicio</option>
                                     @foreach ($servicios as $servicio)
                                         <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
@@ -96,7 +91,7 @@
                                     <x-input-label for="id_tratamiento" value="Tratamiento" />
                                     <select id="id_tratamiento" name="id_tratamiento" required
                                             x-model="idTratamiento" @change="cargarHorarios()"
-                                            class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                            class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                         <option value="">Selecciona un tratamiento</option>
                                         <template x-for="tratamiento in servicioSeleccionado.tratamientos" :key="tratamiento.id">
                                             <option :value="tratamiento.id" x-text="tratamiento.nombre + ' (' + tratamiento.duracion_estimada + ' min)'"></option>
@@ -109,7 +104,7 @@
                     </div>
 
                     <!-- Paso 3: Fecha y Horario -->
-                    <div class="rounded-xl bg-white p-4 sm:p-5 border border-[#e9dfdb]/70 space-y-4">
+                    <div class="rounded-xl bg-white p-4 sm:p-5 border border-line/70 space-y-4">
                         <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1.5">
                             <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">3</span>
                             Fecha y Horario
@@ -134,11 +129,11 @@
                     <div>
                         <x-input-label for="motivo" value="Motivo (opcional)" />
                         <textarea id="motivo" name="motivo" rows="3" placeholder="Notas clínicas o motivo específico de consulta..."
-                                  class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition placeholder:text-[#8A7A7D]/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('motivo') }}</textarea>
+                                  class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('motivo') }}</textarea>
                         <x-input-error :messages="$errors->get('motivo')" class="mt-2" />
                     </div>
 
-                    <div class="flex items-center gap-4 pt-4 border-t border-[#e9dfdb]">
+                    <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button x-bind:disabled="!hora">Confirmar cita</x-primary-button>
 
                         <a href="{{ route('citas.index') }}">

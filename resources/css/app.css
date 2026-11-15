@@ -52,22 +52,50 @@
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* Fraunces: serif cálida para títulos (SIL Open Font License 1.1). */
 @font-face {
-    font-family: 'Alex Brush';
+    font-family: 'Fraunces';
     font-style: normal;
-    font-weight: 400;
+    font-weight: 500;
     font-display: swap;
-    src: url('/fonts/alex-brush-latin-400-normal.woff2') format('woff2');
+    src: url('/fonts/fraunces-latin-500-normal.woff2') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-    font-family: 'Alex Brush';
+    font-family: 'Fraunces';
     font-style: normal;
-    font-weight: 400;
+    font-weight: 500;
     font-display: swap;
-    src: url('/fonts/alex-brush-latin-ext-400-normal.woff2') format('woff2');
+    src: url('/fonts/fraunces-latin-ext-500-normal.woff2') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/fraunces-latin-600-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/fraunces-latin-ext-600-normal.woff2') format('woff2');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: 'Fraunces';
+    font-style: italic;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/fraunces-latin-500-italic.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @tailwind base;
@@ -75,143 +103,213 @@
 @tailwind utilities;
 
 @layer base {
+    /*
+     * Tokens de color "Boutique cálida".
+     * Se escriben como canales RGB para que Tailwind pueda aplicar opacidad
+     * (por ejemplo `bg-cream/80`). Cambiar un valor aquí actualiza todo el sitio.
+     */
     :root {
+        --c-cream: 251 247 243;    /* #FBF7F3 fondo de página */
+        --c-shell: 246 238 233;    /* #F6EEE9 rellenos sutiles */
+        --c-line: 236 224 218;     /* #ECE0DA bordes */
+        --c-ink: 43 34 36;         /* #2B2224 texto principal */
+        --c-ink-soft: 92 78 82;    /* #5C4E52 texto secundario */
+        --c-muted: 122 106 110;    /* #7A6A6E texto de apoyo */
+
+        /* Alias heredados: algunos estilos en línea todavía los usan. */
         --brand-pink: #d75078;
-        --brand-pink-hover: #bd3f64;
+        --brand-pink-hover: #c13866;
         --brand-peach: #f2b0a6;
-        --brand-bg: #FAF6F6;
-        --brand-text: #2D2526;
-        --brand-muted: #8A7A7D;
-        --brand-salvia: #4E8D72;
-        --brand-border: #e9dfdb;
+        --brand-bg: rgb(var(--c-cream));
+        --brand-text: rgb(var(--c-ink));
+        --brand-muted: rgb(var(--c-muted));
+        --brand-salvia: #4e8d72;
+        --brand-border: rgb(var(--c-line));
+
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+        color-scheme: light;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
     }
 
     body {
         font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background-color: #FAF6F6;
-        color: #2D2526;
-        letter-spacing: -0.011em;
+        background-color: rgb(var(--c-cream));
+        color: rgb(var(--c-ink));
+        letter-spacing: -0.006em;
+        text-rendering: optimizeLegibility;
+        /* En el celular, el destello gris al tocar delata que "es una web". */
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Títulos de página y de sección en serif; el resto de la interfaz en sans. */
+    h1,
+    h2 {
+        font-family: 'Fraunces', Georgia, Cambria, serif;
+        font-weight: 500;
+        letter-spacing: -0.015em;
+        text-wrap: balance;
+    }
+
+    p {
+        text-wrap: pretty;
+    }
+
+    ::selection {
+        background-color: #f7d4cb;
+        color: rgb(var(--c-ink));
+    }
+
+    :focus-visible {
+        outline: 2px solid #d75078;
+        outline-offset: 2px;
+    }
+
+    /* Los botones no deben seleccionar su texto con una pulsación larga. */
+    button,
+    [role='button'] {
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: manipulation;
+    }
+
+    /*
+     * iOS hace zoom al enfocar campos con letra menor a 16px.
+     * En pantallas pequeñas forzamos 16px para que el formulario no "salte".
+     */
+    @media (max-width: 639px) {
+        input:not([type='checkbox']):not([type='radio']),
+        select,
+        textarea {
+            font-size: 16px !important;
+        }
     }
 }
 
 @layer components {
-    /* Botones Boutique Dentissa */
-    .btn-brand {
+    /* ---------- Botones ---------- */
+    .btn-brand,
+    .btn-secondary {
         display: inline-flex;
+        min-height: 2.75rem;
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
         padding: 0.625rem 1.25rem;
-        border-radius: 0.75rem;
-        font-size: 0.8125rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #FFFFFF;
-        background: linear-gradient(135deg, #d75078 0%, #bd3f64 100%);
-        box-shadow: 0 4px 14px -2px rgba(215, 80, 120, 0.35);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+        line-height: 1.25rem;
+        white-space: nowrap;
+        transition-property: background-color, border-color, color, box-shadow, transform;
+        transition-duration: 160ms;
+        transition-timing-function: var(--ease-out);
     }
-    .btn-brand:hover {
-        background: linear-gradient(135deg, #e05c84 0%, #a83054 100%);
-        box-shadow: 0 6px 20px -2px rgba(215, 80, 120, 0.45);
-        transform: translateY(-1px);
-    }
-    .btn-brand:active {
-        transform: translateY(1px);
-        box-shadow: 0 2px 6px -1px rgba(215, 80, 120, 0.3);
-    }
-    .btn-brand:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
+
+    .btn-brand {
+        color: #fff;
+        background-color: #c13866;
+        box-shadow: 0 8px 20px -10px rgb(193 56 102 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.18);
     }
 
     .btn-secondary {
+        color: rgb(var(--c-ink));
+        background-color: #fff;
+        border: 1px solid rgb(var(--c-line));
+        box-shadow: 0 1px 2px rgb(43 34 36 / 0.04);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .btn-brand:hover {
+            background-color: #a12a54;
+        }
+
+        .btn-secondary:hover {
+            border-color: #f2b0a6;
+            color: #a12a54;
+        }
+    }
+
+    /* Respuesta al pulsar: el botón "se hunde" un poco. */
+    .btn-brand:active,
+    .btn-secondary:active {
+        transform: scale(0.97);
+    }
+
+    .btn-brand:disabled,
+    .btn-secondary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* ---------- Tarjetas ---------- */
+    .card-boutique {
+        background-color: #fff;
+        border-radius: 1.5rem;
+        border: 1px solid rgb(var(--c-line));
+        box-shadow: 0 1px 2px rgb(43 34 36 / 0.04), 0 8px 24px -12px rgb(120 60 70 / 0.14);
+        transition: border-color 200ms ease, box-shadow 200ms ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        a.card-boutique:hover,
+        .card-boutique.is-interactive:hover {
+            border-color: #f7d4cb;
+            box-shadow: 0 2px 4px rgb(43 34 36 / 0.04), 0 18px 40px -16px rgb(120 60 70 / 0.22);
+        }
+    }
+
+    /* Nombre de la doctora (logotipo): Fraunces itálica. */
+    .firma {
+        font-family: 'Fraunces', Georgia, Cambria, serif;
+        font-style: italic;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+    }
+
+    /* Etiqueta pequeña sobre los títulos de sección ("Servicios", "Agenda"...). */
+    .eyebrow {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
         gap: 0.5rem;
-        padding: 0.625rem 1.25rem;
-        border-radius: 0.75rem;
-        font-size: 0.8125rem;
+        font-size: 0.75rem;
         font-weight: 600;
-        color: #382d31;
-        background-color: #FFFFFF;
-        border: 1px solid #e9dfdb;
-        box-shadow: 0 1px 3px 0 rgba(45, 37, 38, 0.04);
-        transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .btn-secondary:hover {
-        background-color: #FAF6F6;
-        color: #d75078;
-        border-color: #f2b0a6;
-        box-shadow: 0 4px 12px -2px rgba(215, 80, 120, 0.1);
-        transform: translateY(-1px);
-    }
-    .btn-secondary:active {
-        transform: translateY(1px);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #a12a54;
     }
 
-    /* Tarjetas Boutique */
-    .card-boutique {
-        background-color: #FFFFFF;
-        border-radius: 1.25rem;
-        border: 1px solid #e9dfdb;
-        box-shadow: 0 10px 30px -5px rgba(215, 80, 120, 0.05), 0 4px 12px -2px rgba(45, 37, 38, 0.03);
-        transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .card-boutique:hover {
-        border-color: #f2b0a6;
-        box-shadow: 0 14px 35px -5px rgba(215, 80, 120, 0.09), 0 6px 16px -2px rgba(45, 37, 38, 0.04);
+    .eyebrow::before {
+        content: '';
+        width: 1.25rem;
+        height: 1px;
+        background-color: currentColor;
+        opacity: 0.6;
     }
 
-    /* Inputs y Campos de Captura */
+    /* ---------- Campos ---------- */
     .input-boutique {
-        border-radius: 0.75rem;
-        border: 1px solid #e9dfdb;
-        background-color: #FFFFFF;
-        color: #2D2526;
+        border-radius: 0.875rem;
+        border: 1px solid rgb(var(--c-line));
+        background-color: #fff;
+        color: rgb(var(--c-ink));
         font-size: 0.875rem;
         padding: 0.625rem 0.875rem;
-        box-shadow: 0 1px 2px 0 rgba(45, 37, 38, 0.03);
-        transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 1px 2px rgb(43 34 36 / 0.03);
+        transition: border-color 150ms ease, box-shadow 150ms ease;
     }
+
     .input-boutique:focus {
         border-color: #d75078;
         outline: none;
-        box-shadow: 0 0 0 3px rgba(215, 80, 120, 0.18);
+        box-shadow: 0 0 0 4px rgb(215 80 120 / 0.14);
     }
 
-    /* Badges e Insignias de Estado */
-    .badge-success {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.375rem;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        background-color: #EAF4EE;
-        color: #4E8D72;
-        border: 1px solid rgba(78, 141, 114, 0.25);
-    }
-
-    .badge-brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.375rem;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        background-color: #fdf1f4;
-        color: #a12a54;
-        border: 1px solid rgba(215, 80, 120, 0.25);
-    }
-
+    /* ---------- Insignias ---------- */
+    .badge-success,
+    .badge-brand,
     .badge-warning {
         display: inline-flex;
         align-items: center;
@@ -220,18 +318,34 @@
         border-radius: 9999px;
         font-size: 0.75rem;
         font-weight: 600;
-        background-color: #FEF9EE;
-        color: #B45309;
-        border: 1px solid rgba(217, 119, 6, 0.25);
+        border: 1px solid transparent;
     }
 
-    /* Contenedores de Tablas Profesionales */
+    .badge-success {
+        background-color: #eef6f1;
+        color: #335f4e;
+        border-color: rgb(78 141 114 / 0.22);
+    }
+
+    .badge-brand {
+        background-color: #fdf1f4;
+        color: #a12a54;
+        border-color: rgb(215 80 120 / 0.22);
+    }
+
+    .badge-warning {
+        background-color: #fef7ea;
+        color: #92400e;
+        border-color: rgb(217 119 6 / 0.22);
+    }
+
+    /* ---------- Tablas ---------- */
     .table-container-boutique {
         overflow-x: auto;
-        border-radius: 1.25rem;
-        border: 1px solid #e9dfdb;
-        background-color: #FFFFFF;
-        box-shadow: 0 4px 20px -2px rgba(45, 37, 38, 0.03);
+        border-radius: 1.5rem;
+        border: 1px solid rgb(var(--c-line));
+        background-color: #fff;
+        box-shadow: 0 1px 2px rgb(43 34 36 / 0.04), 0 8px 24px -12px rgb(120 60 70 / 0.14);
     }
 
     .table-boutique {
@@ -243,22 +357,20 @@
     }
 
     .table-boutique thead {
-        background-color: #FAF6F6;
-        color: #6b5e62;
+        background-color: rgb(var(--c-shell) / 0.6);
+        color: rgb(var(--c-ink-soft));
         font-size: 0.75rem;
         font-weight: 600;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        border-bottom: 1px solid #e9dfdb;
     }
 
     .table-boutique tbody tr {
-        border-bottom: 1px solid rgba(233, 223, 219, 0.6);
-        transition: background-color 150ms ease-in-out;
+        transition: background-color 150ms ease;
     }
 
     .table-boutique tbody tr:hover {
-        background-color: rgba(250, 246, 246, 0.65);
+        background-color: rgb(var(--c-cream) / 0.7);
     }
 }
 
@@ -332,5 +444,41 @@ html::-webkit-scrollbar {
 @keyframes servicios-marquee {
     to {
         transform: translate3d(-50%, 0, 0);
+    }
+}
+
+/*
+ * Entrada suave de secciones al hacer scroll (portada pública).
+ * JS agrega `.is-visible`; sin JS el contenido se ve normal.
+ */
+.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+}
+
+.js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* Movimiento reducido: se conservan los fundidos, se quitan los desplazamientos. */
+@media (prefers-reduced-motion: reduce) {
+    .js [data-reveal] {
+        transform: none;
+        transition: opacity 200ms ease;
+    }
+
+    .servicios-marquee-track {
+        animation: none;
+    }
+
+    .animate-carousel-fade-in {
+        animation-name: none;
+    }
+
+    .btn-brand:active,
+    .btn-secondary:active {
+        transform: none;
     }
 }

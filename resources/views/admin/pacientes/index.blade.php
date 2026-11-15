@@ -12,13 +12,13 @@
                 <x-admin.card-header title="Expedientes registrados" description="Selecciona un paciente para consultar o registrar su historial clínico.">
                     <form method="GET" action="{{ route('admin.pacientes.index') }}" class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
                         <div class="relative w-full sm:w-72">
-                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#8A7A7D]">
+                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </span>
                             <input type="text" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" placeholder="Nombre, correo o teléfono…" aria-label="Buscar pacientes por nombre, correo o teléfono"
-                                   class="w-full rounded-xl border border-[#e9dfdb] bg-white pl-9 pr-3.5 py-2 text-sm text-[#2D2526] shadow-sm transition placeholder:text-[#8A7A7D]/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 sm:w-72">
+                                   class="w-full rounded-xl border border-line bg-white pl-9 pr-3.5 py-2 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 sm:w-72">
                         </div>
                         <x-secondary-button type="submit" class="shrink-0">Buscar</x-secondary-button>
                         @if (!empty($filtros['buscar']))
@@ -45,9 +45,9 @@
                                 <div class="flex items-center gap-3">
                                     <x-admin.user-avatar :name="$paciente->nombre . ' ' . $paciente->apellido" />
                                     <div>
-                                        <p class="font-bold text-[#2D2526] group-hover:text-brand-700 transition-colors">{{ $paciente->nombre }} {{ $paciente->apellido }}</p>
+                                        <p class="font-bold text-ink group-hover:text-brand-700 transition-colors">{{ $paciente->nombre }} {{ $paciente->apellido }}</p>
                                         @if (!empty($paciente->tutor_id) && $paciente->tutor)
-                                            <p class="text-[11px] text-[#8A7A7D] flex items-center gap-1 mt-0.5">
+                                            <p class="text-[11px] text-muted flex items-center gap-1 mt-0.5">
                                                 <span class="inline-block h-1.5 w-1.5 rounded-full bg-peach-400"></span>
                                                 Tutor: {{ $paciente->tutor->nombre }} {{ $paciente->tutor->apellido }}
                                             </p>
@@ -55,14 +55,14 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-[#6b5e62]">
+                            <td class="px-6 py-4 text-sm text-ink-soft">
                                 {{ $paciente->email ?? '—' }}
                             </td>
-                            <td class="px-6 py-4 text-sm font-mono text-[#6b5e62]">
+                            <td class="px-6 py-4 text-sm font-mono text-ink-soft">
                                 {{ $paciente->telefono ?? '—' }}
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span class="inline-flex items-center justify-center min-w-[2.25rem] rounded-full bg-[#FAF6F6] px-2.5 py-1 text-xs font-bold text-[#2D2526] border border-[#e9dfdb]">
+                                <span class="inline-flex items-center justify-center min-w-[2.25rem] rounded-full bg-cream px-2.5 py-1 text-xs font-bold text-ink border border-line">
                                     {{ $paciente->historial_clinico_count }}
                                 </span>
                             </td>
@@ -74,7 +74,7 @@
                                         <span>Historial</span>
                                     </a>
                                     <a href="{{ route('admin.pacientes.edit', $paciente) }}" title="Editar datos" aria-label="Editar datos del paciente"
-                                       class="rounded-xl border border-[#e9dfdb] bg-white p-2 text-[#8A7A7D] transition hover:bg-[#FAF6F6] hover:text-[#2D2526] hover:border-brand-200 shadow-xs">
+                                       class="rounded-xl border border-line bg-white p-2 text-muted transition hover:bg-cream hover:text-ink hover:border-brand-200 shadow-xs">
                                         <x-icon name="edit" class="h-4 w-4" />
                                     </a>
                                 </div>
@@ -83,11 +83,11 @@
                     @empty
                         <x-admin.empty-state colspan="5" title="No se encontraron pacientes">
                             <x-slot:icon>
-                                <svg class="h-6 w-6 text-[#d75078]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-6 w-6 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
                             </x-slot:icon>
-                            <p class="mt-1 text-xs text-[#8A7A7D]">
+                            <p class="mt-1 text-xs text-muted">
                                 @if (!empty($filtros['buscar']))
                                     No hay pacientes que coincidan con "{{ $filtros['buscar'] }}".
                                 @else

@@ -20,18 +20,18 @@
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-6">
             
             <!-- Tarjeta de Identificación Rápida -->
-            <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft sm:p-8">
-                <div class="flex items-center gap-4 pb-6 border-b border-[#e9dfdb]/80">
+            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
+                <div class="flex items-center gap-4 pb-6 border-b border-line/80">
                     <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-peach-100 text-base font-bold text-brand-700 border border-brand-200 shadow-soft">
                         {{ strtoupper(substr($paciente->nombre, 0, 1) . substr($paciente->apellido, 0, 1)) }}
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-[#2D2526]">{{ $paciente->nombre }} {{ $paciente->apellido }}</h3>
-                        <p class="text-xs text-[#8A7A7D]">ID de paciente: #{{ str_pad($paciente->id, 5, '0', STR_PAD_LEFT) }} &bull; Consultas registradas: {{ $paciente->historialClinico()->count() }}</p>
+                        <h3 class="text-lg font-bold text-ink">{{ $paciente->nombre }} {{ $paciente->apellido }}</h3>
+                        <p class="text-xs text-muted">ID de paciente: #{{ str_pad($paciente->id, 5, '0', STR_PAD_LEFT) }} &bull; Consultas registradas: {{ $paciente->historialClinico()->count() }}</p>
                     </div>
                 </div>
 
-                <p class="mt-6 text-sm text-[#6b5e62]">
+                <p class="mt-6 text-sm text-ink-soft">
                     Actualiza los datos de contacto y, si hace falta, los identificadores oficiales o la relación familiar.
                 </p>
 
@@ -40,8 +40,8 @@
                     @method('put')
 
                     <!-- Sección: Datos Personales -->
-                    <div class="rounded-xl bg-[#FAF6F6]/60 p-4 sm:p-6 border border-[#e9dfdb]/70 space-y-4">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-[#8A7A7D] flex items-center gap-1.5">
+                    <div class="rounded-xl bg-cream/60 p-4 sm:p-6 border border-line/70 space-y-4">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-muted flex items-center gap-1.5">
                             <span class="h-2 w-2 rounded-full bg-brand-500"></span>
                             Datos Personales y Contacto
                         </h4>
@@ -79,8 +79,8 @@
                     </div>
 
                     <!-- Sección: Identificadores Oficiales -->
-                    <div class="rounded-xl bg-white p-4 sm:p-6 border border-[#e9dfdb]/70 space-y-4">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-[#8A7A7D] flex items-center gap-1.5">
+                    <div class="rounded-xl bg-white p-4 sm:p-6 border border-line/70 space-y-4">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-muted flex items-center gap-1.5">
                             <span class="h-2 w-2 rounded-full bg-teal-600"></span>
                             Identificadores Oficiales y Tutoría
                         </h4>
@@ -113,7 +113,7 @@
                             <div>
                                 <x-input-label for="tutor_id" value="Tutor o responsable (opcional)" />
                                 <select id="tutor_id" name="tutor_id"
-                                        class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                        class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                     <option value="">Ninguno — paciente independiente</option>
                                     @foreach ($tutoresDisponibles as $t)
                                         <option value="{{ $t['id'] }}" @selected(old('tutor_id', $paciente->tutor_id) == $t['id'])>{{ $t['nombre'] }}</option>
@@ -124,7 +124,7 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-4 pt-4 border-t border-[#e9dfdb]">
+                    <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button>Guardar cambios</x-primary-button>
 
                         <a href="{{ route('admin.pacientes.index') }}">

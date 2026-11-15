@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-[#2D2526]">
+        <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
             Asistente de agenda
         </h2>
     </x-slot>
@@ -9,7 +9,7 @@
         <div class="mx-auto max-w-3xl space-y-6 sm:px-6 lg:px-8">
             <div class="rounded-2xl border border-brand-200/80 bg-brand-50/70 p-5 text-sm text-brand-900 shadow-sm">
                 <p class="font-semibold text-brand-700">Primero propone; tú decides.</p>
-                <p class="mt-1 text-[#6b5e62]">El asistente solo consulta la disponibilidad. No guarda una cita ni envía un aviso hasta que pulses <em>Confirmar y agendar</em>.</p>
+                <p class="mt-1 text-ink-soft">El asistente solo consulta la disponibilidad. No guarda una cita ni envía un aviso hasta que pulses <em>Confirmar y agendar</em>.</p>
             </div>
 
             @if ($errors->any())
@@ -18,7 +18,7 @@
                 </div>
             @endif
 
-            <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft sm:p-8"
+            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8"
                  x-data="{
                     idServicio: @js(old('id_servicio', $propuesta['id_servicio'] ?? '')),
                     idTratamiento: @js(old('id_tratamiento', $propuesta['tratamiento']->id ?? '')),
@@ -33,7 +33,7 @@
                     <div>
                         <x-input-label for="id_paciente" value="Paciente" />
                         <select id="id_paciente" name="id_paciente" required
-                                class="mt-1.5 block w-full rounded-xl border-[#e9dfdb] text-sm shadow-sm focus:border-brand-500 focus:ring-brand-400">
+                                class="mt-1.5 block w-full rounded-xl border-line text-sm shadow-sm focus:border-brand-500 focus:ring-brand-400">
                             <option value="">Selecciona un paciente</option>
                             @foreach ($pacientes as $paciente)
                                 <option value="{{ $paciente->id }}" @selected(old('id_paciente', $propuesta['paciente']->id ?? null) == $paciente->id)>
@@ -46,7 +46,7 @@
                     <div>
                         <x-input-label for="id_servicio" value="Servicio" />
                         <select id="id_servicio" name="id_servicio" required x-model="idServicio" @change="idTratamiento = ''"
-                                class="mt-1.5 block w-full rounded-xl border-[#e9dfdb] text-sm shadow-sm focus:border-brand-500 focus:ring-brand-400">
+                                class="mt-1.5 block w-full rounded-xl border-line text-sm shadow-sm focus:border-brand-500 focus:ring-brand-400">
                             <option value="">Selecciona un servicio</option>
                             @foreach ($servicios as $servicio)
                                 <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
@@ -58,7 +58,7 @@
                         <div>
                             <x-input-label for="id_tratamiento" value="Tratamiento" />
                             <select id="id_tratamiento" name="id_tratamiento" required x-model="idTratamiento"
-                                    class="mt-1.5 block w-full rounded-xl border-[#e9dfdb] text-sm shadow-sm focus:border-brand-500 focus:ring-brand-400">
+                                    class="mt-1.5 block w-full rounded-xl border-line text-sm shadow-sm focus:border-brand-500 focus:ring-brand-400">
                                 <option value="">Selecciona un tratamiento</option>
                                 <template x-for="tratamiento in servicioSeleccionado.tratamientos" :key="tratamiento.id">
                                     <option :value="tratamiento.id" x-text="tratamiento.nombre + ' (' + tratamiento.duracion_estimada + ' min)'"></option>
@@ -75,7 +75,7 @@
 
                     <div>
                         <x-input-label for="motivo" value="Motivo (opcional)" />
-                        <textarea id="motivo" name="motivo" rows="3" class="mt-1.5 block w-full rounded-xl border-[#e9dfdb] text-sm shadow-sm focus:border-brand-500 focus:ring-brand-400">{{ old('motivo', $propuesta['motivo'] ?? '') }}</textarea>
+                        <textarea id="motivo" name="motivo" rows="3" class="mt-1.5 block w-full rounded-xl border-line text-sm shadow-sm focus:border-brand-500 focus:ring-brand-400">{{ old('motivo', $propuesta['motivo'] ?? '') }}</textarea>
                     </div>
 
                     <x-primary-button>Buscar horarios y preparar propuesta</x-primary-button>
@@ -83,9 +83,9 @@
             </div>
 
             @isset($propuesta)
-                <div class="rounded-2xl border border-[#e9dfdb] bg-white p-6 shadow-soft sm:p-8">
-                    <h3 class="text-lg font-semibold text-[#2D2526]">Propuesta para {{ $propuesta['paciente']->nombre_completo }}</h3>
-                    <p class="mt-1 text-sm text-[#6b5e62]">
+                <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
+                    <h3 class="text-lg font-semibold text-ink">Propuesta para {{ $propuesta['paciente']->nombre_completo }}</h3>
+                    <p class="mt-1 text-sm text-ink-soft">
                         {{ $propuesta['tratamiento']->nombre }} · {{ $propuesta['tratamiento']->duracion_estimada }} minutos · {{ \Illuminate\Support\Carbon::parse($propuesta['fecha'])->translatedFormat('l d \d\e F') }}
                     </p>
 
@@ -100,7 +100,7 @@
 
                             <div>
                                 <x-input-label for="hora" value="Elige el horario que deseas confirmar" />
-                                <select id="hora" name="hora" required class="mt-1.5 block w-full rounded-xl border-[#e9dfdb] text-sm shadow-sm focus:border-brand-500 focus:ring-brand-400">
+                                <select id="hora" name="hora" required class="mt-1.5 block w-full rounded-xl border-line text-sm shadow-sm focus:border-brand-500 focus:ring-brand-400">
                                     @foreach ($propuesta['horarios'] as $horario)
                                         <option value="{{ $horario }}">{{ $horario }}</option>
                                     @endforeach
