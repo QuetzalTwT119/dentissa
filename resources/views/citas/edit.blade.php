@@ -32,11 +32,11 @@
 
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-brand-100/60 text-xs text-ink">
                         <div>
-                            <span class="font-bold text-ink">Servicio:</span> 
+                            <span class="font-bold text-ink">Servicio:</span>
                             <span>{{ $cita->servicio->nombre ?? '—' }}</span>
                         </div>
                         <div>
-                            <span class="font-bold text-ink">Tratamiento:</span> 
+                            <span class="font-bold text-ink">Tratamiento:</span>
                             <span>{{ $cita->tratamiento->nombre ?? '—' }}</span>
                         </div>
                     </div>
