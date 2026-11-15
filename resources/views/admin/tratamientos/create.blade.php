@@ -37,7 +37,7 @@
                         <select id="categoria" name="categoria"
                                 class="mt-1.5 block w-full rounded-xl border border-[#e9dfdb] bg-white px-3.5 py-2.5 text-sm text-[#2D2526] shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="">Sin categoría</option>
-                            @foreach (['Estética', 'Preventiva', 'Restauradora', 'Quirúrgica'] as $categoria)
+                            @foreach (\App\Models\Tratamiento::CATEGORIAS as $categoria)
                                 <option value="{{ $categoria }}" @selected(old('categoria') === $categoria)>{{ $categoria }}</option>
                             @endforeach
                         </select>

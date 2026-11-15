@@ -16,6 +16,9 @@ class Tratamiento extends Model
 {
     use HasFactory;
 
+    /** Categorías que ofrece el panel; el catálogo base usa estas mismas. */
+    public const CATEGORIAS = ['Diagnóstico', 'Preventiva', 'Restauradora', 'Estética', 'Quirúrgica'];
+
     protected function casts(): array
     {
         return [
