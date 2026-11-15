@@ -11,7 +11,7 @@
 
         <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="/fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="/fonts/alex-brush-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/fraunces-latin-500-italic.woff2" as="font" type="font/woff2" crossorigin>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="bg-cream font-sans text-ink antialiased">
@@ -36,7 +36,7 @@
                             <img src="/images/brand/logo-rosa-transparente.png" alt="" class="h-full w-full object-contain">
                         </span>
                         <div class="leading-tight drop-shadow-md">
-                            <p class="font-cursive text-2xl text-white sm:text-[1.8rem]">Melissa López N.</p>
+                            <p class="firma text-xl text-white sm:text-[1.4rem]">Melissa López N.</p>
                             <p class="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/90">Odontología integral</p>
                         </div>
                     </div>

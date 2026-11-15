@@ -15,6 +15,6 @@ class TipografiaEstableTest extends TestCase
             ->assertOk()
             ->assertDontSee('fonts.bunny.net', false)
             ->assertSee('/fonts/figtree-latin-400-normal.woff2', false)
-            ->assertSee('/fonts/alex-brush-latin-400-normal.woff2', false);
+            ->assertSee('/fonts/fraunces-latin-500-italic.woff2', false);
     }
 }

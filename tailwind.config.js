@@ -32,7 +32,6 @@ export default {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
                 // Títulos: Fraunces, serif cálida para el tono boutique.
                 serif: ['Fraunces', 'Georgia', 'Cambria', 'serif'],
-                cursive: ['"Alex Brush"', 'cursive'],
             },
             colors: {
                 // Neutros semánticos (ver :root en app.css).

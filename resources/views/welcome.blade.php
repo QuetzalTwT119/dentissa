@@ -7,10 +7,10 @@
     @include('partials.favicon')
     <title>Dentissa — Odontología Integral | Dra. Melissa López N.</title>
 
-    <!-- Tipografía local: Figtree (texto), Fraunces (títulos), Alex Brush (firma) -->
+    <!-- Tipografía local: Figtree (texto), Fraunces (títulos), Fraunces itálica (firma) -->
     <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/alex-brush-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/fraunces-latin-500-italic.woff2" as="font" type="font/woff2" crossorigin>
 
     <!-- Activa las animaciones de entrada solo si hay JavaScript -->
     <script>document.documentElement.classList.add('js')</script>
@@ -108,7 +108,7 @@
                 <a href="{{ url('/') }}" class="flex min-w-0 shrink-0 items-center gap-3 rounded-full">
                     <img src="{{ asset('images/9.jpg') }}" alt="Logo Dentissa" class="h-11 w-11 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-peach-200" width="44" height="44">
                     <span class="min-w-0 leading-none">
-                        <span class="block truncate font-cursive text-[1.65rem] leading-none text-brand-700 sm:text-[1.85rem]">Dra. Melissa López</span>
+                        <span class="block truncate firma text-[1.2rem] leading-none text-brand-700 sm:text-[1.35rem]">Dra. Melissa López</span>
                         <span class="mt-1 block text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-muted">Odontología Integral</span>
                     </span>
                 </a>
@@ -350,7 +350,7 @@
                         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/85 via-transparent to-transparent"></div>
                         <figcaption class="absolute inset-x-0 bottom-0 p-6 text-white">
                             <span class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-peach-200">Directora Médica</span>
-                            <span class="mt-1 block font-cursive text-[2.3rem] leading-none">Dra. Melissa López N.</span>
+                            <span class="mt-1 block firma text-[1.75rem] leading-tight">Dra. Melissa López N.</span>
                             <span class="mt-1.5 block text-sm text-white/80">Odontología Integral & Armonización</span>
                         </figcaption>
                     </div>
@@ -478,7 +478,7 @@
                         <img src="{{ asset('images/9.jpg') }}" alt="Logo Dentissa" class="h-11 w-11 shrink-0 rounded-full bg-white object-contain p-0.5">
                         <div>
                             <span class="block font-serif text-xl leading-none text-white">Dentissa</span>
-                            <span class="mt-1 block font-cursive text-xl leading-none text-peach-200">Dra. Melissa López</span>
+                            <span class="mt-1 block firma text-lg leading-none text-peach-200">Dra. Melissa López</span>
                         </div>
                     </div>
                     <p class="max-w-sm text-sm leading-6 text-white/65">

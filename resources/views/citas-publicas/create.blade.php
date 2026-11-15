@@ -11,7 +11,7 @@
 
         <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="/fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="/fonts/alex-brush-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/fraunces-latin-500-italic.woff2" as="font" type="font/woff2" crossorigin>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -35,7 +35,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <p class="mt-6 font-cursive text-3xl text-brand-600">Melissa López N.</p>
+                    <p class="mt-6 firma text-2xl text-brand-600">Melissa López N.</p>
                     <h1 class="mt-3 text-[1.75rem] leading-tight text-ink">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
                     @if ($resumen = session('cita_resumen'))
                         <dl class="mt-6 divide-y divide-line/80 rounded-2xl border border-line bg-cream text-left text-sm">
@@ -62,7 +62,7 @@
                     <a href="{{ url('/') }}" class="flex min-w-0 items-center gap-3 rounded-full" aria-label="Volver al inicio">
                         <img src="/images/brand/logo-rosa-transparente.png" alt="Dentissa" class="h-10 w-10 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-peach-200">
                         <span class="min-w-0 leading-none">
-                            <span class="block truncate font-cursive text-[1.45rem] leading-none text-brand-700 sm:text-[1.6rem]">Dra. Melissa López N.</span>
+                            <span class="block truncate firma text-[1.1rem] leading-none text-brand-700 sm:text-[1.2rem]">Dra. Melissa López N.</span>
                             <span class="mt-1 hidden text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-muted sm:block">Odontología Integral & Armonización</span>
                         </span>
                     </a>
