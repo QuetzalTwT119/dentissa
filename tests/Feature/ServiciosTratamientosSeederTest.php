@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Enums\RolUsuario;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
+use App\Models\User;
 use Database\Seeders\ServiciosTratamientosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -48,6 +50,39 @@ class ServiciosTratamientosSeederTest extends TestCase
 
         // Ningún servicio activo queda vacío: el paciente no debe elegir algo sin tratamientos.
         $this->assertSame(0, Servicio::where('activo', true)->whereDoesntHave('tratamientos', fn ($q) => $q->where('activo', true))->count());
+    }
+
+    public function test_puede_reordenar_tratamientos_ya_asignados_sin_fallar(): void
+    {
+        // Base con datos previos: Limpieza ya estaba asignada con otro orden.
+        $general = Servicio::create(['nombre' => 'Odontología General', 'orden' => 1, 'activo' => true]);
+        $limpieza = Tratamiento::create(['nombre' => 'Limpieza Dental', 'duracion_estimada' => 60, 'activo' => true]);
+        $general->tratamientos()->attach($limpieza->id, ['orden' => 9]);
+
+        $this->seed(ServiciosTratamientosSeeder::class);
+
+        $this->assertSame(2, (int) $general->tratamientos()->whereKey($limpieza->id)->first()->pivot->orden);
+    }
+
+    public function test_el_panel_ofrece_las_mismas_categorias_que_usa_el_catalogo(): void
+    {
+        $this->seed(ServiciosTratamientosSeeder::class);
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $valoracion = Tratamiento::where('nombre', 'Valoración')->firstOrFail();
+
+        foreach (Tratamiento::where('activo', true)->pluck('categoria') as $categoria) {
+            $this->assertContains($categoria, Tratamiento::CATEGORIAS);
+        }
+
+        $this->actingAs($admin)
+            ->get(route('admin.tratamientos.edit', $valoracion))
+            ->assertOk()
+            ->assertSee('<option value="Diagnóstico" selected>', false);
+
+        $this->actingAs($admin)
+            ->get(route('admin.tratamientos.create'))
+            ->assertOk()
+            ->assertSee('<option value="Diagnóstico"', false);
     }
 
     public function test_desactiva_el_catalogo_de_ejemplo_anterior_sin_borrarlo_y_respeta_lo_creado_por_la_clinica(): void
