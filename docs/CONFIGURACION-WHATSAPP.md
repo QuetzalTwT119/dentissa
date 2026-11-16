@@ -129,7 +129,9 @@ funciona, porque Meta no puede llegar a tu laptop.
 - Solo cambia la cita si el número que pulsa el botón es el del paciente de
   esa cita.
 - Si Meta reintenta el mismo aviso, se procesa una sola vez.
-- Los mensajes que no son botones del recordatorio se ignoran.
+- A un mensaje de texto, audio o foto (no un botón) contesta automáticamente
+  que el número solo envía recordatorios, con el teléfono del consultorio y el
+  enlace para agendar. Una vez cada 12 h por número, y sin guardar el contenido.
 
 **Costo:** Meta cobra los mensajes de plantilla que inicia la empresa, como el
 recordatorio, según la tarifa de la categoría *Utilidad* para México. La

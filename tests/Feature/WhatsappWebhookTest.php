@@ -128,15 +128,49 @@ class WhatsappWebhookTest extends TestCase
         Http::assertSent(fn (Request $r) => str_contains($r['text']['body'] ?? '', 'ya no admite cambios'));
     }
 
-    public function test_mensajes_que_no_son_botones_del_recordatorio_se_ignoran(): void
+    public function test_un_mensaje_de_texto_recibe_la_respuesta_automatica_sin_cambiar_citas(): void
     {
-        $texto = $this->boton('confirmar');
-        $texto['entry'][0]['changes'][0]['value']['messages'][0] = ['id' => 'wamid.texto', 'from' => '5215512345678', 'type' => 'text', 'text' => ['body' => 'hola']];
-
-        $this->enviar($texto)->assertOk();
+        $this->enviar($this->texto('wamid.texto-1', '5215512345678', '¿Puedo llegar 10 minutos tarde?'))->assertOk();
 
         $this->assertSame(EstadoCita::Agendada, $this->cita->fresh()->estado);
+        Http::assertSentCount(1);
+        Http::assertSent(fn (Request $r) => $r['type'] === 'text'
+            && $r['to'] === '5215512345678'
+            && str_contains($r['text']['body'], 'solo envía los recordatorios')
+            && str_contains($r['text']['body'], config('dentissa.contacto.telefono'))
+            && str_contains($r['text']['body'], route('citas.publica.create')));
+    }
+
+    public function test_la_respuesta_automatica_se_manda_una_vez_cada_12_horas_por_numero(): void
+    {
+        $this->enviar($this->texto('wamid.a', '5215512345678', 'hola'))->assertOk();
+        $this->enviar($this->texto('wamid.b', '5215512345678', '¿siguen ahí?'))->assertOk();
+        $this->enviar($this->texto('wamid.c', '5215587654321', 'hola'))->assertOk();
+        Http::assertSentCount(2);
+
+        Carbon::setTestNow(now()->addHours(13));
+        $this->enviar($this->texto('wamid.d', '5215512345678', 'hola otra vez'))->assertOk();
+        Http::assertSentCount(3);
+    }
+
+    public function test_los_avisos_de_estado_de_meta_no_reciben_respuesta(): void
+    {
+        $estado = $this->boton('confirmar');
+        unset($estado['entry'][0]['changes'][0]['value']['messages']);
+        $estado['entry'][0]['changes'][0]['value']['statuses'] = [['id' => 'wamid.enviado', 'status' => 'delivered', 'recipient_id' => '5215512345678']];
+
+        $this->enviar($estado)->assertOk();
+
         Http::assertNothingSent();
+    }
+
+    /** @return array<string, mixed> */
+    private function texto(string $id, string $desde, string $cuerpo): array
+    {
+        $datos = $this->boton('confirmar');
+        $datos['entry'][0]['changes'][0]['value']['messages'][0] = ['id' => $id, 'from' => $desde, 'type' => 'text', 'text' => ['body' => $cuerpo]];
+
+        return $datos;
     }
 
     /** @return array<string, mixed> */
