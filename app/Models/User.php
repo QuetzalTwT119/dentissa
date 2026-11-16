@@ -13,8 +13,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+// Los campos dos_pasos_* no están en Fillable: solo los escribe
+// DosPasosService con forceFill, nunca un formulario.
 #[Fillable(['nombre', 'apellido', 'email', 'telefono', 'password', 'rol', 'foto_perfil', 'activo'])]
-#[Hidden(['password', 'remember_token'])]
+#[Hidden(['password', 'remember_token', 'dos_pasos_secreto', 'dos_pasos_recuperacion'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -34,7 +36,23 @@ class User extends Authenticatable
             'rol' => RolUsuario::class,
             'activo' => 'boolean',
             'telefono_verificado' => 'boolean',
+            // Cifrados con APP_KEY: un volcado de la base no revela el secreto.
+            'dos_pasos_secreto' => 'encrypted',
+            'dos_pasos_recuperacion' => 'encrypted:array',
+            'dos_pasos_confirmado_en' => 'datetime',
         ];
+    }
+
+    public function tieneDosPasos(): bool
+    {
+        return $this->dos_pasos_confirmado_en !== null && filled($this->dos_pasos_secreto);
+    }
+
+    /** El administrador ve historiales clínicos: para él es obligatoria. */
+    public function debeUsarDosPasos(): bool
+    {
+        return $this->rol === RolUsuario::Admin
+            && (bool) config('dentissa.seguridad.dos_pasos_admin_obligatorio');
     }
 
     public function paciente(): HasOne

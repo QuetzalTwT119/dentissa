@@ -111,6 +111,11 @@ Antes de generar un dominio público:
   servicio MySQL (`MYSQLHOST`, `MYSQLPORT`, `MYSQLDATABASE`, `MYSQLUSER`,
   `MYSQLPASSWORD`). Los valores reales deben guardarse solo en el panel de
   variables de Railway, nunca en Git.
+- Seguridad del personal (Manual Técnico, sección 24): `SESSION_SECURE_COOKIE=true`,
+  `SESSION_ENCRYPT=true`, `SESSION_LIFETIME=30` y `DENTISSA_2FA_ADMIN=true`.
+  Antes de la presentación, el administrador debe activar la verificación en
+  dos pasos con su celular; solo una demo sin pacientes reales puede usar
+  `DENTISSA_2FA_ADMIN=false`.
 - Antes de recibir pacientes reales, configurar `DENTISSA_PRIVACIDAD_RESPONSABLE`,
   `DENTISSA_PRIVACIDAD_DOMICILIO` y `DENTISSA_PRIVACIDAD_CORREO` con los datos
   de la clínica. Poner `DENTISSA_AVISO_REVISADO=true` solo cuando un abogado o

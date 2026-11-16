@@ -126,6 +126,23 @@ return [
         'excluir' => ['google-oauth-client.json', 'google-oauth-token.json'],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Seguridad del personal
+    |--------------------------------------------------------------------------
+    |
+    | La verificación en dos pasos es obligatoria para el administrador, que ve
+    | los historiales clínicos. En un entorno de demostración se puede apagar
+    | con DENTISSA_2FA_ADMIN=false; con pacientes reales debe quedar en true.
+    |
+    */
+
+    'seguridad' => [
+        'dos_pasos_admin_obligatorio' => filter_var(env('DENTISSA_2FA_ADMIN', true), FILTER_VALIDATE_BOOL),
+        // Nombre que verá el personal en su app de autenticación.
+        'emisor_dos_pasos' => env('DENTISSA_2FA_EMISOR', 'Dentissa'),
+    ],
+
     'privacidad' => [
         'version' => '2026-11-16',
         'revisado' => (bool) env('DENTISSA_AVISO_REVISADO', false),
