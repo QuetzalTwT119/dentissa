@@ -81,7 +81,7 @@
                 @elseif ($resultado === Respuesta::NO_DISPONIBLE || ! $disponible)
                     <p class="mt-5 text-sm leading-6 text-muted">
                         La cita ya pasó, se canceló o ya fue atendida. Si necesitas ayuda, llama al consultorio al
-                        <a class="font-semibold text-brand-700 underline" href="tel:{{ preg_replace('/[^0-9+]/', '', config('dentissa.contacto.telefono')) }}">{{ config('dentissa.contacto.telefono') }}</a>.
+                        <a class="font-semibold text-brand-700 underline" href="{{ config('dentissa.contacto.telefono_enlace') }}">{{ config('dentissa.contacto.telefono') }}</a>.
                     </p>
                     <a href="{{ route('citas.publica.create') }}" class="btn-brand mt-8 w-full py-3">Agendar una cita</a>
                 @else
