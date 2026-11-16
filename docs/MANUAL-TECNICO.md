@@ -875,3 +875,95 @@ gestionan reprogramaciones y cancelaciones desde el panel (`/citas`).
 - **Pruebas:** `AgendaSemanalTest` cubre acceso, rango de la semana, orden por
   hora, datos de cada cita, navegación, fecha inválida, días cerrados y que la
   lista siga siendo la vista predeterminada.
+
+## 22. Recordatorio 24 h antes y respuesta del paciente (etapa 1)
+
+**Objetivo:** reducir inasistencias. Un día antes, el paciente recibe un
+recordatorio por WhatsApp **y** por correo y puede responder **Asistiré**,
+**Reagendar** o **Cancelar**. La etapa 1 recibe las respuestas por los enlaces
+del correo; la etapa 2 (pendiente, requiere Railway encendido) agregará el
+webhook que recibe los botones de WhatsApp.
+
+### Flujo
+
+```
+scheduler (cada 15 min) ──> dentissa:enviar-recordatorios
+                              │ citas Agendada/Confirmada, en (ahora, ahora+24h],
+                              │ sin recordatorio_enviado_en y creadas ≥24 h antes
+                              ▼
+                     NotificacionService::citaRecordatorio
+                       ├─ WhatsApp: plantilla cita_recordatorio + 3 botones
+                       └─ Correo: RecordatorioCita con 3 enlaces firmados
+                              ▼
+   paciente abre enlace ──GET──> página que pregunta (no cambia nada)
+                         ──POST─> RespuestaRecordatorioService::responder
+                                    ├─ confirmar → Confirmada + asistencia_confirmada_en
+                                    ├─ cancelar  → Cancelada (motivo del paciente)
+                                    └─ reagendar → Cancelada + enlace a /agendar-cita
+                                  + aviso interno al personal (campana)
+```
+
+### Decisiones técnicas
+
+- **Columnas nuevas en `citas`:** `recordatorio_enviado_en` evita duplicados;
+  `asistencia_confirmada_en` guarda la respuesta "Asistiré" aparte del estado,
+  porque las citas públicas ya nacen Confirmadas. Reagendar desde el panel
+  (`CitaController@update`) vacía ambas para que la nueva fecha tenga su propio
+  recordatorio y su propia confirmación.
+- **Sin duplicados aunque el comando se encime:** el schedule usa
+  `withoutOverlapping()` y, además, cada cita se *reclama* con un `UPDATE ...
+  WHERE recordatorio_enviado_en IS NULL`; solo la ejecución que cambia la fila
+  manda el aviso. La marca se pone aunque los dos canales fallen: es un solo
+  intento, auditado en `notificaciones` con `tipo` vacío.
+- **Doble canal, no cascada:** los demás avisos siguen siendo WhatsApp → correo
+  de respaldo; el recordatorio intenta los dos y guarda una fila por cada envío
+  exitoso (`tipo = whatsapp` / `email`, `canal = cita_recordatorio`).
+- **Enlaces firmados** (`URL::temporarySignedRoute`): el paciente no tiene
+  cuenta, así que la firma es lo que autoriza. Cambiar el número de cita o la
+  acción invalida la URL (403). La firma vence un día después de la cita para
+  que un enlace viejo muestre "ya no admite cambios" en vez de un error; la
+  regla real (estado Agendada/Confirmada y cita futura) está en
+  `RespuestaRecordatorioService::admiteRespuesta()`.
+- **GET pregunta, POST cambia:** Gmail, Outlook y algunos antivirus abren los
+  enlaces de un correo para revisarlos. Si el GET cancelara, una cita podría
+  cancelarse sola. Después del POST se redirige al GET (Post/Redirect/Get), así
+  que recargar no reenvía la respuesta.
+- **Una sola lógica para los dos canales:** `RespuestaRecordatorioService`
+  bloquea la fila (`lockForUpdate`) para no pisar un cambio simultáneo del
+  personal, y es lo que reutilizará el webhook de WhatsApp. El payload de cada
+  botón ya se envía como `recordatorio:{id_cita}:{accion}`.
+- **Avisos al personal:** eventos `asistencia_confirmada`, `cancelada_paciente`
+  y `reagendar_paciente`; los dos últimos se destacan como prioritarios porque
+  liberan un horario. No van a la auditoría: no los hizo un empleado.
+- **Fechas en español:** `APP_LOCALE` es `en`; la página y los mensajes a
+  pacientes fuerzan `locale('es')` (antes los avisos decían "Jan").
+- **Producción:** Supervisor ejecuta un proceso `scheduler`
+  (`php artisan schedule:work`) junto al web y al bot de Telegram, en el mismo
+  contenedor, sin costo extra. En local, el comando se prueba a mano.
+
+### Cómo validar en local
+
+```bash
+php artisan schedule:list
+```
+
+Debe listar `dentissa:enviar-recordatorios` con `*/15 * * * *`.
+
+```bash
+php artisan test --filter=RecordatorioCitaTest
+```
+
+**Cuidado:** si tu `.env` local tiene credenciales reales de WhatsApp o un
+`MAIL_MAILER` que envía de verdad, `php artisan dentissa:enviar-recordatorios`
+avisará a los pacientes reales de la base local. Para probarlo a mano usa una
+copia de la base con `MAIL_MAILER=log` y las variables de WhatsApp vacías.
+
+### Pruebas
+
+`RecordatorioCitaTest` (16 pruebas, hora fija 9 ene 2030 10:00) cubre: envío
+por ambos canales una sola vez con los 3 botones, WhatsApp caído con correo que
+sí sale, correo caído sin detener el comando, citas excluidas (canceladas,
+inasistencia, completadas, pasadas, a más de 24 h, agendadas con menos de 24 h),
+reagendar que vuelve a habilitar el recordatorio, el schedule cada 15 min,
+enlaces firmados en el correo, GET que no modifica, confirmar/cancelar/reagendar,
+la marca en lista y semana, cita pasada o cancelada, y URL sin firma o alterada.

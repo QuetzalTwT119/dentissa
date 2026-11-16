@@ -46,7 +46,7 @@ horas — no sirve para producción. Hace falta uno permanente:
 
 Meta exige plantillas pre-aprobadas para mensajes que la clínica inicia
 (fuera de la ventana de 24h de conversación, no se puede mandar texto
-libre). `WhatsappService::enviarPlantilla()` manda exactamente estas 4 —
+libre). `WhatsappService::enviarPlantilla()` manda exactamente estas 5 —
 los nombres y la cantidad de variables deben coincidir tal cual:
 
 | Plantilla | Idioma | Disparada desde | Variables `{{1}} {{2}} {{3}}` |
@@ -55,6 +55,7 @@ los nombres y la cantidad de variables deben coincidir tal cual:
 | `cita_confirmada` | `es_MX` | `CitaController@confirm` | nombre, fecha |
 | `cita_cancelada` | `es_MX` | `CitaController@cancel` | nombre, fecha |
 | `cita_reagendada` | `es_MX` | `CitaController@update` | nombre, fecha |
+| `cita_recordatorio` | `es_MX` | `dentissa:enviar-recordatorios` (scheduler) | nombre, tratamiento, fecha + 3 botones |
 
 Se crean en **WhatsApp → Plantillas de mensajes → Crear plantilla**,
 categoría **Utilidad (Utility)**. Ejemplo de cuerpo para `cita_agendada`:
@@ -64,6 +65,34 @@ Hola {{1}}, tu cita de {{2}} quedó agendada para el {{3}}. Te esperamos.
 ```
 
 La aprobación de Meta suele tardar de minutos a un día.
+
+### Plantilla del recordatorio con botones
+
+`cita_recordatorio` la envía el comando programado
+`dentissa:enviar-recordatorios` unas 24 h antes de la cita. Además del cuerpo,
+lleva **3 botones de respuesta rápida**, en este orden exacto, porque el
+sistema les asigna el payload por posición:
+
+| Posición | Texto del botón | Payload que envía Dentissa |
+|---|---|---|
+| 0 | Sí, asistiré | `recordatorio:{id_cita}:confirmar` |
+| 1 | Cancelar cita | `recordatorio:{id_cita}:cancelar` |
+| 2 | Reagendar | `recordatorio:{id_cita}:reagendar` |
+
+Cuerpo sugerido (variables: nombre, tratamiento, fecha):
+
+```
+Hola {{1}}, te recordamos tu cita de {{2}} el {{3}}. ¿Nos confirmas si vas a asistir?
+```
+
+El recordatorio no es una cascada: sale por WhatsApp **y** por correo. Mientras
+la plantilla no esté aprobada, el intento de WhatsApp falla sin afectar el
+correo, que trae los mismos tres botones como enlaces.
+
+**Pendiente (etapa 2):** recibir la pulsación de los botones. Requiere un
+webhook HTTPS público (Railway), el token de verificación del webhook y el
+secreto de la app de Meta para validar la firma `X-Hub-Signature-256`. La
+lógica de cada respuesta ya existe en `RespuestaRecordatorioService`.
 
 ## 5. Variables de entorno
 

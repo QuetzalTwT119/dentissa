@@ -24,8 +24,12 @@ class WhatsappService
      * Envía una plantilla a un número de teléfono. Devuelve false tanto si no
      * hay credenciales configuradas como si Meta rechaza el envío — en ambos
      * casos NotificacionService debe caer a correo como respaldo.
+     *
+     * $botones son los payloads de los botones de respuesta rápida de la
+     * plantilla, en el mismo orden en que se aprobaron en Meta. Meta devuelve
+     * ese payload al webhook cuando el paciente pulsa el botón.
      */
-    public function enviarPlantilla(string $telefono, string $plantilla, array $parametros = []): bool
+    public function enviarPlantilla(string $telefono, string $plantilla, array $parametros = [], array $botones = []): bool
     {
         if (! $this->configurado()) {
             Log::info('WhatsApp sin configurar — mensaje no enviado (revisa DENTISSA_WHATSAPP_PHONE_ID / _TOKEN)', [
@@ -58,13 +62,7 @@ class WhatsappService
                     'template' => [
                         'name' => $plantilla,
                         'language' => ['code' => config('dentissa.whatsapp.plantilla_idioma')],
-                        'components' => empty($parametros) ? [] : [[
-                            'type' => 'body',
-                            'parameters' => array_map(
-                                fn ($valor) => ['type' => 'text', 'text' => (string) $valor],
-                                $parametros,
-                            ),
-                        ]],
+                        'components' => $this->componentes($parametros, $botones),
                     ],
                 ]);
         } catch (ConnectionException $e) {
@@ -84,6 +82,32 @@ class WhatsappService
         }
 
         return $response->successful();
+    }
+
+    private function componentes(array $parametros, array $botones): array
+    {
+        $componentes = [];
+
+        if ($parametros !== []) {
+            $componentes[] = [
+                'type' => 'body',
+                'parameters' => array_map(
+                    fn ($valor) => ['type' => 'text', 'text' => (string) $valor],
+                    $parametros,
+                ),
+            ];
+        }
+
+        foreach (array_values($botones) as $indice => $payload) {
+            $componentes[] = [
+                'type' => 'button',
+                'sub_type' => 'quick_reply',
+                'index' => (string) $indice,
+                'parameters' => [['type' => 'payload', 'payload' => (string) $payload]],
+            ];
+        }
+
+        return $componentes;
     }
 
     private function normalizarTelefono(string $telefono): ?string

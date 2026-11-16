@@ -227,6 +227,10 @@ class CitaController extends Controller
 
             $datosActualizados = [
                 'fecha_hora' => $fechaHora,
+                // Con la nueva fecha el paciente debe recibir otro recordatorio
+                // y volver a confirmar su asistencia.
+                'recordatorio_enviado_en' => null,
+                'asistencia_confirmada_en' => null,
             ];
 
             // Una reserva ya confirmada conserva su confirmación al cambiar de

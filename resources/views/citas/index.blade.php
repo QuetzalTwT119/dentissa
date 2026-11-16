@@ -168,6 +168,9 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                         <span class="h-1.5 w-1.5 rounded-full {{ $estadoDot[$cita->estado->value] ?? 'bg-muted' }}"></span>
                                         {{ $estadoLabel[$cita->estado->value] }}
                                     </span>
+                                    @if ($cita->asistencia_confirmada_en && ! $cita->estado->esInactiva())
+                                        <span class="mt-1 block text-xs font-medium text-sage-700" data-asistencia-confirmada>✓ Paciente confirmó asistencia</span>
+                                    @endif
                                 </td>
                                 <td class="whitespace-nowrap px-6 py-4">
                                     <div class="flex w-max max-w-full items-center justify-center gap-2">

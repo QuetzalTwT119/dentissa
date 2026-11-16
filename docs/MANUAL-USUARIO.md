@@ -129,8 +129,32 @@ a elegir otro servicio.
 El sistema crea o reutiliza el paciente por correo, bloquea el horario y crea
 la cita en estado **Confirmada**. La pantalla muestra la confirmación con el
 tratamiento, la fecha y la hora, para que el paciente pueda guardarlos; no hace
-falta que el personal pulse una segunda vez **Confirmar**. El sistema todavía
-no envía recordatorios automáticos antes de la cita.
+falta que el personal pulse una segunda vez **Confirmar**.
+
+### Recordatorio un día antes
+
+Unas 24 horas antes de la cita, el paciente recibe un recordatorio por correo
+y, cuando WhatsApp está configurado, también por WhatsApp. El correo trae tres
+botones:
+
+| Botón | Qué pasa |
+|---|---|
+| **Sí, asistiré** | La cita queda confirmada y en la agenda aparece **✓ Paciente confirmó asistencia**. |
+| **Quiero reagendar** | Se libera el horario y el paciente pasa a la agenda en línea para elegir otro día y hora. |
+| **No podré asistir, cancelar cita** | La cita se cancela y el horario queda libre para otro paciente. |
+
+Abrir un botón no cambia nada por sí solo: se abre una página que muestra la
+cita y pide confirmar la respuesta con otro botón. Desde esa página el paciente
+puede elegir otra respuesta. Si la cita ya pasó o ya se canceló, la página
+indica que ya no admite cambios y muestra el teléfono del consultorio.
+
+Las citas que se agendan con menos de 24 horas de anticipación no reciben
+recordatorio, porque el paciente acaba de recibir su confirmación. Si el
+personal reagenda una cita, el paciente recibe un recordatorio nuevo para la
+nueva fecha.
+
+Los botones de WhatsApp todavía no cambian la cita: esa parte se activará
+cuando el sistema esté en línea en Railway y Meta apruebe la plantilla.
 
 ## 3. Gestión interna de citas
 
@@ -371,6 +395,9 @@ hasta que se abra el aviso o se marque como leído. El centro completo agrupa lo
 **Anteriores**, y etiqueta el tipo de cambio; cancelaciones e inasistencias se
 destacan para facilitar el seguimiento. Al abrir un aviso desde esa lista o desde el aviso emergente,
 el sistema lleva a la cita relacionada sin cerrar la sesión.
+Las respuestas de los pacientes al recordatorio también llegan aquí:
+**Respuesta del paciente** cuando confirma que asistirá, y **Cancelación del
+paciente** u **Horario liberado** (destacados) cuando cancela o pide reagendar.
 Con la sesión abierta, la notificación aparece al instante en un aviso
 emergente y el contador se actualiza sin recargar la página. Si el canal en
 vivo se desconecta temporalmente, el sistema revisa novedades cada pocos

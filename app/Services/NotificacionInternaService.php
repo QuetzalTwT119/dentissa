@@ -22,6 +22,10 @@ class NotificacionInternaService
             'iniciada' => ['Atención iniciada', 'Comenzó la atención de una cita programada para'],
             'no_asistio' => ['Inasistencia registrada', 'Se registró una inasistencia para la cita de'],
             'completada' => ['Cita completada', 'Se completó una cita programada para'],
+            // Respuestas del paciente al recordatorio (RespuestaRecordatorioService).
+            'asistencia_confirmada' => ['Paciente confirmó asistencia', 'El paciente confirmó que asistirá a su cita del'],
+            'cancelada_paciente' => ['Paciente canceló su cita', 'El paciente canceló desde el recordatorio su cita del'],
+            'reagendar_paciente' => ['Paciente pidió reagendar', 'El paciente pidió reagendar y liberó el horario del'],
         ];
 
         if (! isset($etiquetas[$evento])) {
