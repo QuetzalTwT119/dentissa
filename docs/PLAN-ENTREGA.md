@@ -98,7 +98,9 @@ histórica y no debe usarse para fijar la fecha actual de entrega.
 - Congelar nuevas funciones.
 - Ejecutar regresión completa.
 - Revisar manual técnico, manual de usuario y diagramas.
-- Preparar datos demo, instrucciones de instalación y guion de demostración.
+- Preparar datos demo, instrucciones de instalación y guion de demostración
+  (ver `GUION-DEMO.md`: reparto, preparación T-2/T-1, recorrido de 7 minutos,
+  planes B y preguntas probables).
 
 ### 7. Margen final — 4 de diciembre
 
