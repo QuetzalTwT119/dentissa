@@ -5,7 +5,9 @@ $privateDirectory = Join-Path $projectRoot 'storage/app/private'
 $clientFile = Join-Path $privateDirectory 'google-oauth-client.json'
 $tokenFile = Join-Path $privateDirectory 'google-oauth-token.json'
 $redirectUri = 'http://localhost:53682/'
-$scope = 'https://www.googleapis.com/auth/gmail.send'
+# gmail.send: enviar correos. drive.file: subir respaldos cifrados; solo da
+# acceso a los archivos que crea Dentissa, no al resto del Drive.
+$scope = 'https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/drive.file'
 
 if (-not (Test-Path -LiteralPath $clientFile -PathType Leaf)) {
     throw 'No se encontró storage/app/private/google-oauth-client.json.'
@@ -38,7 +40,7 @@ try {
     }) -join '&'
     $authorizationUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' + $query
 
-    Write-Host 'Se abrirá Google para autorizar el Gmail emisor. Mantén esta ventana abierta.'
+    Write-Host 'Se abrirá Google para autorizar el Gmail emisor y la carpeta de respaldos en Drive. Mantén esta ventana abierta.'
     Start-Process $authorizationUrl
 
     $context = $listener.GetContext()

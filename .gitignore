@@ -25,6 +25,7 @@
 /storage/app/antigravity-respaldos/
 /storage/app/private/
 /storage/app/backup-staging/
+/storage/app/respaldos-tmp/
 /.backup-staging/
 /vendor
 _ide_helper.php

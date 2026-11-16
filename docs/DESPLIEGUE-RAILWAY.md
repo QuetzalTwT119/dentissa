@@ -139,8 +139,14 @@ Antes de generar un dominio público:
 - Configurar `/up` como healthcheck: Laravel ya registra esa ruta en
   `bootstrap/app.php`. Railway usa el healthcheck para validar la nueva versión
   durante el despliegue; no sustituye un monitor continuo.
-- Elegir almacenamiento persistente para `storage/app` y comprobar una
-  restauración. Las fotos de perfil también se guardan de forma privada en
+- **Montar un volumen de Railway en `/var/www/html/storage/app`.** Sin él, las
+  imágenes clínicas y las fotos de perfil se borran en cada despliegue.
+- Respaldos: configurar `DENTISSA_RESPALDO_CLAVE` (genérala con
+  `php artisan dentissa:respaldo-llave` y guárdala también en un gestor de
+  contraseñas), volver a autorizar Google con `scripts/google-oauth.ps1` para
+  agregar el permiso de Drive y actualizar `GMAIL_OAUTH_REFRESH_TOKEN`. Después
+  ejecutar `php artisan dentissa:respaldar` y `php artisan dentissa:restaurar-prueba`
+  (Manual Técnico, sección 14.1). El scheduler lo repite cada día a las 03:00. Las fotos de perfil también se guardan de forma privada en
   `storage/app/private/profile-photos`; no exponerlas mediante el disco público.
 - Dejar deshabilitada la IA local en Railway: el servicio Ollama de Docker
   Compose es un prototipo para desarrollo y no está incluido en el despliegue.

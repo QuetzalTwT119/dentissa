@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\Respaldo\CifradoRespaldo;
 use App\Services\WhatsappService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -37,3 +38,14 @@ Artisan::command('whatsapp:probar {telefono} {--confirmar}', function (WhatsappS
 Schedule::command('dentissa:enviar-recordatorios')
     ->everyFifteenMinutes()
     ->withoutOverlapping();
+
+// Respaldo cifrado diario a Google Drive, de madrugada para no competir con
+// la agenda. Si falla, el comando avisa al administrador.
+Schedule::command('dentissa:respaldar')
+    ->dailyAt('03:00')
+    ->withoutOverlapping();
+
+Artisan::command('dentissa:respaldo-llave', function () {
+    $this->warn('Esta llave descifra todos los respaldos. Guárdala en un gestor de contraseñas y en DENTISSA_RESPALDO_CLAVE; si se pierde, los respaldos no se pueden recuperar. No la compartas ni la subas a Git.');
+    $this->line(CifradoRespaldo::generarLlave());
+})->purpose('Genera una llave nueva para cifrar los respaldos');

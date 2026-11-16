@@ -8,10 +8,42 @@ use App\Models\Cita;
 use App\Models\NotificacionSistema;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class NotificacionInternaService
 {
+    /**
+     * Aviso del sistema solo para administradores, en la campana y por correo
+     * (por ejemplo, un respaldo fallido). Nunca lanza: si avisar también
+     * falla, queda en el log.
+     */
+    public function alertaSistema(string $evento, string $titulo, string $mensaje): void
+    {
+        $admins = User::query()->where('activo', true)->where('rol', RolUsuario::Admin->value)->get(['id', 'email']);
+
+        foreach ($admins as $admin) {
+            try {
+                $notificacion = NotificacionSistema::create([
+                    'user_id' => $admin->id,
+                    'evento' => $evento,
+                    'titulo' => $titulo,
+                    'mensaje' => $mensaje,
+                    'url' => route('notificaciones.index', [], false),
+                ]);
+                event(new NotificacionSistemaCreada($notificacion));
+            } catch (Throwable $e) {
+                Log::warning('No se pudo guardar una alerta del sistema', ['evento' => $evento, 'error' => $e->getMessage()]);
+            }
+
+            try {
+                Mail::raw($mensaje, fn ($correo) => $correo->to($admin->email)->subject("Dentissa: {$titulo}"));
+            } catch (Throwable $e) {
+                Log::warning('No se pudo enviar por correo una alerta del sistema', ['evento' => $evento, 'error' => $e->getMessage()]);
+            }
+        }
+    }
+
     public function cambioCita(Cita $cita, string $evento, ?int $actorId = null): void
     {
         $etiquetas = [

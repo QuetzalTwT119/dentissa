@@ -588,8 +588,97 @@ aprobada para no eliminar copias históricas.
 
 La restauración de prueba sólo permite un destino que no exista bajo el disco
 externo; comprueba que se recuperen el manifiesto y el dump. No importa ni
-sobrescribe la base activa. El ensayo de importación a un schema MySQL aislado
-queda como siguiente paso antes de usar datos clínicos reales.
+sobrescribe la base activa. Estos scripts quedan para respaldos manuales del
+entorno local; en el servidor se usa el respaldo automático de la sección 14.1.
+
+### 14.1 Respaldo automático cifrado a Google Drive (servidor)
+
+**Analogía:** cada noche se saca una copia de los expedientes, se mete en una
+caja fuerte con candado y se guarda en otro edificio. Si se pierde el
+consultorio, la copia sigue a salvo, y sin la llave nadie puede abrirla.
+
+**Flujo** (`dentissa:respaldar`, diario a las 03:00 con el scheduler):
+
+```
+base activa ──> VolcadoBaseDatos ─┐
+  SQLite: VACUUM INTO             │
+  MySQL: volcado PDO en una       ├─> respaldo.zip + manifiesto.json (SHA-256 y conteos)
+  instantánea consistente         │            │
+storage/app/private (sin las      ┘            ▼
+credenciales google-oauth-*.json)    CifradoRespaldo (XChaCha20-Poly1305)
+                                               │  .dntb, el .zip en claro se borra
+                                               ▼
+                                     GoogleDriveDestino: carpeta "Dentissa respaldos"
+                                     + retención (30 días, mínimo 3 copias)
+```
+
+**Decisiones técnicas**
+
+- **Sin `mysqldump`:** el cliente de Debian es de MariaDB y puede fallar al
+  autenticarse contra MySQL 8. El volcado se hace con PDO dentro de
+  `START TRANSACTION WITH CONSISTENT SNAPSHOT`, una sentencia por línea. Las
+  tablas efímeras (`sessions`, `cache`, `jobs`, `password_reset_tokens`…)
+  solo guardan su estructura.
+- **Cifrado antes de salir del servidor:** `sodium` secretstream con una llave
+  de 32 bytes en `DENTISSA_RESPALDO_CLAVE`. Cada bloque está autenticado: un
+  byte alterado o un archivo cortado hacen fallar el descifrado. Google solo
+  guarda bytes ilegibles.
+- **Las credenciales nunca salen:** `google-oauth-client.json` y
+  `google-oauth-token.json` se excluyen del paquete, aunque vaya cifrado.
+- **Permiso mínimo en Drive:** `drive.file`. Dentissa solo ve y borra los
+  archivos que ella misma creó. La subida es reanudable, para archivos grandes.
+- **Token compartido:** `App\Services\Google\GoogleAccessToken` sirve al
+  correo y a Drive. Hay que volver a autorizar la cuenta con
+  `scripts/google-oauth.ps1`, que ahora pide los dos permisos, y actualizar
+  `GMAIL_OAUTH_REFRESH_TOKEN` en Railway.
+- **Retención:** borra las copias con más de `DENTISSA_RESPALDO_DIAS` (30)
+  días, pero conserva siempre las 3 más recientes, aunque el servidor haya
+  estado detenido.
+- **Alerta:** si algo falla, cada administrador activo recibe "Respaldo
+  fallido" en la campana (destacado) y por correo. El log guarda solo el
+  mensaje del error.
+- **Destino intercambiable:** la interfaz `DestinoRespaldo` (Drive hoy, uno en
+  memoria en las pruebas). Si la clínica paga otro almacenamiento, basta con
+  otra implementación registrada en `AppServiceProvider`.
+
+**Restauración de prueba** (`dentissa:restaurar-prueba`, o con
+`--archivo=ruta.dntb`): descarga la copia más reciente, la descifra, comprueba
+la huella SHA-256 de la base y de cada archivo, y carga la base en un lugar
+aislado. En SQLite abre la copia aparte y corre `PRAGMA integrity_check`; en
+MySQL la importa en el esquema `<base>_restauracion_prueba`, cuenta los
+registros y lo borra. Los conteos deben coincidir con el manifiesto. **Nunca
+toca la base ni los archivos activos.**
+
+**Configuración en Railway**
+
+```bash
+php artisan dentissa:respaldo-llave
+```
+
+Genera la llave: guárdala en un gestor de contraseñas y en
+`DENTISSA_RESPALDO_CLAVE`. **Si se pierde, los respaldos no se pueden
+recuperar.** Opcionales: `DENTISSA_RESPALDO_CARPETA` y `DENTISSA_RESPALDO_DIAS`.
+
+**Validar:**
+
+```bash
+php artisan dentissa:respaldar
+```
+
+```bash
+php artisan dentissa:restaurar-prueba
+```
+
+Hay que repetir la restauración de prueba al menos una vez al mes.
+
+**Pruebas:** `RespaldoTest` (8 pruebas): paquete cifrado sin datos en claro ni
+credenciales; restauración que no toca la base activa; archivo alterado o llave
+distinta rechazados; retención con mínimo de 3; alerta solo al administrador y
+sin temporales; horario 03:00; subida reanudable a Drive con `Http::fake`; y
+mensaje claro si falta el permiso de Drive. En el job de MySQL del CI las
+mismas pruebas ejercitan el volcado PDO y el esquema aislado. Ensayo local el
+16/11/2026 sobre una copia de SQLite: respaldo de 12.5 KB, restauración con
+conteos idénticos, 0.3 s y sin temporales.
 
 ## 15. Widget público en móvil y acceso por LAN
 
