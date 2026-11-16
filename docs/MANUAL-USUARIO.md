@@ -419,6 +419,10 @@ el sistema lleva a la cita relacionada sin cerrar la sesión.
 Las respuestas de los pacientes al recordatorio también llegan aquí:
 **Respuesta del paciente** cuando confirma que asistirá, y **Cancelación del
 paciente** u **Horario liberado** (destacados) cuando cancela o pide reagendar.
+Solo el administrador recibe **Respaldo fallido** (destacado, también por
+correo) si la copia de seguridad nocturna no se completó. Ese aviso no se debe
+ignorar: avisa al equipo técnico el mismo día, porque mientras siga fallando no
+hay copia reciente de citas ni historiales.
 Con la sesión abierta, la notificación aparece al instante en un aviso
 emergente y el contador se actualiza sin recargar la página. Si el canal en
 vivo se desconecta temporalmente, el sistema revisa novedades cada pocos

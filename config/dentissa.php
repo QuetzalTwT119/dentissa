@@ -102,6 +102,30 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Respaldos automáticos
+    |--------------------------------------------------------------------------
+    |
+    | `php artisan dentissa:respaldar` (diario, 03:00) empaqueta la base y
+    | storage/app/private, lo cifra con DENTISSA_RESPALDO_CLAVE y lo sube a la
+    | carpeta de Google Drive. Sin la llave los respaldos no se pueden leer:
+    | guárdala también fuera del servidor (gestor de contraseñas).
+    |
+    */
+
+    'respaldos' => [
+        'clave' => env('DENTISSA_RESPALDO_CLAVE'),
+        'carpeta_drive' => env('DENTISSA_RESPALDO_CARPETA', 'Dentissa respaldos'),
+        'dias_retencion' => (int) (env('DENTISSA_RESPALDO_DIAS') ?: 30),
+        // Aunque sean viejas, nunca se borran las copias más recientes.
+        'minimo_conservar' => 3,
+        // Archivos privados que se respaldan (imágenes clínicas, fotos de perfil).
+        'directorio_archivos' => storage_path('app/private'),
+        // Credenciales que nunca deben salir del servidor, ni cifradas.
+        'excluir' => ['google-oauth-client.json', 'google-oauth-token.json'],
+    ],
+
     'privacidad' => [
         'version' => '2026-11-16',
         'revisado' => (bool) env('DENTISSA_AVISO_REVISADO', false),

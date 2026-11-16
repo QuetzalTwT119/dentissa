@@ -38,6 +38,7 @@ class NotificacionSistema extends Model
             'asistencia_confirmada' => 'Respuesta del paciente',
             'cancelada_paciente' => 'Cancelación del paciente',
             'reagendar_paciente' => 'Horario liberado',
+            'respaldo_fallido' => 'Respaldo fallido',
             default => 'Sistema',
         };
     }
@@ -45,6 +46,6 @@ class NotificacionSistema extends Model
     /** Los cambios que pueden requerir reacción inmediata se destacan visualmente. */
     public function esPrioritaria(): bool
     {
-        return in_array($this->evento, ['cancelada', 'no_asistio', 'cancelada_paciente', 'reagendar_paciente'], true);
+        return in_array($this->evento, ['cancelada', 'no_asistio', 'cancelada_paciente', 'reagendar_paciente', 'respaldo_fallido'], true);
     }
 }

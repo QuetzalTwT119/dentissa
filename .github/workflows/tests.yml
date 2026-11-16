@@ -118,6 +118,12 @@ jobs:
           cp .env.example .env
           php artisan key:generate --force
 
+      # Como en un servidor real, el usuario de la app no puede crear bases:
+      # la base de la restauración de prueba se prepara una vez con root.
+      - name: Preparar base de restauración de prueba
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -uroot -proot_test -e "CREATE DATABASE IF NOT EXISTS dentissa_test_restauracion_prueba CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; GRANT ALL ON dentissa_test_restauracion_prueba.* TO 'dentissa'@'%';"
+
       - name: Ejecutar suite contra MySQL
         env:
           DB_HOST: 127.0.0.1

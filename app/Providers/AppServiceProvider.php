@@ -17,6 +17,8 @@ use App\Models\Testimonio;
 use App\Models\Tratamiento;
 use App\Models\User;
 use App\Observers\AuditoriaObserver;
+use App\Services\Respaldo\DestinoRespaldo;
+use App\Services\Respaldo\GoogleDriveDestino;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -30,7 +32,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Destino de los respaldos cifrados. Las pruebas lo cambian por uno en memoria.
+        $this->app->bind(DestinoRespaldo::class, GoogleDriveDestino::class);
     }
 
     /**
