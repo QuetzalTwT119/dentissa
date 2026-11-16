@@ -24,7 +24,7 @@
                         <tr>
                             <td style="padding:16px 32px; background-color:#fdf1f4;">
                                 <p style="margin:0; color:#9ca3af; font-size:11px;">
-                                    Recibiste este correo porque tienes una cita registrada con nosotros. Si tienes dudas, contáctanos directamente.
+                                    Recibiste este correo porque tienes una cita registrada con nosotros. Si tienes dudas, contáctanos directamente. <a href="{{ route('privacidad.aviso') }}" style="color:#9ca3af;">Aviso de privacidad</a>.
                                 </p>
                             </td>
                         </tr>

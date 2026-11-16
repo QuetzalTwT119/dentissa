@@ -355,6 +355,23 @@
                                               class="{{ $claseCampo }} py-3">{{ old('motivo') }}</textarea>
                                 </div>
 
+                                {{-- Consentimiento expreso: el motivo puede contener datos de salud. --}}
+                                <div>
+                                    <label for="acepta_aviso" class="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-line bg-cream/60 px-4 py-3 text-sm leading-6 text-ink-soft">
+                                        <input id="acepta_aviso" type="checkbox" name="acepta_aviso" value="1" required
+                                               @checked(old('acepta_aviso'))
+                                               aria-invalid="{{ $errors->has('acepta_aviso') ? 'true' : 'false' }}"
+                                               @if ($errors->has('acepta_aviso')) aria-describedby="acepta_aviso-error" @endif
+                                               class="mt-1 h-5 w-5 shrink-0 rounded border-line text-brand-600 focus:ring-brand-500">
+                                        <span>
+                                            He leído y acepto el <a href="{{ route('privacidad.aviso') }}" target="_blank" rel="noopener" class="font-semibold text-brand-700 underline">aviso de privacidad</a>, y doy mi consentimiento para el tratamiento de mis datos, incluidos los de salud. <span class="text-brand-600" aria-hidden="true">*</span>
+                                        </span>
+                                    </label>
+                                    @error('acepta_aviso')
+                                        <p id="acepta_aviso-error" role="alert" class="{{ $claseError }}">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
                                 @error('hora')
                                     <p role="alert" class="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{{ $message }}</p>
                                 @enderror

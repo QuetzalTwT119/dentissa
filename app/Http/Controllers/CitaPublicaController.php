@@ -43,11 +43,13 @@ class CitaPublicaController extends Controller
             ],
             'email' => ['required', 'email', 'max:100'],
             'motivo' => ['nullable', 'string'],
+            'acepta_aviso' => ['accepted'],
         ], [
             'telefono.regex' => 'Ingresa exactamente 10 dígitos numéricos de México.',
+            'acepta_aviso.accepted' => 'Para agendar necesitamos que aceptes el aviso de privacidad.',
         ]);
 
-        $resultado = $crearCita->crear($validated, 'publico', request: $request);
+        $resultado = $crearCita->crear(['acepta_aviso' => true] + $validated, 'publico', request: $request);
         $cita = $resultado['cita'];
 
         if (! $cita) {

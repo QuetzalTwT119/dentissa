@@ -89,6 +89,7 @@ Route::get('/version', function () {
     ])->header('Cache-Control', 'no-store');
 })->name('version');
 
+Route::view('/aviso-de-privacidad', 'privacidad.aviso')->name('privacidad.aviso');
 Route::get('/agendar-cita', [CitaPublicaController::class, 'create'])->name('citas.publica.create');
 Route::post('/agendar-cita', [CitaPublicaController::class, 'store'])
     ->middleware('throttle:agendar-cita')

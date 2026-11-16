@@ -231,6 +231,7 @@ class CitaReglasTest extends TestCase
             'apellido' => 'Prueba',
             'telefono' => '5555555555',
             'email' => 'ana-reglas@example.test',
+            'acepta_aviso' => '1',
         ])->assertSessionHasErrors('id_tratamiento');
 
         $this->assertDatabaseCount('citas', 0);
@@ -256,6 +257,7 @@ class CitaReglasTest extends TestCase
             'apellido' => 'Pasada',
             'telefono' => '5555555555',
             'email' => 'ana-pasada@example.test',
+            'acepta_aviso' => '1',
         ])->assertSessionHasErrors('hora');
 
         $this->assertDatabaseCount('citas', 0);

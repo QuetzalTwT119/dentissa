@@ -340,7 +340,9 @@ class AgendaTelegramService
         $estado['paso'] = 'confirmacion';
         Cache::put($this->clave($chatId), $estado, now()->addMinutes(20));
 
-        return $this->resumen($estado)."\n\n¿Confirmas la cita? No se guardará hasta que toques «Confirmar cita».";
+        return $this->resumen($estado)."\n\n¿Confirmas la cita? No se guardará hasta que toques «Confirmar cita».\n\n"
+            .'Al tocar «Confirmar cita» aceptas el aviso de privacidad ('.route('privacidad.aviso').') '
+            .'y das tu consentimiento para el tratamiento de tus datos, incluidos los de salud.';
     }
 
     /** @param array<string, mixed> $estado */
@@ -360,6 +362,8 @@ class AgendaTelegramService
             'telefono' => $estado['telefono'],
             'email' => $estado['email'],
             'motivo' => $estado['motivo'] ?? null,
+            // Tocar «Confirmar cita» después de leer el aviso es el consentimiento.
+            'acepta_aviso' => true,
         ], 'telegram', 'telegram:'.$callbackQueryId);
 
         if (! $resultado['cita']) {

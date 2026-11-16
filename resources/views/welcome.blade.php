@@ -518,7 +518,7 @@
 
             <div class="flex flex-col items-center justify-between gap-3 pt-6 text-center text-xs text-white/45 sm:flex-row sm:text-left">
                 <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
-                <p>Atención con previa cita.</p>
+                <p>Atención con previa cita · <a href="{{ route('privacidad.aviso') }}" class="inline-flex min-h-9 items-center underline underline-offset-4 transition-colors hover:text-white">Aviso de privacidad</a></p>
             </div>
         </div>
     </footer>

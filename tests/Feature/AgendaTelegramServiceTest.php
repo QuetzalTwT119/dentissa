@@ -48,6 +48,7 @@ class AgendaTelegramServiceTest extends TestCase
             'apellido' => 'Prueba',
             'telefono' => '7555550203',
             'email' => 'ana.primera@example.test',
+            'acepta_aviso' => true,
         ];
         $crear = app(CrearCitaService::class);
 
@@ -152,6 +153,7 @@ class AgendaTelegramServiceTest extends TestCase
             'apellido' => 'Prueba',
             'telefono' => '+52 755 555 0101',
             'email' => 'ana.prueba@example.test',
+            'acepta_aviso' => true,
         ], 'telegram', 'telegram:callback-confirm-999');
 
         $this->assertFalse($reintento['creada']);
