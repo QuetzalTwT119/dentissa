@@ -603,11 +603,16 @@ restricción del navegador no deje el widget sin inicializar.
 
 El acceso se posiciona fijo respecto a la ventana también en móvil: una cápsula
 horizontal compacta con ícono dental y nombre, pegada visualmente al panel del
-chat que se despliega encima. En las vistas públicas, un `IntersectionObserver`
-observa la franja ocupada por el botón (con margen inferior compacto y distinto
-en móvil y escritorio) y lo eleva temporalmente si una tarjeta, campo o acción
-importante la cruza; permanece visible y regresa a su posición al dejar libre
-esa zona. El flujo de agenda usa
+chat que se despliega encima. El botón no cambia de posición con el scroll. En
+pantallas menores a 640 px (`sm`), el componente escucha `scroll` en la ventana
+(listener pasivo) y **se oculta al bajar y reaparece al subir**: así no tapa el
+extremo derecho de **Continuar** o **Agendar cita** cuando el paciente baja
+hasta esos botones (hallazgo de QA a 375 px: lo cubría unos 35 px). Al ocultarse
+se desliza hacia abajo y pierde opacidad, sin recibir clics. Con
+`prefers-reduced-motion` el cambio es instantáneo, y al enfocarlo con teclado
+vuelve a aparecer. Abierto el chat, o desde `sm`, nunca se oculta. (La versión
+anterior describía un `IntersectionObserver` que elevaba el botón; ese código ya
+no existe.) El flujo de agenda usa
 dos columnas desde `lg`: formulario y resumen con progreso compacto/reactivo. En
 el primer paso, elegir un servicio reemplaza esa lista por sus tratamientos y
 el recuadro del servicio seleccionado funciona como control para deseleccionarlo

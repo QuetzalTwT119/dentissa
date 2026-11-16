@@ -103,7 +103,8 @@
                         'Endodoncia': 'Terapia de conductos radiculares para aliviar dolor y salvar tus piezas naturales.',
                         'Odontopediatría': 'Cuidado dental preventivo y amable diseñado especialmente para niñas y niños.'
                     },
-                    // "2026-11-18" -> "miércoles 18 de noviembre de 2026" (se arma a mediodía local para evitar desfases de zona horaria).
+                    // 2026-11-18 -> miércoles 18 de noviembre de 2026 (se arma a mediodía local para evitar desfases de zona horaria).
+                    // Sin comillas dobles: este código vive dentro del atributo x-data y una comilla doble lo cierra.
                     get fechaLegible() {
                         if (!this.fecha) return '';
                         const [anio, mes, dia] = this.fecha.split('-').map(Number);
@@ -141,7 +142,7 @@
                             </p>
                             <h1 class="mt-3 text-[1.75rem] leading-tight text-ink sm:text-[2.1rem]"
                                 x-text="paso === 0 && servicioSeleccionado ? 'Elige un tratamiento' : encabezados[paso].titulo">¿Qué tipo de atención necesitas?</h1>
-                            <p class="mt-2 max-w-lg text-sm leading-6 text-muted" x-text="encabezados[paso].texto">Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.</p>
+                            <p class="mt-2 max-w-lg text-sm leading-6 text-muted" x-text="paso === 0 && servicioSeleccionado ? 'Selecciona el procedimiento que necesitas; cada uno muestra su duración aproximada.' : encabezados[paso].texto">Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.</p>
 
                             <div class="mt-5 flex gap-1.5" aria-hidden="true">
                                 <template x-for="(p, i) in pasos" :key="i">

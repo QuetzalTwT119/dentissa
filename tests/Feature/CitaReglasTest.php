@@ -426,8 +426,19 @@ class CitaReglasTest extends TestCase
             ->assertSee('Cita confirmada correctamente.')
             ->assertSee('Confirmada')
             ->assertSee('Iniciar')
-            ->assertSee(route('citas.no-show', $cita), false)
-            ->assertSee('¿Marcar esta cita como no asistida? Esta acción no se puede deshacer.', false);
+            // Aún no llega la hora: el servidor rechazaría la inasistencia, así que no se ofrece.
+            ->assertDontSee(route('citas.no-show', $cita), false);
+
+        Carbon::setTestNow($cita->fecha_hora->copy()->addMinutes(20));
+
+        try {
+            $this->get(route('citas.index', ['fecha' => $cita->fecha_hora->toDateString()]))
+                ->assertOk()
+                ->assertSee(route('citas.no-show', $cita), false)
+                ->assertSee('¿Marcar esta cita como no asistida? Esta acción no se puede deshacer.', false);
+        } finally {
+            Carbon::setTestNow();
+        }
 
         $cita->refresh();
 
