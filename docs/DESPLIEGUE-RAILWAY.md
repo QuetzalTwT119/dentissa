@@ -145,7 +145,9 @@ Antes de generar un dominio público:
   `php artisan dentissa:respaldo-llave` y guárdala también en un gestor de
   contraseñas), volver a autorizar Google con `scripts/google-oauth.ps1` para
   agregar el permiso de Drive y actualizar `GMAIL_OAUTH_REFRESH_TOKEN`. Después
-  ejecutar `php artisan dentissa:respaldar` y `php artisan dentissa:restaurar-prueba`
+  ejecutar `php artisan dentissa:respaldar` y `php artisan dentissa:restaurar-prueba`.
+  Si el usuario de MySQL no es `root`, la restauración de prueba indica el
+  `CREATE DATABASE … _restauracion_prueba` y el `GRANT` que hay que correr una vez
   (Manual Técnico, sección 14.1). El scheduler lo repite cada día a las 03:00. Las fotos de perfil también se guardan de forma privada en
   `storage/app/private/profile-photos`; no exponerlas mediante el disco público.
 - Dejar deshabilitada la IA local en Railway: el servicio Ollama de Docker

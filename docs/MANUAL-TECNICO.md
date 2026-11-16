@@ -646,7 +646,11 @@ credenciales google-oauth-*.json)    CifradoRespaldo (XChaCha20-Poly1305)
 la huella SHA-256 de la base y de cada archivo, y carga la base en un lugar
 aislado. En SQLite abre la copia aparte y corre `PRAGMA integrity_check`; en
 MySQL la importa en el esquema `<base>_restauracion_prueba`, cuenta los
-registros y lo borra. Los conteos deben coincidir con el manifiesto. **Nunca
+registros y vacía sus tablas. El esquema se conserva vacío: en un servidor
+real el usuario de la aplicación suele tener permisos sobre una sola base, así
+que, si no puede crearlo, el comando muestra el `CREATE DATABASE` y el `GRANT`
+exactos que debe ejecutar una vez un administrador de MySQL (el CI hace lo
+mismo con `root`). Los conteos deben coincidir con el manifiesto. **Nunca
 toca la base ni los archivos activos.**
 
 **Configuración en Railway**

@@ -131,12 +131,22 @@ class VolcadoBaseDatos
             $config['password'],
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION],
         );
-        $pdo->exec("DROP DATABASE IF EXISTS `{$esquema}`");
-        $pdo->exec("CREATE DATABASE `{$esquema}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-        $pdo->exec("USE `{$esquema}`");
+
+        // En producción el usuario suele tener permisos sobre una sola base:
+        // la de prueba puede crearse de antemano y aquí solo se reutiliza.
+        try {
+            $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$esquema}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            $pdo->exec("USE `{$esquema}`");
+        } catch (\PDOException) {
+            throw new RuntimeException(
+                "El usuario de MySQL no puede usar la base de prueba {$esquema}. Créala una vez con un usuario administrador: "
+                ."CREATE DATABASE {$esquema}; GRANT ALL ON {$esquema}.* TO '{$config['username']}'@'%';"
+            );
+        }
 
         $entrada = fopen($archivo, 'rb');
         try {
+            $this->vaciar($pdo);
             while (($linea = fgets($entrada)) !== false) {
                 if (trim($linea) !== '') {
                     $pdo->exec(rtrim($linea, "\r\n"));
@@ -145,11 +155,21 @@ class VolcadoBaseDatos
             $conteos = $this->contar($pdo);
         } finally {
             fclose($entrada);
-            // La base de prueba solo sirve para comprobar el respaldo.
-            $pdo->exec("DROP DATABASE IF EXISTS `{$esquema}`");
+            // La base de prueba solo sirve para comprobar el respaldo: se
+            // vacía, pero se conserva para no necesitar permiso de crearla.
+            $this->vaciar($pdo);
         }
 
         return $conteos;
+    }
+
+    private function vaciar(PDO $pdo): void
+    {
+        $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+        foreach ($pdo->query("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")->fetchAll(PDO::FETCH_COLUMN) as $tabla) {
+            $pdo->exec('DROP TABLE IF EXISTS `'.str_replace('`', '``', $tabla).'`');
+        }
+        $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
     }
 
     /** @return array<string, int> */
