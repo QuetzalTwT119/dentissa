@@ -22,8 +22,11 @@ class Paciente extends Model
 
     protected function casts(): array
     {
+        // aviso_privacidad_* no está en Fillable a propósito: solo se escribe
+        // con forceFill desde CrearCitaService, nunca desde un formulario.
         return [
             'fecha_nacimiento' => 'date',
+            'aviso_privacidad_aceptado_en' => 'datetime',
         ];
     }
 

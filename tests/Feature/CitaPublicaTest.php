@@ -78,6 +78,7 @@ class CitaPublicaTest extends TestCase
             'apellido' => 'Prueba',
             'telefono' => '5555555555',
             'email' => 'ana.publica@example.test',
+            'acepta_aviso' => '1',
             'motivo' => 'Consulta de prueba',
         ]);
 
@@ -235,6 +236,7 @@ class CitaPublicaTest extends TestCase
                 'apellido' => 'Prueba',
                 'telefono' => $telefono,
                 'email' => 'ana.publica@example.test',
+                'acepta_aviso' => '1',
             ])->assertSessionHasErrors('telefono');
         }
 
@@ -283,6 +285,7 @@ class CitaPublicaTest extends TestCase
                 'apellido' => 'Prueba',
                 'telefono' => $telefono,
                 'email' => 'ana.publica@example.test',
+                'acepta_aviso' => '1',
             ])->assertSessionHasErrors('telefono');
         }
 

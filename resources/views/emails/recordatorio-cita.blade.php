@@ -47,7 +47,7 @@
                         <tr>
                             <td style="padding:16px 32px; background-color:#fdf1f4;">
                                 <p style="margin:0; color:#9ca3af; font-size:11px;">
-                                    Los botones abren una página donde confirmas tu respuesta; nada cambia solo con abrir este correo. Los enlaces dejan de funcionar a la hora de tu cita.
+                                    Los botones abren una página donde confirmas tu respuesta; nada cambia solo con abrir este correo. Los enlaces dejan de funcionar a la hora de tu cita. <a href="{{ route('privacidad.aviso') }}" style="color:#9ca3af;">Aviso de privacidad</a>.
                                 </p>
                             </td>
                         </tr>

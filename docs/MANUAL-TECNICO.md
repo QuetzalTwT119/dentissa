@@ -982,3 +982,60 @@ inasistencia, completadas, pasadas, a más de 24 h, agendadas con menos de 24 h)
 reagendar que vuelve a habilitar el recordatorio, el schedule cada 15 min,
 enlaces firmados en el correo, GET que no modifica, confirmar/cancelar/reagendar,
 la marca en lista y semana, cita pasada o cancelada, y URL sin firma o alterada.
+
+## 23. Aviso de privacidad y consentimiento (fase 1 para pacientes reales)
+
+**Objetivo:** antes de usar Dentissa con pacientes reales, informar qué datos
+se recaban y obtener el consentimiento expreso, porque el motivo de la visita y
+el historial clínico son **datos de salud**, que la ley considera sensibles.
+
+### Qué se implementó
+
+- **Página pública `/aviso-de-privacidad`** (`privacidad.aviso`). Incluye:
+  responsable y domicilio, datos que se recaban (incluidos los de salud),
+  finalidades, proveedores que tratan datos por cuenta de la clínica (hospedaje,
+  correo de Google, WhatsApp de Meta y Telegram), derechos ARCO y revocación,
+  consentimiento y cambios al aviso.
+- **Configuración `config('dentissa.privacidad')`:**
+
+  | Variable | Uso |
+  |---|---|
+  | `DENTISSA_PRIVACIDAD_RESPONSABLE` | Nombre del responsable |
+  | `DENTISSA_PRIVACIDAD_DOMICILIO` | Domicilio del responsable |
+  | `DENTISSA_PRIVACIDAD_CORREO` | Correo para solicitudes ARCO |
+  | `DENTISSA_AVISO_REVISADO` | `true` solo cuando un abogado o la clínica lo aprueben |
+
+  Mientras falte un dato, la página lo marca como **[Por completar: …]**.
+  Mientras `revisado` sea `false`, muestra "Borrador pendiente de revisión
+  legal". Así nadie publica el aviso creyendo que está completo.
+- **Versión del aviso:** `privacidad.version` (fecha). Hay que cambiarla cada
+  vez que cambie el texto.
+- **Consentimiento obligatorio en todos los canales:**
+  - Web: casilla `acepta_aviso` con la regla `accepted`, y el mensaje "Para
+    agendar necesitamos que aceptes el aviso de privacidad."
+  - Telegram: el resumen antes de confirmar enlaza el aviso y explica que tocar
+    **Confirmar cita** es aceptar.
+  - `CrearCitaService::crear()` lanza una excepción si no recibe
+    `acepta_aviso === true`. Es la última barrera: un canal nuevo no puede
+    olvidar el consentimiento sin que las pruebas fallen.
+- **Evidencia:** `pacientes.aviso_privacidad_aceptado_en` y
+  `pacientes.aviso_privacidad_version` se actualizan en cada cita. **No** están
+  en `Fillable`: solo se escriben con `forceFill` desde el servicio, nunca desde
+  un formulario.
+- **Enlaces:** pie de la portada, formulario de la agenda (abre en otra
+  pestaña para no perder lo capturado) y pie de los correos.
+
+### Límites
+
+- El texto es una **plantilla técnica, no asesoría legal**. Debe revisarla un
+  abogado o la clínica antes de poner `DENTISSA_AVISO_REVISADO=true`.
+- Las citas que el personal registra en el consultorio (`/citas/crear`) no
+  pasan por la casilla: el consentimiento se recaba en persona.
+
+### Pruebas
+
+`AvisoPrivacidadTest` (9 pruebas): apartados del aviso, borrador y datos por
+completar, aviso limpio con datos de la clínica, agenda sin consentimiento
+rechazada sin guardar nada, fecha y versión guardadas, campos fuera de
+`Fillable`, servicio que rechaza cualquier canal sin consentimiento, enlaces en
+formulario y portada, y el texto de Telegram.

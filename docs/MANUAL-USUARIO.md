@@ -126,6 +126,23 @@ los controles cómodos. Al elegir un servicio, su nombre permanece visible sobre
 los tratamientos para conservar el contexto; el mismo recuadro permite volver
 a elegir otro servicio.
 
+### Aviso de privacidad
+
+Antes de **Agendar cita**, el paciente debe marcar la casilla **He leído y
+acepto el aviso de privacidad**. Sin esa casilla la cita no se guarda y aparece
+el mensaje "Para agendar necesitamos que aceptes el aviso de privacidad". El
+enlace abre el aviso en otra pestaña, así que lo capturado no se pierde. En
+Telegram, el resumen antes de confirmar enlaza el aviso, y tocar **Confirmar
+cita** equivale a aceptarlo. El sistema guarda cuándo aceptó cada paciente y
+qué versión del aviso aceptó.
+
+El aviso completo está en **/aviso-de-privacidad** y se enlaza desde el pie de
+la portada y de los correos. **Antes de usar el sistema con pacientes
+reales:** la clínica debe llenar sus datos (responsable, domicilio y correo para
+solicitudes), y un abogado o la clínica deben revisar el texto. Mientras eso no
+ocurra, la página muestra "Borrador pendiente de revisión legal" y resalta los
+datos que faltan.
+
 El sistema crea o reutiliza el paciente por correo, bloquea el horario y crea
 la cita en estado **Confirmada**. La pantalla muestra la confirmación con el
 tratamiento, la fecha y la hora, para que el paciente pueda guardarlos; no hace

@@ -111,6 +111,10 @@ Antes de generar un dominio público:
   servicio MySQL (`MYSQLHOST`, `MYSQLPORT`, `MYSQLDATABASE`, `MYSQLUSER`,
   `MYSQLPASSWORD`). Los valores reales deben guardarse solo en el panel de
   variables de Railway, nunca en Git.
+- Antes de recibir pacientes reales, configurar `DENTISSA_PRIVACIDAD_RESPONSABLE`,
+  `DENTISSA_PRIVACIDAD_DOMICILIO` y `DENTISSA_PRIVACIDAD_CORREO` con los datos
+  de la clínica. Poner `DENTISSA_AVISO_REVISADO=true` solo cuando un abogado o
+  la clínica hayan aprobado `/aviso-de-privacidad` (Manual Técnico, sección 23).
 - Generar una `APP_KEY` exclusiva de producción. Configurar `APP_ENV=production`,
   `APP_DEBUG=false` y `APP_URL` con el dominio definitivo; revisar logs para que
   no incluyan datos personales o clínicos.

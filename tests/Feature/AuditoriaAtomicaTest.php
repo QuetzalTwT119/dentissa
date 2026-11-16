@@ -75,6 +75,7 @@ class AuditoriaAtomicaTest extends TestCase
             'apellido' => 'QA',
             'telefono' => '5555555555',
             'email' => 'paciente-auditoria@example.test',
+            'acepta_aviso' => '1',
         ])
             ->assertRedirect(route('citas.publica.create'))
             ->assertSessionHas('success');

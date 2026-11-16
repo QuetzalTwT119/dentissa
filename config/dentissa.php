@@ -91,6 +91,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Aviso de privacidad
+    |--------------------------------------------------------------------------
+    |
+    | Los datos del responsable los debe llenar la clínica. Mientras falten, la
+    | página /aviso-de-privacidad los marca como "Por completar". Mientras
+    | `revisado` sea false, muestra que es un borrador pendiente de revisión
+    | legal. Cambia `version` cada vez que cambie el texto: cada paciente
+    | guarda la versión que aceptó.
+    |
+    */
+
+    'privacidad' => [
+        'version' => '2026-11-16',
+        'revisado' => (bool) env('DENTISSA_AVISO_REVISADO', false),
+        'responsable' => env('DENTISSA_PRIVACIDAD_RESPONSABLE') ?: null,
+        'domicilio' => env('DENTISSA_PRIVACIDAD_DOMICILIO') ?: null,
+        'correo' => env('DENTISSA_PRIVACIDAD_CORREO') ?: null,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | WhatsApp Cloud API (Meta) — notificaciones de citas
     |--------------------------------------------------------------------------
     |

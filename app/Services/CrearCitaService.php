@@ -9,6 +9,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class CrearCitaService
 {
@@ -25,6 +26,12 @@ class CrearCitaService
      */
     public function crear(array $datos, string $canal, ?string $claveIdempotencia = null, ?Request $request = null): array
     {
+        // Web y Telegram piden datos personales y de salud: ningún canal puede
+        // guardar una cita sin el consentimiento expreso al aviso de privacidad.
+        if (($datos['acepta_aviso'] ?? false) !== true) {
+            throw new InvalidArgumentException('Falta el consentimiento al aviso de privacidad.');
+        }
+
         if ($claveIdempotencia !== null) {
             $existente = Cita::where('clave_idempotencia', $claveIdempotencia)->first();
 
@@ -51,6 +58,12 @@ class CrearCitaService
                         'telefono' => $datos['telefono'],
                     ],
                 );
+
+                // Evidencia del consentimiento: fecha y versión del aviso aceptado.
+                $paciente->forceFill([
+                    'aviso_privacidad_aceptado_en' => now(),
+                    'aviso_privacidad_version' => config('dentissa.privacidad.version'),
+                ])->save();
 
                 $cita = Cita::create([
                     'id_paciente' => $paciente->id,
