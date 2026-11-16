@@ -176,6 +176,11 @@ chat: la confirmación o, si pidió reagendar o canceló, el enlace para elegir
 otro horario. Para que funcione, el sistema debe estar en línea y Meta debe
 haber aprobado la plantilla del recordatorio.
 
+El número de WhatsApp de los recordatorios no lo atiende nadie. Si un paciente
+le escribe un mensaje (texto, audio o foto), recibe una respuesta automática
+con el teléfono del consultorio y el enlace para agendar. La respuesta llega
+una sola vez cada 12 horas por número, y el sistema no guarda lo que escribió.
+
 ## 3. Gestión interna de citas
 
 ### Vista de lista o de semana

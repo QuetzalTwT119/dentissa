@@ -69,12 +69,20 @@ class WhatsappWebhookController extends Controller
         $id = $mensaje['id'] ?? null;
         $telefono = $mensaje['from'] ?? null;
 
-        if (! $payload || ! $id || ! preg_match('/^recordatorio:(\d+):([a-z]+)$/', $payload, $partes)) {
-            return; // Otros mensajes (texto libre, estados) no cambian citas.
+        if (! $id || ! $telefono) {
+            return;
         }
 
         if (! Cache::add('whatsapp:mensaje:'.$id, true, now()->addDays(2))) {
             return; // Reintento de Meta: ya se procesó.
+        }
+
+        if (! $payload || ! preg_match('/^recordatorio:(\d+):([a-z]+)$/', $payload, $partes)) {
+            // Texto, audio, foto… Nadie lee este número: se avisa al paciente
+            // a dónde escribir. No se guarda ni se registra el contenido.
+            $this->responderAutomaticamente($telefono, $whatsapp);
+
+            return;
         }
 
         [, $idCita, $accion] = $partes;
@@ -91,6 +99,29 @@ class WhatsappWebhookController extends Controller
         Log::info('WhatsApp: respuesta de recordatorio aplicada', ['id_cita' => $cita->id, 'resultado' => $resultado]);
 
         $whatsapp->enviarTexto($telefono, $this->textoRespuesta($resultado, $cita->refresh()));
+    }
+
+    /**
+     * Una sola respuesta automática por número cada 12 horas: si el paciente
+     * manda varios mensajes seguidos, no recibe el mismo aviso varias veces.
+     */
+    private function responderAutomaticamente(string $telefono, WhatsappService $whatsapp): void
+    {
+        $clave = 'whatsapp:autorespuesta:'.substr(preg_replace('/\D/', '', $telefono), -10);
+        if (! Cache::add($clave, true, now()->addHours(12))) {
+            return;
+        }
+
+        $whatsapp->enviarTexto($telefono, self::textoAutomatico());
+    }
+
+    public static function textoAutomatico(): string
+    {
+        $telefono = config('dentissa.contacto.telefono');
+
+        return 'Hola, este número solo envía los recordatorios de tus citas y no recibe mensajes. '
+            ."Para dudas o cambios, llama o escribe al consultorio al {$telefono}. "
+            .'Para agendar una cita: '.route('citas.publica.create');
     }
 
     private function textoRespuesta(string $resultado, Cita $cita): string

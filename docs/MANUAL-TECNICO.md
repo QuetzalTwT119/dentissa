@@ -1008,16 +1008,19 @@ webhook firmado por Meta. Las dos usan `RespuestaRecordatorioService`.
     (`WhatsappService::mismoTelefono`, últimos 10 dígitos);
   - cada `id` de mensaje se procesa una sola vez (`Cache::add`, 2 días), porque
     Meta reintenta;
-  - cualquier otro mensaje se ignora;
+  - cualquier otro mensaje recibe una respuesta automática (una vez cada 12 h
+    por número) con el teléfono del consultorio y el enlace para agendar; el
+    contenido no se guarda ni se registra, porque puede traer datos de salud;
   - con firma válida siempre responde 200, para que Meta no reintente durante
     horas.
 - **Respuesta al paciente:** `WhatsappService::enviarTexto()`, texto libre
   permitido dentro de la ventana de 24 h abierta por su mensaje: confirmación,
   enlace a la agenda si canceló o reagendó, o "ya no admite cambios" con el
   teléfono del consultorio.
-- **Pruebas:** `WhatsappWebhookTest` (8): verificación de la URL, confirmar,
+- **Pruebas:** `WhatsappWebhookTest` (10): verificación de la URL, confirmar,
   reagendar con enlace, firma ausente o falsa, otro número, reintento
-  idempotente, cita pasada y mensajes ajenos ignorados.
+  idempotente, cita pasada, respuesta automática al texto (una vez cada 12 h por
+  número) y avisos de estado de Meta sin respuesta.
 
 ### Flujo
 
