@@ -112,7 +112,11 @@ class WhatsappWebhookController extends Controller
             return;
         }
 
-        $whatsapp->enviarTexto($telefono, self::textoAutomatico());
+        // Si Meta no aceptó el envío (token vencido, red caída…), se libera el
+        // número para que el siguiente mensaje del paciente sí reciba respuesta.
+        if (! $whatsapp->enviarTexto($telefono, self::textoAutomatico())) {
+            Cache::forget($clave);
+        }
     }
 
     public static function textoAutomatico(): string

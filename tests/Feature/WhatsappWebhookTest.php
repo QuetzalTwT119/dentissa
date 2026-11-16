@@ -9,6 +9,7 @@ use App\Models\Servicio;
 use App\Models\Tratamiento;
 use App\Services\RespuestaRecordatorioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -151,6 +152,22 @@ class WhatsappWebhookTest extends TestCase
         Carbon::setTestNow(now()->addHours(13));
         $this->enviar($this->texto('wamid.d', '5215512345678', 'hola otra vez'))->assertOk();
         Http::assertSentCount(3);
+    }
+
+    public function test_si_la_respuesta_automatica_falla_el_siguiente_mensaje_lo_vuelve_a_intentar(): void
+    {
+        // Meta rechaza el primer envío (por ejemplo, un token vencido) y acepta el segundo.
+        // Cliente nuevo: el de setUp() siempre responde éxito y tendría prioridad.
+        Http::swap(new HttpFactory);
+        Http::fake(['graph.facebook.com/*' => Http::sequence()
+            ->push(['error' => ['code' => 190]], 401)
+            ->push(['messages' => [['id' => 'wamid.ok']]])]);
+
+        $this->enviar($this->texto('wamid.f1', '5215512345678', 'hola'))->assertOk();
+        $this->enviar($this->texto('wamid.f2', '5215512345678', 'hola de nuevo'))->assertOk();
+
+        // Sin el arreglo, el número quedaba bloqueado 12 h y el segundo no se intentaba.
+        Http::assertSentCount(2);
     }
 
     public function test_los_avisos_de_estado_de_meta_no_reciben_respuesta(): void
