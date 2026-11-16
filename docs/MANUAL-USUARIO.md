@@ -190,7 +190,9 @@ confirmadas. En la agenda, la acción principal y el menú **Acciones** se
 presentan alineados en una misma línea para ubicarlos rápidamente. Una cita **En
 curso** muestra únicamente **Completar**, y los estados finales muestran **Sin
 acciones**.
-La inasistencia no se puede registrar antes de la fecha y hora programadas.
+La inasistencia no se puede registrar antes de la fecha y hora programadas; por
+eso **Marcar inasistencia** solo aparece en **Más acciones** de una cita
+confirmada cuando ya pasó su hora.
 Antes de marcarla, el sistema pide confirmación porque el cambio no se puede
 deshacer; cancelar también solicita un motivo opcional y confirmación.
 Después de una acción válida, la agenda muestra el estado actualizado y un
@@ -227,7 +229,9 @@ En la portada, al agendar una cita y en las páginas del portal, el acceso queda
 fijo en la esquina inferior derecha. Plegado muestra el diente; al pasar el
 cursor o enfocarlo con teclado aparece el nombre **Dentissa Asistente**. En
 pantallas táctiles, tócalo para abrir el chat. El panel se despliega encima del
-acceso. En la agenda pública, el flujo principal se presenta primero.
+acceso. En el celular, el botón se esconde mientras bajas por la página, para
+no tapar botones como **Continuar** o **Agendar cita**, y vuelve a aparecer en
+cuanto subes un poco. En la agenda pública, el flujo principal se presenta primero.
 
 El chat también puede consultar horarios: escribe que buscas una cita, elige el
 servicio y tratamiento tal como aparecen en las listas y proporciona una fecha.

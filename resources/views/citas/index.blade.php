@@ -214,7 +214,8 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                                 </summary>
                                                 <div x-data="{}" x-init="$nextTick(() => { const detail = $el.closest('details'); detail?.addEventListener('toggle', () => { if (!detail.open) return; const trigger = detail.querySelector('summary').getBoundingClientRect(); const scrollArea = detail.closest('.overflow-x-auto')?.getBoundingClientRect(); const top = scrollArea?.top ?? 0; const bottom = scrollArea?.bottom ?? window.innerHeight; const roomBelow = bottom - trigger.bottom; const roomAbove = trigger.top - top; $el.classList.toggle('bottom-full', roomBelow < 220 && roomAbove > roomBelow); $el.classList.toggle('top-full', !(roomBelow < 220 && roomAbove > roomBelow)); $el.classList.toggle('mb-2', roomBelow < 220 && roomAbove > roomBelow); $el.classList.toggle('mt-2', !(roomBelow < 220 && roomAbove > roomBelow)); }); })" class="absolute right-0 top-full z-30 mt-2 flex min-w-48 flex-col rounded-2xl border border-line bg-white p-1.5 shadow-lift">
                                                     <p class="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">Gestionar cita</p>
-                                                    @if ($cita->estado->value === 'confirmada')
+                                                    {{-- Misma regla que CitaController@noShow: solo después de la hora de la cita. --}}
+                                                    @if ($cita->estado->value === 'confirmada' && ! $cita->fecha_hora->isFuture())
                                                         <form method="POST" action="{{ route('citas.no-show', $cita) }}"
                                                               onsubmit="return confirm('¿Marcar esta cita como no asistida? Esta acción no se puede deshacer.');">
                                                             @csrf

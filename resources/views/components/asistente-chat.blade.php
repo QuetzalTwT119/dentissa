@@ -3,6 +3,21 @@
             abierto: new URLSearchParams(window.location.search).has('asistente_abierto') || false,
             hover: new URLSearchParams(window.location.search).has('asistente_hover') || false,
             enfocado: false,
+            // En celular el botón se esconde al bajar y vuelve al subir, para no
+            // tapar botones como Continuar o Agendar cita al final de la página.
+            oculto: false,
+            ultimoY: 0,
+            alDesplazar() {
+                const y = window.scrollY;
+                if (this.abierto || window.innerWidth >= 640) {
+                    this.oculto = false;
+                    this.ultimoY = y;
+                    return;
+                }
+                if (Math.abs(y - this.ultimoY) < 8) return;
+                this.oculto = y > this.ultimoY && y > 80;
+                this.ultimoY = y;
+            },
             consulta: '',
             conversacionId: '',
             mensajes: [{ autor: 'bot', texto: 'Hola, soy Dentissa Asistente. Puedo orientarte con información del consultorio o ayudarte a buscar horarios. No doy diagnósticos. ¿Qué necesitas saber?' }],
@@ -62,7 +77,8 @@
                     this.$nextTick(() => this.$refs.historial.scrollTop = this.$refs.historial.scrollHeight);
                 }
             },
-         }">
+         }"
+     @scroll.window.passive="alDesplazar()">
     <div x-show="abierto" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2 scale-[0.97]" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-out duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 translate-y-1" x-cloak class="w-[calc(100vw-2rem)] max-w-sm origin-bottom-right overflow-hidden rounded-3xl border border-line bg-white p-4 shadow-lift sm:w-[calc(100vw-2.5rem)]">
         <div class="flex items-start justify-between gap-4">
             <div class="flex min-w-0 items-center gap-3">
@@ -105,13 +121,14 @@
             @click="abierto = !abierto"
             @mouseenter="hover = true"
             @mouseleave="hover = false"
-            @focus="enfocado = true"
+            @focus="enfocado = true; oculto = false"
             @blur="enfocado = false"
             :aria-expanded="abierto.toString()"
             aria-label="Abrir o cerrar Dentissa Asistente"
             title="Dentissa Asistente"
-            :class="(hover || enfocado || abierto) ? 'w-56 gap-3 px-3.5' : 'w-14 sm:w-16 justify-center p-0'"
-            class="group relative inline-flex h-14 sm:h-16 shrink-0 items-center overflow-hidden rounded-full border-2 border-white bg-brand-600 text-white shadow-lg shadow-black/15 transition-[width,background-color] duration-200 ease-out hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+            :data-oculto="oculto.toString()"
+            :class="[(hover || enfocado || abierto) ? 'w-56 gap-3 px-3.5' : 'w-14 sm:w-16 justify-center p-0', oculto ? 'translate-y-24 opacity-0 pointer-events-none' : '']"
+            class="group relative inline-flex h-14 sm:h-16 shrink-0 items-center overflow-hidden rounded-full border-2 border-white bg-brand-600 text-white shadow-lg shadow-black/15 transition-[width,background-color,transform,opacity] duration-200 ease-out motion-reduce:transition-none hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
         <span class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center">
             <svg aria-hidden="true" class="h-9 w-9 sm:h-10 sm:w-10" viewBox="0 0 24 24" fill="none">
                 <path d="M12 3.6c-1.6-1.2-4.5-1.2-6.4.1C3.2 5.4 3.7 8.4 4.4 10.8c.8 2.8 2.8 8.1 4.5 8.1.8 0 1.1-1.5 1.5-2.9.4-1.3.7-2 1.6-2s1.2.7 1.6 2c.4 1.4.7 2.9 1.5 2.9 1.7 0 3.7-5.3 4.5-8.1.7-2.4 1.2-5.4-1.2-7.1-1.9-1.3-4.8-1.3-6.4-.1Z" fill="white" />

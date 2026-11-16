@@ -47,6 +47,27 @@ class AsistenteVistasPublicasTest extends TestCase
         $this->assertSame(1, substr_count($contenido, 'id="consulta-inicio"'));
     }
 
+    public function test_en_celular_el_boton_se_esconde_al_bajar_para_no_tapar_los_botones_de_la_agenda(): void
+    {
+        $contenido = $this->get(route('citas.publica.create'))->assertOk()->getContent();
+
+        // No cambia de posición: solo se oculta al bajar y vuelve al subir,
+        // y únicamente en pantallas menores a 640 px (breakpoint sm).
+        $this->assertStringContainsString('@scroll.window.passive="alDesplazar()"', $contenido);
+        $this->assertStringContainsString('window.innerWidth >= 640', $contenido);
+        $this->assertStringContainsString("oculto ? 'translate-y-24 opacity-0 pointer-events-none' : ''", $contenido);
+        $this->assertStringContainsString('motion-reduce:transition-none', $contenido);
+        // Con teclado nunca queda oculto: al enfocarlo reaparece.
+        $this->assertStringContainsString('@focus="enfocado = true; oculto = false"', $contenido);
+    }
+
+    public function test_el_paso_de_tratamiento_explica_que_se_elige_el_procedimiento(): void
+    {
+        $this->get(route('citas.publica.create'))
+            ->assertOk()
+            ->assertSee('Selecciona el procedimiento que necesitas; cada uno muestra su duración aproximada.', false);
+    }
+
     public function test_la_agenda_aprovecha_el_espacio_de_escritorio_con_un_resumen_responsivo(): void
     {
         $contenido = $this->get(route('citas.publica.create'))->assertOk()->getContent();

@@ -346,6 +346,37 @@ class CitaPublicaTest extends TestCase
         ]);
     }
 
+    public function test_el_componente_alpine_de_la_agenda_llega_completo_al_navegador(): void
+    {
+        $html = $this->get(route('citas.publica.create'))->assertOk()->getContent();
+
+        // Si una comilla doble se cuela en el JavaScript de x-data, el atributo
+        // se corta y el resto del código aparece como texto en la página.
+        $dom = new \DOMDocument;
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="utf-8"?>'.$html);
+        libxml_clear_errors();
+
+        $componente = (new \DOMXPath($dom))->query('//*[@x-data and contains(@x-data, "pasos")]')->item(0);
+
+        $this->assertNotNull($componente, 'No se encontró el componente de la agenda.');
+        $codigo = $componente->getAttribute('x-data');
+        foreach (['get fechaLegible()', 'siguiente()', 'async cargarHorarios()'] as $fragmento) {
+            $this->assertStringContainsString($fragmento, $codigo);
+        }
+        $this->assertStringNotContainsString('cargarHorariosDisponibles', $this->textoVisible($dom));
+    }
+
+    private function textoVisible(\DOMDocument $dom): string
+    {
+        // Texto de la página sin scripts ni atributos: lo que el paciente lee.
+        foreach (iterator_to_array($dom->getElementsByTagName('script')) as $script) {
+            $script->parentNode->removeChild($script);
+        }
+
+        return $dom->textContent;
+    }
+
     public function test_el_calendario_usa_la_fecha_de_la_clinica_y_el_resumen_una_fecha_legible(): void
     {
         // 23:30 en Ciudad de México ya es el día siguiente en UTC; el mínimo debe seguir siendo hoy.
