@@ -168,6 +168,11 @@ return [
         'access_token' => env('DENTISSA_WHATSAPP_TOKEN'),
         'api_version' => env('DENTISSA_WHATSAPP_API_VERSION', 'v21.0'),
         'plantilla_idioma' => env('DENTISSA_WHATSAPP_IDIOMA', 'es_MX'),
+        // Webhook de respuestas (botones del recordatorio). El secreto de la
+        // app firma cada aviso de Meta; el token de verificación lo eliges tú
+        // y lo escribes igual en el panel de Meta.
+        'app_secret' => env('DENTISSA_WHATSAPP_APP_SECRET'),
+        'verify_token' => env('DENTISSA_WHATSAPP_VERIFY_TOKEN'),
     ],
 
     /* Recursos visuales estáticos aprobados para el sitio público. */

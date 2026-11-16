@@ -989,8 +989,35 @@ administrador y el asistente gestionan los demás cambios desde el panel
 **Objetivo:** reducir inasistencias. Un día antes, el paciente recibe un
 recordatorio por WhatsApp **y** por correo y puede responder **Asistiré**,
 **Reagendar** o **Cancelar**. La etapa 1 recibe las respuestas por los enlaces
-del correo; la etapa 2 (pendiente, requiere Railway encendido) agregará el
-webhook que recibe los botones de WhatsApp.
+del correo. La etapa 2 (sección 22.1) recibe los botones de WhatsApp en un
+webhook firmado por Meta. Las dos usan `RespuestaRecordatorioService`.
+
+### 22.1 Webhook de WhatsApp (etapa 2)
+
+- **Rutas:** `GET /webhooks/whatsapp` responde la verificación de Meta
+  (`hub_verify_token` contra `DENTISSA_WHATSAPP_VERIFY_TOKEN`; PHP convierte
+  `hub.mode` en `hub_mode`). `POST /webhooks/whatsapp` recibe los mensajes, con
+  `throttle:120,1` y fuera de CSRF.
+- **Firma:** `X-Hub-Signature-256` = `sha256=` + HMAC-SHA256 del **cuerpo
+  crudo** con `DENTISSA_WHATSAPP_APP_SECRET`, comparada con `hash_equals`. Sin
+  firma válida responde 403 y no lee nada.
+- **Mensaje:** botón de plantilla (`button.payload`) o interactivo
+  (`interactive.button_reply.id`) con `recordatorio:{id}:{accion}`.
+- **Controles:**
+  - el teléfono `from` debe ser el del paciente de esa cita
+    (`WhatsappService::mismoTelefono`, últimos 10 dígitos);
+  - cada `id` de mensaje se procesa una sola vez (`Cache::add`, 2 días), porque
+    Meta reintenta;
+  - cualquier otro mensaje se ignora;
+  - con firma válida siempre responde 200, para que Meta no reintente durante
+    horas.
+- **Respuesta al paciente:** `WhatsappService::enviarTexto()`, texto libre
+  permitido dentro de la ventana de 24 h abierta por su mensaje: confirmación,
+  enlace a la agenda si canceló o reagendó, o "ya no admite cambios" con el
+  teléfono del consultorio.
+- **Pruebas:** `WhatsappWebhookTest` (8): verificación de la URL, confirmar,
+  reagendar con enlace, firma ausente o falsa, otro número, reintento
+  idempotente, cita pasada y mensajes ajenos ignorados.
 
 ### Flujo
 

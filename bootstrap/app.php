@@ -31,6 +31,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'no-cache' => NoCachearRespuesta::class,
         ]);
 
+        // Meta no envía token CSRF: el webhook valida la firma HMAC de la app.
+        $middleware->validateCsrfTokens(except: ['webhooks/whatsapp']);
+
         // Seguridad del personal (Manual Técnico, sección 24).
         $middleware->web(append: [
             CabecerasSeguridad::class,
