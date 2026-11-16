@@ -146,6 +146,9 @@ Antes de generar un dominio público:
   durante el despliegue; no sustituye un monitor continuo.
 - **Montar un volumen de Railway en `/var/www/html/storage/app`.** Sin él, las
   imágenes clínicas y las fotos de perfil se borran en cada despliegue.
+  Railway monta el volumen como `root`; `scripts/start-production.sh` crea
+  `private`, `public` y `respaldos-tmp` y le da el volumen a `www-data` en cada
+  arranque, antes de las migraciones.
 - Respaldos: configurar `DENTISSA_RESPALDO_CLAVE` (genérala con
   `php artisan dentissa:respaldo-llave` y guárdala también en un gestor de
   contraseñas), volver a autorizar Google con `scripts/google-oauth.ps1` para
