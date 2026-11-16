@@ -1,7 +1,10 @@
 <?php
 
 use App\Exceptions\AuditoriaNoDisponible;
+use App\Http\Middleware\CabecerasSeguridad;
+use App\Http\Middleware\CerrarSesionUsuarioInactivo;
 use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\ExigirDosPasos;
 use App\Http\Middleware\NoCachearRespuesta;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -26,6 +29,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
             'no-cache' => NoCachearRespuesta::class,
+        ]);
+
+        // Seguridad del personal (Manual Técnico, sección 24).
+        $middleware->web(append: [
+            CabecerasSeguridad::class,
+            CerrarSesionUsuarioInactivo::class,
+            ExigirDosPasos::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

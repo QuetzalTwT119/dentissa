@@ -26,6 +26,21 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        $usuario = Auth::user();
+        if ($usuario->tieneDosPasos()) {
+            // La contraseña era correcta, pero falta el segundo paso: se cierra
+            // la sesión recién abierta y solo se recuerda quién la pidió.
+            Auth::guard('web')->logout();
+            $request->session()->regenerate();
+            $request->session()->put('dos_pasos', [
+                'usuario_id' => $usuario->id,
+                'recordar' => $request->boolean('remember'),
+                'expira' => now()->addMinutes(5)->timestamp,
+            ]);
+
+            return redirect()->route('dos-pasos.reto');
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));

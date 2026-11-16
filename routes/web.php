@@ -20,6 +20,7 @@ use App\Http\Controllers\AsistentePacienteController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\CitaPublicaController;
 use App\Http\Controllers\DisponibilidadController;
+use App\Http\Controllers\DosPasosController;
 use App\Http\Controllers\GaleriaController;
 use App\Http\Controllers\HistorialImagenController;
 use App\Http\Controllers\MensajeContactoController;
@@ -161,6 +162,11 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
         ->middleware('role:admin,asistente')->name('notificaciones.vistas');
     Route::get('/asistente-agenda', [AsistenteAgendaController::class, 'create'])->name('asistente-agenda.create');
     Route::post('/asistente-agenda/proponer', [AsistenteAgendaController::class, 'proponer'])->name('asistente-agenda.proponer');
+
+    Route::get('/profile/dos-pasos', [DosPasosController::class, 'show'])->name('dos-pasos.show');
+    Route::post('/profile/dos-pasos', [DosPasosController::class, 'confirmar'])->middleware('throttle:10,1')->name('dos-pasos.confirmar');
+    Route::post('/profile/dos-pasos/codigos', [DosPasosController::class, 'regenerar'])->name('dos-pasos.regenerar');
+    Route::delete('/profile/dos-pasos', [DosPasosController::class, 'desactivar'])->name('dos-pasos.desactivar');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

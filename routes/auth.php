@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\RetoDosPasosController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,12 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
+
+    // Segundo paso del inicio de sesión (verificación en dos pasos).
+    Route::get('dos-pasos', [RetoDosPasosController::class, 'create'])->name('dos-pasos.reto');
+    Route::post('dos-pasos', [RetoDosPasosController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('dos-pasos.verificar');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');

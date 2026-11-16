@@ -362,6 +362,38 @@ segura y guarda. El correo debe ser único. También puedes cambiar el rol de un
 cuenta existente desde **Editar**; conserva tu cuenta actual hasta confirmar
 que puedes iniciar sesión con la nueva.
 
+### Seguridad de la cuenta
+
+- **Contraseñas:** al crear o cambiar una contraseña, debe tener al menos 10
+  caracteres, con mayúsculas, minúsculas y números. Al cambiarla, se cierran
+  las sesiones abiertas en otros equipos.
+- **Inactividad:** después de 30 minutos sin usar el panel, la sesión se cierra
+  sola. Vuelve a iniciar sesión.
+- **Cuentas desactivadas:** al desactivar una cuenta en **Usuarios**, esa
+  persona sale del sistema en su siguiente clic, aunque tuviera "Recordarme".
+
+### Verificación en dos pasos
+
+Además de la contraseña, al entrar se pide un código de 6 dígitos que genera
+una app gratuita en tu celular (Google Authenticator o Microsoft
+Authenticator). **Es obligatoria para el administrador**, porque puede ver
+historiales clínicos; para la asistente es opcional y recomendada.
+
+**Para activarla:** **Perfil → Verificación en dos pasos**. Escanea el código QR
+con la app (o escribe la clave que aparece debajo) y escribe el código de 6
+dígitos que muestra la app. Si eres administrador y aún no la activas, el
+sistema te lleva a esa pantalla automáticamente.
+
+**Códigos de recuperación:** al activarla verás 8 códigos. **Guárdalos en un
+lugar seguro: no se vuelven a mostrar.** Si pierdes el celular, cada uno sirve
+una sola vez para entrar. Desde la misma pantalla puedes generar códigos
+nuevos con tu contraseña; los anteriores dejan de servir.
+
+**Al iniciar sesión:** después de la contraseña aparece **Un paso más**.
+Escribe el código actual de la app o un código de recuperación. Tienes 5
+minutos; si se pasa el tiempo, vuelve a iniciar sesión. Si el código no
+funciona, revisa que la hora de tu celular esté en automático.
+
 ## 7. Reportes administrativos
 
 En **Reportes**, el administrador selecciona las fechas **Desde** y **Hasta**

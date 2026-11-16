@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -42,6 +43,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Mail::extend('gmail-api', fn () => new GmailApiTransport);
+
+        // Contraseñas del personal: mínimo 10 caracteres con mayúsculas,
+        // minúsculas y números. Aplica al crearlas o cambiarlas; las
+        // existentes siguen sirviendo hasta el siguiente cambio.
+        Password::defaults(fn () => Password::min(10)->letters()->mixedCase()->numbers());
 
         foreach ([
             Cita::class, Paciente::class, HistorialClinico::class, HorarioAtencion::class,

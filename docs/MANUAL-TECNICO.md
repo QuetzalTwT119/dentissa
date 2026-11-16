@@ -1132,3 +1132,70 @@ completar, aviso limpio con datos de la clínica, agenda sin consentimiento
 rechazada sin guardar nada, fecha y versión guardadas, campos fuera de
 `Fillable`, servicio que rechaza cualquier canal sin consentimiento, enlaces en
 formulario y portada, y el texto de Telegram.
+
+## 24. Seguridad de las cuentas del personal (fase 3 para pacientes reales)
+
+Auditoría del 16/11/2026: ya existían el bloqueo tras 5 intentos de inicio de
+sesión, la regeneración de la sesión, los permisos por rol y la bitácora. Se
+cerraron cinco huecos.
+
+| # | Hueco | Solución |
+|---|---|---|
+| 1 | `activo` solo se revisaba al iniciar sesión: una cuenta desactivada seguía dentro, o semanas con "Recordarme". | Middleware `CerrarSesionUsuarioInactivo` en el grupo `web`: en cada petición, si la cuenta está inactiva, cierra la sesión y la envía al login con un aviso. |
+| 2 | Sin verificación en dos pasos. | TOTP (RFC 6238) con `pragmarx/google2fa` y QR en SVG con `bacon/bacon-qr-code`, ambas gratuitas. **Obligatoria para el administrador.** |
+| 3 | Contraseña mínima de 8 caracteres, sin más reglas. | `Password::defaults()`: mínimo 10, con mayúsculas, minúsculas y números. Aplica al crear o cambiar contraseñas. |
+| 4 | Cambiar la contraseña no cerraba otras sesiones; inactividad de 2 h. | Al cambiarla se borran las demás sesiones (driver `database`) y se rota el `remember_token`. `SESSION_LIFETIME=30` y `SESSION_ENCRYPT=true`. |
+| 5 | Sin cabeceras de seguridad. | Middleware `CabecerasSeguridad`: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, y HSTS solo en HTTPS. |
+
+### Verificación en dos pasos
+
+```
+contraseña correcta ──> ¿tiene 2 pasos? ── no ──> panel
+                               │ sí
+                               ▼
+        se cierra la sesión recién abierta; la sesión guarda
+        {usuario_id, recordar, expira en 5 min}
+                               ▼
+        /dos-pasos: código de 6 dígitos o código de recuperación
+        (throttle 5/min) ──> login(usuario, recordar) ──> panel
+```
+
+- **Datos** (`users`): `dos_pasos_secreto` (cast `encrypted`, cifrado con
+  `APP_KEY`), `dos_pasos_recuperacion` (8 hashes SHA-256 en `encrypted:array`),
+  `dos_pasos_confirmado_en` y `dos_pasos_ultimo_paso`. Ninguno está en
+  `Fillable`; `secreto` y `recuperacion` están en `Hidden`.
+- **Sin repetición:** `verifyKeyNewer` solo acepta un intervalo de 30 s
+  posterior al último usado, así que un código ya aceptado no vuelve a servir.
+  La ventana es de ±1 intervalo por relojes desfasados.
+- **Activación** (`/profile/dos-pasos`): el secreto vive en la sesión hasta que
+  el usuario confirma un código; solo entonces se guarda. Los 8 códigos de
+  recuperación se muestran **una sola vez**.
+- **Obligatoria para el administrador** (`DENTISSA_2FA_ADMIN`, por defecto
+  `true`): el middleware `ExigirDosPasos` lo lleva a activarla en cualquier ruta
+  con `auth`, salvo la propia activación y `logout`. Las páginas públicas no se
+  bloquean. El administrador no puede desactivarla; la asistente sí, con su
+  contraseña.
+- **Demostración:** con `DENTISSA_2FA_ADMIN=false` se puede presentar sin
+  celular. **Con pacientes reales debe quedar en `true`.**
+- **Si se pierde el celular y los códigos:** un administrador de la base puede
+  vaciar los cuatro campos `dos_pasos_*` del usuario para que vuelva a
+  activarla. Esto debe quedar registrado por el equipo.
+
+### Dependencias
+
+`composer audit` mostró 19 avisos en paquetes que ya existían: uno crítico en
+`laravel/framework` (`TokenGuard`, que la app no usa) y varios altos en
+`league/commonmark` y Symfony. Se actualizaron dentro de las restricciones de
+`composer.json` en un commit aparte. Hay que repetir `composer audit` antes de
+cada entrega.
+
+### Pruebas
+
+`SeguridadPersonalTest`: cuenta desactivada expulsada; cabeceras y HSTS solo en
+HTTPS; contraseña débil rechazada; otras sesiones cerradas y `remember_token`
+rotado; vida de sesión de 30 min; activación con QR, código incorrecto
+rechazado, códigos de recuperación y secreto cifrado en la base;
+administrador bloqueado hasta activarla (sin afectar a la asistente ni a las
+páginas públicas); el administrador no puede desactivarla; la contraseña sola
+no abre sesión; un código no sirve dos veces; un código de recuperación sirve
+una sola vez; el reto caduca a los 5 minutos.
