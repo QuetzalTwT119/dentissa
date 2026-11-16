@@ -97,6 +97,9 @@
                                                 </span>
                                                 <span @class(['mt-1 block truncate font-medium text-ink', 'line-through' => $cita->estado->esInactiva()])>{{ $cita->paciente?->nombre_completo ?? 'Paciente' }}</span>
                                                 <span class="block truncate text-xs text-muted">{{ $cita->tratamiento?->nombre ?? 'Sin tratamiento' }}</span>
+                                                @if ($cita->asistencia_confirmada_en && ! $cita->estado->esInactiva())
+                                                    <span class="mt-1 block truncate text-xs font-medium text-sage-700" data-asistencia-confirmada>✓ Confirmó asistencia</span>
+                                                @endif
                                             </a>
                                         </li>
                                     @empty

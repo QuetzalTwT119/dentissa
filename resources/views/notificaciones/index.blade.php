@@ -112,8 +112,8 @@
                                             'rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider border',
                                             'border-rose-200 bg-rose-50 text-rose-700' => $prioritaria,
                                             'border-amber-200 bg-amber-50 text-amber-700' => $notificacion->evento === 'reagendada',
-                                            'border-sage-100 bg-sage-50 text-sage-700' => in_array($notificacion->evento, ['confirmada', 'completada'], true),
-                                            'border-brand-200/60 bg-brand-50 text-brand-700' => ! $prioritaria && ! in_array($notificacion->evento, ['reagendada', 'confirmada', 'completada'], true),
+                                            'border-sage-100 bg-sage-50 text-sage-700' => in_array($notificacion->evento, ['confirmada', 'completada', 'asistencia_confirmada'], true),
+                                            'border-brand-200/60 bg-brand-50 text-brand-700' => ! $prioritaria && ! in_array($notificacion->evento, ['reagendada', 'confirmada', 'completada', 'asistencia_confirmada'], true),
                                         ])>{{ $notificacion->etiquetaEvento() }}</span>
                                         <span @class([
                                             'rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',

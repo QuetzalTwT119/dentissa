@@ -3,6 +3,7 @@
 use App\Services\WhatsappService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -29,3 +30,10 @@ Artisan::command('whatsapp:probar {telefono} {--confirmar}', function (WhatsappS
 
     return self::SUCCESS;
 })->purpose('Envía la plantilla oficial hello_world a un destinatario autorizado de prueba');
+
+// Recordatorio 24 h antes de cada cita. withoutOverlapping evita que dos
+// ejecuciones lentas se encimen; el comando además reclama cada cita antes
+// de avisar, así que nunca se manda el mismo recordatorio dos veces.
+Schedule::command('dentissa:enviar-recordatorios')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping();

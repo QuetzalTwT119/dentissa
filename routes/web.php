@@ -26,12 +26,14 @@ use App\Http\Controllers\MensajeContactoController;
 use App\Http\Controllers\NotificacionSistemaController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RespuestaRecordatorioController;
 use App\Models\Caso;
 use App\Models\Imagen;
 use App\Models\Oferta;
 use App\Models\PreguntaFrecuente;
 use App\Models\Servicio;
 use App\Models\Testimonio;
+use App\Services\RespuestaRecordatorioService;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 
@@ -91,6 +93,16 @@ Route::get('/agendar-cita', [CitaPublicaController::class, 'create'])->name('cit
 Route::post('/agendar-cita', [CitaPublicaController::class, 'store'])
     ->middleware('throttle:agendar-cita')
     ->name('citas.publica.store');
+// Respuesta del paciente al recordatorio de su cita. Sin cuenta: lo que
+// autoriza es la firma del enlace que le llegó por correo.
+Route::middleware(['signed', 'throttle:20,1'])
+    ->whereIn('accion', RespuestaRecordatorioService::ACCIONES)
+    ->group(function () {
+        Route::get('/cita/{cita}/recordatorio/{accion}', [RespuestaRecordatorioController::class, 'show'])
+            ->name('citas.recordatorio.show');
+        Route::post('/cita/{cita}/recordatorio/{accion}', [RespuestaRecordatorioController::class, 'responder'])
+            ->name('citas.recordatorio.responder');
+    });
 Route::get('/disponibilidad', [DisponibilidadController::class, 'index'])->name('disponibilidad.index');
 Route::post('/asistente-paciente/responder', [AsistentePacienteController::class, 'responder'])
     ->middleware('throttle:30,1')

@@ -43,6 +43,9 @@ El Dockerfile productivo inicia `scripts/start-production.sh`, que aplica las
 migraciones y ejecuta Supervisor para mantener juntos el servidor web y el
 proceso `php artisan dentissa:telegram`. Por eso, el token del bot debe existir
 como variable privada `DENTISSA_TELEGRAM_BOT_TOKEN` en el servicio `dentissa`.
+Supervisor también ejecuta `php artisan schedule:work`, que manda los
+recordatorios de citas cada 15 minutos; no hace falta configurar un cron en
+Railway.
 Nunca se incorpora al repositorio ni al comando de inicio. No se crea un segundo
 servicio para este prototipo.
 
