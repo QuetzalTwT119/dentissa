@@ -170,8 +170,11 @@ recordatorio, porque el paciente acaba de recibir su confirmación. Si el
 personal reagenda una cita, el paciente recibe un recordatorio nuevo para la
 nueva fecha.
 
-Los botones de WhatsApp todavía no cambian la cita: esa parte se activará
-cuando el sistema esté en línea en Railway y Meta apruebe la plantilla.
+El mensaje de WhatsApp trae los mismos tres botones. Al pulsar uno, la cita
+cambia igual que con el correo y el paciente recibe una respuesta en el mismo
+chat: la confirmación o, si pidió reagendar o canceló, el enlace para elegir
+otro horario. Para que funcione, el sistema debe estar en línea y Meta debe
+haber aprobado la plantilla del recordatorio.
 
 ## 3. Gestión interna de citas
 

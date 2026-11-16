@@ -89,10 +89,55 @@ El recordatorio no es una cascada: sale por WhatsApp **y** por correo. Mientras
 la plantilla no esté aprobada, el intento de WhatsApp falla sin afectar el
 correo, que trae los mismos tres botones como enlaces.
 
-**Pendiente (etapa 2):** recibir la pulsación de los botones. Requiere un
-webhook HTTPS público (Railway), el token de verificación del webhook y el
-secreto de la app de Meta para validar la firma `X-Hub-Signature-256`. La
-lógica de cada respuesta ya existe en `RespuestaRecordatorioService`.
+Cuando el paciente pulsa un botón, Meta avisa al webhook de Dentissa (sección
+4.1), que cambia la cita y le contesta por WhatsApp.
+
+## 4.1 Webhook de respuestas (botones del recordatorio)
+
+**Analogía:** la plantilla es el altavoz; el webhook es el buzón donde Meta
+deja la respuesta del paciente. Meta necesita la dirección pública del buzón
+(HTTPS) y una contraseña compartida para comprobar que el buzón es el correcto.
+
+**Requisito:** Dentissa en línea con HTTPS (Railway). En `localhost` no
+funciona, porque Meta no puede llegar a tu laptop.
+
+1. **Inventa un token de verificación**, una frase larga al azar, y ponlo en
+   Railway como `DENTISSA_WHATSAPP_VERIFY_TOKEN`. No es una contraseña de
+   Meta: es una contraseña que tú eliges para este paso.
+2. **Copia el secreto de la app:** developers.facebook.com → tu app →
+   **Configuración de la app → Básica → Clave secreta de la app → Mostrar**.
+   Ponlo en Railway como `DENTISSA_WHATSAPP_APP_SECRET`. **No lo pegues en
+   chats ni en capturas.**
+3. Redespliega o reinicia el servicio para que lea las variables.
+4. En la app de Meta: **WhatsApp → Configuración → Webhook → Editar**.
+   - **URL de devolución de llamada:** `https://TU-DOMINIO/webhooks/whatsapp`
+     (en Railway, la URL pública del servicio + `/webhooks/whatsapp`).
+   - **Token de verificación:** el mismo del paso 1.
+   - Pulsa **Verificar y guardar**. Si Dentissa contesta, Meta lo acepta.
+5. En la misma pantalla, en **Campos del webhook**, **suscríbete a
+   `messages`**. Sin esto, Meta no envía las pulsaciones de los botones.
+6. **Prueba real:** agenda una cita ficticia para mañana con tu número de
+   prueba, de forma que se haya creado con más de 24 h de anticipación (o
+   cambia su `created_at` en una base de prueba). Ejecuta
+   `php artisan dentissa:enviar-recordatorios` y pulsa **Sí, asistiré** en tu
+   WhatsApp. Debe llegarte "¡Gracias! Registramos que asistirás…" y la agenda
+   debe mostrar **✓ Confirmó asistencia**.
+
+**Seguridad del webhook (`WhatsappWebhookController`):**
+- Rechaza (403) cualquier aviso cuya firma `X-Hub-Signature-256` no
+  corresponda al secreto de la app: solo Meta puede llamarlo.
+- Solo cambia la cita si el número que pulsa el botón es el del paciente de
+  esa cita.
+- Si Meta reintenta el mismo aviso, se procesa una sola vez.
+- Los mensajes que no son botones del recordatorio se ignoran.
+
+**Costo:** Meta cobra los mensajes de plantilla que inicia la empresa, como el
+recordatorio, según la tarifa de la categoría *Utilidad* para México. La
+respuesta que manda Dentissa cuando el paciente pulsa un botón va dentro de la
+ventana de 24 h de atención y no se cobra como plantilla. Con el número de
+prueba (hasta 5 destinatarios registrados) se puede hacer la demo; para
+pacientes reales, revisa la tarifa vigente en la documentación de precios de
+WhatsApp Business antes de activarlo.
 
 ## 5. Variables de entorno
 
@@ -103,6 +148,8 @@ DENTISSA_WHATSAPP_PHONE_ID=el_id_que_copiaste
 DENTISSA_WHATSAPP_TOKEN=el_token_permanente_del_usuario_del_sistema
 DENTISSA_WHATSAPP_API_VERSION=v21.0
 DENTISSA_WHATSAPP_IDIOMA=es_MX
+DENTISSA_WHATSAPP_APP_SECRET=clave_secreta_de_la_app
+DENTISSA_WHATSAPP_VERIFY_TOKEN=frase_que_tu_eliges
 ```
 
 Ver `config/dentissa.php` (bloque `whatsapp`) para cómo se leen.

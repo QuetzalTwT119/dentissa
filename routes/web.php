@@ -28,6 +28,7 @@ use App\Http\Controllers\NotificacionSistemaController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RespuestaRecordatorioController;
+use App\Http\Controllers\WhatsappWebhookController;
 use App\Models\Caso;
 use App\Models\Imagen;
 use App\Models\Oferta;
@@ -105,6 +106,12 @@ Route::middleware(['signed', 'throttle:20,1'])
         Route::post('/cita/{cita}/recordatorio/{accion}', [RespuestaRecordatorioController::class, 'responder'])
             ->name('citas.recordatorio.responder');
     });
+// Webhook de Meta para los botones del recordatorio por WhatsApp. Sin CSRF
+// (bootstrap/app.php): lo protege la firma HMAC de la app de Meta.
+Route::get('/webhooks/whatsapp', [WhatsappWebhookController::class, 'verificar'])->name('webhooks.whatsapp.verificar');
+Route::post('/webhooks/whatsapp', [WhatsappWebhookController::class, 'recibir'])
+    ->middleware('throttle:120,1')
+    ->name('webhooks.whatsapp.recibir');
 Route::get('/disponibilidad', [DisponibilidadController::class, 'index'])->name('disponibilidad.index');
 Route::post('/asistente-paciente/responder', [AsistentePacienteController::class, 'responder'])
     ->middleware('throttle:30,1')

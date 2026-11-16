@@ -84,6 +84,55 @@ class WhatsappService
         return $response->successful();
     }
 
+    /**
+     * Texto libre. Meta solo lo permite dentro de las 24 h siguientes a un
+     * mensaje del paciente: se usa para contestar cuando pulsa un botón.
+     */
+    public function enviarTexto(string $telefono, string $texto): bool
+    {
+        $destinatario = $this->normalizarTelefono($telefono);
+        if (! $this->configurado() || ! $destinatario) {
+            return false;
+        }
+
+        $phoneNumberId = config('dentissa.whatsapp.phone_number_id');
+        $version = config('dentissa.whatsapp.api_version');
+
+        try {
+            $response = Http::withToken(config('dentissa.whatsapp.access_token'))
+                ->baseUrl("https://graph.facebook.com/{$version}")
+                ->timeout(10)
+                ->post("/{$phoneNumberId}/messages", [
+                    'messaging_product' => 'whatsapp',
+                    'to' => $destinatario,
+                    'type' => 'text',
+                    'text' => ['body' => $texto, 'preview_url' => true],
+                ]);
+        } catch (ConnectionException $e) {
+            Log::warning('WhatsApp: fallo de conexión al responder', ['error' => $e->getMessage()]);
+
+            return false;
+        }
+
+        if ($response->failed()) {
+            Log::warning('WhatsApp rechazó la respuesta', ['status' => $response->status(), 'codigo_error' => $response->json('error.code')]);
+        }
+
+        return $response->successful();
+    }
+
+    /**
+     * ¿Dos teléfonos son el mismo número de México? Compara los 10 dígitos
+     * nacionales: Meta envía 521XXXXXXXXXX o 52XXXXXXXXXX y el paciente
+     * captura solo 10 dígitos.
+     */
+    public static function mismoTelefono(?string $a, ?string $b): bool
+    {
+        $ultimos = fn (?string $t) => substr(preg_replace('/\D/', '', (string) $t), -10);
+
+        return strlen($ultimos($a)) === 10 && $ultimos($a) === $ultimos($b);
+    }
+
     private function componentes(array $parametros, array $botones): array
     {
         $componentes = [];
