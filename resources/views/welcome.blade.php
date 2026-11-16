@@ -506,11 +506,11 @@
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-peach-200">Contacto y citas</h3>
                     <ul class="mt-4 space-y-1 text-sm text-white/70">
-                        <li><a href="tel:+527551020089" class="inline-flex min-h-9 items-center transition-colors hover:text-white">755 102 0089</a></li>
+                        <li><a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-9 items-center transition-colors hover:text-white">{{ $contacto['telefono'] }}</a></li>
                         <li><a href="mailto:trabajout745@gmail.com" class="inline-flex min-h-9 items-center break-all transition-colors hover:text-white">trabajout745@gmail.com</a></li>
                     </ul>
                     <div class="mt-4 flex flex-wrap gap-2">
-                        <a href="https://wa.me/527551020089" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center rounded-full bg-sage-500 px-5 text-sm font-semibold text-white transition-colors hover:bg-sage-600">WhatsApp</a>
+                        <a href="https://wa.me/{{ preg_replace('/\D/', '', $contacto['whatsapp']) }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center rounded-full bg-sage-500 px-5 text-sm font-semibold text-white transition-colors hover:bg-sage-600">WhatsApp</a>
                         <a href="{{ url('/login') }}" class="inline-flex min-h-11 items-center rounded-full bg-white/10 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/20">Portal →</a>
                     </div>
                 </div>

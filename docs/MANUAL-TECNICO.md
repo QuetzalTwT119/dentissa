@@ -820,8 +820,10 @@ iniciara sesión para agendar, consultar, reprogramar y cancelar sus citas.
 
 **Decisión.** El paciente no tiene cuenta. Agenda desde el sitio público
 (`/agendar-cita`) eligiendo servicio, tratamiento, fecha y hora disponible, y
-captura nombre, apellido, teléfono y correo. El administrador y el asistente
-gestionan reprogramaciones y cancelaciones desde el panel (`/citas`).
+captura nombre, apellido, teléfono y correo. Responde a su recordatorio con un
+enlace firmado: Asistiré, Cancelar o Reagendar (sección 22, RF12). El
+administrador y el asistente gestionan los demás cambios desde el panel
+(`/citas`).
 
 **Motivos.**
 
@@ -831,16 +833,22 @@ gestionan reprogramaciones y cancelaciones desde el panel (`/citas`).
    existe un acceso público a información clínica.
 3. **Privacidad del historial:** el historial clínico solo se consulta desde el
    panel con rol `admin`, como piden los requerimientos.
-4. **Control de la agenda:** los cambios pasan por el personal, lo que evita
-   empalmes y reprogramaciones sin revisión.
+4. **Control de la agenda:** el paciente solo puede confirmar o liberar su
+   horario. Una nueva fecha siempre pasa por la agenda en línea, que solo
+   ofrece horarios libres, o por el personal, lo que evita empalmes.
 
 **Consecuencias.**
 
 - El RF01 aplica solo al personal (`admin` y `asistente`) y el RF02 se
-  redefine como agendado público.
-- El paciente no puede consultar, reprogramar ni cancelar por su cuenta; lo
-  solicita a la clínica. El canal oficial (teléfono, WhatsApp o ambos) está
-  pendiente de confirmar por el equipo.
+  redefine como agendado público. Se agrega el RF12 (recordatorio y respuesta
+  del paciente).
+- El paciente no puede consultar su historial. Confirma, cancela o reagenda
+  solo desde el recordatorio; para cualquier otro cambio contacta a la clínica
+  por **teléfono o WhatsApp** (decidido el 16/11/2026). Ambos datos salen de
+  `config('dentissa.contacto')` (`DENTISSA_TELEFONO`, `DENTISSA_WHATSAPP`); su
+  valor por defecto es el número que publica la portada, para que ninguna página
+  muestre un número de ejemplo. `telefono_enlace` arma el `tel:` con +52, y una
+  variable vacía también usa el valor por defecto (`ContactoClinicaTest`).
 - Los datos del paciente se vinculan por teléfono y correo, y el formulario
   público valida los campos.
 - Como el formulario es público, `POST /agendar-cita` usa el limitador
@@ -854,8 +862,10 @@ gestionan reprogramaciones y cancelaciones desde el panel (`/citas`).
 
 - *Cuenta obligatoria para el paciente:* más pasos para el paciente y más datos
   sensibles que proteger.
-- *Enlace de gestión por correo o WhatsApp, sin contraseña:* se deja como
-  posible mejora futura si la clínica la necesita.
+- *Portal completo del paciente con enlace mágico* (ver todas sus citas y
+  cambiarlas en cualquier momento): descartado para la v1.0. Se adoptó una
+  versión acotada: el enlace firmado del recordatorio, que solo sirve para esa
+  cita y deja de aceptar respuestas a la hora de la cita.
 
 ## 21. Vista semanal de la agenda (RF03)
 

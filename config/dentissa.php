@@ -1,5 +1,12 @@
 <?php
 
+// Teléfono de la clínica: el mismo que publica la portada. El enlace tel:
+// se arma aquí una sola vez; un número nacional de 10 dígitos recibe +52.
+// `?:` y no el default de env(): .env.example trae DENTISSA_TELEFONO vacío y
+// env() devolvería '' en lugar del número.
+$telefonoClinica = env('DENTISSA_TELEFONO') ?: '755 102 0089';
+$digitosTelefono = preg_replace('/\D/', '', (string) $telefonoClinica);
+
 return [
 
     /*
@@ -63,14 +70,18 @@ return [
     |
     | El modo demostración usa información ficticia claramente identificada.
     | Desactívalo y configura los datos reales antes de abrir el sitio al público.
+    | Teléfono y WhatsApp ya usan por defecto el número que publica la portada:
+    | la portada y la página del recordatorio los leen de aquí, para que un
+    | paciente nunca vea un número de ejemplo.
     |
     */
 
     'modo_demo' => (bool) env('DENTISSA_MODO_DEMO', true),
 
     'contacto' => [
-        'telefono' => env('DENTISSA_TELEFONO', '+52 55 0000 0000'),
-        'whatsapp' => env('DENTISSA_WHATSAPP', '5215500000000'),
+        'telefono' => $telefonoClinica,
+        'telefono_enlace' => 'tel:+'.(strlen($digitosTelefono) === 10 ? '52'.$digitosTelefono : $digitosTelefono),
+        'whatsapp' => env('DENTISSA_WHATSAPP') ?: '527551020089',
         'correo' => env('DENTISSA_CORREO', 'hola@dentissa.demo'),
         'direccion' => env('DENTISSA_DIRECCION', 'Consultorio de demostración · Ciudad de México'),
         'horario_texto' => env('DENTISSA_HORARIO_TEXTO', 'Lunes a viernes · 9:00 a 18:00'),
