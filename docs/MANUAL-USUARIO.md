@@ -110,6 +110,10 @@ tanto en escritorio como en el menú móvil.
 6. Escribe nombre, apellido, teléfono y correo.
 7. Pulsa **Agendar cita**.
 
+El resumen muestra la fecha completa (por ejemplo, "miércoles 18 de noviembre
+de 2026") y el calendario solo permite elegir desde el día de hoy según la hora
+de la clínica, aunque se agende tarde por la noche.
+
 Para evitar citas falsas, el formulario acepta hasta 5 envíos por minuto y 20
 por hora desde la misma conexión. Si se supera, aparece el aviso **"Recibimos
 varios intentos seguidos. Espera un minuto e inténtalo de nuevo."** y los datos

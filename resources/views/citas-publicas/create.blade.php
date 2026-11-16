@@ -103,6 +103,12 @@
                         'Endodoncia': 'Terapia de conductos radiculares para aliviar dolor y salvar tus piezas naturales.',
                         'Odontopediatría': 'Cuidado dental preventivo y amable diseñado especialmente para niñas y niños.'
                     },
+                    // "2026-11-18" -> "miércoles 18 de noviembre de 2026" (se arma a mediodía local para evitar desfases de zona horaria).
+                    get fechaLegible() {
+                        if (!this.fecha) return '';
+                        const [anio, mes, dia] = this.fecha.split('-').map(Number);
+                        return new Date(anio, mes - 1, dia, 12).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                    },
                     get servicioSeleccionado() {
                         return this.servicios.find(s => s.id === Number(this.idServicio)) ?? null;
                     },
@@ -228,7 +234,7 @@
                             <div class="space-y-6 p-5 sm:p-8">
                                 <div>
                                     <label for="fecha-picker" class="{{ $claseEtiqueta }}">Selecciona el día</label>
-                                    <input id="fecha-picker" type="date" :min="new Date().toISOString().split('T')[0]"
+                                    <input id="fecha-picker" type="date" min="{{ now()->toDateString() }}"
                                            x-model="fecha" @change="cargarHorarios()"
                                            class="{{ $claseCampo }} font-semibold">
                                     <p class="mt-2 text-sm text-muted">Horario regular: {{ $horarioRegular }}</p>
@@ -271,7 +277,7 @@
                                         </div>
                                         <div class="px-5 py-4">
                                             <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Fecha y hora</dt>
-                                            <dd class="mt-1 font-semibold text-brand-700" x-text="fecha + ' — ' + hora + ' hrs'"></dd>
+                                            <dd class="mt-1 font-semibold text-brand-700" x-text="fechaLegible + ' — ' + hora + ' hrs'"></dd>
                                         </div>
                                     </dl>
                                 </div>
@@ -401,7 +407,7 @@
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Fecha</dt>
-                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!fecha && 'font-normal text-muted/80'" x-text="fecha || 'Pendiente'"></dd>
+                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!fecha && 'font-normal text-muted/80'" x-text="fechaLegible || 'Pendiente'"></dd>
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Hora</dt>
