@@ -118,7 +118,7 @@
                         [route('admin.pacientes.index'), 'Expedientes', 'Directorio oficial'],
                         [route('admin.horarios.edit'), 'Horarios', 'Turnos configurados'],
                     ] as [$url, $etiqueta, $texto])
-                        <a href="{{ $url }}" class="group flex min-h-16 items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-inset ring-white transition-[background-color,box-shadow] duration-150 hover:bg-white hover:shadow-soft">
+                        <a href="{{ $url }}" class="group flex min-h-16 items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-inset ring-white transition-colors duration-150 hover:bg-white">
                             <span>
                                 <span class="block text-caption font-semibold uppercase tracking-label text-brand-700">{{ $etiqueta }}</span>
                                 <span class="mt-0.5 block text-sm font-semibold text-ink">{{ $texto }}</span>

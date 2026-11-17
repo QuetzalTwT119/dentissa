@@ -87,7 +87,7 @@
                                         <li>
                                             <a href="{{ route('citas.edit', $cita) }}"
                                                @class([
-                                                   'block rounded-xl border bg-white p-2.5 text-sm transition hover:border-brand-300 hover:shadow-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
+                                                   'block rounded-xl border bg-white p-2.5 text-sm transition hover:border-brand-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
                                                    'border-line/70 opacity-70' => $cita->estado->esInactiva(),
                                                    'border-line' => ! $cita->estado->esInactiva(),
                                                ])>

@@ -12,9 +12,6 @@
     <link rel="preload" href="/fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/fraunces-latin-500-italic.woff2" as="font" type="font/woff2" crossorigin>
 
-    <!-- Activa las animaciones de entrada solo si hay JavaScript -->
-    <script>document.documentElement.classList.add('js')</script>
-
     <!-- Tailwind CSS y Scripts -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -258,7 +255,7 @@
         <section aria-label="Beneficios" class="border-y border-line/80 bg-white">
             <div class="mx-auto grid max-w-7xl gap-px overflow-hidden px-4 sm:px-6 md:grid-cols-3 lg:px-8">
                 @foreach ($beneficios as $beneficio)
-                    <div data-reveal class="flex items-start gap-4 py-7 md:px-6 md:py-10 md:first:pl-0 md:[&:not(:first-child)]:border-l md:[&:not(:first-child)]:border-line/80 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line/80 md:[&:not(:first-child)]:border-t-0" style="transition-delay: {{ $loop->index * 60 }}ms">
+                    <div class="flex items-start gap-4 py-7 md:px-6 md:py-10 md:first:pl-0 md:[&:not(:first-child)]:border-l md:[&:not(:first-child)]:border-line/80 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line/80 md:[&:not(:first-child)]:border-t-0">
                         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl {{ $loop->last ? 'bg-sage-50 text-sage-600' : 'bg-peach-50 text-brand-600' }}">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="{{ $beneficio['icono'] }}"/></svg>
                         </span>
@@ -273,7 +270,7 @@
 
         <!-- ============ Tratamientos ============ -->
         <section id="servicios" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-            <div data-reveal class="max-w-2xl">
+            <div class="max-w-2xl">
                 <p class="eyebrow">Cuidado Especializado</p>
                 <h2 class="mt-4 text-title-1 text-ink">
                     Tratamientos diseñados para tu salud y armonía
@@ -285,7 +282,7 @@
 
             <div class="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach ($tratamientos as [$numero, $titulo, $texto, $duracion, $etiqueta, $valor, $destacado])
-                    <article data-reveal style="transition-delay: {{ ($loop->index % 3) * 60 }}ms" @class([
+                    <article @class([
                         'relative flex h-full flex-col rounded-[1.75rem] p-6 sm:p-7',
                         'card-boutique is-interactive' => ! $destacado,
                         'bg-brand-700 text-white shadow-lift' => $destacado,
@@ -323,8 +320,8 @@
                 @endforeach
 
                 <!-- Tarjeta fotográfica: instrumental -->
-                <article data-reveal style="transition-delay: 120ms" class="group relative flex min-h-[320px] flex-col justify-end overflow-hidden rounded-[1.75rem] p-6 text-white shadow-soft sm:p-7">
-                    <img src="{{ asset('images/3.jpg') }}" alt="Instrumental Dental de Precisión" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]" loading="lazy">
+                <article class="group relative flex min-h-[320px] flex-col justify-end overflow-hidden rounded-[1.75rem] p-6 text-white shadow-soft sm:p-7">
+                    <img src="{{ asset('images/3.jpg') }}" alt="Instrumental Dental de Precisión" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
                     <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/90 via-[#2b1a20]/40 to-transparent"></div>
 
                     <div class="relative">
@@ -343,7 +340,7 @@
         <section id="nosotros" class="border-y border-line/80 bg-white">
             <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8 lg:py-28">
 
-                <figure data-reveal class="relative mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none">
+                <figure class="relative mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none">
                     <div aria-hidden="true" class="absolute -inset-3 -z-0 rotate-[-2.5deg] rounded-[2.5rem] bg-peach-100"></div>
                     <div class="relative aspect-[4/5] overflow-hidden rounded-[2.25rem] shadow-lift">
                         <img src="{{ asset('images/4.jpg') }}" alt="Uniforme Dra. Melissa López N." class="h-full w-full object-cover" loading="lazy">
@@ -357,7 +354,7 @@
                 </figure>
 
                 <div class="lg:col-span-7">
-                    <div data-reveal>
+                    <div>
                         <p class="eyebrow">Nuestra Filosofía</p>
                         <h2 class="mt-4 text-title-1 text-ink">
                             Cuidado dental personalizado en un ambiente de absoluta serenidad
@@ -369,7 +366,7 @@
 
                     <ul class="mt-8 divide-y divide-line/80 border-y border-line/80">
                         @foreach ($compromisos as [$fuerte, $detalle])
-                            <li data-reveal style="transition-delay: {{ $loop->index * 60 }}ms" class="flex items-start gap-4 py-5">
+                            <li class="flex items-start gap-4 py-5">
                                 <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sage-50 text-sage-600 ring-1 ring-inset ring-sage-500/20">
                                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                                 </span>
@@ -383,7 +380,7 @@
 
         <!-- ============ Galería ============ -->
         <section id="galeria" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-            <div data-reveal class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
                     <p class="eyebrow">Ambiente Boutique</p>
                     <h2 class="mt-4 text-title-1 text-ink">
@@ -397,8 +394,8 @@
                     ['6.jpg', 'Detalles del consultorio', 'Espacios Diseñados para Ti', 'Calidez y Hospitalidad', 'Disfruta de una sala relajante y una atención pensada para tu total tranquilidad.', 'md:col-span-3'],
                     ['2.jpg', 'Identidad de marca Dentissa', 'Armonía & Estética', 'Paleta de Marca Relajante', 'Colores rosa y durazno cálidos que transmiten serenidad, confianza y bienestar.', 'md:col-span-2'],
                 ] as [$imagen, $alt, $etiqueta, $titulo, $texto, $columnas])
-                    <figure data-reveal style="transition-delay: {{ $loop->index * 80 }}ms" class="group relative min-h-[300px] overflow-hidden rounded-[2rem] bg-shell shadow-soft sm:min-h-[380px] {{ $columnas }}">
-                        <img src="{{ asset('images/'.$imagen) }}" alt="{{ $alt }}" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]" loading="lazy">
+                    <figure class="group relative min-h-[300px] overflow-hidden rounded-[2rem] bg-shell shadow-soft sm:min-h-[380px] {{ $columnas }}">
+                        <img src="{{ asset('images/'.$imagen) }}" alt="{{ $alt }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
                         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/85 via-[#2b1a20]/20 to-transparent"></div>
                         <figcaption class="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
                             <span class="text-caption font-semibold uppercase tracking-label text-peach-200">{{ $etiqueta }}</span>
@@ -413,7 +410,7 @@
         <!-- ============ Testimonios ============ -->
         <section id="testimonios" class="border-y border-line/80 bg-peach-50/60">
             <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-                <div data-reveal class="mx-auto max-w-2xl text-center">
+                <div class="mx-auto max-w-2xl text-center">
                     <p class="eyebrow justify-center">Experiencias de pacientes</p>
                     <h2 class="mt-4 text-title-1 text-ink">
                         Sonrisas que hablan por nosotros
@@ -425,7 +422,7 @@
 
                 <div class="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
                     @foreach ($testimoniosPendientes as [$iniciales, $detalle])
-                        <figure data-reveal style="transition-delay: {{ $loop->index * 60 }}ms" class="card-boutique flex h-full flex-col p-6 sm:p-7">
+                        <figure class="card-boutique flex h-full flex-col p-6 sm:p-7">
                             <svg class="h-7 w-7 text-peach-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.6 6C6.5 7.3 4.5 10 4.5 13.4V18h6v-6H7.6c.2-1.9 1.4-3.4 3.2-4.2L9.6 6Zm9 0c-3.1 1.3-5.1 4-5.1 7.4V18h6v-6h-2.9c.2-1.9 1.4-3.4 3.2-4.2L18.6 6Z"/></svg>
                             <div class="mt-3 flex text-sm tracking-label text-amber-400" aria-label="5 estrellas">★★★★★</div>
                             <blockquote class="mt-3 flex-1 font-serif text-title-3 italic text-ink">
@@ -446,7 +443,7 @@
 
         <!-- ============ Llamada a agendar ============ -->
         <section id="agendar" class="px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
-            <div data-reveal class="relative mx-auto max-w-5xl overflow-hidden rounded-[2.5rem] bg-brand-700 px-6 py-14 text-center text-white shadow-lift sm:px-12 lg:py-20">
+            <div class="relative mx-auto max-w-5xl overflow-hidden rounded-[2.5rem] bg-brand-700 px-6 py-14 text-center text-white shadow-lift sm:px-12 lg:py-20">
                 <div aria-hidden="true" class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand-500/50 blur-3xl"></div>
                 <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-peach-300/30 blur-3xl"></div>
 
@@ -572,9 +569,9 @@
         window.addEventListener('hashchange', scheduleActiveNavigationUpdate);
         updateActiveNavigation();
 
-        // Desplazamiento suave hacia las secciones del menú.
-        // Duración corta (≈0.5–0.9 s) para que se sienta ágil; sin animación
-        // si la persona pidió reducir el movimiento en su sistema.
+        // Desplazamiento hacia las secciones del menú con el desplazamiento suave
+        // NATIVO del navegador (no un bucle en el hilo principal). Si la persona
+        // pidió reducir el movimiento en su sistema, el salto es directo.
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
         document.addEventListener('click', (event) => {
@@ -588,38 +585,9 @@
             event.preventDefault();
             const header = document.querySelector('header.sticky');
             const offset = (header?.getBoundingClientRect().height ?? 0) + 12;
-            const start = window.scrollY;
-            const destination = Math.max(0, target.getBoundingClientRect().top + start - offset);
-            const distance = destination - start;
-            const animationDuration = Math.min(900, Math.max(500, Math.abs(distance) * 0.25));
+            const destination = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
 
-            if (window.dentissaScrollFrame) {
-                cancelAnimationFrame(window.dentissaScrollFrame);
-            }
-
-            if (Math.abs(distance) < 2 || prefersReducedMotion.matches) {
-                window.scrollTo({ top: destination, behavior: 'auto' });
-            } else {
-                const animationStart = performance.now();
-                const animateScroll = (now) => {
-                    const progress = Math.min((now - animationStart) / animationDuration, 1);
-                    // ease-in-out cúbica: acelera y frena con suavidad.
-                    const easedProgress = progress < 0.5
-                        ? 4 * progress * progress * progress
-                        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-
-                    window.scrollTo({ top: start + distance * easedProgress, behavior: 'auto' });
-
-                    if (progress < 1) {
-                        window.dentissaScrollFrame = requestAnimationFrame(animateScroll);
-                    } else {
-                        window.dentissaScrollFrame = null;
-                    }
-                };
-
-                window.dentissaScrollFrame = requestAnimationFrame(animateScroll);
-            }
-
+            window.scrollTo({ top: destination, behavior: prefersReducedMotion.matches ? 'auto' : 'smooth' });
             history.pushState(null, '', link.hash);
         });
     </script>

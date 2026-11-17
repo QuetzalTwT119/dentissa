@@ -12,34 +12,6 @@ if ('serviceWorker' in navigator && window.isSecureContext) {
     });
 }
 
-// Entrada suave de secciones marcadas con [data-reveal] (ver app.css).
-// Cada sección se anima una sola vez: al volver a subir ya no se repite.
-function iniciarRevelado() {
-    const elementos = document.querySelectorAll('[data-reveal]');
-
-    if (!('IntersectionObserver' in window)) {
-        elementos.forEach((el) => el.classList.add('is-visible'));
-        return;
-    }
-
-    const observer = new IntersectionObserver((entradas) => {
-        entradas.forEach((entrada) => {
-            if (entrada.isIntersecting) {
-                entrada.target.classList.add('is-visible');
-                observer.unobserve(entrada.target);
-            }
-        });
-    }, { rootMargin: '0px 0px -8% 0px' });
-
-    elementos.forEach((el) => observer.observe(el));
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', iniciarRevelado);
-} else {
-    iniciarRevelado();
-}
-
 // Botón "enviando": al enviar un formulario, el botón muestra un indicador,
 // se desactiva y (si tiene data-loading-text) cambia su texto. Evita envíos
 // dobles y confirma que el sistema recibió el clic.

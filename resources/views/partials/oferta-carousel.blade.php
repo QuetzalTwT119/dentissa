@@ -17,7 +17,7 @@
                             : '$'.$oferta->valor_descuento.' de descuento';
                     }
                 @endphp
-                <div class="animate-carousel-fade-in w-[85%] shrink-0 snap-start overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition duration-200 ease-out hover:border-peach-300 sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)]"
+                <div class="w-[85%] shrink-0 snap-start overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition duration-200 ease-out hover:border-peach-300 sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)]"
                      style="animation-delay: {{ $index * 60 }}ms">
                     @if ($oferta->imagen)
                         <img src="/storage/{{ $oferta->imagen }}" alt="{{ $oferta->titulo }}" class="h-40 w-full object-cover">

@@ -334,14 +334,14 @@
         border-radius: 1.5rem;
         border: 1px solid rgb(var(--c-line));
         box-shadow: 0 1px 2px rgb(43 34 36 / 0.04), 0 8px 24px -12px rgb(120 60 70 / 0.14);
-        transition: border-color 200ms ease, box-shadow 200ms ease;
+        /* Solo cambia el color del borde: animar la sombra obliga a redibujar. */
+        transition: border-color 150ms ease;
     }
 
     @media (hover: hover) and (pointer: fine) {
         a.card-boutique:hover,
         .card-boutique.is-interactive:hover {
-            border-color: #f7d4cb;
-            box-shadow: 0 2px 4px rgb(43 34 36 / 0.04), 0 18px 40px -16px rgb(120 60 70 / 0.22);
+            border-color: #f2b0a6;
         }
     }
 
@@ -497,71 +497,8 @@ html::-webkit-scrollbar {
     }
 }
 
-@keyframes carousel-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-carousel-fade-in {
-    animation: carousel-fade-in 0.6s ease-out both;
-}
-
-.servicios-marquee-mask {
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-    mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-}
-
-.servicios-marquee-track {
-    animation: servicios-marquee 42s linear infinite;
-    will-change: transform;
-}
-
-.servicios-marquee-mask:focus-within .servicios-marquee-track {
-    animation-play-state: paused;
-}
-
-@keyframes servicios-marquee {
-    to {
-        transform: translate3d(-50%, 0, 0);
-    }
-}
-
-/*
- * Entrada suave de secciones al hacer scroll (portada pública).
- * JS agrega `.is-visible`; sin JS el contenido se ve normal.
- */
-.js [data-reveal] {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
-}
-
-.js [data-reveal].is-visible {
-    opacity: 1;
-    transform: none;
-}
-
-/* Movimiento reducido: se conservan los fundidos, se quitan los desplazamientos. */
+/* Movimiento reducido: los botones no se "hunden" al presionar. */
 @media (prefers-reduced-motion: reduce) {
-    .js [data-reveal] {
-        transform: none;
-        transition: opacity 200ms ease;
-    }
-
-    .servicios-marquee-track {
-        animation: none;
-    }
-
-    .animate-carousel-fade-in {
-        animation-name: none;
-    }
-
     .btn-brand:active,
     .btn-secondary:active {
         transform: none;

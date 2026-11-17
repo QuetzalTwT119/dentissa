@@ -128,7 +128,7 @@
             title="Dentissa Asistente"
             :data-oculto="oculto.toString()"
             :class="[(hover || enfocado || abierto) ? 'w-56 gap-3 px-3.5' : 'w-14 sm:w-16 justify-center p-0', oculto ? 'translate-y-24 opacity-0 pointer-events-none' : '']"
-            class="group relative inline-flex h-14 sm:h-16 shrink-0 items-center overflow-hidden rounded-full border-2 border-white bg-brand-600 text-white shadow-lg shadow-black/15 transition-[width,background-color,transform,opacity] duration-200 ease-out motion-reduce:transition-none hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+            class="group relative inline-flex h-14 sm:h-16 shrink-0 items-center overflow-hidden rounded-full border-2 border-white bg-brand-600 text-white shadow-lg shadow-black/15 transition-[background-color,transform,opacity] duration-200 ease-out motion-reduce:transition-none hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
         <span class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center">
             <svg aria-hidden="true" class="h-9 w-9 sm:h-10 sm:w-10" viewBox="0 0 24 24" fill="none">
                 <path d="M12 3.6c-1.6-1.2-4.5-1.2-6.4.1C3.2 5.4 3.7 8.4 4.4 10.8c.8 2.8 2.8 8.1 4.5 8.1.8 0 1.1-1.5 1.5-2.9.4-1.3.7-2 1.6-2s1.2.7 1.6 2c.4 1.4.7 2.9 1.5 2.9 1.7 0 3.7-5.3 4.5-8.1.7-2.4 1.2-5.4-1.2-7.1-1.9-1.3-4.8-1.3-6.4-.1Z" fill="white" />
@@ -139,9 +139,9 @@
             </svg>
         </span>
         <span x-show="hover || enfocado || abierto"
-              x-transition:enter="transition ease-out duration-200"
-              x-transition:enter-start="opacity-0 translate-x-1"
-              x-transition:enter-end="opacity-100 translate-x-0"
+              x-transition:enter="transition-opacity ease-out duration-150"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
               class="whitespace-nowrap text-sm font-semibold tracking-wide">Dentissa Asistente</span>
         <span aria-hidden="true" class="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 h-3 w-3 rounded-full border-2 border-white bg-sage-500"></span>
     </button>
