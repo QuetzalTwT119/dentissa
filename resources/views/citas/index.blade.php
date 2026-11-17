@@ -54,7 +54,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                 <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-brand-500" aria-hidden="true">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4" stroke-linecap="round"/></svg>
                                 </span>
-                                <input id="buscar_citas" type="search" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" maxlength="100"
+                                <input enterkeyhint="search" id="buscar_citas" type="search" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" maxlength="100"
                                        placeholder="Paciente, teléfono, servicio o tratamiento"
                                        aria-label="Buscar citas por paciente, teléfono, servicio o tratamiento"
                                        x-on:input.debounce.600ms="$el.form.requestSubmit()"

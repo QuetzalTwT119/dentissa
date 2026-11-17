@@ -2,7 +2,7 @@
 <html lang="es">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
         <meta name="theme-color" content="#fbf7f3">
         {{-- El enlace firmado funciona como una llave: que no lo indexen ni lo
              compartan los buscadores. --}}
@@ -16,7 +16,7 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="min-h-[100dvh] bg-cream font-sans text-ink antialiased">
+    <body class="min-h-[100dvh] bg-cream pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] font-sans text-ink antialiased">
         @use('App\Services\RespuestaRecordatorioService', 'Respuesta')
         @php
             // APP_LOCALE sigue en inglés: se fuerza español como en la agenda pública.

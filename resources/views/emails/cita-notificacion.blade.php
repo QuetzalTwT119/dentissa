@@ -2,7 +2,7 @@
 <html lang="es">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
         <title>{{ $titulo }}</title>
     </head>
     <body style="margin:0; padding:0; background-color:#fdf1f4; font-family: Arial, Helvetica, sans-serif;">

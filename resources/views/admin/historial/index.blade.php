@@ -95,14 +95,14 @@ $tipoConsultaLabel = [
                             </div>
 
                             <div class="flex shrink-0 items-center gap-2 pt-2 sm:pt-0 border-t border-line/60 sm:border-0">
-                                <a href="{{ route('admin.pacientes.historial.edit', [$paciente, $consulta]) }}" class="rounded-xl px-3 py-1.5 text-sm font-semibold text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
+                                <a href="{{ route('admin.pacientes.historial.edit', [$paciente, $consulta]) }}" class="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
                                     Editar
                                 </a>
                                 <form method="POST" action="{{ route('admin.pacientes.historial.destroy', [$paciente, $consulta]) }}"
                                       onsubmit="return confirm('¿Eliminar esta consulta del historial? Esta acción no se puede deshacer.');">
                                     @csrf
                                     @method('delete')
-                                    <button type="submit" class="rounded-xl px-3 py-1.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">Eliminar</button>
+                                    <button type="submit" class="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">Eliminar</button>
                                 </form>
                             </div>
                         </div>

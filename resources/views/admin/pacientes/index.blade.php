@@ -17,7 +17,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </span>
-                            <input type="text" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" placeholder="Nombre, correo o teléfono…" aria-label="Buscar pacientes por nombre, correo o teléfono"
+                            <input enterkeyhint="search" type="text" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" placeholder="Nombre, correo o teléfono…" aria-label="Buscar pacientes por nombre, correo o teléfono"
                                    class="w-full rounded-xl border border-field bg-white pl-9 pr-3.5 py-2 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 sm:w-72">
                         </div>
                         <x-secondary-button type="submit" class="shrink-0">Buscar</x-secondary-button>

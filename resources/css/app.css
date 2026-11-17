@@ -132,6 +132,8 @@
         color-scheme: light;
         -webkit-text-size-adjust: 100%;
         text-size-adjust: 100%;
+        /* En el celular, el destello gris al tocar delata que "es una web". */
+        -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -140,11 +142,14 @@
         color: rgb(var(--c-ink));
         letter-spacing: 0;
         text-rendering: optimizeLegibility;
-        /* En el celular, el destello gris al tocar delata que "es una web". */
-        -webkit-tap-highlight-color: transparent;
+        /*
+         * Con viewport-fit=cover, en horizontal la muesca invade los lados:
+         * separamos el contenido con los márgenes seguros del sistema.
+         */
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
     }
 
-    /* Títulos de página y de sección en serif; el resto de la interfaz en sans. */
     /*
      * Títulos de página y de sección en serif. El tamaño, interlineado y
      * espaciado exactos los da cada clase de la escala (text-display,
@@ -193,19 +198,34 @@
         outline-offset: 2px;
     }
 
-    /* Los botones no deben seleccionar su texto con una pulsación larga. */
+    /* Sin retraso de 300 ms al tocar: el navegador no espera un doble toque. */
+    a,
     button,
+    summary,
+    label,
     [role='button'] {
-        -webkit-user-select: none;
-        user-select: none;
         touch-action: manipulation;
     }
 
     /*
-     * iOS hace zoom al enfocar campos con letra menor a 16px.
-     * En pantallas pequeñas forzamos 16px para que el formulario no "salte".
+     * Los controles no seleccionan su texto ni abren el menú de iOS con una
+     * pulsación larga. El texto de contenido sigue siendo seleccionable.
      */
-    @media (max-width: 639px) {
+    button,
+    summary,
+    [role='button'],
+    .btn-brand,
+    .btn-secondary {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+    }
+
+    /*
+     * iOS hace zoom al enfocar campos con letra menor a 16px. Lo evitamos en
+     * cualquier pantalla táctil (celular o tableta), sin bloquear el zoom.
+     */
+    @media (pointer: coarse) {
         input:not([type='checkbox']):not([type='radio']),
         select,
         textarea {
@@ -549,5 +569,15 @@ html::-webkit-scrollbar {
 @keyframes btn-spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+/*
+ * Agendar cita en el celular: la fila de botones queda fija abajo, así que el
+ * botón del asistente sube para no taparla.
+ */
+@media (max-width: 639px) {
+    .agenda-publica .asistente-flotante {
+        bottom: 5.5rem;
     }
 }

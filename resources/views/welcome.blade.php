@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
     <meta name="theme-color" content="#fbf7f3">
     @include('partials.favicon')
     <title>Dentissa — Odontología Integral | Dra. Melissa López N.</title>
@@ -100,7 +100,7 @@
     @endphp
 
     <!-- ============ Navegación ============ -->
-    <header x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-40 border-b border-line/70 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
+    <header x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-40 pt-[env(safe-area-inset-top)] border-b border-line/70 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <nav class="flex h-[4.5rem] items-center justify-between gap-4" aria-label="Navegación principal">
 
@@ -490,7 +490,7 @@
                     <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Tratamientos</h3>
                     <ul class="mt-4 space-y-1 text-sm text-white/70">
                         @foreach (['Valoración Integral', 'Limpieza Profiláctica', 'Resinas Biocompatibles', 'Extracciones Suaves'] as $tratamiento)
-                            <li><a href="#servicios" class="inline-flex min-h-9 items-center transition-colors hover:text-white">{{ $tratamiento }}</a></li>
+                            <li><a href="#servicios" class="inline-flex min-h-11 items-center transition-colors hover:text-white">{{ $tratamiento }}</a></li>
                         @endforeach
                     </ul>
                 </div>
@@ -506,8 +506,8 @@
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Contacto y citas</h3>
                     <ul class="mt-4 space-y-1 text-sm text-white/70">
-                        <li><a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-9 items-center transition-colors hover:text-white">{{ $contacto['telefono'] }}</a></li>
-                        <li><a href="mailto:trabajout745@gmail.com" class="inline-flex min-h-9 items-center break-all transition-colors hover:text-white">trabajout745@gmail.com</a></li>
+                        <li><a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-11 items-center transition-colors hover:text-white">{{ $contacto['telefono'] }}</a></li>
+                        <li><a href="mailto:trabajout745@gmail.com" class="inline-flex min-h-11 items-center break-all transition-colors hover:text-white">trabajout745@gmail.com</a></li>
                     </ul>
                     <div class="mt-4 flex flex-wrap gap-2">
                         <a href="https://wa.me/{{ preg_replace('/\D/', '', $contacto['whatsapp']) }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center rounded-full bg-sage-500 px-5 text-sm font-semibold text-white transition-colors hover:bg-sage-600">WhatsApp</a>
@@ -518,7 +518,7 @@
 
             <div class="flex flex-col items-center justify-between gap-3 pt-6 text-center text-xs text-white/60 sm:flex-row sm:text-left">
                 <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
-                <p>Atención con previa cita · <a href="{{ route('privacidad.aviso') }}" class="inline-flex min-h-9 items-center underline underline-offset-4 transition-colors hover:text-white">Aviso de privacidad</a></p>
+                <p>Atención con previa cita · <a href="{{ route('privacidad.aviso') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-white">Aviso de privacidad</a></p>
             </div>
         </div>
     </footer>

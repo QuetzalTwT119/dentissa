@@ -1,4 +1,4 @@
-<div class="fixed bottom-6 right-4 z-50 mb-[env(safe-area-inset-bottom)] flex w-auto max-w-none flex-col items-end gap-2 sm:bottom-6 sm:right-6"
+<div class="asistente-flotante fixed bottom-6 right-4 z-50 mb-[env(safe-area-inset-bottom)] flex w-auto max-w-none flex-col items-end gap-2 sm:bottom-6 sm:right-6"
      x-data="{
             abierto: new URLSearchParams(window.location.search).has('asistente_abierto') || false,
             hover: new URLSearchParams(window.location.search).has('asistente_hover') || false,
@@ -103,7 +103,7 @@
             <template x-for="(mensaje, indice) in mensajes" :key="indice">
                 <div class="flex flex-col" :class="mensaje.autor === 'persona' ? 'items-end' : 'items-start'">
                     <p class="max-w-[88%] whitespace-pre-line rounded-2xl px-3.5 py-2.5 text-sm leading-5" :class="mensaje.autor === 'persona' ? 'rounded-br-md bg-brand-600 text-white' : 'rounded-bl-md bg-white text-ink ring-1 ring-inset ring-line'" x-text="mensaje.texto"></p>
-                    <a x-show="mensaje.accion" :href="mensaje.accion?.url" class="mt-2 inline-flex min-h-10 items-center rounded-full bg-brand-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-brand-700" x-text="mensaje.accion?.etiqueta"></a>
+                    <a x-show="mensaje.accion" :href="mensaje.accion?.url" class="mt-2 inline-flex min-h-11 items-center rounded-full bg-brand-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-brand-700" x-text="mensaje.accion?.etiqueta"></a>
                 </div>
             </template>
             <p x-show="cargando" class="text-sm text-muted">Dentissa Asistente está respondiendo…</p>

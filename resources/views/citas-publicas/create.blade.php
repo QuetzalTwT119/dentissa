@@ -2,7 +2,7 @@
 <html lang="es" class="agenda-publica">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
         <meta name="theme-color" content="#fbf7f3">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         @include('partials.favicon')
@@ -25,6 +25,9 @@
             $claseError = 'mt-1.5 text-footnote font-medium text-rose-700';
             $claseAtras = 'btn-secondary flex-1 py-3 sm:flex-none sm:px-6';
             $claseSiguiente = 'btn-brand flex-[2] py-3 sm:flex-none sm:px-8';
+            // Fila de botones de cada paso: en el celular queda fija abajo (con el margen
+            // de la zona del gesto de inicio); desde 640 px vuelve a su lugar normal.
+            $claseBarra = 'sticky bottom-0 z-10 -mx-5 -mb-5 flex gap-3 border-t border-line/80 bg-white/95 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur supports-[backdrop-filter]:bg-white/85 sm:static sm:mx-0 sm:mb-0 sm:justify-between sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none';
         @endphp
 
         @if (session('success'))
@@ -57,7 +60,7 @@
             </main>
         @else
             <!-- Barra superior -->
-            <header class="sticky top-0 z-20 border-b border-line/70 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
+            <header class="sticky top-0 z-20 pt-[env(safe-area-inset-top)] border-b border-line/70 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
                 <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
                     <a href="{{ url('/') }}" class="flex min-w-0 items-center gap-3 rounded-full" aria-label="Volver al inicio">
                         <img src="/images/brand/logo-rosa-transparente.png" alt="Dentissa" class="h-10 w-10 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-peach-200">
@@ -131,7 +134,7 @@
                 <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.75fr)] lg:gap-8">
 
                     <!-- Tarjeta principal con los pasos -->
-                    <section x-ref="tarjeta" class="w-full scroll-mt-20 overflow-hidden rounded-4xl border border-line bg-white shadow-soft">
+                    <section x-ref="tarjeta" class="w-full scroll-mt-20 overflow-clip rounded-4xl border border-line bg-white shadow-soft">
 
                         <!-- Encabezado del paso actual (uno solo para los 5 pasos) -->
                         <div class="border-b border-line/80 bg-gradient-to-b from-peach-50 to-white px-5 pb-6 pt-6 sm:px-8 sm:pt-8">
@@ -220,7 +223,7 @@
                                         </div>
 
                                         <p x-show="!idTratamiento" class="mt-5 text-footnote text-muted sm:text-right" aria-live="polite">Elige un procedimiento para continuar.</p>
-                                        <div class="mt-3 flex">
+                                        <div class="{{ $claseBarra }} mt-3">
                                             <button type="button" :disabled="!idTratamiento" @click="siguiente()" class="btn-brand w-full py-3 sm:ml-auto sm:w-auto sm:px-8">
                                                 <span>Continuar a fecha y horario</span>
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
@@ -243,7 +246,7 @@
                                 </div>
 
                                 <p x-show="!fecha" class="-mb-3 text-footnote text-muted sm:text-right" aria-live="polite">Elige un día para continuar.</p>
-                                <div class="flex gap-3 sm:justify-between">
+                                <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="button" :disabled="!fecha" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a horario</button>
                                 </div>
@@ -259,7 +262,7 @@
                                 </div>
 
                                 <p x-show="!hora" class="-mb-3 text-footnote text-muted sm:text-right" aria-live="polite">Elige un horario para continuar.</p>
-                                <div class="flex gap-3 sm:justify-between">
+                                <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="button" :disabled="!hora" @click="siguiente()" class="{{ $claseSiguiente }}">Revisar resumen</button>
                                 </div>
@@ -286,7 +289,7 @@
                                     </dl>
                                 </div>
 
-                                <div class="flex gap-3 sm:justify-between">
+                                <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="button" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a mis datos</button>
                                 </div>
@@ -317,7 +320,7 @@
                                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                                     <div>
                                         <label for="nombre" class="{{ $claseEtiqueta }}">Nombre <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="nombre" type="text" name="nombre" autocomplete="given-name" maxlength="100" required
+                                        <input id="nombre" enterkeyhint="next" type="text" name="nombre" autocomplete="given-name" maxlength="100" required
                                                placeholder="Ej. Ana" value="{{ old('nombre') }}"
                                                aria-invalid="{{ $errors->has('nombre') ? 'true' : 'false' }}"
                                                @if ($errors->has('nombre')) aria-describedby="nombre-error" @endif
@@ -329,7 +332,7 @@
 
                                     <div>
                                         <label for="apellido" class="{{ $claseEtiqueta }}">Apellido <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="apellido" type="text" name="apellido" autocomplete="family-name" maxlength="100" required
+                                        <input id="apellido" enterkeyhint="next" type="text" name="apellido" autocomplete="family-name" maxlength="100" required
                                                placeholder="Ej. Pérez" value="{{ old('apellido') }}"
                                                aria-invalid="{{ $errors->has('apellido') ? 'true' : 'false' }}"
                                                @if ($errors->has('apellido')) aria-describedby="apellido-error" @endif
@@ -341,7 +344,7 @@
 
                                     <div>
                                         <label for="telefono" class="{{ $claseEtiqueta }}">Teléfono <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="telefono" type="tel" name="telefono" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="Ingresa exactamente 10 dígitos numéricos." required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                                        <input id="telefono" enterkeyhint="next" type="tel" name="telefono" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="Ingresa exactamente 10 dígitos numéricos." required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
                                                placeholder="Ej. 5512345678" value="{{ old('telefono') }}"
                                                aria-invalid="{{ $errors->has('telefono') ? 'true' : 'false' }}"
                                                @if ($errors->has('telefono')) aria-describedby="telefono-error" @endif
@@ -353,7 +356,7 @@
 
                                     <div>
                                         <label for="email" class="{{ $claseEtiqueta }}">Correo electrónico <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="email" type="email" name="email" autocomplete="email" maxlength="100" required
+                                        <input id="email" enterkeyhint="next" type="email" name="email" autocomplete="email" maxlength="100" required
                                                placeholder="Ej. ana@correo.com" value="{{ old('email') }}"
                                                aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
                                                @if ($errors->has('email')) aria-describedby="email-error" @endif
@@ -395,7 +398,7 @@
                                     <x-alert type="warning" :message="$message" />
                                 @enderror
 
-                                <div class="flex gap-3 pt-1 sm:justify-between">
+                                <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="submit" class="{{ $claseSiguiente }}" data-loading-text="Agendando…"><span data-loading-label>Agendar cita</span></button>
                                 </div>
