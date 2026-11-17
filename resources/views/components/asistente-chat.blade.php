@@ -1,4 +1,4 @@
-<div class="fixed bottom-6 right-4 z-50 mb-[env(safe-area-inset-bottom)] flex w-auto max-w-none flex-col items-end gap-2 sm:bottom-6 sm:right-6"
+<div class="asistente-flotante fixed bottom-6 right-4 z-50 mb-[env(safe-area-inset-bottom)] flex w-auto max-w-none flex-col items-end gap-2 sm:bottom-6 sm:right-6"
      x-data="{
             abierto: new URLSearchParams(window.location.search).has('asistente_abierto') || false,
             hover: new URLSearchParams(window.location.search).has('asistente_hover') || false,
@@ -82,7 +82,7 @@
     <div x-show="abierto" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2 scale-[0.97]" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-out duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 translate-y-1" x-cloak class="w-[calc(100vw-2rem)] max-w-sm origin-bottom-right overflow-hidden rounded-3xl border border-line bg-white p-4 shadow-lift sm:w-[calc(100vw-2.5rem)]">
         <div class="flex items-start justify-between gap-4">
             <div class="flex min-w-0 items-center gap-3">
-                <span class="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white shadow-sm border border-white">
+                <span class="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white shadow-2xs border border-white">
                     <svg aria-hidden="true" class="h-7 w-7" viewBox="0 0 24 24" fill="none">
                         <path d="M12 3.6c-1.6-1.2-4.5-1.2-6.4.1C3.2 5.4 3.7 8.4 4.4 10.8c.8 2.8 2.8 8.1 4.5 8.1.8 0 1.1-1.5 1.5-2.9.4-1.3.7-2 1.6-2s1.2.7 1.6 2c.4 1.4.7 2.9 1.5 2.9 1.7 0 3.7-5.3 4.5-8.1.7-2.4 1.2-5.4-1.2-7.1-1.9-1.3-4.8-1.3-6.4-.1Z" fill="white" />
                         <circle cx="9" cy="9.3" r=".9" fill="#B73361" />
@@ -93,7 +93,7 @@
                     <span aria-hidden="true" class="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-sage-500"></span>
                 </span>
                 <div class="min-w-0">
-                    <h2 class="text-lg leading-tight text-ink">Dentissa Asistente</h2>
+                    <h2 class="text-title-3 leading-tight text-ink">Dentissa Asistente</h2>
                     <p class="mt-0.5 text-xs text-muted">Aquí para orientarte</p>
                 </div>
             </div>
@@ -103,7 +103,7 @@
             <template x-for="(mensaje, indice) in mensajes" :key="indice">
                 <div class="flex flex-col" :class="mensaje.autor === 'persona' ? 'items-end' : 'items-start'">
                     <p class="max-w-[88%] whitespace-pre-line rounded-2xl px-3.5 py-2.5 text-sm leading-5" :class="mensaje.autor === 'persona' ? 'rounded-br-md bg-brand-600 text-white' : 'rounded-bl-md bg-white text-ink ring-1 ring-inset ring-line'" x-text="mensaje.texto"></p>
-                    <a x-show="mensaje.accion" :href="mensaje.accion?.url" class="mt-2 inline-flex min-h-10 items-center rounded-full bg-brand-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-brand-700" x-text="mensaje.accion?.etiqueta"></a>
+                    <a x-show="mensaje.accion" :href="mensaje.accion?.url" class="mt-2 inline-flex min-h-11 items-center rounded-full bg-brand-600 px-4 text-xs font-semibold text-white transition-colors hover:bg-brand-700" x-text="mensaje.accion?.etiqueta"></a>
                 </div>
             </template>
             <p x-show="cargando" class="text-sm text-muted">Dentissa Asistente está respondiendo…</p>
@@ -111,7 +111,7 @@
         <form class="mt-3 flex gap-2" @submit.prevent="preguntar()">
             <label for="consulta-inicio" class="sr-only">Escribe tu pregunta</label>
             <input id="consulta-inicio" type="text" x-model="consulta" placeholder="Ej. Quiero una cita"
-                   class="block min-h-11 min-w-0 flex-1 rounded-full border-line px-4 text-sm shadow-2xs focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15">
+                   class="block min-h-11 min-w-0 flex-1 rounded-full border-field px-4 text-sm shadow-2xs focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15">
             <button type="submit" :disabled="cargando || consulta.trim().length < 3"
                     class="inline-flex min-h-11 items-center rounded-full bg-brand-600 px-5 text-sm font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-brand-700 active:scale-[0.97] disabled:opacity-50">Enviar</button>
         </form>
@@ -128,7 +128,7 @@
             title="Dentissa Asistente"
             :data-oculto="oculto.toString()"
             :class="[(hover || enfocado || abierto) ? 'w-56 gap-3 px-3.5' : 'w-14 sm:w-16 justify-center p-0', oculto ? 'translate-y-24 opacity-0 pointer-events-none' : '']"
-            class="group relative inline-flex h-14 sm:h-16 shrink-0 items-center overflow-hidden rounded-full border-2 border-white bg-brand-600 text-white shadow-lg shadow-black/15 transition-[width,background-color,transform,opacity] duration-200 ease-out motion-reduce:transition-none hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+            class="group relative inline-flex h-14 sm:h-16 shrink-0 items-center overflow-hidden rounded-full border-2 border-white bg-brand-600 text-white shadow-lg shadow-black/15 transition-[background-color,transform,opacity] duration-200 ease-out motion-reduce:transition-none hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
         <span class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center">
             <svg aria-hidden="true" class="h-9 w-9 sm:h-10 sm:w-10" viewBox="0 0 24 24" fill="none">
                 <path d="M12 3.6c-1.6-1.2-4.5-1.2-6.4.1C3.2 5.4 3.7 8.4 4.4 10.8c.8 2.8 2.8 8.1 4.5 8.1.8 0 1.1-1.5 1.5-2.9.4-1.3.7-2 1.6-2s1.2.7 1.6 2c.4 1.4.7 2.9 1.5 2.9 1.7 0 3.7-5.3 4.5-8.1.7-2.4 1.2-5.4-1.2-7.1-1.9-1.3-4.8-1.3-6.4-.1Z" fill="white" />
@@ -139,9 +139,9 @@
             </svg>
         </span>
         <span x-show="hover || enfocado || abierto"
-              x-transition:enter="transition ease-out duration-200"
-              x-transition:enter-start="opacity-0 translate-x-1"
-              x-transition:enter-end="opacity-100 translate-x-0"
+              x-transition:enter="transition-opacity ease-out duration-150"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
               class="whitespace-nowrap text-sm font-semibold tracking-wide">Dentissa Asistente</span>
         <span aria-hidden="true" class="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 h-3 w-3 rounded-full border-2 border-white bg-sage-500"></span>
     </button>

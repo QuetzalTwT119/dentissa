@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
         <meta name="theme-color" content="#fbf7f3">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         @include('partials.favicon')
@@ -35,19 +35,19 @@
                         <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/95 p-1 shadow-lg ring-1 ring-white/50 sm:h-14 sm:w-14">
                             <img src="/images/brand/logo-rosa-transparente.png" alt="" class="h-full w-full object-contain">
                         </span>
-                        <div class="leading-tight drop-shadow-md">
+                        <div class="leading-tight drop-shadow-soft">
                             <p class="firma text-xl text-white sm:text-[1.4rem]">Melissa López N.</p>
-                            <p class="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/90">Odontología integral</p>
+                            <p class="mt-1 text-caption font-semibold uppercase tracking-label text-white/90">Odontología integral</p>
                         </div>
                     </div>
 
                     <div class="relative mt-8 hidden max-w-lg sm:block">
-                        <p class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-sm">
+                        <p class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-caption font-semibold uppercase tracking-label text-white backdrop-blur-sm">
                             <span class="h-1.5 w-1.5 rounded-full bg-peach-300" aria-hidden="true"></span>
                             Espacio de trabajo Dentissa
                         </p>
-                        <h1 class="mt-4 text-3xl leading-tight sm:text-[2.6rem]">Cada cita merece una atención bien coordinada.</h1>
-                        <p class="mt-3 max-w-md text-sm leading-6 text-white/85 sm:text-base sm:leading-7">Agenda, pacientes y solicitudes del consultorio, organizados para el equipo.</p>
+                        <h1 class="mt-4 text-title-1">Cada cita merece una atención bien coordinada.</h1>
+                        <p class="mt-3 max-w-md text-callout text-white/85 sm:text-body">Agenda, pacientes y solicitudes del consultorio, organizados para el equipo.</p>
                     </div>
 
                     <p class="relative mt-5 hidden items-center gap-2 text-xs font-medium text-white/85 sm:inline-flex sm:text-sm">

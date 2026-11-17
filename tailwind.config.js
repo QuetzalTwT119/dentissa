@@ -33,11 +33,36 @@ export default {
                 // Títulos: Fraunces, serif cálida para el tono boutique.
                 serif: ['Fraunces', 'Georgia', 'Cambria', 'serif'],
             },
+            /*
+             * Escala tipográfica (Fase 1). Cada nivel define tamaño, interlineado
+             * y espaciado entre letras juntos: los títulos grandes llevan letras
+             * más juntas e interlineado corto; los textos chicos, un poco más de
+             * aire. Los títulos crecen con la pantalla mediante clamp().
+             * Tamaño mínimo de lectura: 12 px (caption).
+             */
+            fontSize: {
+                display: ['clamp(2.5rem, 1.6rem + 3.6vw, 3.75rem)', { lineHeight: '1.05', letterSpacing: '-0.025em' }],
+                'title-1': ['clamp(2rem, 1.55rem + 1.8vw, 2.625rem)', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+                'title-2': ['clamp(1.6875rem, 1.45rem + 0.9vw, 2rem)', { lineHeight: '1.15', letterSpacing: '-0.015em' }],
+                'title-3': ['clamp(1.25rem, 1.15rem + 0.4vw, 1.4375rem)', { lineHeight: '1.25', letterSpacing: '-0.01em' }],
+                headline: ['1.0625rem', { lineHeight: '1.4', letterSpacing: '-0.005em' }],
+                // Párrafo introductorio (bajo el título principal), solo en pantallas medianas o más.
+                lead: ['1.125rem', { lineHeight: '1.6', letterSpacing: '-0.003em' }],
+                body: ['1rem', { lineHeight: '1.65', letterSpacing: '0' }],
+                callout: ['0.9375rem', { lineHeight: '1.55', letterSpacing: '0' }],
+                footnote: ['0.8125rem', { lineHeight: '1.45', letterSpacing: '0.005em' }],
+                caption: ['0.75rem', { lineHeight: '1.35', letterSpacing: '0.01em' }],
+            },
+            letterSpacing: {
+                // Único valor para etiquetas en mayúsculas (eyebrows, cabeceras de tabla).
+                label: '0.12em',
+            },
             colors: {
                 // Neutros semánticos (ver :root en app.css).
                 cream: token('cream'),      // fondo de página
                 shell: token('shell'),      // relleno sutil (cabeceras de tabla, chips)
                 line: token('line'),        // bordes y divisores
+                field: token('field'),      // borde de campos de formulario (contraste 3:1)
                 ink: token('ink'),          // texto principal
                 'ink-soft': token('ink-soft'), // texto secundario
                 muted: token('muted'),      // texto de apoyo (cumple 4.5:1 sobre crema)

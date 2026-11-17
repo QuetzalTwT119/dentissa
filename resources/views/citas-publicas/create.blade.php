@@ -2,7 +2,7 @@
 <html lang="es" class="agenda-publica">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
         <meta name="theme-color" content="#fbf7f3">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         @include('partials.favicon')
@@ -20,50 +20,53 @@
 
         @php
             // Clases compartidas del formulario (se definen una vez y se reutilizan).
-            $claseCampo = 'block w-full min-h-12 rounded-xl border-line bg-white px-3.5 text-[0.95rem] text-ink shadow-2xs placeholder:text-muted/70 transition-[border-color,box-shadow] duration-150 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-rose-400';
+            $claseCampo = 'block w-full min-h-12 rounded-xl border-field bg-white px-3.5 text-callout text-ink shadow-2xs placeholder:text-muted transition-[border-color,box-shadow] duration-150 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-rose-400';
             $claseEtiqueta = 'mb-1.5 block text-sm font-semibold text-ink';
-            $claseError = 'mt-1.5 text-xs font-medium text-rose-700';
+            $claseError = 'mt-1.5 text-footnote font-medium text-rose-700';
             $claseAtras = 'btn-secondary flex-1 py-3 sm:flex-none sm:px-6';
             $claseSiguiente = 'btn-brand flex-[2] py-3 sm:flex-none sm:px-8';
+            // Fila de botones de cada paso: en el celular queda fija abajo (con el margen
+            // de la zona del gesto de inicio); desde 640 px vuelve a su lugar normal.
+            $claseBarra = 'sticky bottom-0 z-10 -mx-5 -mb-5 flex gap-3 border-t border-line/80 bg-white/95 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur supports-[backdrop-filter]:bg-white/85 sm:static sm:mx-0 sm:mb-0 sm:justify-between sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none';
         @endphp
 
         @if (session('success'))
             <main class="flex min-h-[100dvh] items-center justify-center px-4 py-10">
                 <div class="w-full max-w-md rounded-4xl border border-line bg-white p-8 text-center shadow-lift sm:p-10">
-                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sage-50 text-sage-600 ring-8 ring-sage-50/60">
+                    <div class="conf-circulo mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sage-50 text-sage-600 ring-8 ring-sage-50/60">
                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7" />
+                            <path class="conf-check" pathLength="1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <p class="mt-6 firma text-2xl text-brand-600">Melissa López N.</p>
-                    <h1 class="mt-3 text-[1.75rem] leading-tight text-ink">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
+                    <p class="conf-titulo mt-6 firma text-2xl text-brand-600">Melissa López N.</p>
+                    <h1 class="conf-titulo mt-3 text-title-2 text-ink">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
                     @if ($resumen = session('cita_resumen'))
-                        <dl class="mt-6 divide-y divide-line/80 rounded-2xl border border-line bg-cream text-left text-sm">
+                        <dl class="conf-resumen mt-6 divide-y divide-line/80 rounded-2xl border border-line bg-cream text-left text-sm">
                             <div class="px-5 py-3.5">
-                                <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Tratamiento</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-label text-muted">Tratamiento</dt>
                                 <dd class="mt-1 font-semibold text-ink">{{ $resumen['tratamiento'] }}</dd>
                             </div>
                             <div class="px-5 py-3.5">
-                                <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Fecha y hora</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-label text-muted">Fecha y hora</dt>
                                 <dd class="mt-1 font-semibold text-brand-700">{{ ucfirst($resumen['fecha']) }} · {{ $resumen['hora'] }} hrs</dd>
                             </div>
                         </dl>
                     @endif
-                    <p class="mt-5 text-sm leading-6 text-muted">Tu cita quedó registrada en el consultorio. Guarda estos datos o toma una captura; si necesitas cambiarla, comunícate con el consultorio.</p>
-                    <a href="/" class="btn-brand mt-8 w-full py-3 sm:w-auto sm:px-8">
+                    <p class="conf-cierre mt-5 text-callout text-muted">Tu cita quedó registrada en el consultorio. Guarda estos datos o toma una captura; si necesitas cambiarla, comunícate con el consultorio.</p>
+                    <a href="/" class="conf-cierre btn-brand mt-8 w-full py-3 sm:w-auto sm:px-8">
                         Volver al inicio
                     </a>
                 </div>
             </main>
         @else
             <!-- Barra superior -->
-            <header class="sticky top-0 z-20 border-b border-line/70 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
+            <header class="sticky top-0 z-20 pt-[env(safe-area-inset-top)] border-b border-line/70 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
                 <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
                     <a href="{{ url('/') }}" class="flex min-w-0 items-center gap-3 rounded-full" aria-label="Volver al inicio">
                         <img src="/images/brand/logo-rosa-transparente.png" alt="Dentissa" class="h-10 w-10 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-peach-200">
                         <span class="min-w-0 leading-none">
                             <span class="block truncate firma text-[1.1rem] leading-none text-brand-700 sm:text-[1.2rem]">Dra. Melissa López N.</span>
-                            <span class="mt-1 hidden text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-muted sm:block">Odontología Integral & Armonización</span>
+                            <span class="mt-1 hidden text-caption font-semibold uppercase tracking-label text-muted sm:block">Odontología Integral & Armonización</span>
                         </span>
                     </a>
 
@@ -116,8 +119,18 @@
                     get tratamientoSeleccionado() {
                         return this.servicioSeleccionado?.tratamientos.find(t => t.id === Number(this.idTratamiento)) ?? null;
                     },
-                    siguiente() { this.paso = Math.min(this.paso + 1, this.pasos.length - 1); },
-                    anterior() { this.paso = Math.max(this.paso - 1, 0); },
+                    // Dirección y primera interacción: solo para la animación entre pasos.
+                    direccion: 'adelante',
+                    interactuado: false,
+                    mover(direccion) { this.direccion = direccion; this.interactuado = true; },
+                    siguiente() { this.mover('adelante'); this.paso = Math.min(this.paso + 1, this.pasos.length - 1); },
+                    anterior() { this.mover('atras'); this.paso = Math.max(this.paso - 1, 0); },
+                    formatoDuracion(minutos) {
+                        const m = Number(minutos) || 0;
+                        if (m < 60) return `${m} min`;
+                        const h = Math.floor(m / 60), resto = m % 60;
+                        return resto ? `${h} h ${resto} min` : `${h} h`;
+                    },
                     async cargarHorarios() {
                         this.hora = null;
                         if (!this.idTratamiento || !this.fecha) { this.horarios = []; return; }
@@ -126,27 +139,29 @@
                         this.loadingHorarios = false;
                     },
                  }"
+                 :class="{ 'pasos-animados': interactuado }"
+                 :data-direccion="direccion"
                  x-init="$watch('paso', () => { if ($refs.tarjeta.getBoundingClientRect().top < 0) $refs.tarjeta.scrollIntoView({ block: 'start' }) })"
             >
                 <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.75fr)] lg:gap-8">
 
                     <!-- Tarjeta principal con los pasos -->
-                    <section x-ref="tarjeta" class="w-full scroll-mt-20 overflow-hidden rounded-4xl border border-line bg-white shadow-soft">
+                    <section x-ref="tarjeta" class="w-full scroll-mt-20 overflow-clip rounded-4xl border border-line bg-white shadow-soft">
 
                         <!-- Encabezado del paso actual (uno solo para los 5 pasos) -->
                         <div class="border-b border-line/80 bg-gradient-to-b from-peach-50 to-white px-5 pb-6 pt-6 sm:px-8 sm:pt-8">
-                            <p class="eyebrow">
-                                <span x-text="`Paso ${paso + 1} de ${pasos.length}`">Paso 1 de 5</span>
+                            <p class="eyebrow flex-wrap gap-x-2 gap-y-1">
+                                <span class="whitespace-nowrap" x-text="`Paso ${paso + 1} de ${pasos.length}`">Paso 1 de 5</span>
                                 <span aria-hidden="true">·</span>
-                                <span x-text="encabezados[paso].etiqueta">Selección clínica</span>
+                                <span class="whitespace-nowrap" x-text="encabezados[paso].etiqueta">Selección clínica</span>
                             </p>
-                            <h1 class="mt-3 text-[1.75rem] leading-tight text-ink sm:text-[2.1rem]"
+                            <h1 class="mt-3 text-title-2 text-ink"
                                 x-text="paso === 0 && servicioSeleccionado ? 'Elige un tratamiento' : encabezados[paso].titulo">¿Qué tipo de atención necesitas?</h1>
-                            <p class="mt-2 max-w-lg text-sm leading-6 text-muted" x-text="paso === 0 && servicioSeleccionado ? 'Selecciona el procedimiento que necesitas; cada uno muestra su duración aproximada.' : encabezados[paso].texto">Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.</p>
+                            <p class="mt-2 max-w-lg text-callout text-muted" x-text="paso === 0 && servicioSeleccionado ? 'Selecciona el procedimiento que necesitas; cada uno muestra su duración aproximada.' : encabezados[paso].texto">Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.</p>
 
                             <div class="mt-5 flex gap-1.5" aria-hidden="true">
                                 <template x-for="(p, i) in pasos" :key="i">
-                                    <span class="h-1.5 flex-1 rounded-full transition-colors duration-300"
+                                    <span class="h-1.5 flex-1 rounded-full transition-colors duration-200"
                                           :class="i < paso ? 'bg-sage-500' : (i === paso ? 'bg-brand-500' : 'bg-line')"></span>
                                 </template>
                             </div>
@@ -157,10 +172,10 @@
                             <div class="p-5 sm:p-8">
                                 <!-- Especialidades -->
                                 <template x-if="!servicioSeleccionado">
-                                    <div class="grid gap-3">
+                                    <div class="paso-anim grid gap-3">
                                         <template x-for="servicio in servicios" :key="servicio.id">
                                             <button type="button"
-                                                    @click="idServicio = servicio.id; idTratamiento = ''"
+                                                    @click="mover('adelante'); idServicio = servicio.id; idTratamiento = ''"
                                                     class="group flex w-full items-center gap-4 rounded-2xl border border-line bg-white p-4 text-left transition-[border-color,background-color,transform] duration-150 ease-out hover:border-peach-300 hover:bg-peach-50/50 active:scale-[0.99] sm:p-5">
                                                 <span class="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200 transition-colors group-hover:bg-white sm:flex">
                                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -168,7 +183,7 @@
                                                     </svg>
                                                 </span>
                                                 <span class="min-w-0 flex-1">
-                                                    <span class="block font-serif text-lg leading-snug text-ink" x-text="servicio.nombre"></span>
+                                                    <span class="block font-serif text-title-3 text-ink" x-text="servicio.nombre"></span>
                                                     <span class="mt-0.5 block text-sm leading-5 text-muted line-clamp-2" x-text="descripciones[servicio.nombre] || 'Atención personalizada y diagnóstico oportuno'"></span>
                                                 </span>
                                                 <svg class="h-5 w-5 shrink-0 text-muted transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
@@ -179,20 +194,20 @@
 
                                 <!-- Tratamientos de la especialidad elegida -->
                                 <template x-if="servicioSeleccionado">
-                                    <div>
+                                    <div class="paso-anim">
                                         <div class="mb-6 flex items-center justify-between gap-3 rounded-2xl bg-cream p-3 pl-4 ring-1 ring-inset ring-line">
                                             <div class="min-w-0">
-                                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Especialidad elegida</p>
-                                                <p class="font-serif text-lg leading-snug text-ink" x-text="servicioSeleccionado.nombre"></p>
+                                                <p class="text-xs font-semibold uppercase tracking-label text-muted">Especialidad elegida</p>
+                                                <p class="font-serif text-title-3 text-ink" x-text="servicioSeleccionado.nombre"></p>
                                             </div>
                                             <button type="button"
-                                                    @click="idServicio = ''; idTratamiento = ''"
+                                                    @click="mover('atras'); idServicio = ''; idTratamiento = ''"
                                                     class="inline-flex min-h-11 shrink-0 items-center rounded-full bg-white px-4 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-line transition-colors hover:ring-peach-300">
                                                 Cambiar
                                             </button>
                                         </div>
 
-                                        <p id="titulo-tratamientos" class="mb-3 text-sm font-semibold text-ink">Selecciona el procedimiento específico</p>
+                                        <p id="titulo-tratamientos" x-show="servicioSeleccionado.tratamientos.length > 0" class="mb-3 text-sm font-semibold text-ink">Selecciona el procedimiento específico</p>
 
                                         <div class="grid gap-2.5" role="radiogroup" aria-labelledby="titulo-tratamientos">
                                             <template x-for="tratamiento in servicioSeleccionado.tratamientos" :key="tratamiento.id">
@@ -200,26 +215,38 @@
                                                         role="radio"
                                                         :aria-checked="(Number(idTratamiento) === tratamiento.id).toString()"
                                                         @click="idTratamiento = tratamiento.id"
-                                                        class="flex w-full items-center justify-between gap-3 rounded-2xl border p-4 text-left transition-[border-color,background-color] duration-150"
+                                                        class="flex w-full items-start justify-between gap-3 rounded-2xl border p-4 text-left transition-[border-color,background-color] duration-150"
                                                         :class="Number(idTratamiento) === tratamiento.id
                                                             ? 'border-brand-400 bg-brand-50/60 ring-1 ring-brand-400'
                                                             : 'border-line bg-white hover:border-peach-300'">
-                                                    <span class="flex min-w-0 items-center gap-3">
-                                                        <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors"
+                                                    <span class="flex min-w-0 items-start gap-3">
+                                                        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors"
                                                               :class="Number(idTratamiento) === tratamiento.id ? 'border-brand-600 bg-brand-600' : 'border-line bg-white'">
-                                                            <span class="h-1.5 w-1.5 rounded-full bg-white" x-show="Number(idTratamiento) === tratamiento.id"></span>
+                                                            <span class="h-1.5 w-1.5 rounded-full bg-white" x-show="Number(idTratamiento) === tratamiento.id"
+                                                                  x-transition:enter="transition-[opacity,transform] duration-[120ms] ease-out" x-transition:enter-start="opacity-0 scale-50 motion-reduce:scale-100" x-transition:enter-end="opacity-100 scale-100"></span>
                                                         </span>
-                                                        <span class="text-[0.95rem] font-semibold text-ink" x-text="tratamiento.nombre"></span>
+                                                        <span class="min-w-0">
+                                                            <span class="block text-callout font-semibold text-ink" x-text="tratamiento.nombre"></span>
+                                                            <span class="mt-0.5 block text-footnote text-muted sm:hidden" x-text="formatoDuracion(tratamiento.duracion_estimada)"></span>
+                                                        </span>
                                                     </span>
-                                                    <span class="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-muted">
+                                                    <span class="mt-0.5 hidden shrink-0 items-center gap-1 whitespace-nowrap text-xs font-medium text-muted sm:inline-flex">
                                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                        <span x-text="tratamiento.duracion_estimada + ' min'"></span>
+                                                        <span x-text="formatoDuracion(tratamiento.duracion_estimada)"></span>
                                                     </span>
                                                 </button>
                                             </template>
                                         </div>
 
-                                        <div class="mt-6 flex">
+                                        <template x-if="servicioSeleccionado.tratamientos.length === 0">
+                                            <div class="rounded-2xl bg-cream px-4 py-5 text-center">
+                                                <p class="text-callout text-ink-soft">Por ahora no hay procedimientos para agendar en línea en esta especialidad.</p>
+                                                <button type="button" @click="mover('atras'); idServicio = ''; idTratamiento = ''" class="btn-secondary mt-3">Elegir otra especialidad</button>
+                                            </div>
+                                        </template>
+
+                                        <p x-show="!idTratamiento && servicioSeleccionado.tratamientos.length > 0" class="mt-5 text-footnote text-muted sm:text-right" aria-live="polite">Elige un procedimiento para continuar.</p>
+                                        <div class="{{ $claseBarra }} mt-3">
                                             <button type="button" :disabled="!idTratamiento" @click="siguiente()" class="btn-brand w-full py-3 sm:ml-auto sm:w-auto sm:px-8">
                                                 <span>Continuar a fecha y horario</span>
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
@@ -232,7 +259,7 @@
 
                         <!-- PASO 1: SELECCIONAR FECHA -->
                         <template x-if="paso === 1">
-                            <div class="space-y-6 p-5 sm:p-8">
+                            <div class="paso-anim space-y-6 p-5 sm:p-8">
                                 <div>
                                     <label for="fecha-picker" class="{{ $claseEtiqueta }}">Selecciona el día</label>
                                     <input id="fecha-picker" type="date" min="{{ now()->toDateString() }}"
@@ -241,7 +268,8 @@
                                     <p class="mt-2 text-sm text-muted">Horario regular: {{ $horarioRegular }}</p>
                                 </div>
 
-                                <div class="flex gap-3 sm:justify-between">
+                                <p x-show="!fecha" class="-mb-3 text-footnote text-muted sm:text-right" aria-live="polite">Elige un día para continuar.</p>
+                                <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="button" :disabled="!fecha" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a horario</button>
                                 </div>
@@ -250,13 +278,14 @@
 
                         <!-- PASO 2: ELEGIR HORA -->
                         <template x-if="paso === 2">
-                            <div class="space-y-6 p-5 sm:p-8">
+                            <div class="paso-anim space-y-6 p-5 sm:p-8">
                                 <div>
                                     <p class="mb-3 text-sm font-semibold text-ink">Horarios disponibles para el día seleccionado</p>
                                     @include('partials.disponibilidad-picker')
                                 </div>
 
-                                <div class="flex gap-3 sm:justify-between">
+                                <p x-show="!hora" class="-mb-3 text-footnote text-muted sm:text-right" aria-live="polite">Elige un horario para continuar.</p>
+                                <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="button" :disabled="!hora" @click="siguiente()" class="{{ $claseSiguiente }}">Revisar resumen</button>
                                 </div>
@@ -265,25 +294,25 @@
 
                         <!-- PASO 3: RESUMEN DE LA CITA -->
                         <template x-if="paso === 3">
-                            <div class="space-y-6 p-5 sm:p-8">
+                            <div class="paso-anim space-y-6 p-5 sm:p-8">
                                 <div class="overflow-hidden rounded-3xl border border-line">
                                     <div class="bg-cream px-5 py-4">
-                                        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Consulta en Dentissa</p>
-                                        <h3 class="mt-1 font-serif text-xl text-ink" x-text="tratamientoSeleccionado?.nombre"></h3>
+                                        <p class="text-xs font-semibold uppercase tracking-label text-muted">Consulta en Dentissa</p>
+                                        <h3 class="mt-1 font-serif text-title-3 text-ink" x-text="tratamientoSeleccionado?.nombre"></h3>
                                     </div>
                                     <dl class="grid grid-cols-1 divide-y divide-line/80 border-t border-line sm:grid-cols-2 sm:divide-x sm:divide-y-0">
                                         <div class="px-5 py-4">
-                                            <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Especialidad</dt>
+                                            <dt class="text-xs font-semibold uppercase tracking-label text-muted">Especialidad</dt>
                                             <dd class="mt-1 font-semibold text-ink" x-text="servicioSeleccionado?.nombre"></dd>
                                         </div>
                                         <div class="px-5 py-4">
-                                            <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Fecha y hora</dt>
+                                            <dt class="text-xs font-semibold uppercase tracking-label text-muted">Fecha y hora</dt>
                                             <dd class="mt-1 font-semibold text-brand-700" x-text="fechaLegible + ' — ' + hora + ' hrs'"></dd>
                                         </div>
                                     </dl>
                                 </div>
 
-                                <div class="flex gap-3 sm:justify-between">
+                                <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="button" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a mis datos</button>
                                 </div>
@@ -292,8 +321,20 @@
 
                         <!-- PASO 4: DATOS DEL PACIENTE -->
                         <template x-if="paso === 4">
-                            <form method="POST" action="{{ route('citas.publica.store') }}" class="space-y-5 p-5 sm:p-8">
+                            <form method="POST" action="{{ route('citas.publica.store') }}" class="paso-anim space-y-5 p-5 sm:p-8"
+                                  x-init="$nextTick(() => $el.querySelector('[aria-invalid=true]')?.focus())">
                                 @csrf
+
+                                @php
+                                    $camposConError = collect(['nombre', 'apellido', 'telefono', 'email', 'acepta_aviso'])
+                                        ->filter(fn ($campo) => $errors->has($campo))
+                                        ->count();
+                                @endphp
+                                @if ($camposConError > 0)
+                                    <x-alert type="error">
+                                        {{ $camposConError === 1 ? 'Revisa el dato marcado para poder agendar tu cita.' : "Revisa los {$camposConError} datos marcados para poder agendar tu cita." }}
+                                    </x-alert>
+                                @endif
                                 <input type="hidden" name="id_servicio" :value="idServicio">
                                 <input type="hidden" name="id_tratamiento" :value="idTratamiento">
                                 <input type="hidden" name="fecha" :value="fecha">
@@ -302,7 +343,7 @@
                                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                                     <div>
                                         <label for="nombre" class="{{ $claseEtiqueta }}">Nombre <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="nombre" type="text" name="nombre" autocomplete="given-name" maxlength="100" required
+                                        <input id="nombre" enterkeyhint="next" type="text" name="nombre" autocomplete="given-name" maxlength="100" required
                                                placeholder="Ej. Ana" value="{{ old('nombre') }}"
                                                aria-invalid="{{ $errors->has('nombre') ? 'true' : 'false' }}"
                                                @if ($errors->has('nombre')) aria-describedby="nombre-error" @endif
@@ -314,7 +355,7 @@
 
                                     <div>
                                         <label for="apellido" class="{{ $claseEtiqueta }}">Apellido <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="apellido" type="text" name="apellido" autocomplete="family-name" maxlength="100" required
+                                        <input id="apellido" enterkeyhint="next" type="text" name="apellido" autocomplete="family-name" maxlength="100" required
                                                placeholder="Ej. Pérez" value="{{ old('apellido') }}"
                                                aria-invalid="{{ $errors->has('apellido') ? 'true' : 'false' }}"
                                                @if ($errors->has('apellido')) aria-describedby="apellido-error" @endif
@@ -326,7 +367,7 @@
 
                                     <div>
                                         <label for="telefono" class="{{ $claseEtiqueta }}">Teléfono <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="telefono" type="tel" name="telefono" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="Ingresa exactamente 10 dígitos numéricos." required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                                        <input id="telefono" enterkeyhint="next" type="tel" name="telefono" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="Ingresa exactamente 10 dígitos numéricos." required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
                                                placeholder="Ej. 5512345678" value="{{ old('telefono') }}"
                                                aria-invalid="{{ $errors->has('telefono') ? 'true' : 'false' }}"
                                                @if ($errors->has('telefono')) aria-describedby="telefono-error" @endif
@@ -338,7 +379,7 @@
 
                                     <div>
                                         <label for="email" class="{{ $claseEtiqueta }}">Correo electrónico <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="email" type="email" name="email" autocomplete="email" maxlength="100" required
+                                        <input id="email" enterkeyhint="next" type="email" name="email" autocomplete="email" maxlength="100" required
                                                placeholder="Ej. ana@correo.com" value="{{ old('email') }}"
                                                aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
                                                @if ($errors->has('email')) aria-describedby="email-error" @endif
@@ -351,20 +392,20 @@
 
                                 <div>
                                     <label for="motivo" class="{{ $claseEtiqueta }}">Motivo de la visita <span class="font-normal text-muted">(opcional)</span></label>
-                                    <textarea id="motivo" name="motivo" placeholder="Cuéntanos brevemente si tienes alguna molestia o si es revisión de rutina..." rows="3"
+                                    <textarea id="motivo" name="motivo" maxlength="1000" placeholder="Cuéntanos brevemente si tienes alguna molestia o si es revisión de rutina..." rows="3"
                                               class="{{ $claseCampo }} py-3">{{ old('motivo') }}</textarea>
                                 </div>
 
                                 {{-- Consentimiento expreso: el motivo puede contener datos de salud. --}}
                                 <div>
-                                    <label for="acepta_aviso" class="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-line bg-cream/60 px-4 py-3 text-sm leading-6 text-ink-soft">
+                                    <label for="acepta_aviso" class="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-line bg-cream/60 px-4 py-3 text-callout text-ink-soft">
                                         <input id="acepta_aviso" type="checkbox" name="acepta_aviso" value="1" required
                                                @checked(old('acepta_aviso'))
                                                aria-invalid="{{ $errors->has('acepta_aviso') ? 'true' : 'false' }}"
                                                @if ($errors->has('acepta_aviso')) aria-describedby="acepta_aviso-error" @endif
                                                class="mt-1 h-5 w-5 shrink-0 rounded border-line text-brand-600 focus:ring-brand-500">
                                         <span>
-                                            He leído y acepto el <a href="{{ route('privacidad.aviso') }}" target="_blank" rel="noopener" class="font-semibold text-brand-700 underline">aviso de privacidad</a>, y doy mi consentimiento para el tratamiento de mis datos, incluidos los de salud. <span class="text-brand-600" aria-hidden="true">*</span>
+                                            He leído y acepto el <a href="{{ route('privacidad.aviso') }}" target="_blank" rel="noopener" class="link">aviso de privacidad</a>, y doy mi consentimiento para el tratamiento de mis datos, incluidos los de salud. <span class="text-brand-600" aria-hidden="true">*</span>
                                         </span>
                                     </label>
                                     @error('acepta_aviso')
@@ -373,16 +414,16 @@
                                 </div>
 
                                 @error('hora')
-                                    <p role="alert" class="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{{ $message }}</p>
+                                    <x-alert type="error" :message="$message" />
                                 @enderror
 
                                 @error('envios')
-                                    <p role="alert" class="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{{ $message }}</p>
+                                    <x-alert type="warning" :message="$message" />
                                 @enderror
 
-                                <div class="flex gap-3 pt-1 sm:justify-between">
+                                <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
-                                    <button type="submit" class="{{ $claseSiguiente }}">Agendar cita</button>
+                                    <button type="submit" class="{{ $claseSiguiente }}" data-loading-text="Agendando…"><span data-loading-label>Agendar cita</span></button>
                                 </div>
                             </form>
                         </template>
@@ -393,14 +434,14 @@
                         <div class="flex items-start justify-between gap-4">
                             <div>
                                 <p class="eyebrow">Agenda en línea</p>
-                                <h2 class="mt-2 text-2xl text-ink">Tu cita, paso a paso</h2>
+                                <h2 class="mt-2 text-title-3 text-ink">Tu cita, paso a paso</h2>
                             </div>
                             <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             </span>
                         </div>
 
-                        <p class="mt-2 text-sm leading-6 text-muted">Elige lo que necesitas y revisa la disponibilidad antes de confirmar.</p>
+                        <p class="mt-2 text-callout text-muted">Elige lo que necesitas y revisa la disponibilidad antes de confirmar.</p>
 
                         <!-- Progreso -->
                         <div class="mt-5 hidden rounded-2xl bg-cream p-4 lg:block" role="progressbar" aria-label="Progreso de la cita" aria-valuemin="1" :aria-valuemax="pasos.length" :aria-valuenow="paso + 1">
@@ -413,28 +454,28 @@
 
                         <!-- Datos seleccionados -->
                         <div class="mt-5 rounded-2xl border border-dashed border-peach-300 p-4" aria-live="polite">
-                            <p class="text-xs font-semibold uppercase tracking-[0.12em] text-brand-700">Resumen de la cita</p>
+                            <p class="text-xs font-semibold uppercase tracking-label text-brand-700">Resumen de la cita</p>
                             <dl class="mt-2 divide-y divide-line/80 text-sm">
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Servicio</dt>
-                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!servicioSeleccionado && 'font-normal text-muted/80'" x-text="servicioSeleccionado?.nombre ?? 'Pendiente'"></dd>
+                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!servicioSeleccionado && 'font-normal text-muted'" x-text="servicioSeleccionado?.nombre ?? 'Pendiente'"></dd>
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Tratamiento</dt>
-                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!tratamientoSeleccionado && 'font-normal text-muted/80'" x-text="tratamientoSeleccionado?.nombre ?? 'Pendiente'"></dd>
+                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!tratamientoSeleccionado && 'font-normal text-muted'" x-text="tratamientoSeleccionado?.nombre ?? 'Pendiente'"></dd>
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Fecha</dt>
-                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!fecha && 'font-normal text-muted/80'" x-text="fechaLegible || 'Pendiente'"></dd>
+                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!fecha && 'font-normal text-muted'" x-text="fechaLegible || 'Pendiente'"></dd>
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Hora</dt>
-                                    <dd class="min-w-0 text-right font-semibold text-brand-700" :class="!hora && 'font-normal text-muted/80'" x-text="hora || 'Pendiente'"></dd>
+                                    <dd class="min-w-0 text-right font-semibold text-brand-700" :class="!hora && 'font-normal text-muted'" x-text="hora || 'Pendiente'"></dd>
                                 </div>
                             </dl>
                         </div>
 
-                        <p class="mt-4 text-center text-xs leading-5 text-muted">Elige un horario disponible y completa tus datos para reservar tu cita.</p>
+                        <p class="mt-4 text-center text-footnote text-muted">Elige un horario disponible y completa tus datos para reservar tu cita.</p>
                     </aside>
                 </div>
             </main>

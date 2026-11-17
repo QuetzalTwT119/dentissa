@@ -15,7 +15,10 @@ class CitaPublicaController extends Controller
 {
     public function create(): View
     {
+        // Solo especialidades con al menos un tratamiento activo: no se ofrece
+        // al paciente algo que no puede agendar (casos extremos, Fase 4).
         $servicios = Servicio::where('activo', true)
+            ->whereHas('tratamientos', fn ($q) => $q->where('activo', true))
             ->with(['tratamientos' => fn ($q) => $q->where('activo', true)])
             ->orderBy('orden')
             ->get();
@@ -42,7 +45,7 @@ class CitaPublicaController extends Controller
                 'regex:/^[0-9]{10}$/',
             ],
             'email' => ['required', 'email', 'max:100'],
-            'motivo' => ['nullable', 'string'],
+            'motivo' => ['nullable', 'string', 'max:1000'],
             'acepta_aviso' => ['accepted'],
         ], [
             'telefono.regex' => 'Ingresa exactamente 10 dígitos numéricos de México.',

@@ -4,8 +4,8 @@
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /></svg>
         </span>
         <div>
-            <h2 class="text-xl text-ink">Información personal</h2>
-            <p class="mt-1 text-sm leading-6 text-ink-soft">Mantén actualizados tus datos de contacto y correo electrónico.</p>
+            <h2 class="text-title-3 text-ink">Información personal</h2>
+            <p class="mt-1 text-callout text-ink-soft">Mantén actualizados tus datos de contacto y correo electrónico.</p>
         </div>
     </header>
 
@@ -45,7 +45,7 @@
                     <p class="text-sm mt-2 text-ink">
                         Tu correo electrónico no está verificado.
 
-                        <button form="send-verification" class="underline text-sm text-ink-soft hover:text-ink rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-400">
+                        <button form="send-verification" class="underline text-sm text-ink-soft hover:text-ink rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-400">
                             Haz clic aquí para reenviar el correo de verificación.
                         </button>
                     </p>

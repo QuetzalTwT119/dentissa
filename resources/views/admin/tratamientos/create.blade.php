@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+                <h2 class="mt-1.5 text-title-2 text-ink">
                     Nuevo tratamiento
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Creación de procedimiento clínico y parámetros de reserva.</p>
@@ -28,14 +28,14 @@
                     <div>
                         <x-input-label for="descripcion" value="Descripción" />
                         <textarea id="descripcion" name="descripcion" rows="3"
-                                  class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion') }}</textarea>
+                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion') }}</textarea>
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 
                     <div>
                         <x-input-label for="categoria" value="Categoría" />
                         <select id="categoria" name="categoria"
-                                class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="">Sin categoría</option>
                             @foreach (\App\Models\Tratamiento::CATEGORIAS as $categoria)
                                 <option value="{{ $categoria }}" @selected(old('categoria') === $categoria)>{{ $categoria }}</option>

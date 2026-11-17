@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <p class="eyebrow">Ajustes de cuenta</p>
-            <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">Perfil de usuario</h2>
+            <h2 class="mt-1.5 text-title-2 text-ink">Perfil de usuario</h2>
             <p class="mt-1 text-sm text-muted">Administra tu información de contacto, credenciales y seguridad.</p>
         </div>
     </x-slot>
@@ -11,7 +11,7 @@
         <div class="mx-auto max-w-6xl space-y-6 px-4 sm:px-6 lg:px-8">
             <section aria-label="Resumen de la cuenta" class="card-boutique overflow-hidden">
                 <div class="flex flex-col gap-5 bg-gradient-to-r from-white via-white to-brand-50/50 p-5 sm:flex-row sm:items-center sm:p-7">
-                    <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-500 via-[#e2698d] to-peach-300 text-xl font-bold text-white shadow-soft ring-4 ring-brand-50 sm:h-[4.5rem] sm:w-[4.5rem]">
+                    <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-500 via-[#e2698d] to-peach-300 text-xl font-semibold text-white shadow-soft ring-4 ring-brand-50 sm:h-[4.5rem] sm:w-[4.5rem]">
                         @if (auth()->user()->foto_perfil)
                             <img src="{{ route('profile.photo.show') }}" alt="Foto de perfil de {{ auth()->user()->nombre }}" class="h-full w-full object-cover">
                         @else
@@ -20,7 +20,7 @@
                     </div>
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2.5">
-                            <h3 class="break-words font-serif text-2xl text-ink sm:text-[1.7rem]">{{ auth()->user()->nombre }} {{ auth()->user()->apellido }}</h3>
+                            <h3 class="break-words font-serif text-title-2 text-ink">{{ auth()->user()->nombre }} {{ auth()->user()->apellido }}</h3>
                             <span class="badge-brand">{{ auth()->user()->rol->name ?? 'Usuario' }}</span>
                         </div>
                         <div class="mt-2 flex flex-col gap-x-5 gap-y-1 text-sm text-ink-soft sm:flex-row sm:flex-wrap">
@@ -40,27 +40,27 @@
 
             <div class="grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
                 <nav aria-label="Secciones del perfil" class="card-boutique p-4 lg:sticky lg:top-28">
-                    <p class="px-3 pb-2 text-xs font-bold uppercase tracking-[0.12em] text-muted">Tu cuenta</p>
+                    <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-label text-muted">Tu cuenta</p>
                     <div class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
-                        <a href="#profile-information" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-300 lg:w-full">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-brand-600 shadow-sm" aria-hidden="true">
+                        <a href="#profile-information" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:w-full">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-brand-600 shadow-2xs" aria-hidden="true">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /></svg>
                             </span>
                             Información personal
                         </a>
-                        <a href="#profile-password" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-cream hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 lg:w-full">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-cream text-muted" aria-hidden="true">
+                        <a href="#profile-password" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-cream hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:w-full">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-cream text-muted" aria-hidden="true">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4.5" y="10" width="15" height="10.5" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v2"/></svg>
                             </span>
                             Contraseña
                         </a>
-                        <a href="{{ route('dos-pasos.show') }}" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-cream hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 lg:w-full">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-cream text-muted" aria-hidden="true">
+                        <a href="{{ route('dos-pasos.show') }}" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-cream hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:w-full">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-cream text-muted" aria-hidden="true">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path stroke-linecap="round" d="M11 18.5h2"/></svg>
                             </span>
                             Verificación en dos pasos
                             @if (auth()->user()->tieneDosPasos())
-                                <span class="ml-auto rounded-full bg-sage-50 px-2 py-0.5 text-[0.7rem] font-semibold text-sage-700">Activa</span>
+                                <span class="ml-auto rounded-full bg-sage-50 px-2 py-0.5 text-caption font-semibold text-sage-700">Activa</span>
                             @endif
                         </a>
                     </div>

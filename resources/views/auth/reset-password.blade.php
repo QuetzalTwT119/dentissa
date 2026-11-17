@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="mb-6">
         <p class="eyebrow">Seguridad de cuenta</p>
-        <h2 class="mt-3 text-[2rem] leading-tight text-ink sm:text-[2.4rem]">Restablecer contraseña</h2>
-        <p class="mt-2 text-sm leading-6 text-muted">Ingresa tu nueva contraseña para acceder a Dentissa.</p>
+        <h2 class="mt-3 text-title-1 text-ink">Restablecer contraseña</h2>
+        <p class="mt-2 text-callout text-muted">Ingresa tu nueva contraseña para acceder a Dentissa.</p>
     </div>
 
     <form method="POST" action="{{ route('password.store') }}" class="space-y-4">

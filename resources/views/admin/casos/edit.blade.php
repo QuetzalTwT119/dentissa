@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+                <h2 class="mt-1.5 text-title-2 text-ink">
                     Editar caso — {{ $caso->titulo }}
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Gestión de información y fotografías del caso clínico.</p>
@@ -29,7 +29,7 @@
                     <div>
                         <x-input-label for="descripcion" value="Descripción breve" />
                         <textarea id="descripcion" name="descripcion" rows="3"
-                                  class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion', $caso->descripcion) }}</textarea>
+                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion', $caso->descripcion) }}</textarea>
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 
@@ -43,7 +43,7 @@
                         <div>
                             <x-input-label for="activo" value="Estado" />
                             <select id="activo" name="activo"
-                                    class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                    class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                 <option value="1" @selected(old('activo', $caso->activo ? '1' : '0') == '1')>Activo</option>
                                 <option value="0" @selected(old('activo', $caso->activo ? '1' : '0') == '0')>Inactivo</option>
                             </select>
@@ -61,12 +61,12 @@
             </div>
 
             <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <h3 class="text-lg font-semibold text-ink">Fotos (antes/después)</h3>
+                <h3 class="text-headline font-semibold text-ink">Fotos (antes/después)</h3>
                 <p class="mt-1 text-xs text-muted">Imágenes comparativas del caso para la galería pública.</p>
 
                 <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                     @forelse ($caso->imagenes as $imagen)
-                        <div class="relative overflow-hidden rounded-xl border border-line shadow-sm group">
+                        <div class="relative overflow-hidden rounded-xl border border-line shadow-2xs group">
                             <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-32 w-full object-cover">
                             <form method="POST" action="{{ route('admin.casos.imagenes.destroy', [$caso, $imagen]) }}"
                                   onsubmit="return confirm('¿Eliminar esta foto?');" class="absolute right-2 top-2">

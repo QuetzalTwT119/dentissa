@@ -7,13 +7,13 @@ $clasesEnlace = 'inline-flex min-h-11 items-center rounded-full px-4 text-sm fon
 $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-50 px-4 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-brand-200/70 transition-colors duration-150 hover:bg-brand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400';
 @endphp
 
-<nav x-data="{ open: false, notificationsOpen: false }" class="sticky top-0 z-40 border-b border-line/80 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
+<nav x-data="{ open: false, notificationsOpen: false }" class="sticky top-0 z-40 pt-[env(safe-area-inset-top)] border-b border-line/80 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
     <div class="mx-auto flex min-h-[4.5rem] max-w-screen-2xl items-center justify-between gap-4 px-4 sm:px-6 2xl:px-10">
-        <a href="{{ route('dashboard') }}" class="flex min-w-0 shrink-0 items-center gap-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-300" aria-label="Dentissa, ir al inicio">
+        <a href="{{ route('dashboard') }}" class="flex min-w-0 shrink-0 items-center gap-3 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300" aria-label="Dentissa, ir al inicio">
             <img src="/images/brand/logo-rosa-transparente.png" alt="" class="h-11 w-11 rounded-full bg-white object-cover p-0.5 ring-1 ring-peach-200" width="44" height="44">
             <span class="flex min-w-0 flex-col leading-tight">
                 <span class="truncate font-serif text-xl font-medium tracking-tight text-ink">Dentissa</span>
-                <span class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-brand-700/80">{{ $esAdmin ? 'Administración' : 'Asistencia' }}</span>
+                <span class="text-caption font-semibold uppercase tracking-label text-brand-700/80">{{ $esAdmin ? 'Administración' : 'Asistencia' }}</span>
             </span>
         </a>
 
@@ -67,7 +67,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9a6 6 0 1 0-12 0v.75a8.967 8.967 0 0 1-2.312 6.022 23.848 23.848 0 0 0 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                     </svg>
-                    <span data-notification-count-badge class="absolute right-1 top-1 inline-flex min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.65rem] font-bold leading-4 text-white {{ $notificacionesNuevas > 0 ? '' : 'hidden' }}" @if ($notificacionesNuevas === 0) hidden @endif>{{ $notificacionesNuevas > 99 ? '99+' : $notificacionesNuevas }}</span>
+                    <span data-notification-count-badge class="absolute right-1 top-1 inline-flex min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-brand-600 px-1 text-caption font-semibold leading-4 text-white {{ $notificacionesNuevas > 0 ? '' : 'hidden' }}" @if ($notificacionesNuevas === 0) hidden @endif>{{ $notificacionesNuevas > 99 ? '99+' : $notificacionesNuevas }}</span>
                 </button>
 
             </div>
@@ -77,7 +77,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                     @if ($usuario->foto_perfil)
                         <img src="{{ route('profile.photo.show') }}" alt="" class="h-8 w-8 shrink-0 rounded-full object-cover" width="32" height="32">
                     @else
-                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-bold text-brand-800" aria-hidden="true">{{ strtoupper(substr($usuario->nombre, 0, 1).substr($usuario->apellido, 0, 1)) }}</span>
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold text-brand-800" aria-hidden="true">{{ \App\Support\Iniciales::de($usuario->nombre, $usuario->apellido) }}</span>
                     @endif
                     <span class="truncate">{{ $usuario->nombre }} {{ $usuario->apellido }}</span>
                     <svg class="h-4 w-4 shrink-0 text-muted" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
@@ -92,7 +92,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
         <div class="flex shrink-0 items-center gap-1 2xl:hidden">
             <button type="button" data-notification-preview-trigger @click.stop="notificationsOpen = !notificationsOpen" :aria-expanded="notificationsOpen.toString()" aria-label="Ver notificaciones recientes" class="relative inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-soft hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300">
                 <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9a6 6 0 1 0-12 0v.75a8.967 8.967 0 0 1-2.312 6.022 23.848 23.848 0 0 0 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
-                <span data-notification-count-badge class="absolute right-1 top-1 inline-flex min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-brand-600 px-1 text-[0.65rem] font-bold leading-4 text-white {{ $notificacionesNuevas > 0 ? '' : 'hidden' }}" @if ($notificacionesNuevas === 0) hidden @endif>{{ $notificacionesNuevas > 99 ? '99+' : $notificacionesNuevas }}</span>
+                <span data-notification-count-badge class="absolute right-1 top-1 inline-flex min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-brand-600 px-1 text-caption font-semibold leading-4 text-white {{ $notificacionesNuevas > 0 ? '' : 'hidden' }}" @if ($notificacionesNuevas === 0) hidden @endif>{{ $notificacionesNuevas > 99 ? '99+' : $notificacionesNuevas }}</span>
             </button>
             <button type="button" @click="open = !open" :aria-expanded="open.toString()" :aria-label="open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'" aria-controls="mobile-navigation-menu" class="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300">
                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true"><path :class="{'hidden': open, 'inline-flex': !open}" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /><path :class="{'hidden': !open, 'inline-flex': open}" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -103,10 +103,10 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
     <div id="notification-preview-panel" data-notification-preview-panel x-cloak x-show="notificationsOpen" @click.outside="notificationsOpen = false" @keydown.escape.window="notificationsOpen = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-out duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed left-4 right-4 top-[4.75rem] z-50 2xl:absolute 2xl:left-auto 2xl:right-40 2xl:top-20 2xl:w-[26rem]" role="dialog" aria-label="Notificaciones recientes">
         <section class="overflow-hidden rounded-3xl border border-line bg-white shadow-lift">
             <header class="flex items-center justify-between border-b border-line/70 bg-cream px-4 py-3.5">
-                <div><h2 class="text-lg text-ink">Notificaciones recientes</h2><p class="mt-0.5 text-xs text-muted"><span data-notification-count-summary>{{ $notificacionesNuevas }}</span> nuevas</p></div>
-                <button type="button" @click="notificationsOpen = false" class="rounded-lg p-2 text-muted transition hover:bg-white hover:text-ink focus:outline-none focus:ring-2 focus:ring-brand-primary" aria-label="Cerrar notificaciones"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 0 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 0 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /></svg></button>
+                <div><h2 class="text-title-3 text-ink">Notificaciones recientes</h2><p class="mt-0.5 text-xs text-muted"><span data-notification-count-summary>{{ $notificacionesNuevas }}</span> nuevas</p></div>
+                <button type="button" @click="notificationsOpen = false" class="inline-flex h-11 w-11 items-center justify-center rounded-full text-muted transition hover:bg-white hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" aria-label="Cerrar notificaciones"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 0 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 0 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /></svg></button>
             </header>
-            <div data-notification-preview-list class="max-h-[min(60vh,26rem)] divide-y divide-line/60 overflow-y-auto">
+            <div data-notification-preview-list class="max-h-[min(60dvh,26rem)] overscroll-contain divide-y divide-line/60 overflow-y-auto">
                 @forelse ($notificacionesRecientes as $notificacion)
                     <a data-notification-preview="{{ $notificacion->id }}" data-notification-read-url="{{ route('notificaciones.leida', $notificacion, false) }}" href="{{ $notificacion->url ?: route('citas.index', [], false) }}" @click="notificationsOpen = false" class="flex gap-3 px-4 py-3.5 transition hover:bg-cream focus:bg-cream focus:outline-none"><span data-notification-preview-dot class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full {{ $notificacion->leida_en ? 'bg-line' : 'bg-brand-600 ring-4 ring-brand-100' }}" aria-label="{{ $notificacion->leida_en ? 'Notificación leída' : 'Notificación nueva' }}"></span><span class="min-w-0 flex-1"><span class="flex items-start justify-between gap-3"><span data-notification-preview-title class="notification-preview-title text-sm font-semibold text-ink">{{ $notificacion->titulo }}</span><time class="shrink-0 text-xs text-muted" datetime="{{ $notificacion->created_at->toIso8601String() }}">{{ $notificacion->created_at->diffForHumans() }}</time></span><span data-notification-preview-message class="notification-preview-message mt-1 text-sm leading-5 text-ink-soft">{{ $notificacion->mensaje }}</span></span></a>
                 @empty
@@ -128,13 +128,13 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 <x-responsive-nav-link :href="route('galeria.index')" :active="request()->routeIs('galeria.*')">Galería</x-responsive-nav-link>
             @endunless
             @if ($esAdmin)
-                <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-[0.16em] text-brand-700/80">Gestión</p>
+                <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-label text-brand-700/80">Gestión</p>
                 <x-responsive-nav-link :href="route('admin.pacientes.index')" :active="request()->routeIs('admin.pacientes.*')">Pacientes</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.usuarios.index')" :active="request()->routeIs('admin.usuarios.*')">Usuarios</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reportes.index')" :active="request()->routeIs('admin.reportes.*')">Reportes</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.mensajes.index')" :active="request()->routeIs('admin.mensajes.*')">Mensajes</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.auditoria.index')" :active="request()->routeIs('admin.auditoria.*')">Auditoría</x-responsive-nav-link>
-                <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-[0.16em] text-brand-700/80">Catálogo y contenido</p>
+                <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-label text-brand-700/80">Catálogo y contenido</p>
                 <x-responsive-nav-link :href="route('admin.servicios.index')" :active="request()->routeIs('admin.servicios.*')">Servicios</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.tratamientos.index')" :active="request()->routeIs('admin.tratamientos.*')">Tratamientos</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.ofertas.index')" :active="request()->routeIs('admin.ofertas.*')">Ofertas</x-responsive-nav-link>
@@ -150,7 +150,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 @if ($usuario->foto_perfil)
                     <img src="{{ route('profile.photo.show') }}" alt="" class="h-10 w-10 shrink-0 rounded-full object-cover" width="40" height="40">
                 @else
-                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700" aria-hidden="true">{{ strtoupper(substr($usuario->nombre, 0, 1).substr($usuario->apellido, 0, 1)) }}</span>
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700" aria-hidden="true">{{ \App\Support\Iniciales::de($usuario->nombre, $usuario->apellido) }}</span>
                 @endif
                 <div class="min-w-0">
                     <p class="truncate text-sm font-semibold text-ink">{{ $usuario->nombre }} {{ $usuario->apellido }}</p>

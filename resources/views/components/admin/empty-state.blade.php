@@ -16,7 +16,7 @@
                     </svg>
                 @endif
             </div>
-            <p class="font-serif text-lg text-ink">{{ $title }}</p>
+            <p class="font-serif text-title-3 text-ink">{{ $title }}</p>
             @if ($description)
                 <p class="mt-1 text-sm text-muted">{{ $description }}</p>
             @endif

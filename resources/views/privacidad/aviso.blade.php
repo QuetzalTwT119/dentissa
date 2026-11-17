@@ -2,7 +2,7 @@
 <html lang="es">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
         <meta name="theme-color" content="#fbf7f3">
         @include('partials.favicon')
 
@@ -13,7 +13,7 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="min-h-[100dvh] bg-cream font-sans text-ink antialiased">
+    <body class="min-h-[100dvh] bg-cream pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] font-sans text-ink antialiased">
         @php
             $privacidad = config('dentissa.privacidad');
             // Un dato que la clínica aún no llena se ve resaltado, para que nadie
@@ -32,16 +32,16 @@
 
             <article class="mt-6 rounded-4xl border border-line bg-white p-6 shadow-soft sm:p-10" data-aviso-version="{{ $privacidad['version'] }}">
                 <p class="firma text-xl text-brand-600">Melissa López N.</p>
-                <h1 class="mt-2 text-[1.9rem] leading-tight">Aviso de privacidad integral</h1>
+                <h1 class="mt-2 text-title-1">Aviso de privacidad integral</h1>
                 <p class="mt-2 text-sm text-muted">Versión {{ $privacidad['version'] }}</p>
 
                 @unless ($privacidad['revisado'])
-                    <p role="note" class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900" data-aviso-borrador>
+                    <p role="note" class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-callout text-amber-900" data-aviso-borrador>
                         <strong>Borrador pendiente de revisión legal.</strong> Este texto es una plantilla preparada por el equipo de desarrollo; debe revisarlo un abogado o la clínica antes de usar el sistema con pacientes reales.
                     </p>
                 @endunless
 
-                <div class="mt-8 space-y-8 text-[0.95rem] leading-7 text-ink-soft [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-ink [&_li]:ml-5 [&_li]:list-disc">
+                <div class="mt-8 space-y-8 text-body text-ink-soft [&_h2]:mb-2 [&_h2]:text-title-3 [&_h2]:font-medium [&_h2]:text-ink [&_li]:ml-5 [&_li]:list-disc">
                     <section>
                         <h2>1. Responsable de tus datos</h2>
                         <p>{!! $dato($privacidad['responsable'], 'nombre del responsable') !!}, con domicilio en {!! $dato($privacidad['domicilio'], 'domicilio') !!}, es responsable del tratamiento de tus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>
@@ -74,7 +74,7 @@
 
                     <section>
                         <h2>5. Tus derechos ARCO y cómo revocar tu consentimiento</h2>
-                        <p>Puedes <strong>acceder</strong> a tus datos, <strong>rectificarlos</strong>, <strong>cancelarlos</strong> u <strong>oponerte</strong> a su uso, así como revocar tu consentimiento, enviando una solicitud a {!! $correo ? '<a class="font-semibold text-brand-700 underline" href="mailto:'.e($correo).'">'.e($correo).'</a>' : $dato(null, 'correo para solicitudes') !!} o llamando al <a class="font-semibold text-brand-700 underline" href="{{ config('dentissa.contacto.telefono_enlace') }}">{{ config('dentissa.contacto.telefono') }}</a>. Indica tu nombre, cómo localizarte y qué solicitas. Te responderemos en los plazos que marca la ley.</p>
+                        <p>Puedes <strong>acceder</strong> a tus datos, <strong>rectificarlos</strong>, <strong>cancelarlos</strong> u <strong>oponerte</strong> a su uso, así como revocar tu consentimiento, enviando una solicitud a {!! $correo ? '<a class="link" href="mailto:'.e($correo).'">'.e($correo).'</a>' : $dato(null, 'correo para solicitudes') !!} o llamando al <a class="link" href="{{ config('dentissa.contacto.telefono_enlace') }}">{{ config('dentissa.contacto.telefono') }}</a>. Indica tu nombre, cómo localizarte y qué solicitas. Te responderemos en los plazos que marca la ley.</p>
                         <p class="mt-3">El expediente clínico debe conservarse el tiempo que exige la normativa de salud aplicable, por lo que algunas solicitudes de cancelación pueden tener esa limitación.</p>
                     </section>
 

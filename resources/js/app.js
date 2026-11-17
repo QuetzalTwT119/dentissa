@@ -12,33 +12,55 @@ if ('serviceWorker' in navigator && window.isSecureContext) {
     });
 }
 
-// Entrada suave de secciones marcadas con [data-reveal] (ver app.css).
-// Cada sección se anima una sola vez: al volver a subir ya no se repite.
-function iniciarRevelado() {
-    const elementos = document.querySelectorAll('[data-reveal]');
+// Botón "enviando": al enviar un formulario, el botón muestra un indicador,
+// se desactiva y (si tiene data-loading-text) cambia su texto. Evita envíos
+// dobles y confirma que el sistema recibió el clic.
+// - Respeta formularios cancelados (confirm() o @submit.prevent de Alpine).
+// - Se omite con data-sin-carga en el <form>.
+function restaurarBoton(boton) {
+    if (!boton || boton.dataset.loading === undefined) return;
+    delete boton.dataset.loading;
+    boton.removeAttribute('aria-busy');
+    boton.querySelector(':scope > .btn-spinner')?.remove();
+    if (boton.dataset.textoOriginal !== undefined) {
+        const etiqueta = boton.querySelector(':scope > [data-loading-label]');
+        if (etiqueta) etiqueta.textContent = boton.dataset.textoOriginal;
+        delete boton.dataset.textoOriginal;
+    }
+}
 
-    if (!('IntersectionObserver' in window)) {
-        elementos.forEach((el) => el.classList.add('is-visible'));
-        return;
+document.addEventListener('submit', (event) => {
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement) || event.defaultPrevented || form.hasAttribute('data-sin-carga')) return;
+
+    const boton = event.submitter ?? form.querySelector('button[type="submit"]:not(.sr-only)');
+    if (!boton || boton.dataset.loading !== undefined) return;
+
+    boton.dataset.loading = '';
+    boton.setAttribute('aria-busy', 'true');
+
+    const spinner = document.createElement('span');
+    spinner.className = 'btn-spinner';
+    spinner.setAttribute('aria-hidden', 'true');
+    boton.prepend(spinner);
+
+    const etiqueta = boton.querySelector(':scope > [data-loading-label]');
+    if (etiqueta && boton.dataset.loadingText) {
+        boton.dataset.textoOriginal = etiqueta.textContent;
+        etiqueta.textContent = boton.dataset.loadingText;
     }
 
-    const observer = new IntersectionObserver((entradas) => {
-        entradas.forEach((entrada) => {
-            if (entrada.isIntersecting) {
-                entrada.target.classList.add('is-visible');
-                observer.unobserve(entrada.target);
-            }
-        });
-    }, { rootMargin: '0px 0px -8% 0px' });
+    // Seguridad: si la página no cambia (descarga, error de red), se libera.
+    setTimeout(() => restaurarBoton(boton), 12000);
+});
 
-    elementos.forEach((el) => observer.observe(el));
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', iniciarRevelado);
-} else {
-    iniciarRevelado();
-}
+// Al volver con el botón "Atrás", el navegador puede restaurar la página
+// tal como quedó: liberamos los botones que seguían "enviando".
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        document.querySelectorAll('[data-loading]').forEach(restaurarBoton);
+    }
+});
 
 window.cargarHorariosDisponibles = async function (tratamientoId, fecha, excludeCitaId) {
     if (!tratamientoId || !fecha) {
@@ -404,7 +426,24 @@ if (updatesUrl) {
 
         toast.append(title, message);
         region.append(toast);
-        window.setTimeout(() => toast.remove(), 8000);
+
+        // Entra desde arriba (el aviso vive arriba a la derecha) y sale por el
+        // mismo camino. Con "reducir movimiento" solo hay un fundido breve.
+        const reducir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const oculto = reducir ? { opacity: 0 } : { opacity: 0, transform: 'translateY(-8px)' };
+        const visible = reducir ? { opacity: 1 } : { opacity: 1, transform: 'none' };
+        const curva = 'cubic-bezier(0.23, 1, 0.32, 1)';
+
+        toast.animate?.([oculto, visible], { duration: reducir ? 150 : 220, easing: curva });
+
+        window.setTimeout(() => {
+            const salida = toast.animate?.([visible, oculto], { duration: 150, easing: curva, fill: 'forwards' });
+            if (salida) {
+                salida.onfinish = () => toast.remove();
+            } else {
+                toast.remove();
+            }
+        }, 8000);
     };
 
     const receiveNotification = (notification) => {

@@ -80,7 +80,7 @@ class AsistenteVistasPublicasTest extends TestCase
         $this->assertStringContainsString('role="progressbar"', $contenido);
         $this->assertStringContainsString('Paso ${paso + 1} de ${pasos.length}', $contenido);
         $this->assertStringContainsString('x-if="!servicioSeleccionado"', $contenido);
-        $this->assertStringContainsString('@click="idServicio = \'\'; idTratamiento = \'\'"', $contenido);
+        $this->assertStringContainsString('@click="mover(\'atras\'); idServicio = \'\'; idTratamiento = \'\'"', $contenido);
         $this->assertStringNotContainsString('>×</span>', $contenido);
         $this->assertStringContainsString('grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5', $contenido);
         $this->assertStringContainsString('x-text="servicioSeleccionado?.nombre ?? \'Pendiente\'"', $contenido);

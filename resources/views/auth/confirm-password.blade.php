@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="mb-6">
         <p class="eyebrow">Área protegida</p>
-        <h2 class="mt-3 text-[2rem] leading-tight text-ink sm:text-[2.4rem]">Confirmar contraseña</h2>
-        <p class="mt-2 text-sm leading-6 text-muted">
+        <h2 class="mt-3 text-title-1 text-ink">Confirmar contraseña</h2>
+        <p class="mt-2 text-callout text-muted">
             Esta es un área segura de la aplicación. Confirma tu contraseña antes de continuar.
         </p>
     </div>

@@ -22,11 +22,11 @@
             <!-- Tarjeta de Identificación Rápida -->
             <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
                 <div class="flex items-center gap-4 pb-6 border-b border-line/80">
-                    <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-peach-100 text-base font-bold text-brand-700 border border-brand-200 shadow-soft">
+                    <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-peach-100 text-base font-semibold text-brand-700 border border-brand-200 shadow-soft">
                         {{ strtoupper(substr($paciente->nombre, 0, 1) . substr($paciente->apellido, 0, 1)) }}
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-ink">{{ $paciente->nombre }} {{ $paciente->apellido }}</h3>
+                        <h3 class="text-headline font-semibold text-ink">{{ $paciente->nombre }} {{ $paciente->apellido }}</h3>
                         <p class="text-xs text-muted">ID de paciente: #{{ str_pad($paciente->id, 5, '0', STR_PAD_LEFT) }} &bull; Consultas registradas: {{ $paciente->historialClinico()->count() }}</p>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
 
                     <!-- Sección: Datos Personales -->
                     <div class="rounded-xl bg-cream/60 p-4 sm:p-6 border border-line/70 space-y-4">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-muted flex items-center gap-1.5">
+                        <h4 class="text-xs font-semibold uppercase tracking-label text-muted flex items-center gap-1.5">
                             <span class="h-2 w-2 rounded-full bg-brand-500"></span>
                             Datos Personales y Contacto
                         </h4>
@@ -80,7 +80,7 @@
 
                     <!-- Sección: Identificadores Oficiales -->
                     <div class="rounded-xl bg-white p-4 sm:p-6 border border-line/70 space-y-4">
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-muted flex items-center gap-1.5">
+                        <h4 class="text-xs font-semibold uppercase tracking-label text-muted flex items-center gap-1.5">
                             <span class="h-2 w-2 rounded-full bg-teal-600"></span>
                             Identificadores Oficiales y Tutoría
                         </h4>
@@ -113,7 +113,7 @@
                             <div>
                                 <x-input-label for="tutor_id" value="Tutor o responsable (opcional)" />
                                 <select id="tutor_id" name="tutor_id"
-                                        class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                        class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                     <option value="">Ninguno — paciente independiente</option>
                                     @foreach ($tutoresDisponibles as $t)
                                         <option value="{{ $t['id'] }}" @selected(old('tutor_id', $paciente->tutor_id) == $t['id'])>{{ $t['nombre'] }}</option>

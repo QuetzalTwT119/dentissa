@@ -11,15 +11,15 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 items-stretch">
                 @forelse ($imagenes as $imagen)
-                    <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:shadow-md hover:border-peach-300 h-full flex flex-col justify-between group">
+                    <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:border-peach-300 h-full flex flex-col justify-between group">
                         <div>
                             <div class="relative h-48 w-full overflow-hidden bg-stone-100">
-                                <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
+                                <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-full w-full object-cover transition duration-200 group-hover:scale-105">
                             </div>
                             @if ($imagen->titulo || $imagen->descripcion)
                                 <div class="p-4 sm:p-5">
                                     @if ($imagen->titulo)
-                                        <p class="text-sm font-bold text-ink">{{ $imagen->titulo }}</p>
+                                        <p class="text-sm font-semibold text-ink">{{ $imagen->titulo }}</p>
                                     @endif
                                     @if ($imagen->descripcion)
                                         <p class="mt-1.5 text-xs text-ink-soft leading-relaxed">{{ $imagen->descripcion }}</p>
@@ -35,7 +35,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <h4 class="font-bold text-ink">Todavía no hay imágenes en la galería</h4>
+                        <h4 class="font-semibold text-ink">Todavía no hay imágenes en la galería</h4>
                         <p class="mt-1 text-xs">Las fotografías clínicas e instalaciones se mostrarán aquí una vez registradas.</p>
                     </div>
                 @endforelse

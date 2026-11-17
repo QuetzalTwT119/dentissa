@@ -18,7 +18,7 @@
                     @click="hora = horario"
                     :class="hora === horario ? 'border-brand-600 bg-brand-600 text-white shadow-brand' : 'border-line bg-white text-ink hover:border-peach-300 hover:bg-peach-50/60'"
                     :aria-pressed="(hora === horario).toString()"
-                    class="min-h-12 rounded-xl border px-2 py-2.5 text-center text-[0.95rem] font-semibold tabular-nums transition-[background-color,border-color,color,transform] duration-150 ease-out active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+                    class="min-h-12 rounded-xl border px-2 py-2.5 text-center text-callout font-semibold tabular-nums transition-[background-color,border-color,color,transform] duration-150 ease-out active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
                     x-text="horario"></button>
         </template>
     </div>

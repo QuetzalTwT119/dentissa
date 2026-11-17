@@ -64,9 +64,7 @@ $tipoConsultaLabel = [
             </div>
 
             @if (session('status'))
-                <div role="status" class="rounded-2xl border border-sky-200 bg-sky-50/80 p-4 text-sm text-sky-800">
-                    {{ session('status') }}
-                </div>
+                <x-alert type="info" :message="session('status')" />
             @endif
 
             <div class="space-y-4">
@@ -82,7 +80,7 @@ $tipoConsultaLabel = [
                                         {{ \Illuminate\Support\Carbon::parse($consulta->fecha_consulta)->translatedFormat('d M Y') }}
                                     </p>
                                 </div>
-                                <h3 class="mt-2 text-base font-bold text-ink">{{ $consulta->motivo_consulta }}</h3>
+                                <h3 class="mt-2 text-headline font-semibold text-ink">{{ $consulta->motivo_consulta }}</h3>
                                 @if ($consulta->diagnostico)
                                     <p class="mt-1 text-sm text-ink-soft">
                                         <span class="font-semibold text-ink">Diagnóstico:</span> {{ $consulta->diagnostico }}
@@ -97,21 +95,21 @@ $tipoConsultaLabel = [
                             </div>
 
                             <div class="flex shrink-0 items-center gap-2 pt-2 sm:pt-0 border-t border-line/60 sm:border-0">
-                                <a href="{{ route('admin.pacientes.historial.edit', [$paciente, $consulta]) }}" class="rounded-xl px-3 py-1.5 text-sm font-semibold text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
+                                <a href="{{ route('admin.pacientes.historial.edit', [$paciente, $consulta]) }}" class="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
                                     Editar
                                 </a>
                                 <form method="POST" action="{{ route('admin.pacientes.historial.destroy', [$paciente, $consulta]) }}"
                                       onsubmit="return confirm('¿Eliminar esta consulta del historial? Esta acción no se puede deshacer.');">
                                     @csrf
                                     @method('delete')
-                                    <button type="submit" class="rounded-xl px-3 py-1.5 text-sm font-semibold text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">Eliminar</button>
+                                    <button type="submit" class="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">Eliminar</button>
                                 </form>
                             </div>
                         </div>
                     </div>
                 @empty
                     <div class="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-sm text-muted shadow-soft">
-                        <p class="font-bold text-ink">Este paciente todavía no tiene consultas registradas.</p>
+                        <p class="font-semibold text-ink">Este paciente todavía no tiene consultas registradas.</p>
                         <p class="mt-1">El PDF estará disponible cuando registres la primera consulta.</p>
                     </div>
                 @endforelse

@@ -49,7 +49,7 @@
                     <div>
                         <x-input-label for="rol" value="Rol" />
                         <select id="rol" name="rol"
-                                class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="asistente" @selected(old('rol', $usuario->rol->value) === 'asistente')>Asistente</option>
                             <option value="admin" @selected(old('rol', $usuario->rol->value) === 'admin')>Admin</option>
                         </select>
@@ -61,7 +61,7 @@
                             <div class="w-full border-t border-line"></div>
                         </div>
                         <div class="relative flex justify-start">
-                            <span class="bg-white pr-3 text-xs font-semibold uppercase tracking-wider text-muted">Cambio de contraseña (opcional)</span>
+                            <span class="bg-white pr-3 text-xs font-semibold uppercase tracking-label text-muted">Cambio de contraseña (opcional)</span>
                         </div>
                     </div>
 

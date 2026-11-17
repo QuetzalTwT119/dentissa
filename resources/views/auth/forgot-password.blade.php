@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="mb-6">
         <p class="eyebrow">Seguridad de cuenta</p>
-        <h2 class="mt-3 text-[2rem] leading-tight text-ink sm:text-[2.4rem]">Recuperar contraseña</h2>
-        <p class="mt-2 text-sm leading-6 text-muted">
+        <h2 class="mt-3 text-title-1 text-ink">Recuperar contraseña</h2>
+        <p class="mt-2 text-callout text-muted">
             ¿Olvidaste tu contraseña? No hay problema. Solo indícanos tu correo electrónico y te enviaremos un enlace para restablecerla.
         </p>
     </div>
@@ -21,7 +21,7 @@
         </div>
 
         <div class="flex flex-col-reverse gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
-            <a href="{{ route('login') }}" class="text-center text-sm font-semibold text-brand-700 underline-offset-4 hover:text-brand-800 hover:underline">← Volver a inicio de sesión</a>
+            <a href="{{ route('login') }}" class="link text-center text-sm">← Volver a inicio de sesión</a>
             <x-primary-button>
                 Enviar enlace de restablecimiento
             </x-primary-button>

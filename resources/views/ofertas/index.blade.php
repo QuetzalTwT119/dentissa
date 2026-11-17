@@ -21,7 +21,7 @@
                                 : '$'.$oferta->valor_descuento.' de descuento';
                         }
                     @endphp
-                    <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:shadow-md hover:border-peach-300 h-full flex flex-col justify-between">
+                    <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:border-peach-300 h-full flex flex-col justify-between">
                         <div>
                             @if ($oferta->imagen)
                                 <img src="/storage/{{ $oferta->imagen }}" alt="{{ $oferta->titulo }}" class="h-48 w-full object-cover">
@@ -36,7 +36,7 @@
                                 </div>
                             @endif
                             <div class="p-5 sm:p-6">
-                                <h3 class="font-bold text-ink text-lg">{{ $oferta->titulo }}</h3>
+                                <h3 class="font-semibold text-ink text-headline">{{ $oferta->titulo }}</h3>
                                 @if ($oferta->tratamiento)
                                     <p class="mt-1 text-xs text-brand-700 font-semibold inline-flex items-center gap-1">
                                         <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
@@ -47,7 +47,7 @@
                                     <p class="mt-2.5 text-xs sm:text-sm text-ink-soft leading-relaxed">{{ $oferta->descripcion }}</p>
                                 @endif
                                 @if ($valor)
-                                    <div class="mt-4 inline-flex items-center rounded-xl bg-brand-50 px-3 py-1.5 text-sm font-bold text-brand-700 border border-brand-200">
+                                    <div class="mt-4 inline-flex items-center rounded-xl bg-brand-50 px-3 py-1.5 text-sm font-semibold text-brand-700 border border-brand-200">
                                         {{ $valor }}
                                     </div>
                                 @endif
@@ -65,7 +65,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V4a2 2 0 10-2 2h2zm0 13a2 2 0 112-2H10a2 2 0 012 2z" />
                             </svg>
                         </div>
-                        <h4 class="font-bold text-ink">No hay ofertas vigentes por el momento</h4>
+                        <h4 class="font-semibold text-ink">No hay ofertas vigentes por el momento</h4>
                         <p class="mt-1 text-xs">Consulta periódicamente o comunícate con el consultorio para conocer promociones de temporada.</p>
                     </div>
                 @endforelse

@@ -114,7 +114,8 @@
         --c-line: 236 224 218;     /* #ECE0DA bordes */
         --c-ink: 43 34 36;         /* #2B2224 texto principal */
         --c-ink-soft: 92 78 82;    /* #5C4E52 texto secundario */
-        --c-muted: 122 106 110;    /* #7A6A6E texto de apoyo */
+        --c-muted: 118 102 105;    /* #766669 texto de apoyo (≥4.5:1 en crema, blanco y shell) */
+        --c-field: 156 137 132;    /* #9C8984 borde de campos (≥3:1 sobre blanco) */
 
         /* Alias heredados: algunos estilos en línea todavía los usan. */
         --brand-pink: #d75078;
@@ -131,29 +132,62 @@
         color-scheme: light;
         -webkit-text-size-adjust: 100%;
         text-size-adjust: 100%;
+        /* En el celular, el destello gris al tocar delata que "es una web". */
+        -webkit-tap-highlight-color: transparent;
     }
 
     body {
         font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         background-color: rgb(var(--c-cream));
         color: rgb(var(--c-ink));
-        letter-spacing: -0.006em;
+        letter-spacing: 0;
         text-rendering: optimizeLegibility;
-        /* En el celular, el destello gris al tocar delata que "es una web". */
-        -webkit-tap-highlight-color: transparent;
+        /*
+         * Con viewport-fit=cover, en horizontal la muesca invade los lados:
+         * separamos el contenido con los márgenes seguros del sistema.
+         */
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
     }
 
-    /* Títulos de página y de sección en serif; el resto de la interfaz en sans. */
+    /*
+     * Títulos de página y de sección en serif. El tamaño, interlineado y
+     * espaciado exactos los da cada clase de la escala (text-display,
+     * text-title-1…); aquí solo queda un valor de respaldo.
+     */
     h1,
     h2 {
         font-family: 'Fraunces', Georgia, Cambria, serif;
         font-weight: 500;
         letter-spacing: -0.015em;
-        text-wrap: balance;
+        /* Solo el estilo de salto: text-wrap (abreviado) reactivaría el salto
+           de línea y anularía un white-space: nowrap heredado. */
+        text-wrap-style: balance;
+        font-kerning: normal;
     }
 
     p {
-        text-wrap: pretty;
+        text-wrap-style: pretty;
+    }
+
+    /* Campo con error: borde y anillo rosados (lo marca <x-text-input> o aria-invalid). */
+    input[aria-invalid='true'],
+    select[aria-invalid='true'],
+    textarea[aria-invalid='true'] {
+        border-color: #fb7185;
+    }
+
+    input[aria-invalid='true']:focus,
+    select[aria-invalid='true']:focus,
+    textarea[aria-invalid='true']:focus {
+        border-color: #f43f5e;
+        box-shadow: 0 0 0 4px rgb(244 63 94 / 0.15);
+    }
+
+    /* Deshabilitado: siempre el mismo aspecto y sin efecto al presionar. */
+    button:disabled,
+    [aria-disabled='true'] {
+        cursor: not-allowed;
     }
 
     ::selection {
@@ -166,19 +200,34 @@
         outline-offset: 2px;
     }
 
-    /* Los botones no deben seleccionar su texto con una pulsación larga. */
+    /* Sin retraso de 300 ms al tocar: el navegador no espera un doble toque. */
+    a,
     button,
+    summary,
+    label,
     [role='button'] {
-        -webkit-user-select: none;
-        user-select: none;
         touch-action: manipulation;
     }
 
     /*
-     * iOS hace zoom al enfocar campos con letra menor a 16px.
-     * En pantallas pequeñas forzamos 16px para que el formulario no "salte".
+     * Los controles no seleccionan su texto ni abren el menú de iOS con una
+     * pulsación larga. El texto de contenido sigue siendo seleccionable.
      */
-    @media (max-width: 639px) {
+    button,
+    summary,
+    [role='button'],
+    .btn-brand,
+    .btn-secondary {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+    }
+
+    /*
+     * iOS hace zoom al enfocar campos con letra menor a 16px. Lo evitamos en
+     * cualquier pantalla táctil (celular o tableta), sin bloquear el zoom.
+     */
+    @media (pointer: coarse) {
         input:not([type='checkbox']):not([type='radio']),
         select,
         textarea {
@@ -244,20 +293,55 @@
         transform: none;
     }
 
+    /* ---------- Enlaces de texto ---------- */
+    .link {
+        color: #a12a54;
+        font-weight: 600;
+        text-decoration-line: underline;
+        text-decoration-color: rgb(161 42 84 / 0.3);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+        border-radius: 0.25rem;
+        transition: color 150ms ease, text-decoration-color 150ms ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .link:hover {
+            color: #832545;
+            text-decoration-color: currentColor;
+        }
+    }
+
+    /* ---------- Botón enviando (lo activa app.js al enviar un formulario) ---------- */
+    [data-loading] {
+        pointer-events: none;
+        opacity: 0.85;
+    }
+
+    .btn-spinner {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+        border-radius: 9999px;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        animation: btn-spin 600ms linear infinite;
+    }
+
     /* ---------- Tarjetas ---------- */
     .card-boutique {
         background-color: #fff;
         border-radius: 1.5rem;
         border: 1px solid rgb(var(--c-line));
         box-shadow: 0 1px 2px rgb(43 34 36 / 0.04), 0 8px 24px -12px rgb(120 60 70 / 0.14);
-        transition: border-color 200ms ease, box-shadow 200ms ease;
+        /* Solo cambia el color del borde: animar la sombra obliga a redibujar. */
+        transition: border-color 150ms ease;
     }
 
     @media (hover: hover) and (pointer: fine) {
         a.card-boutique:hover,
         .card-boutique.is-interactive:hover {
-            border-color: #f7d4cb;
-            box-shadow: 0 2px 4px rgb(43 34 36 / 0.04), 0 18px 40px -16px rgb(120 60 70 / 0.22);
+            border-color: #f2b0a6;
         }
     }
 
@@ -276,7 +360,8 @@
         gap: 0.5rem;
         font-size: 0.75rem;
         font-weight: 600;
-        letter-spacing: 0.14em;
+        line-height: 1.3;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: #a12a54;
     }
@@ -292,7 +377,7 @@
     /* ---------- Campos ---------- */
     .input-boutique {
         border-radius: 0.875rem;
-        border: 1px solid rgb(var(--c-line));
+        border: 1px solid rgb(var(--c-field));
         background-color: #fff;
         color: rgb(var(--c-ink));
         font-size: 0.875rem;
@@ -361,7 +446,7 @@
         color: rgb(var(--c-ink-soft));
         font-size: 0.75rem;
         font-weight: 600;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
     }
 
@@ -412,73 +497,170 @@ html::-webkit-scrollbar {
     }
 }
 
-@keyframes carousel-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+/* Movimiento reducido: los botones no se "hunden" al presionar. */
+@media (prefers-reduced-motion: reduce) {
+    .btn-brand:active,
+    .btn-secondary:active {
+        transform: none;
     }
 }
 
-.animate-carousel-fade-in {
-    animation: carousel-fade-in 0.6s ease-out both;
-}
-
-.servicios-marquee-mask {
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-    mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
-}
-
-.servicios-marquee-track {
-    animation: servicios-marquee 42s linear infinite;
-    will-change: transform;
-}
-
-.servicios-marquee-mask:focus-within .servicios-marquee-track {
-    animation-play-state: paused;
-}
-
-@keyframes servicios-marquee {
+@keyframes btn-spin {
     to {
-        transform: translate3d(-50%, 0, 0);
+        transform: rotate(360deg);
     }
 }
 
 /*
- * Entrada suave de secciones al hacer scroll (portada pública).
- * JS agrega `.is-visible`; sin JS el contenido se ve normal.
+ * Agendar cita en el celular: la fila de botones queda fija abajo, así que el
+ * botón del asistente sube para no taparla.
  */
-.js [data-reveal] {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+@media (max-width: 639px) {
+    .agenda-publica .asistente-flotante {
+        bottom: 5.5rem;
+    }
 }
 
-.js [data-reveal].is-visible {
-    opacity: 1;
-    transform: none;
+/* ===================== Fase 5: animaciones con propósito ===================== */
+
+/*
+ * #1 Pasos de agendar cita. Solo después de la primera interacción
+ * (.pasos-animados), para no animar la carga inicial. Al avanzar el
+ * contenido entra desde la derecha; al regresar, desde la izquierda.
+ */
+.pasos-animados .paso-anim {
+    transition:
+        opacity 200ms var(--ease-out),
+        transform 240ms var(--ease-out);
 }
 
-/* Movimiento reducido: se conservan los fundidos, se quitan los desplazamientos. */
+@starting-style {
+    .pasos-animados .paso-anim {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+
+    .pasos-animados[data-direccion='atras'] .paso-anim {
+        transform: translateX(-16px);
+    }
+}
+
+/*
+ * #2 Confirmación de cita: círculo → palomita dibujada → título → resumen
+ * → texto y botón, solapados como un solo gesto (~630 ms en total).
+ */
+@keyframes conf-aparece {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+@keyframes conf-sube {
+    from {
+        opacity: 0;
+        transform: translateY(var(--conf-distancia, 8px));
+    }
+}
+
+@keyframes conf-dibuja {
+    from {
+        stroke-dashoffset: 1;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.conf-circulo {
+    animation: conf-aparece 300ms var(--ease-out) backwards;
+}
+
+.conf-check {
+    stroke-dasharray: 1;
+    animation: conf-dibuja 320ms var(--ease-out) 120ms backwards;
+}
+
+.conf-titulo,
+.conf-resumen,
+.conf-cierre {
+    /* backwards: solo el estado inicial; al terminar no retiene transform
+       (así el botón conserva su efecto al presionar). */
+    animation: conf-sube 400ms var(--ease-out) backwards;
+}
+
+.conf-titulo {
+    animation-delay: 160ms;
+}
+
+.conf-resumen {
+    --conf-distancia: 6px;
+    animation-duration: 380ms;
+    animation-delay: 220ms;
+}
+
+.conf-cierre {
+    --conf-distancia: 4px;
+    animation-duration: 360ms;
+    animation-delay: 270ms;
+}
+
+/*
+ * #4 Menú "Más acciones" de la agenda: aparece desde su botón (esquina
+ * superior derecha, o inferior si abre hacia arriba). Se cierra al instante.
+ */
+.menu-acciones {
+    transform-origin: top right;
+    transition:
+        opacity 150ms var(--ease-out),
+        transform 150ms var(--ease-out);
+}
+
+.menu-acciones.bottom-full {
+    transform-origin: bottom right;
+}
+
+@starting-style {
+    .menu-acciones {
+        opacity: 0;
+        transform: scale(0.97);
+    }
+}
+
+/* Movimiento reducido: sin desplazamientos; solo fundidos breves y juntos. */
 @media (prefers-reduced-motion: reduce) {
-    .js [data-reveal] {
-        transform: none;
-        transition: opacity 200ms ease;
+    .pasos-animados .paso-anim {
+        transition: opacity 150ms ease;
     }
 
-    .servicios-marquee-track {
+    @starting-style {
+        .pasos-animados .paso-anim,
+        .pasos-animados[data-direccion='atras'] .paso-anim {
+            transform: none;
+        }
+    }
+
+    .conf-circulo,
+    .conf-titulo,
+    .conf-resumen,
+    .conf-cierre {
+        animation: fade-in 200ms ease backwards;
+    }
+
+    .conf-check {
         animation: none;
+        stroke-dasharray: none;
     }
 
-    .animate-carousel-fade-in {
-        animation-name: none;
+    @starting-style {
+        .menu-acciones {
+            transform: none;
+        }
     }
+}
 
-    .btn-brand:active,
-    .btn-secondary:active {
-        transform: none;
+@keyframes fade-in {
+    from {
+        opacity: 0;
     }
 }

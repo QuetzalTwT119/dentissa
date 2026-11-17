@@ -10,9 +10,7 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             @if ($errors->any())
-                <div class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm text-rose-800">
-                    {{ $errors->first() }}
-                </div>
+                <x-alert type="error" :message="$errors->first()" />
             @endif
 
             <x-admin.card>
@@ -22,9 +20,9 @@
                 >
                     <x-slot:actions>
                         <form method="GET" action="{{ route('admin.mensajes.index') }}" class="flex items-center gap-2.5">
-                            <label for="filtro_leido" class="text-xs font-semibold uppercase tracking-wider text-muted">Filtrar:</label>
+                            <label for="filtro_leido" class="text-xs font-semibold uppercase tracking-label text-muted">Filtrar:</label>
                             <select id="filtro_leido" name="leido" onchange="this.form.submit()" aria-label="Filtrar por estado del mensaje"
-                                    class="rounded-xl border border-line bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                    class="rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                 <option value="">Todos</option>
                                 <option value="0" @selected(($filtros['leido'] ?? '') === '0')>Sin leer</option>
                                 <option value="1" @selected(($filtros['leido'] ?? '') === '1')>Leídos</option>

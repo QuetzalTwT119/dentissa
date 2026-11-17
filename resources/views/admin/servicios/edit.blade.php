@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+                <h2 class="mt-1.5 text-title-2 text-ink">
                     Editar servicio
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Configuración del servicio y asignación de tratamientos.</p>
@@ -29,7 +29,7 @@
                     <div>
                         <x-input-label for="descripcion" value="Descripción" />
                         <textarea id="descripcion" name="descripcion" rows="3"
-                                  class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion', $servicio->descripcion) }}</textarea>
+                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion', $servicio->descripcion) }}</textarea>
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 
@@ -43,7 +43,7 @@
                         <x-input-label for="imagen" value="Imagen representativa" />
                         @if ($servicio->imagen)
                             <div class="mt-2 mb-3">
-                                <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-20 w-20 rounded-xl border border-line object-cover shadow-sm">
+                                <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-20 w-20 rounded-xl border border-line object-cover shadow-2xs">
                             </div>
                         @endif
                         <input id="imagen" name="imagen" type="file" accept="image/*" class="mt-1.5 block w-full text-sm text-ink file:mr-3 file:rounded-xl file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-brand-700 hover:file:bg-brand-100">
@@ -72,7 +72,7 @@
             </div>
 
             <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <h3 class="text-lg font-semibold text-ink">Tratamientos asignados</h3>
+                <h3 class="text-headline font-semibold text-ink">Tratamientos asignados</h3>
                 <p class="mt-1 text-xs text-muted">Selecciona los tratamientos disponibles para este servicio en la agenda.</p>
 
                 <form method="POST" action="{{ route('admin.servicios.tratamientos.sync', $servicio) }}" class="mt-6 space-y-3">

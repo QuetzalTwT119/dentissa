@@ -51,12 +51,12 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                 <div class="p-6 bg-gradient-to-r from-white via-white to-cream/50">
                     <form method="GET" action="{{ route('admin.reportes.index') }}" class="flex flex-wrap items-end gap-4">
                         <div>
-                            <x-input-label for="fecha_inicio" value="Desde" class="text-xs font-semibold uppercase tracking-wider text-muted" />
+                            <x-input-label for="fecha_inicio" value="Desde" class="text-xs font-semibold uppercase tracking-label text-muted" />
                             <x-text-input id="fecha_inicio" name="fecha_inicio" type="date" class="mt-1.5" max="{{ now()->toDateString() }}" value="{{ old('fecha_inicio', $reporte['rango']['fecha_inicio']) }}" />
                             <x-input-error :messages="$errors->get('fecha_inicio')" class="mt-2" />
                         </div>
                         <div>
-                            <x-input-label for="fecha_fin" value="Hasta" class="text-xs font-semibold uppercase tracking-wider text-muted" />
+                            <x-input-label for="fecha_fin" value="Hasta" class="text-xs font-semibold uppercase tracking-label text-muted" />
                             <x-text-input id="fecha_fin" name="fecha_fin" type="date" class="mt-1.5" max="{{ now()->toDateString() }}" value="{{ old('fecha_fin', $reporte['rango']['fecha_fin']) }}" />
                             <x-input-error :messages="$errors->get('fecha_fin')" class="mt-2" />
                         </div>
@@ -78,39 +78,39 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
             <!-- Tarjetas de Métricas Clave (KPIs) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-stretch">
                 <div class="rounded-2xl border border-line bg-white p-5 shadow-soft transition hover:border-peach-300 flex flex-col justify-between h-full">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-muted">Tasa de ocupación</p>
-                    <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['ocupacion']['tasa_ocupacion'] }}%</p>
+                    <p class="text-xs font-semibold uppercase tracking-label text-muted">Tasa de ocupación</p>
+                    <p class="mt-2 font-serif text-3xl font-semibold text-brand-600">{{ $reporte['ocupacion']['tasa_ocupacion'] }}%</p>
                 </div>
                 <div class="rounded-2xl border border-line bg-white p-5 shadow-soft transition hover:border-peach-300 flex flex-col justify-between h-full">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-muted">Tasa de inasistencia</p>
-                    <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['citas']['tasa_inasistencia'] }}%</p>
+                    <p class="text-xs font-semibold uppercase tracking-label text-muted">Tasa de inasistencia</p>
+                    <p class="mt-2 font-serif text-3xl font-semibold text-brand-600">{{ $reporte['citas']['tasa_inasistencia'] }}%</p>
                 </div>
                 <div class="rounded-2xl border border-line bg-white p-5 shadow-soft transition hover:border-peach-300 flex flex-col justify-between h-full">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-muted">Eficiencia (citas/1.5h)</p>
-                    <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['eficiencia']['eficiencia'] }}</p>
+                    <p class="text-xs font-semibold uppercase tracking-label text-muted">Eficiencia (citas/1.5h)</p>
+                    <p class="mt-2 font-serif text-3xl font-semibold text-brand-600">{{ $reporte['eficiencia']['eficiencia'] }}</p>
                 </div>
                 <div class="rounded-2xl border border-line bg-white p-5 shadow-soft transition hover:border-peach-300 flex flex-col justify-between h-full">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-muted">Citas completadas por hora</p>
-                    <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['eficiencia']['citas_por_hora'] }}</p>
+                    <p class="text-xs font-semibold uppercase tracking-label text-muted">Citas completadas por hora</p>
+                    <p class="mt-2 font-serif text-3xl font-semibold text-brand-600">{{ $reporte['eficiencia']['citas_por_hora'] }}</p>
                 </div>
                 <div class="rounded-2xl border border-line bg-white p-5 shadow-soft transition hover:border-peach-300 flex flex-col justify-between h-full sm:col-span-2 lg:col-span-1">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-muted">Satisfacción promedio</p>
-                    <p class="mt-2 font-serif text-3xl font-bold text-brand-600">{{ $reporte['satisfaccion'] ?? 'Sin datos' }}</p>
+                    <p class="text-xs font-semibold uppercase tracking-label text-muted">Satisfacción promedio</p>
+                    <p class="mt-2 font-serif text-3xl font-semibold text-brand-600">{{ $reporte['satisfaccion'] ?? 'Sin datos' }}</p>
                 </div>
             </div>
 
             <!-- Detalle por Secciones -->
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div class="rounded-2xl border border-line bg-white p-6 shadow-soft">
-                    <h3 class="mb-4 text-base font-bold text-ink">Pacientes</h3>
+                    <h3 class="mb-4 text-headline font-semibold text-ink">Pacientes</h3>
                     <div class="space-y-3 rounded-xl border border-line/80 bg-cream/50 p-4 text-sm">
-                        <p class="text-ink-soft">Total histórico registrado: <span class="font-bold text-ink">{{ $reporte['pacientes']['total'] }}</span></p>
-                        <p class="text-ink-soft">Nuevos en el período: <span class="font-bold text-ink">{{ $reporte['pacientes']['nuevos'] }}</span></p>
+                        <p class="text-ink-soft">Total histórico registrado: <span class="font-semibold text-ink">{{ $reporte['pacientes']['total'] }}</span></p>
+                        <p class="text-ink-soft">Nuevos en el período: <span class="font-semibold text-ink">{{ $reporte['pacientes']['nuevos'] }}</span></p>
                     </div>
                 </div>
 
                 <div class="rounded-2xl border border-line bg-white p-6 shadow-soft">
-                    <h3 class="mb-4 text-base font-bold text-ink">
+                    <h3 class="mb-4 text-headline font-semibold text-ink">
                         Citas por estado ({{ $reporte['citas']['total'] }} en el período)
                     </h3>
                     <table class="w-full text-sm">
@@ -118,7 +118,7 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                             @foreach ($reporte['citas']['por_estado'] as $estado => $total)
                                 <tr class="transition hover:bg-cream/60">
                                     <td class="py-2.5 text-ink-soft">{{ $estadoLabel[$estado] ?? $estado }}</td>
-                                    <td class="py-2.5 text-right font-bold text-ink">{{ $total }}</td>
+                                    <td class="py-2.5 text-right font-semibold text-ink">{{ $total }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -126,13 +126,13 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                 </div>
 
                 <div class="rounded-2xl border border-line bg-white p-6 shadow-soft">
-                    <h3 class="mb-4 text-base font-bold text-ink">Tratamientos más solicitados</h3>
+                    <h3 class="mb-4 text-headline font-semibold text-ink">Tratamientos más solicitados</h3>
                     <table class="w-full text-sm">
                         <tbody class="divide-y divide-line/60">
                             @forelse ($reporte['catalogo']['tratamientos_mas_solicitados'] as $fila)
                                 <tr class="transition hover:bg-cream/60">
                                     <td class="py-2.5 text-ink-soft">{{ $fila['nombre'] }}</td>
-                                    <td class="py-2.5 text-right font-bold text-ink">{{ $fila['total'] }}</td>
+                                    <td class="py-2.5 text-right font-semibold text-ink">{{ $fila['total'] }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -147,7 +147,7 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                 </div>
 
                 <div class="rounded-2xl border border-line bg-white p-6 shadow-soft">
-                    <h3 class="mb-4 text-base font-bold text-ink">
+                    <h3 class="mb-4 text-headline font-semibold text-ink">
                         Historial clínico ({{ $reporte['historial']['total'] }} {{ $reporte['historial']['total'] === 1 ? 'consulta' : 'consultas' }})
                     </h3>
                     <table class="w-full text-sm">
@@ -155,7 +155,7 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                             @foreach ($reporte['historial']['por_tipo'] as $tipo => $total)
                                 <tr class="transition hover:bg-cream/60">
                                     <td class="py-2.5 text-ink-soft">{{ $tipoConsultaLabel[$tipo] ?? $tipo }}</td>
-                                    <td class="py-2.5 text-right font-bold text-ink">{{ $total }}</td>
+                                    <td class="py-2.5 text-right font-semibold text-ink">{{ $total }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

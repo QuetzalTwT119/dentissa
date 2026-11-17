@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <p class="eyebrow">Gestión de Agenda</p>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+                <h2 class="mt-1.5 text-title-2 text-ink">
                     Agendar cita en consultorio
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Registro directo de consulta médica para pacientes registrados.</p>
@@ -44,8 +44,8 @@
                     <!-- Paso 1: Paciente -->
                     <div class="rounded-xl bg-cream/60 p-4 sm:p-5 border border-line/70 space-y-4">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1.5">
-                                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">1</span>
+                            <span class="text-xs font-semibold uppercase tracking-label text-brand-600 flex items-center gap-1.5">
+                                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-700">1</span>
                                 Selección de Paciente
                             </span>
                         </div>
@@ -54,7 +54,7 @@
                             <div>
                                 <x-input-label for="id_paciente" value="Paciente" />
                                 <select id="id_paciente" name="id_paciente" required
-                                        class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                        class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                     <option value="">Selecciona un paciente</option>
                                     @foreach ($pacientes as $paciente)
                                         <option value="{{ $paciente['id'] }}" @selected(old('id_paciente') == $paciente['id'])>{{ $paciente['nombre'] }}</option>
@@ -67,8 +67,8 @@
 
                     <!-- Paso 2: Servicio y Tratamiento -->
                     <div class="rounded-xl bg-white p-4 sm:p-5 border border-line/70 space-y-4">
-                        <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1.5">
-                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">2</span>
+                        <span class="text-xs font-semibold uppercase tracking-label text-brand-600 flex items-center gap-1.5">
+                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-700">2</span>
                             Servicio y Procedimiento
                         </span>
 
@@ -77,7 +77,7 @@
                                 <x-input-label for="id_servicio" value="Servicio" />
                                 <select id="id_servicio" name="id_servicio" required
                                         x-model="idServicio" @change="idTratamiento = ''"
-                                        class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                        class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                     <option value="">Selecciona un servicio</option>
                                     @foreach ($servicios as $servicio)
                                         <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
@@ -91,7 +91,7 @@
                                     <x-input-label for="id_tratamiento" value="Tratamiento" />
                                     <select id="id_tratamiento" name="id_tratamiento" required
                                             x-model="idTratamiento" @change="cargarHorarios()"
-                                            class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                            class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                         <option value="">Selecciona un tratamiento</option>
                                         <template x-for="tratamiento in servicioSeleccionado.tratamientos" :key="tratamiento.id">
                                             <option :value="tratamiento.id" x-text="tratamiento.nombre + ' (' + tratamiento.duracion_estimada + ' min)'"></option>
@@ -105,8 +105,8 @@
 
                     <!-- Paso 3: Fecha y Horario -->
                     <div class="rounded-xl bg-white p-4 sm:p-5 border border-line/70 space-y-4">
-                        <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1.5">
-                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">3</span>
+                        <span class="text-xs font-semibold uppercase tracking-label text-brand-600 flex items-center gap-1.5">
+                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-700">3</span>
                             Fecha y Horario
                         </span>
 
@@ -129,7 +129,7 @@
                     <div>
                         <x-input-label for="motivo" value="Motivo (opcional)" />
                         <textarea id="motivo" name="motivo" rows="3" placeholder="Notas clínicas o motivo específico de consulta..."
-                                  class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('motivo') }}</textarea>
+                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('motivo') }}</textarea>
                         <x-input-error :messages="$errors->get('motivo')" class="mt-2" />
                     </div>
 

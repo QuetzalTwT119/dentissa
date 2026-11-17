@@ -17,8 +17,8 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </span>
-                            <input type="text" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" placeholder="Nombre, correo o teléfono…" aria-label="Buscar pacientes por nombre, correo o teléfono"
-                                   class="w-full rounded-xl border border-line bg-white pl-9 pr-3.5 py-2 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 sm:w-72">
+                            <input enterkeyhint="search" type="text" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" placeholder="Nombre, correo o teléfono…" aria-label="Buscar pacientes por nombre, correo o teléfono"
+                                   class="w-full rounded-xl border border-field bg-white min-h-11 sm:min-h-0 pl-9 pr-3.5 py-2 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 sm:w-72">
                         </div>
                         <x-secondary-button type="submit" class="shrink-0">Buscar</x-secondary-button>
                         @if (!empty($filtros['buscar']))
@@ -45,9 +45,9 @@
                                 <div class="flex items-center gap-3">
                                     <x-admin.user-avatar :name="$paciente->nombre . ' ' . $paciente->apellido" />
                                     <div>
-                                        <p class="font-bold text-ink group-hover:text-brand-700 transition-colors">{{ $paciente->nombre }} {{ $paciente->apellido }}</p>
+                                        <p class="font-semibold text-ink group-hover:text-brand-700 transition-colors">{{ $paciente->nombre }} {{ $paciente->apellido }}</p>
                                         @if (!empty($paciente->tutor_id) && $paciente->tutor)
-                                            <p class="text-[11px] text-muted flex items-center gap-1 mt-0.5">
+                                            <p class="text-caption text-muted flex items-center gap-1 mt-0.5">
                                                 <span class="inline-block h-1.5 w-1.5 rounded-full bg-peach-400"></span>
                                                 Tutor: {{ $paciente->tutor->nombre }} {{ $paciente->tutor->apellido }}
                                             </p>
@@ -62,8 +62,8 @@
                                 {{ $paciente->telefono ?? '—' }}
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span class="inline-flex items-center justify-center min-w-[2.25rem] rounded-full bg-cream px-2.5 py-1 text-xs font-bold text-ink border border-line">
-                                    {{ $paciente->historial_clinico_count }}
+                                <span class="inline-flex items-center justify-center min-w-[2.25rem] rounded-full bg-cream px-2.5 py-1 text-xs font-semibold text-ink border border-line">
+                                    {{ number_format($paciente->historial_clinico_count, 0, '.', ',') }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right">

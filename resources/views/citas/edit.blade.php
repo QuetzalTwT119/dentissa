@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <p class="eyebrow">Reasignación de Agenda</p>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+                <h2 class="mt-1.5 text-title-2 text-ink">
                     Reagendar cita
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Selecciona una nueva fecha y horario disponible para esta consulta.</p>
@@ -25,18 +25,18 @@
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         </div>
                         <div>
-                            <p class="text-xs font-bold uppercase tracking-wider text-brand-600">Cita a reasignar</p>
-                            <h3 class="text-base font-bold text-ink">{{ $cita->paciente->nombre }} {{ $cita->paciente->apellido }}</h3>
+                            <p class="text-xs font-semibold uppercase tracking-label text-brand-600">Cita a reasignar</p>
+                            <h3 class="text-headline font-semibold text-ink">{{ $cita->paciente->nombre }} {{ $cita->paciente->apellido }}</h3>
                         </div>
                     </div>
 
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-brand-100/60 text-xs text-ink">
                         <div>
-                            <span class="font-bold text-ink">Servicio:</span>
+                            <span class="font-semibold text-ink">Servicio:</span>
                             <span>{{ $cita->servicio->nombre ?? '—' }}</span>
                         </div>
                         <div>
-                            <span class="font-bold text-ink">Tratamiento:</span>
+                            <span class="font-semibold text-ink">Tratamiento:</span>
                             <span>{{ $cita->tratamiento->nombre ?? '—' }}</span>
                         </div>
                     </div>

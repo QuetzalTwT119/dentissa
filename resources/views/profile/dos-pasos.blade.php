@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <p class="eyebrow">Seguridad de la cuenta</p>
-            <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">Verificación en dos pasos</h2>
+            <h2 class="mt-1.5 text-title-2 text-ink">Verificación en dos pasos</h2>
             <p class="mt-1 text-sm text-muted">Además de tu contraseña, al entrar se pedirá un código de tu celular.</p>
         </div>
     </x-slot>
@@ -10,17 +10,17 @@
     <div class="py-7 sm:py-10">
         <div class="mx-auto max-w-3xl space-y-6 px-4 sm:px-6 lg:px-8">
             @if (session('status'))
-                <p role="status" class="rounded-2xl border border-sage-100 bg-sage-50 px-4 py-3 text-sm font-medium text-sage-700">{{ session('status') }}</p>
+                <x-alert type="success" :message="session('status')" />
             @endif
 
             @if ($codigos)
                 {{-- Solo se muestran una vez: en la base se guarda únicamente su hash. --}}
                 <section class="card-boutique border-amber-200 p-5 sm:p-7" aria-label="Códigos de recuperación" data-codigos-recuperacion>
-                    <h3 class="text-lg font-semibold text-ink">Guarda tus códigos de recuperación</h3>
-                    <p class="mt-2 text-sm leading-6 text-muted">Si pierdes el celular, cada código sirve <strong>una sola vez</strong> para entrar. Guárdalos en un lugar seguro (impresos o en un gestor de contraseñas). <strong>No se volverán a mostrar.</strong></p>
+                    <h3 class="text-headline font-semibold text-ink">Guarda tus códigos de recuperación</h3>
+                    <p class="mt-2 text-callout text-muted">Si pierdes el celular, cada código sirve <strong>una sola vez</strong> para entrar. Guárdalos en un lugar seguro (impresos o en un gestor de contraseñas). <strong>No se volverán a mostrar.</strong></p>
                     <ul class="mt-4 grid grid-cols-2 gap-2 font-mono text-sm sm:grid-cols-4">
                         @foreach ($codigos as $codigo)
-                            <li class="rounded-lg bg-cream px-3 py-2 text-center tracking-wider text-ink">{{ $codigo }}</li>
+                            <li class="rounded-xl bg-cream px-3 py-2 text-center tracking-label text-ink">{{ $codigo }}</li>
                         @endforeach
                     </ul>
                 </section>
@@ -29,12 +29,12 @@
             @if (! $usuario->tieneDosPasos())
                 <section class="card-boutique p-5 sm:p-7" aria-label="Activar verificación en dos pasos">
                     @if ($obligatoria)
-                        <p class="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
+                        <p class="mb-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-callout text-amber-900">
                             Como administrador puedes ver historiales clínicos: la verificación en dos pasos es <strong>obligatoria</strong> para usar el panel.
                         </p>
                     @endif
 
-                    <ol class="space-y-6 text-sm leading-6 text-ink-soft">
+                    <ol class="space-y-6 text-callout text-ink-soft">
                         <li>
                             <p class="font-semibold text-ink">1. Instala una app de autenticación gratuita</p>
                             <p>Google Authenticator o Microsoft Authenticator, en tu celular.</p>
@@ -45,7 +45,7 @@
                                 <div class="rounded-2xl border border-line bg-white p-3" aria-label="Código QR para la app de autenticación" role="img">{!! $qr['svg'] !!}</div>
                                 <div class="min-w-0">
                                     <p>¿No puedes escanear? Escribe esta clave en la app:</p>
-                                    <p class="mt-1 break-all font-mono text-base tracking-wider text-ink" data-clave-manual>{{ $qr['clave'] }}</p>
+                                    <p class="mt-1 break-all font-mono text-base tracking-label text-ink" data-clave-manual>{{ $qr['clave'] }}</p>
                                 </div>
                             </div>
                         </li>
@@ -54,7 +54,7 @@
                             <form method="POST" action="{{ route('dos-pasos.confirmar') }}" class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
                                 @csrf
                                 <div class="sm:w-48">
-                                    <x-text-input id="codigo" name="codigo" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" required class="block w-full tracking-[0.3em]" placeholder="123456" aria-label="Código de 6 dígitos" />
+                                    <x-text-input id="codigo" name="codigo" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" required class="block w-full tracking-label" placeholder="123456" aria-label="Código de 6 dígitos" />
                                     <x-input-error :messages="$errors->get('codigo')" />
                                 </div>
                                 <x-primary-button class="justify-center py-3">Activar</x-primary-button>
@@ -94,7 +94,7 @@
                 </section>
             @endif
 
-            <a href="{{ route('profile.edit') }}" class="inline-flex min-h-11 items-center text-sm font-semibold text-brand-700 underline-offset-4 hover:underline">← Volver al perfil</a>
+            <a href="{{ route('profile.edit') }}" class="link inline-flex min-h-11 items-center text-sm">← Volver al perfil</a>
         </div>
     </div>
 </x-app-layout>

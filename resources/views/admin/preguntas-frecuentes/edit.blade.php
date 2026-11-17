@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+                <h2 class="mt-1.5 text-title-2 text-ink">
                     Editar pregunta frecuente
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Modificación de respuesta y variantes de lenguaje natural.</p>

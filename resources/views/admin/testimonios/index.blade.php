@@ -30,17 +30,15 @@ $estadoClase = [
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             @if ($errors->any())
-                <div class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm text-rose-800">
-                    {{ $errors->first() }}
-                </div>
+                <x-alert type="error" :message="$errors->first()" />
             @endif
 
             <x-admin.card>
                 <div class="flex flex-col items-stretch gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6 border-b border-line/80 bg-gradient-to-r from-white via-white to-cream/50">
                     <form method="GET" action="{{ route('admin.testimonios.index') }}" class="flex flex-wrap items-center gap-3">
-                        <label for="filtro_estado" class="text-xs font-semibold uppercase tracking-wider text-muted">Filtrar por estado:</label>
+                        <label for="filtro_estado" class="text-xs font-semibold uppercase tracking-label text-muted">Filtrar por estado:</label>
                         <select id="filtro_estado" name="estado" onchange="this.form.submit()"
-                                class="rounded-xl border border-line bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                class="rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="">Todos</option>
                             <option value="pendiente" @selected(($filtros['estado'] ?? '') === 'pendiente')>Pendiente</option>
                             <option value="aprobado" @selected(($filtros['estado'] ?? '') === 'aprobado')>Aprobado</option>
@@ -72,7 +70,7 @@ $estadoClase = [
                                     <span>{{ $testimonio->paciente->nombre }} {{ $testimonio->paciente->apellido }}</span>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-amber-400 tracking-wider font-bold whitespace-nowrap">{{ str_repeat('★', $testimonio->calificacion) }}</td>
+                            <td class="px-6 py-4 text-amber-400 tracking-label font-semibold whitespace-nowrap">{{ str_repeat('★', $testimonio->calificacion) }}</td>
                             <td class="max-w-sm truncate px-6 py-4 text-ink" title="{{ $testimonio->comentario }}">{{ $testimonio->comentario }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $estadoClase[$testimonio->estado->value] ?? 'bg-shell text-ink' }}">
