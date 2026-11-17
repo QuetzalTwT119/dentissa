@@ -1229,3 +1229,49 @@ administrador bloqueado hasta activarla (sin afectar a la asistente ni a las
 páginas públicas); el administrador no puede desactivarla; la contraseña sola
 no abre sesión; un código no sirve dos veces; un código de recuperación sirve
 una sola vez; el reto caduca a los 5 minutos.
+
+## 25. Diagnóstico de la configuración (`dentissa:diagnostico`)
+
+**Por qué:** en Railway no se ven los valores de las variables, y un dato
+faltante (por ejemplo, el token de verificación del webhook) costaba tiempo de
+adivinar. El comando lo revisa todo de una vez.
+
+```bash
+php artisan dentissa:diagnostico
+```
+
+```bash
+php artisan dentissa:diagnostico --remoto
+```
+
+| Área | Qué revisa (sin `--remoto`) |
+|---|---|
+| Aplicación | `APP_KEY`; `APP_DEBUG` apagado en producción; `APP_URL` con https; `APP_NAME=Dentissa` |
+| Sesiones | Cookie segura en producción, sesión cifrada, inactividad ≤ 30 min |
+| Base de datos | Conexión y migraciones pendientes |
+| Almacenamiento | `storage/app/private` existe y se puede escribir (volumen) |
+| Correo y Google | `MAIL_MAILER`, remitente que no sea de ejemplo, credenciales de Google |
+| Respaldos | Llave de cifrado válida (32 bytes) |
+| WhatsApp | Las 4 variables (número, token, clave secreta, token de verificación) |
+| Privacidad | Datos del responsable y si el aviso sigue como borrador |
+| Seguridad | Verificación en dos pasos obligatoria y administradores que aún no la activan |
+| Telegram | Token del bot |
+
+**Con `--remoto`**, además:
+- **Meta:** consulta el número con el token. Confirma que el token sirve y
+  muestra el número, el nombre, el estado y la calidad. Avisa si
+  `DENTISSA_TELEFONO` es el mismo número del bot.
+- **Google:** obtiene un token y revisa sus permisos (`gmail.send`,
+  `drive.file`) con `tokeninfo`. Si hay Drive, comprueba que el último respaldo
+  tenga menos de 36 h.
+
+**Reglas:**
+- Nunca imprime el valor de un secreto: tokens, llaves ni contraseñas.
+- Los mensajes de error de Meta y Google no incluyen el token.
+- Termina con código de error si hay algún ❌, para usarlo en scripts.
+- El ícono de aviso es ❗ porque la consola de Windows no dibuja ⚠️.
+
+**Pruebas:** `DiagnosticoTest` (6): configuración completa sin errores; lo que
+falta y la salida con error; administrador sin verificación; revisión remota
+(Meta, número del bot y falta de Drive); token rechazado por Meta; y que la
+salida no contiene ningún secreto.
