@@ -21,9 +21,7 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             @if (session('error'))
-                <div class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm text-rose-800">
-                    {{ session('error') }}
-                </div>
+                <x-alert type="error" :message="session('error')" />
             @endif
 
             <x-admin.card>

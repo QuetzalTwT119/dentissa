@@ -20,6 +20,6 @@
     </form>
 
     <p class="mt-6 text-center text-sm text-muted">
-        <a href="{{ route('login') }}" class="font-semibold text-brand-700 underline-offset-4 hover:underline">Volver a iniciar sesión</a>
+        <a href="{{ route('login') }}" class="link">Volver a iniciar sesión</a>
     </p>
 </x-guest-layout>

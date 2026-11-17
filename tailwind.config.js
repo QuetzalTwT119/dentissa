@@ -62,6 +62,7 @@ export default {
                 cream: token('cream'),      // fondo de página
                 shell: token('shell'),      // relleno sutil (cabeceras de tabla, chips)
                 line: token('line'),        // bordes y divisores
+                field: token('field'),      // borde de campos de formulario (contraste 3:1)
                 ink: token('ink'),          // texto principal
                 'ink-soft': token('ink-soft'), // texto secundario
                 muted: token('muted'),      // texto de apoyo (cumple 4.5:1 sobre crema)

@@ -114,7 +114,8 @@
         --c-line: 236 224 218;     /* #ECE0DA bordes */
         --c-ink: 43 34 36;         /* #2B2224 texto principal */
         --c-ink-soft: 92 78 82;    /* #5C4E52 texto secundario */
-        --c-muted: 122 106 110;    /* #7A6A6E texto de apoyo */
+        --c-muted: 118 102 105;    /* #766669 texto de apoyo (≥4.5:1 en crema, blanco y shell) */
+        --c-field: 156 137 132;    /* #9C8984 borde de campos (≥3:1 sobre blanco) */
 
         /* Alias heredados: algunos estilos en línea todavía los usan. */
         --brand-pink: #d75078;
@@ -160,6 +161,26 @@
 
     p {
         text-wrap: pretty;
+    }
+
+    /* Campo con error: borde y anillo rosados (lo marca <x-text-input> o aria-invalid). */
+    input[aria-invalid='true'],
+    select[aria-invalid='true'],
+    textarea[aria-invalid='true'] {
+        border-color: #fb7185;
+    }
+
+    input[aria-invalid='true']:focus,
+    select[aria-invalid='true']:focus,
+    textarea[aria-invalid='true']:focus {
+        border-color: #f43f5e;
+        box-shadow: 0 0 0 4px rgb(244 63 94 / 0.15);
+    }
+
+    /* Deshabilitado: siempre el mismo aspecto y sin efecto al presionar. */
+    button:disabled,
+    [aria-disabled='true'] {
+        cursor: not-allowed;
     }
 
     ::selection {
@@ -250,6 +271,41 @@
         transform: none;
     }
 
+    /* ---------- Enlaces de texto ---------- */
+    .link {
+        color: #a12a54;
+        font-weight: 600;
+        text-decoration-line: underline;
+        text-decoration-color: rgb(161 42 84 / 0.3);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+        border-radius: 0.25rem;
+        transition: color 150ms ease, text-decoration-color 150ms ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .link:hover {
+            color: #832545;
+            text-decoration-color: currentColor;
+        }
+    }
+
+    /* ---------- Botón enviando (lo activa app.js al enviar un formulario) ---------- */
+    [data-loading] {
+        pointer-events: none;
+        opacity: 0.85;
+    }
+
+    .btn-spinner {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+        border-radius: 9999px;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        animation: btn-spin 600ms linear infinite;
+    }
+
     /* ---------- Tarjetas ---------- */
     .card-boutique {
         background-color: #fff;
@@ -299,7 +355,7 @@
     /* ---------- Campos ---------- */
     .input-boutique {
         border-radius: 0.875rem;
-        border: 1px solid rgb(var(--c-line));
+        border: 1px solid rgb(var(--c-field));
         background-color: #fff;
         color: rgb(var(--c-ink));
         font-size: 0.875rem;
@@ -487,5 +543,11 @@ html::-webkit-scrollbar {
     .btn-brand:active,
     .btn-secondary:active {
         transform: none;
+    }
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
     }
 }

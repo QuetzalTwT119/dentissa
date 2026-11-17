@@ -52,7 +52,7 @@
                                         :aria-expanded="open.toString()"
                                         aria-haspopup="listbox"
                                         aria-label="Cantidad de registros por página: actualmente {{ $perPageActual }}"
-                                        class="group inline-flex items-center justify-between gap-1.5 rounded-xl border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink shadow-2xs transition-all duration-150 hover:border-brand-300 hover:bg-cream hover:text-brand-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
+                                        class="group inline-flex items-center justify-between gap-1.5 rounded-xl border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink shadow-2xs transition duration-150 hover:border-brand-300 hover:bg-cream hover:text-brand-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
                                     <span x-text="perPage" class="tabular-nums font-semibold">{{ $perPageActual }}</span>
                                     <svg class="h-3.5 w-3.5 text-muted transition-transform duration-200 group-hover:text-brand-500"
                                          :class="{ 'rotate-180 text-brand-500': open }"
@@ -66,7 +66,7 @@
                                      x-transition:enter="transition ease-out duration-150"
                                      x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
                                      x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                                     x-transition:leave="transition ease-in duration-100"
+                                     x-transition:leave="transition ease-out duration-100"
                                      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                                      x-transition:leave-end="opacity-0 -translate-y-1 scale-95"
                                      role="listbox"
@@ -159,7 +159,7 @@
                                         :aria-expanded="open.toString()"
                                         aria-haspopup="listbox"
                                         aria-label="Cantidad de registros por página: actualmente {{ $perPageActual }}"
-                                        class="group inline-flex items-center justify-between gap-1.5 rounded-xl border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink shadow-2xs transition-all duration-150 hover:border-brand-300 hover:bg-cream hover:text-brand-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
+                                        class="group inline-flex items-center justify-between gap-1.5 rounded-xl border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink shadow-2xs transition duration-150 hover:border-brand-300 hover:bg-cream hover:text-brand-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
                                     <span x-text="perPage" class="tabular-nums font-semibold">{{ $perPageActual }}</span>
                                     <svg class="h-3.5 w-3.5 text-muted transition-transform duration-200 group-hover:text-brand-500"
                                          :class="{ 'rotate-180 text-brand-500': open }"
@@ -173,7 +173,7 @@
                                      x-transition:enter="transition ease-out duration-150"
                                      x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
                                      x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                                     x-transition:leave="transition ease-in duration-100"
+                                     x-transition:leave="transition ease-out duration-100"
                                      x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                                      x-transition:leave-end="opacity-0 -translate-y-1 scale-95"
                                      role="listbox"

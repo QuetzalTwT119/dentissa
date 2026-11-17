@@ -113,7 +113,7 @@
                             <div>
                                 <x-input-label for="tutor_id" value="Tutor o responsable (opcional)" />
                                 <select id="tutor_id" name="tutor_id"
-                                        class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                        class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                     <option value="">Ninguno — paciente independiente</option>
                                     @foreach ($tutoresDisponibles as $t)
                                         <option value="{{ $t['id'] }}" @selected(old('tutor_id', $paciente->tutor_id) == $t['id'])>{{ $t['nombre'] }}</option>

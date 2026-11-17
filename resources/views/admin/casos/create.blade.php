@@ -32,7 +32,7 @@
                     <div>
                         <x-input-label for="descripcion" value="Descripción breve" />
                         <textarea id="descripcion" name="descripcion" rows="3" placeholder="Ej. Tras el tratamiento de alineación, se logró una sonrisa simétrica y funcional."
-                                  class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion') }}</textarea>
+                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion') }}</textarea>
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 

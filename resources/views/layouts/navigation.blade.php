@@ -9,7 +9,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
 
 <nav x-data="{ open: false, notificationsOpen: false }" class="sticky top-0 z-40 border-b border-line/80 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
     <div class="mx-auto flex min-h-[4.5rem] max-w-screen-2xl items-center justify-between gap-4 px-4 sm:px-6 2xl:px-10">
-        <a href="{{ route('dashboard') }}" class="flex min-w-0 shrink-0 items-center gap-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-300" aria-label="Dentissa, ir al inicio">
+        <a href="{{ route('dashboard') }}" class="flex min-w-0 shrink-0 items-center gap-3 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300" aria-label="Dentissa, ir al inicio">
             <img src="/images/brand/logo-rosa-transparente.png" alt="" class="h-11 w-11 rounded-full bg-white object-cover p-0.5 ring-1 ring-peach-200" width="44" height="44">
             <span class="flex min-w-0 flex-col leading-tight">
                 <span class="truncate font-serif text-xl font-medium tracking-tight text-ink">Dentissa</span>
@@ -104,7 +104,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
         <section class="overflow-hidden rounded-3xl border border-line bg-white shadow-lift">
             <header class="flex items-center justify-between border-b border-line/70 bg-cream px-4 py-3.5">
                 <div><h2 class="text-title-3 text-ink">Notificaciones recientes</h2><p class="mt-0.5 text-xs text-muted"><span data-notification-count-summary>{{ $notificacionesNuevas }}</span> nuevas</p></div>
-                <button type="button" @click="notificationsOpen = false" class="rounded-lg p-2 text-muted transition hover:bg-white hover:text-ink focus:outline-none focus:ring-2 focus:ring-brand-primary" aria-label="Cerrar notificaciones"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 0 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 0 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /></svg></button>
+                <button type="button" @click="notificationsOpen = false" class="rounded-xl p-2 text-muted transition hover:bg-white hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" aria-label="Cerrar notificaciones"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 0 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 0 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /></svg></button>
             </header>
             <div data-notification-preview-list class="max-h-[min(60vh,26rem)] divide-y divide-line/60 overflow-y-auto">
                 @forelse ($notificacionesRecientes as $notificacion)

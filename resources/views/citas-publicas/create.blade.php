@@ -20,9 +20,9 @@
 
         @php
             // Clases compartidas del formulario (se definen una vez y se reutilizan).
-            $claseCampo = 'block w-full min-h-12 rounded-xl border-line bg-white px-3.5 text-callout text-ink shadow-2xs placeholder:text-muted/70 transition-[border-color,box-shadow] duration-150 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-rose-400';
+            $claseCampo = 'block w-full min-h-12 rounded-xl border-field bg-white px-3.5 text-callout text-ink shadow-2xs placeholder:text-muted transition-[border-color,box-shadow] duration-150 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-rose-400';
             $claseEtiqueta = 'mb-1.5 block text-sm font-semibold text-ink';
-            $claseError = 'mt-1.5 text-xs font-medium text-rose-700';
+            $claseError = 'mt-1.5 text-footnote font-medium text-rose-700';
             $claseAtras = 'btn-secondary flex-1 py-3 sm:flex-none sm:px-6';
             $claseSiguiente = 'btn-brand flex-[2] py-3 sm:flex-none sm:px-8';
         @endphp
@@ -146,7 +146,7 @@
 
                             <div class="mt-5 flex gap-1.5" aria-hidden="true">
                                 <template x-for="(p, i) in pasos" :key="i">
-                                    <span class="h-1.5 flex-1 rounded-full transition-colors duration-300"
+                                    <span class="h-1.5 flex-1 rounded-full transition-colors duration-200"
                                           :class="i < paso ? 'bg-sage-500' : (i === paso ? 'bg-brand-500' : 'bg-line')"></span>
                                 </template>
                             </div>
@@ -219,7 +219,8 @@
                                             </template>
                                         </div>
 
-                                        <div class="mt-6 flex">
+                                        <p x-show="!idTratamiento" class="mt-5 text-footnote text-muted sm:text-right" aria-live="polite">Elige un procedimiento para continuar.</p>
+                                        <div class="mt-3 flex">
                                             <button type="button" :disabled="!idTratamiento" @click="siguiente()" class="btn-brand w-full py-3 sm:ml-auto sm:w-auto sm:px-8">
                                                 <span>Continuar a fecha y horario</span>
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
@@ -241,6 +242,7 @@
                                     <p class="mt-2 text-sm text-muted">Horario regular: {{ $horarioRegular }}</p>
                                 </div>
 
+                                <p x-show="!fecha" class="-mb-3 text-footnote text-muted sm:text-right" aria-live="polite">Elige un día para continuar.</p>
                                 <div class="flex gap-3 sm:justify-between">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="button" :disabled="!fecha" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a horario</button>
@@ -256,6 +258,7 @@
                                     @include('partials.disponibilidad-picker')
                                 </div>
 
+                                <p x-show="!hora" class="-mb-3 text-footnote text-muted sm:text-right" aria-live="polite">Elige un horario para continuar.</p>
                                 <div class="flex gap-3 sm:justify-between">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="button" :disabled="!hora" @click="siguiente()" class="{{ $claseSiguiente }}">Revisar resumen</button>
@@ -292,8 +295,20 @@
 
                         <!-- PASO 4: DATOS DEL PACIENTE -->
                         <template x-if="paso === 4">
-                            <form method="POST" action="{{ route('citas.publica.store') }}" class="space-y-5 p-5 sm:p-8">
+                            <form method="POST" action="{{ route('citas.publica.store') }}" class="space-y-5 p-5 sm:p-8"
+                                  x-init="$nextTick(() => $el.querySelector('[aria-invalid=true]')?.focus())">
                                 @csrf
+
+                                @php
+                                    $camposConError = collect(['nombre', 'apellido', 'telefono', 'email', 'acepta_aviso'])
+                                        ->filter(fn ($campo) => $errors->has($campo))
+                                        ->count();
+                                @endphp
+                                @if ($camposConError > 0)
+                                    <x-alert type="error">
+                                        {{ $camposConError === 1 ? 'Revisa el dato marcado para poder agendar tu cita.' : "Revisa los {$camposConError} datos marcados para poder agendar tu cita." }}
+                                    </x-alert>
+                                @endif
                                 <input type="hidden" name="id_servicio" :value="idServicio">
                                 <input type="hidden" name="id_tratamiento" :value="idTratamiento">
                                 <input type="hidden" name="fecha" :value="fecha">
@@ -364,7 +379,7 @@
                                                @if ($errors->has('acepta_aviso')) aria-describedby="acepta_aviso-error" @endif
                                                class="mt-1 h-5 w-5 shrink-0 rounded border-line text-brand-600 focus:ring-brand-500">
                                         <span>
-                                            He leído y acepto el <a href="{{ route('privacidad.aviso') }}" target="_blank" rel="noopener" class="font-semibold text-brand-700 underline">aviso de privacidad</a>, y doy mi consentimiento para el tratamiento de mis datos, incluidos los de salud. <span class="text-brand-600" aria-hidden="true">*</span>
+                                            He leído y acepto el <a href="{{ route('privacidad.aviso') }}" target="_blank" rel="noopener" class="link">aviso de privacidad</a>, y doy mi consentimiento para el tratamiento de mis datos, incluidos los de salud. <span class="text-brand-600" aria-hidden="true">*</span>
                                         </span>
                                     </label>
                                     @error('acepta_aviso')
@@ -373,16 +388,16 @@
                                 </div>
 
                                 @error('hora')
-                                    <p role="alert" class="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{{ $message }}</p>
+                                    <x-alert type="error" :message="$message" />
                                 @enderror
 
                                 @error('envios')
-                                    <p role="alert" class="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{{ $message }}</p>
+                                    <x-alert type="warning" :message="$message" />
                                 @enderror
 
                                 <div class="flex gap-3 pt-1 sm:justify-between">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
-                                    <button type="submit" class="{{ $claseSiguiente }}">Agendar cita</button>
+                                    <button type="submit" class="{{ $claseSiguiente }}" data-loading-text="Agendando…"><span data-loading-label>Agendar cita</span></button>
                                 </div>
                             </form>
                         </template>
@@ -417,19 +432,19 @@
                             <dl class="mt-2 divide-y divide-line/80 text-sm">
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Servicio</dt>
-                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!servicioSeleccionado && 'font-normal text-muted/80'" x-text="servicioSeleccionado?.nombre ?? 'Pendiente'"></dd>
+                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!servicioSeleccionado && 'font-normal text-muted'" x-text="servicioSeleccionado?.nombre ?? 'Pendiente'"></dd>
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Tratamiento</dt>
-                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!tratamientoSeleccionado && 'font-normal text-muted/80'" x-text="tratamientoSeleccionado?.nombre ?? 'Pendiente'"></dd>
+                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!tratamientoSeleccionado && 'font-normal text-muted'" x-text="tratamientoSeleccionado?.nombre ?? 'Pendiente'"></dd>
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Fecha</dt>
-                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!fecha && 'font-normal text-muted/80'" x-text="fechaLegible || 'Pendiente'"></dd>
+                                    <dd class="min-w-0 text-right font-semibold text-ink" :class="!fecha && 'font-normal text-muted'" x-text="fechaLegible || 'Pendiente'"></dd>
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Hora</dt>
-                                    <dd class="min-w-0 text-right font-semibold text-brand-700" :class="!hora && 'font-normal text-muted/80'" x-text="hora || 'Pendiente'"></dd>
+                                    <dd class="min-w-0 text-right font-semibold text-brand-700" :class="!hora && 'font-normal text-muted'" x-text="hora || 'Pendiente'"></dd>
                                 </div>
                             </dl>
                         </div>

@@ -9,7 +9,7 @@
                 <span>Anterior</span>
             </span>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" rel="prev" aria-label="Ir a la página anterior" class="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-2.5 py-1.5 text-xs font-semibold text-ink transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1">
+            <a href="{{ $paginator->previousPageUrl() }}" rel="prev" aria-label="Ir a la página anterior" class="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-2.5 py-1.5 text-xs font-semibold text-ink transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1">
                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -32,7 +32,7 @@
                             {{ $page }}
                         </span>
                     @else
-                        <a href="{{ $url }}" aria-label="Ir a la página {{ $page }}" class="inline-flex h-8 min-w-8 items-center justify-center rounded-xl border border-line bg-white px-2.5 text-xs font-semibold text-ink transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1">
+                        <a href="{{ $url }}" aria-label="Ir a la página {{ $page }}" class="inline-flex h-8 min-w-8 items-center justify-center rounded-xl border border-line bg-white px-2.5 text-xs font-semibold text-ink transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-1">
                             {{ $page }}
                         </a>
                     @endif
@@ -42,7 +42,7 @@
 
         {{-- Enlace a la página siguiente --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" rel="next" aria-label="Ir a la página siguiente" class="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-2.5 py-1.5 text-xs font-semibold text-ink transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1">
+            <a href="{{ $paginator->nextPageUrl() }}" rel="next" aria-label="Ir a la página siguiente" class="inline-flex items-center gap-1 rounded-xl border border-line bg-white px-2.5 py-1.5 text-xs font-semibold text-ink transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-1">
                 <span>Siguiente</span>
                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

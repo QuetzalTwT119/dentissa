@@ -30,9 +30,7 @@ $estadoClase = [
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             @if ($errors->any())
-                <div class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm text-rose-800">
-                    {{ $errors->first() }}
-                </div>
+                <x-alert type="error" :message="$errors->first()" />
             @endif
 
             <x-admin.card>
@@ -40,7 +38,7 @@ $estadoClase = [
                     <form method="GET" action="{{ route('admin.testimonios.index') }}" class="flex flex-wrap items-center gap-3">
                         <label for="filtro_estado" class="text-xs font-semibold uppercase tracking-label text-muted">Filtrar por estado:</label>
                         <select id="filtro_estado" name="estado" onchange="this.form.submit()"
-                                class="rounded-xl border border-line bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                class="rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="">Todos</option>
                             <option value="pendiente" @selected(($filtros['estado'] ?? '') === 'pendiente')>Pendiente</option>
                             <option value="aprobado" @selected(($filtros['estado'] ?? '') === 'aprobado')>Aprobado</option>

@@ -308,7 +308,7 @@
 
                         <div @class(['mt-6 flex items-end justify-between gap-4 border-t pt-5', 'border-line/80' => ! $destacado, 'border-white/20' => $destacado])>
                             <div>
-                                <span @class(['block text-caption font-semibold uppercase tracking-label', 'text-muted' => ! $destacado, 'text-white/65' => $destacado])>{{ $etiqueta }}</span>
+                                <span @class(['block text-caption font-semibold uppercase tracking-label', 'text-muted' => ! $destacado, 'text-white/80' => $destacado])>{{ $etiqueta }}</span>
                                 <span class="mt-0.5 block text-sm font-semibold">{{ $valor }}</span>
                             </div>
                             <a href="{{ route('citas.publica.create') }}" @class([
@@ -516,7 +516,7 @@
                 </div>
             </div>
 
-            <div class="flex flex-col items-center justify-between gap-3 pt-6 text-center text-xs text-white/45 sm:flex-row sm:text-left">
+            <div class="flex flex-col items-center justify-between gap-3 pt-6 text-center text-xs text-white/60 sm:flex-row sm:text-left">
                 <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
                 <p>Atención con previa cita · <a href="{{ route('privacidad.aviso') }}" class="inline-flex min-h-9 items-center underline underline-offset-4 transition-colors hover:text-white">Aviso de privacidad</a></p>
             </div>

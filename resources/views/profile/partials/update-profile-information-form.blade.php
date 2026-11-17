@@ -45,7 +45,7 @@
                     <p class="text-sm mt-2 text-ink">
                         Tu correo electrónico no está verificado.
 
-                        <button form="send-verification" class="underline text-sm text-ink-soft hover:text-ink rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-400">
+                        <button form="send-verification" class="underline text-sm text-ink-soft hover:text-ink rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-400">
                             Haz clic aquí para reenviar el correo de verificación.
                         </button>
                     </p>

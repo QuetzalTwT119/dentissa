@@ -35,7 +35,7 @@
                         <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/95 p-1 shadow-lg ring-1 ring-white/50 sm:h-14 sm:w-14">
                             <img src="/images/brand/logo-rosa-transparente.png" alt="" class="h-full w-full object-contain">
                         </span>
-                        <div class="leading-tight drop-shadow-md">
+                        <div class="leading-tight drop-shadow-soft">
                             <p class="firma text-xl text-white sm:text-[1.4rem]">Melissa López N.</p>
                             <p class="mt-1 text-caption font-semibold uppercase tracking-label text-white/90">Odontología integral</p>
                         </div>

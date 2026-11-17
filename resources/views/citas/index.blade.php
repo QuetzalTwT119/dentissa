@@ -27,22 +27,15 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             @if (session('success'))
-                <div role="status" class="rounded-2xl border border-sage-100 bg-sage-50/80 p-4 text-sm font-semibold text-sage-700 shadow-soft flex items-center gap-3">
-                    <svg class="h-5 w-5 shrink-0 text-sage-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    <span>{{ session('success') }}</span>
-                </div>
+                <x-alert type="success" :message="session('success')" />
             @endif
 
             @if (session('error'))
-                <div class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm font-semibold text-rose-700 shadow-soft">
-                    {{ session('error') }}
-                </div>
+                <x-alert type="error" :message="session('error')" />
             @endif
 
             @if ($errors->any())
-                <div class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm font-semibold text-rose-700 shadow-soft">
-                    {{ $errors->first() }}
-                </div>
+                <x-alert type="error" :message="$errors->first()" />
             @endif
 
             @include('citas.partials.selector-vista', ['vistaActual' => 'lista'])
@@ -65,20 +58,20 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                        placeholder="Paciente, teléfono, servicio o tratamiento"
                                        aria-label="Buscar citas por paciente, teléfono, servicio o tratamiento"
                                        x-on:input.debounce.600ms="$el.form.requestSubmit()"
-                                       class="block h-12 w-full rounded-xl border border-line bg-cream/60 pl-11 pr-4 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] placeholder:text-muted/70 hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
+                                       class="block h-12 w-full rounded-xl border border-field bg-cream/60 pl-11 pr-4 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] placeholder:text-muted hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
                             </div>
                         </div>
 
                         <div class="min-w-0 xl:col-span-2">
                             <label for="filtro_fecha" class="mb-1.5 block text-sm font-semibold text-ink">Fecha</label>
                             <input id="filtro_fecha" type="date" name="fecha" value="{{ $filtros['fecha'] ?? '' }}" onchange="this.form.submit()"
-                                   class="h-12 w-full rounded-xl border border-line bg-cream/60 px-3 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
+                                   class="h-12 w-full rounded-xl border border-field bg-cream/60 px-3 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
                         </div>
 
                         <div class="min-w-0 xl:col-span-2">
                             <label for="filtro_estado" class="mb-1.5 block text-sm font-semibold text-ink">Estado</label>
                             <select id="filtro_estado" name="estado" onchange="this.form.submit()"
-                                    class="h-12 w-full rounded-xl border border-line bg-cream/60 px-3 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
+                                    class="h-12 w-full rounded-xl border border-field bg-cream/60 px-3 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
                                 <option value="">Todos los estados</option>
                                 @foreach ($estadoLabel as $valor => $etiqueta)
                                     <option value="{{ $valor }}" @selected(($filtros['estado'] ?? '') === $valor)>{{ $etiqueta }}</option>
@@ -179,7 +172,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                                 @csrf
                                                 @method('patch')
                                                 <button type="submit"
-                                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
+                                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
                                                     Confirmar
                                                 </button>
                                             </form>
@@ -188,7 +181,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                                 @csrf
                                                 @method('patch')
                                                 <button type="submit"
-                                                        class="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-brand-600 px-3.5 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
+                                                        class="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-brand-600 px-3.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
                                                     <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.5 4.75a.75.75 0 011.143-.64l8 5a.75.75 0 010 1.28l-8 5A.75.75 0 016.5 14.75v-10z" /></svg>
                                                     Iniciar
                                                 </button>
@@ -198,7 +191,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                                 @csrf
                                                 @method('patch')
                                                 <button type="submit"
-                                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-sage-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-sage-700 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:ring-offset-2">
+                                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-sage-600 px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-sage-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2">
                                                     Completar
                                                 </button>
                                             </form>
@@ -206,8 +199,8 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
 
                                         @if ($esPersonal && in_array($cita->estado->value, $estadosConAccionesSecundarias, true))
                                             <details class="group relative">
-                                                <summary aria-label="Abrir más acciones de la cita" title="Más acciones" class="inline-flex h-[42px] cursor-pointer list-none items-center justify-center gap-2 rounded-full border border-line bg-white px-3 text-xs font-semibold text-ink-soft shadow-2xs transition-colors duration-150 hover:border-peach-300 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 [&::-webkit-details-marker]:hidden">
-                                                    <span class="flex h-6 w-6 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                                                <summary aria-label="Abrir más acciones de la cita" title="Más acciones" class="inline-flex h-[42px] cursor-pointer list-none items-center justify-center gap-2 rounded-full border border-line bg-white px-3 text-xs font-semibold text-ink-soft shadow-2xs transition-colors duration-150 hover:border-peach-300 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
+                                                    <span class="flex h-6 w-6 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
                                                         <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                                             <path d="M10 4.25a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zm0 4.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zm0 4.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5z" />
                                                         </svg>
@@ -224,7 +217,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                                             @csrf
                                                             @method('patch')
                                                             <button type="submit" class="flex w-full items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-left text-sm font-medium text-ink-soft transition hover:bg-amber-50 hover:text-amber-800 focus:bg-amber-50 focus:outline-none">
-                                                                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+                                                                <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
                                                                     <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v3.5c0 .414.336.75.75.75h2a.75.75 0 000-1.5h-1.25v-2.75z" clip-rule="evenodd" /></svg>
                                                                 </span>
                                                                 Marcar inasistencia
@@ -232,7 +225,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                                         </form>
                                                     @endif
                                                     <a href="{{ route('citas.edit', $cita) }}" class="flex items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-brand-50 hover:text-brand-800 focus:bg-brand-50 focus:text-brand-800 focus:outline-none">
-                                                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                                                        <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
                                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M10 4v2m0 8v2m6-6h-2M6 10H4m10.243-4.243-1.414 1.414M7.172 12.828l-1.414 1.414m8.485 0-1.414-1.414M7.172 7.172 5.758 5.758" /><circle cx="10" cy="10" r="3" stroke-width="1.6" /></svg>
                                                         </span>
                                                         Reagendar
@@ -244,7 +237,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                                         @method('patch')
                                                         <input type="hidden" name="motivo_cancelacion" value="">
                                                         <button type="submit" class="flex w-full items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-left text-sm font-medium text-rose-700 transition hover:bg-rose-50 focus:bg-rose-50 focus:outline-none">
-                                                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
+                                                            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
                                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="m6 6 8 8M14 6l-8 8" /></svg>
                                                             </span>
                                                             Cancelar cita

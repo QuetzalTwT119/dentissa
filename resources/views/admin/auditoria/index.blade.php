@@ -126,7 +126,7 @@ $etiquetasTabla = [
                                 </label>
                                 <input id="filtro_desde" type="date" name="desde" value="{{ $filtros['desde'] ?? '' }}"
                                        aria-label="Fecha inicial desde"
-                                       class="block w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                       class="block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                             </div>
 
                             <!-- Hasta -->
@@ -136,7 +136,7 @@ $etiquetasTabla = [
                                 </label>
                                 <input id="filtro_hasta" type="date" name="hasta" value="{{ $filtros['hasta'] ?? '' }}"
                                        aria-label="Fecha final hasta"
-                                       class="block w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                       class="block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                             </div>
 
                             <!-- Usuario -->
@@ -146,7 +146,7 @@ $etiquetasTabla = [
                                 </label>
                                 <select id="filtro_usuario" name="usuario_id"
                                         aria-label="Filtrar por usuario"
-                                        class="block w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                        class="block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                                     <option value="">Todos los usuarios</option>
                                     @foreach ($usuarios as $usuario)
                                         <option value="{{ $usuario->id }}" @selected((string) ($filtros['usuario_id'] ?? '') === (string) $usuario->id)>
@@ -163,7 +163,7 @@ $etiquetasTabla = [
                                 </label>
                                 <select id="filtro_accion" name="accion"
                                         aria-label="Filtrar por acción"
-                                        class="block w-full rounded-xl border border-line bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                        class="block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                                     <option value="">Todas las acciones</option>
                                     @foreach ($acciones as $accion)
                                         <option value="{{ $accion }}" @selected(($filtros['accion'] ?? '') === $accion)>
@@ -231,7 +231,7 @@ $etiquetasTabla = [
                             <td class="px-6 py-4">
                                 <div class="inline-flex items-center gap-1.5 text-sm text-ink">
                                     <span class="font-medium">{{ $etiquetasTabla[$registro->tabla] ?? ucfirst(str_replace('_', ' ', $registro->tabla ?? 'Registro')) }}</span>
-                                    <span class="rounded-md bg-cream px-1.5 py-0.5 text-xs font-mono font-semibold text-muted border border-line">
+                                    <span class="rounded-lg bg-cream px-1.5 py-0.5 text-xs font-mono font-semibold text-muted border border-line">
                                         #{{ $registro->registro_id ?? '—' }}
                                     </span>
                                 </div>
@@ -240,7 +240,7 @@ $etiquetasTabla = [
                                 @if ($registro->datos_anteriores || $registro->datos_nuevos)
                                     <details class="group relative">
                                         <summary aria-label="Ver cambios detallados del evento"
-                                                 class="inline-flex cursor-pointer list-none items-center gap-1 rounded-xl bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 border border-brand-200/60 transition hover:bg-brand-600 hover:text-white hover:border-brand-600 shadow-xs focus:outline-none focus:ring-2 focus:ring-brand-500/25 [&::-webkit-details-marker]:hidden">
+                                                 class="inline-flex cursor-pointer list-none items-center gap-1 rounded-xl bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 border border-brand-200/60 transition hover:bg-brand-600 hover:text-white hover:border-brand-600 shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/25 [&::-webkit-details-marker]:hidden">
                                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>

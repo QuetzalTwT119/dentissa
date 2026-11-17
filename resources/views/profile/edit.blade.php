@@ -42,20 +42,20 @@
                 <nav aria-label="Secciones del perfil" class="card-boutique p-4 lg:sticky lg:top-28">
                     <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-label text-muted">Tu cuenta</p>
                     <div class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
-                        <a href="#profile-information" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-300 lg:w-full">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-brand-600 shadow-sm" aria-hidden="true">
+                        <a href="#profile-information" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:w-full">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-brand-600 shadow-2xs" aria-hidden="true">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /></svg>
                             </span>
                             Información personal
                         </a>
-                        <a href="#profile-password" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-cream hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 lg:w-full">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-cream text-muted" aria-hidden="true">
+                        <a href="#profile-password" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-cream hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:w-full">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-cream text-muted" aria-hidden="true">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4.5" y="10" width="15" height="10.5" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v2"/></svg>
                             </span>
                             Contraseña
                         </a>
-                        <a href="{{ route('dos-pasos.show') }}" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-cream hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-300 lg:w-full">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-cream text-muted" aria-hidden="true">
+                        <a href="{{ route('dos-pasos.show') }}" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-cream hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:w-full">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-cream text-muted" aria-hidden="true">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path stroke-linecap="round" d="M11 18.5h2"/></svg>
                             </span>
                             Verificación en dos pasos

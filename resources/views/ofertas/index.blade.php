@@ -21,7 +21,7 @@
                                 : '$'.$oferta->valor_descuento.' de descuento';
                         }
                     @endphp
-                    <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:shadow-md hover:border-peach-300 h-full flex flex-col justify-between">
+                    <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:border-peach-300 h-full flex flex-col justify-between">
                         <div>
                             @if ($oferta->imagen)
                                 <img src="/storage/{{ $oferta->imagen }}" alt="{{ $oferta->titulo }}" class="h-48 w-full object-cover">

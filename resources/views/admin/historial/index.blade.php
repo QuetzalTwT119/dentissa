@@ -64,9 +64,7 @@ $tipoConsultaLabel = [
             </div>
 
             @if (session('status'))
-                <div role="status" class="rounded-2xl border border-sky-200 bg-sky-50/80 p-4 text-sm text-sky-800">
-                    {{ session('status') }}
-                </div>
+                <x-alert type="info" :message="session('status')" />
             @endif
 
             <div class="space-y-4">

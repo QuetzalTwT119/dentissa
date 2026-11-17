@@ -74,7 +74,7 @@
 
                     <section>
                         <h2>5. Tus derechos ARCO y cómo revocar tu consentimiento</h2>
-                        <p>Puedes <strong>acceder</strong> a tus datos, <strong>rectificarlos</strong>, <strong>cancelarlos</strong> u <strong>oponerte</strong> a su uso, así como revocar tu consentimiento, enviando una solicitud a {!! $correo ? '<a class="font-semibold text-brand-700 underline" href="mailto:'.e($correo).'">'.e($correo).'</a>' : $dato(null, 'correo para solicitudes') !!} o llamando al <a class="font-semibold text-brand-700 underline" href="{{ config('dentissa.contacto.telefono_enlace') }}">{{ config('dentissa.contacto.telefono') }}</a>. Indica tu nombre, cómo localizarte y qué solicitas. Te responderemos en los plazos que marca la ley.</p>
+                        <p>Puedes <strong>acceder</strong> a tus datos, <strong>rectificarlos</strong>, <strong>cancelarlos</strong> u <strong>oponerte</strong> a su uso, así como revocar tu consentimiento, enviando una solicitud a {!! $correo ? '<a class="link" href="mailto:'.e($correo).'">'.e($correo).'</a>' : $dato(null, 'correo para solicitudes') !!} o llamando al <a class="link" href="{{ config('dentissa.contacto.telefono_enlace') }}">{{ config('dentissa.contacto.telefono') }}</a>. Indica tu nombre, cómo localizarte y qué solicitas. Te responderemos en los plazos que marca la ley.</p>
                         <p class="mt-3">El expediente clínico debe conservarse el tiempo que exige la normativa de salud aplicable, por lo que algunas solicitudes de cancelación pueden tener esa limitación.</p>
                     </section>
 

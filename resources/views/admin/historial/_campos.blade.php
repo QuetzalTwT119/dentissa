@@ -26,7 +26,7 @@ $valor = function (string $campo, $default = '') use ($historial) {
     <div>
         <x-input-label for="tipo_consulta" value="Tipo de consulta (obligatorio)" />
         <select id="tipo_consulta" name="tipo_consulta" required
-                class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
             @foreach ($tiposConsulta as $valorTipo => $etiqueta)
                 <option value="{{ $valorTipo }}" @selected($valor('tipo_consulta', 'primera_vez') === $valorTipo)>{{ $etiqueta }}</option>
             @endforeach
@@ -39,7 +39,7 @@ $valor = function (string $campo, $default = '') use ($historial) {
     <div>
         <x-input-label for="id_cita" value="Cita relacionada (opcional)" />
         <select id="id_cita" name="id_cita"
-                class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
             <option value="">Ninguna</option>
             @foreach ($citas as $cita)
                 <option value="{{ $cita->id }}" @selected(old('id_cita', $historial?->id_cita) == $cita->id)>
@@ -54,35 +54,35 @@ $valor = function (string $campo, $default = '') use ($historial) {
 <div>
     <x-input-label for="motivo_consulta" value="Motivo de la consulta (obligatorio)" />
     <textarea id="motivo_consulta" name="motivo_consulta" rows="2" required
-              class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('motivo_consulta') }}</textarea>
+              class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('motivo_consulta') }}</textarea>
     <x-input-error :messages="$errors->get('motivo_consulta')" class="mt-2" />
 </div>
 
 <div>
     <x-input-label for="diagnostico" value="Diagnóstico (opcional)" />
     <textarea id="diagnostico" name="diagnostico" rows="2"
-              class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('diagnostico') }}</textarea>
+              class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('diagnostico') }}</textarea>
     <x-input-error :messages="$errors->get('diagnostico')" class="mt-2" />
 </div>
 
 <div>
     <x-input-label for="tratamiento_realizado" value="Tratamiento realizado (opcional)" />
     <textarea id="tratamiento_realizado" name="tratamiento_realizado" rows="2"
-              class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('tratamiento_realizado') }}</textarea>
+              class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('tratamiento_realizado') }}</textarea>
     <x-input-error :messages="$errors->get('tratamiento_realizado')" class="mt-2" />
 </div>
 
 <div>
     <x-input-label for="medicamentos_recetados" value="Medicamentos recetados (opcional)" />
     <textarea id="medicamentos_recetados" name="medicamentos_recetados" rows="2"
-              class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('medicamentos_recetados') }}</textarea>
+              class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('medicamentos_recetados') }}</textarea>
     <x-input-error :messages="$errors->get('medicamentos_recetados')" class="mt-2" />
 </div>
 
 <div>
     <x-input-label for="observaciones" value="Observaciones (opcional)" />
     <textarea id="observaciones" name="observaciones" rows="2"
-              class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('observaciones') }}</textarea>
+              class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('observaciones') }}</textarea>
     <x-input-error :messages="$errors->get('observaciones')" class="mt-2" />
 </div>
 
@@ -93,6 +93,6 @@ $valor = function (string $campo, $default = '') use ($historial) {
     </p>
     <textarea id="notas_doctor" name="notas_doctor" rows="2"
               aria-describedby="notas_doctor_ayuda"
-              class="mt-2 block w-full rounded-xl border border-amber-200 bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-200">{{ $valor('notas_doctor') }}</textarea>
+              class="mt-2 block w-full rounded-xl border border-amber-200 bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-200">{{ $valor('notas_doctor') }}</textarea>
     <x-input-error :messages="$errors->get('notas_doctor')" class="mt-2" />
 </div>

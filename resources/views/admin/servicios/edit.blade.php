@@ -29,7 +29,7 @@
                     <div>
                         <x-input-label for="descripcion" value="Descripción" />
                         <textarea id="descripcion" name="descripcion" rows="3"
-                                  class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion', $servicio->descripcion) }}</textarea>
+                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion', $servicio->descripcion) }}</textarea>
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 
@@ -43,7 +43,7 @@
                         <x-input-label for="imagen" value="Imagen representativa" />
                         @if ($servicio->imagen)
                             <div class="mt-2 mb-3">
-                                <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-20 w-20 rounded-xl border border-line object-cover shadow-sm">
+                                <img src="/storage/{{ $servicio->imagen }}" alt="{{ $servicio->nombre }}" class="h-20 w-20 rounded-xl border border-line object-cover shadow-2xs">
                             </div>
                         @endif
                         <input id="imagen" name="imagen" type="file" accept="image/*" class="mt-1.5 block w-full text-sm text-ink file:mr-3 file:rounded-xl file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-brand-700 hover:file:bg-brand-100">

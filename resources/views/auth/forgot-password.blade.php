@@ -21,7 +21,7 @@
         </div>
 
         <div class="flex flex-col-reverse gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
-            <a href="{{ route('login') }}" class="text-center text-sm font-semibold text-brand-700 underline-offset-4 hover:text-brand-800 hover:underline">← Volver a inicio de sesión</a>
+            <a href="{{ route('login') }}" class="link text-center text-sm">← Volver a inicio de sesión</a>
             <x-primary-button>
                 Enviar enlace de restablecimiento
             </x-primary-button>

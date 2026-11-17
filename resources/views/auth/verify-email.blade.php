@@ -25,7 +25,7 @@
         <form method="POST" action="{{ route('logout') }}">
             @csrf
 
-            <button type="submit" class="text-xs font-medium text-ink-soft hover:text-brand-700 underline focus:outline-none focus:ring-2 focus:ring-brand-400">
+            <button type="submit" class="text-xs font-medium text-ink-soft hover:text-brand-700 underline focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">
                 Cerrar sesión
             </button>
         </form>

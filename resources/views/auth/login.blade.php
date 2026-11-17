@@ -23,7 +23,7 @@
             <div class="flex items-center justify-between gap-3">
                 <x-input-label for="password" value="Contraseña" />
                 @if (Route::has('password.request'))
-                    <a class="rounded text-sm font-semibold text-brand-700 underline-offset-4 transition-colors hover:text-brand-800 hover:underline" href="{{ route('password.request') }}">¿La olvidaste?</a>
+                    <a class="link text-sm" href="{{ route('password.request') }}">¿La olvidaste?</a>
                 @endif
             </div>
             <div class="relative mt-2">
@@ -41,8 +41,8 @@
             <span class="text-sm text-ink-soft">Mantener la sesión iniciada</span>
         </label>
 
-        <button type="submit" class="btn-brand w-full py-3">
-            Iniciar sesión
+        <button type="submit" class="btn-brand w-full py-3" data-loading-text="Entrando…">
+            <span data-loading-label>Iniciar sesión</span>
             <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" />
             </svg>

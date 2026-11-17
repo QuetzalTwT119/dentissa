@@ -82,7 +82,7 @@
     <div x-show="abierto" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2 scale-[0.97]" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-out duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 translate-y-1" x-cloak class="w-[calc(100vw-2rem)] max-w-sm origin-bottom-right overflow-hidden rounded-3xl border border-line bg-white p-4 shadow-lift sm:w-[calc(100vw-2.5rem)]">
         <div class="flex items-start justify-between gap-4">
             <div class="flex min-w-0 items-center gap-3">
-                <span class="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white shadow-sm border border-white">
+                <span class="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white shadow-2xs border border-white">
                     <svg aria-hidden="true" class="h-7 w-7" viewBox="0 0 24 24" fill="none">
                         <path d="M12 3.6c-1.6-1.2-4.5-1.2-6.4.1C3.2 5.4 3.7 8.4 4.4 10.8c.8 2.8 2.8 8.1 4.5 8.1.8 0 1.1-1.5 1.5-2.9.4-1.3.7-2 1.6-2s1.2.7 1.6 2c.4 1.4.7 2.9 1.5 2.9 1.7 0 3.7-5.3 4.5-8.1.7-2.4 1.2-5.4-1.2-7.1-1.9-1.3-4.8-1.3-6.4-.1Z" fill="white" />
                         <circle cx="9" cy="9.3" r=".9" fill="#B73361" />
@@ -111,7 +111,7 @@
         <form class="mt-3 flex gap-2" @submit.prevent="preguntar()">
             <label for="consulta-inicio" class="sr-only">Escribe tu pregunta</label>
             <input id="consulta-inicio" type="text" x-model="consulta" placeholder="Ej. Quiero una cita"
-                   class="block min-h-11 min-w-0 flex-1 rounded-full border-line px-4 text-sm shadow-2xs focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15">
+                   class="block min-h-11 min-w-0 flex-1 rounded-full border-field px-4 text-sm shadow-2xs focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15">
             <button type="submit" :disabled="cargando || consulta.trim().length < 3"
                     class="inline-flex min-h-11 items-center rounded-full bg-brand-600 px-5 text-sm font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-brand-700 active:scale-[0.97] disabled:opacity-50">Enviar</button>
         </form>

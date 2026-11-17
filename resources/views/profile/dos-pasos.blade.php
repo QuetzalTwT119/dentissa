@@ -10,7 +10,7 @@
     <div class="py-7 sm:py-10">
         <div class="mx-auto max-w-3xl space-y-6 px-4 sm:px-6 lg:px-8">
             @if (session('status'))
-                <p role="status" class="rounded-2xl border border-sage-100 bg-sage-50 px-4 py-3 text-sm font-medium text-sage-700">{{ session('status') }}</p>
+                <x-alert type="success" :message="session('status')" />
             @endif
 
             @if ($codigos)
@@ -20,7 +20,7 @@
                     <p class="mt-2 text-callout text-muted">Si pierdes el celular, cada código sirve <strong>una sola vez</strong> para entrar. Guárdalos en un lugar seguro (impresos o en un gestor de contraseñas). <strong>No se volverán a mostrar.</strong></p>
                     <ul class="mt-4 grid grid-cols-2 gap-2 font-mono text-sm sm:grid-cols-4">
                         @foreach ($codigos as $codigo)
-                            <li class="rounded-lg bg-cream px-3 py-2 text-center tracking-label text-ink">{{ $codigo }}</li>
+                            <li class="rounded-xl bg-cream px-3 py-2 text-center tracking-label text-ink">{{ $codigo }}</li>
                         @endforeach
                     </ul>
                 </section>
@@ -94,7 +94,7 @@
                 </section>
             @endif
 
-            <a href="{{ route('profile.edit') }}" class="inline-flex min-h-11 items-center text-sm font-semibold text-brand-700 underline-offset-4 hover:underline">← Volver al perfil</a>
+            <a href="{{ route('profile.edit') }}" class="link inline-flex min-h-11 items-center text-sm">← Volver al perfil</a>
         </div>
     </div>
 </x-app-layout>

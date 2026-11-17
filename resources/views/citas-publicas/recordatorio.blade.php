@@ -81,7 +81,7 @@
                 @elseif ($resultado === Respuesta::NO_DISPONIBLE || ! $disponible)
                     <p class="mt-5 text-callout text-muted">
                         La cita ya pasó, se canceló o ya fue atendida. Si necesitas ayuda, llama al consultorio al
-                        <a class="font-semibold text-brand-700 underline" href="{{ config('dentissa.contacto.telefono_enlace') }}">{{ config('dentissa.contacto.telefono') }}</a>.
+                        <a class="link" href="{{ config('dentissa.contacto.telefono_enlace') }}">{{ config('dentissa.contacto.telefono') }}</a>.
                     </p>
                     <a href="{{ route('citas.publica.create') }}" class="btn-brand mt-8 w-full py-3">Agendar una cita</a>
                 @else
@@ -95,7 +95,7 @@
                     <p class="mt-6 text-xs font-semibold uppercase tracking-label text-muted">¿Otra respuesta?</p>
                     <div class="mt-2 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
                         @foreach ($otras as $otra)
-                            <a href="{{ $enlaces[$otra] }}" class="inline-flex min-h-11 items-center font-semibold text-brand-700 underline-offset-4 hover:underline">{{ $etiquetasOtras[$otra] }}</a>
+                            <a href="{{ $enlaces[$otra] }}" class="link inline-flex min-h-11 items-center">{{ $etiquetasOtras[$otra] }}</a>
                         @endforeach
                     </div>
                 @endif

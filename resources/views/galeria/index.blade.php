@@ -11,10 +11,10 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 items-stretch">
                 @forelse ($imagenes as $imagen)
-                    <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:shadow-md hover:border-peach-300 h-full flex flex-col justify-between group">
+                    <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:border-peach-300 h-full flex flex-col justify-between group">
                         <div>
                             <div class="relative h-48 w-full overflow-hidden bg-stone-100">
-                                <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
+                                <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-full w-full object-cover transition duration-200 group-hover:scale-105">
                             </div>
                             @if ($imagen->titulo || $imagen->descripcion)
                                 <div class="p-4 sm:p-5">

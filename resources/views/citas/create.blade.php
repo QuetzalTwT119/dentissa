@@ -54,7 +54,7 @@
                             <div>
                                 <x-input-label for="id_paciente" value="Paciente" />
                                 <select id="id_paciente" name="id_paciente" required
-                                        class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                        class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                     <option value="">Selecciona un paciente</option>
                                     @foreach ($pacientes as $paciente)
                                         <option value="{{ $paciente['id'] }}" @selected(old('id_paciente') == $paciente['id'])>{{ $paciente['nombre'] }}</option>
@@ -77,7 +77,7 @@
                                 <x-input-label for="id_servicio" value="Servicio" />
                                 <select id="id_servicio" name="id_servicio" required
                                         x-model="idServicio" @change="idTratamiento = ''"
-                                        class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                        class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                     <option value="">Selecciona un servicio</option>
                                     @foreach ($servicios as $servicio)
                                         <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
@@ -91,7 +91,7 @@
                                     <x-input-label for="id_tratamiento" value="Tratamiento" />
                                     <select id="id_tratamiento" name="id_tratamiento" required
                                             x-model="idTratamiento" @change="cargarHorarios()"
-                                            class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                            class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                         <option value="">Selecciona un tratamiento</option>
                                         <template x-for="tratamiento in servicioSeleccionado.tratamientos" :key="tratamiento.id">
                                             <option :value="tratamiento.id" x-text="tratamiento.nombre + ' (' + tratamiento.duracion_estimada + ' min)'"></option>
@@ -129,7 +129,7 @@
                     <div>
                         <x-input-label for="motivo" value="Motivo (opcional)" />
                         <textarea id="motivo" name="motivo" rows="3" placeholder="Notas clínicas o motivo específico de consulta..."
-                                  class="mt-1.5 block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink shadow-sm transition placeholder:text-muted/70 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('motivo') }}</textarea>
+                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('motivo') }}</textarea>
                         <x-input-error :messages="$errors->get('motivo')" class="mt-2" />
                     </div>
 

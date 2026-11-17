@@ -8,7 +8,7 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2.5">
-                <button type="button" data-notification-sound-toggle data-label-on="Silenciar sonido" data-label-off="Activar sonido" aria-pressed="false" class="inline-flex items-center gap-2 min-h-11 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-2xs transition hover:border-peach-300 hover:bg-cream focus:outline-none focus:ring-2 focus:ring-brand-400" aria-label="Activar sonido de notificaciones" title="Activar sonido de notificaciones">
+                <button type="button" data-notification-sound-toggle data-label-on="Silenciar sonido" data-label-off="Activar sonido" aria-pressed="false" class="inline-flex items-center gap-2 min-h-11 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-2xs transition hover:border-peach-300 hover:bg-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Activar sonido de notificaciones" title="Activar sonido de notificaciones">
                     <svg class="h-4 w-4 text-muted" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H3v6h3l5 4V5Zm4.5 3.5a5 5 0 0 1 0 7m3-10a9 9 0 0 1 0 13" />
                     </svg>
@@ -19,7 +19,7 @@
                     <form method="POST" action="{{ route('notificaciones.leidas') }}">
                         @csrf
                         @method('PATCH')
-                        <button class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold uppercase tracking-label text-white shadow-soft transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
+                        <button class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold uppercase tracking-label text-white shadow-soft transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
                             Marcar todas como leídas
                         </button>
                     </form>
@@ -31,12 +31,7 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8">
             @if (session('success'))
-                <div role="status" class="flex items-center gap-3 rounded-2xl border border-sage-100 bg-sage-50/80 px-4 py-3 text-sm text-sage-700 shadow-soft">
-                    <svg class="h-5 w-5 shrink-0 text-sage-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.78-9.72a.75.75 0 0 0-1.06-1.06l-3.47 3.47-1.47-1.47a.75.75 0 0 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l4-4Z" clip-rule="evenodd" />
-                    </svg>
-                    {{ session('success') }}
-                </div>
+                <x-alert type="success" :message="session('success')" />
             @endif
 
             <section class="grid gap-4 sm:grid-cols-3" aria-label="Resumen de notificaciones">
@@ -88,7 +83,7 @@
                             @foreach ($grupo as $notificacion)
                     @php($pendiente = is_null($notificacion->leida_en))
                     @php($prioritaria = $notificacion->esPrioritaria())
-                    <article class="relative overflow-hidden rounded-2xl border bg-white shadow-soft transition hover:shadow-md {{ $pendiente ? ($prioritaria ? 'border-rose-300' : 'border-peach-300') : 'border-line' }}">
+                    <article class="relative overflow-hidden rounded-2xl border bg-white shadow-soft transition {{ $pendiente ? ($prioritaria ? 'border-rose-300' : 'border-peach-300') : 'border-line' }}">
                         @if ($pendiente)
                             <span class="absolute inset-y-0 left-0 w-1.5 bg-brand-600" aria-hidden="true"></span>
                         @endif
@@ -140,13 +135,13 @@
                                     <form method="POST" action="{{ route('notificaciones.leida', $notificacion) }}">
                                         @csrf
                                         @method('PATCH')
-                                        <button class="rounded-xl border border-line bg-white px-3.5 py-2 text-xs font-medium text-ink transition hover:bg-cream hover:border-peach-300 focus:outline-none focus:ring-2 focus:ring-brand-400">Marcar leída</button>
+                                        <button class="rounded-xl border border-line bg-white px-3.5 py-2 text-xs font-medium text-ink transition hover:bg-cream hover:border-peach-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">Marcar leída</button>
                                     </form>
                                 @else
                                     <form method="POST" action="{{ route('notificaciones.pendiente', $notificacion) }}">
                                         @csrf
                                         @method('PATCH')
-                                        <button class="rounded-xl border border-line bg-white px-3.5 py-2 text-xs font-medium text-ink-soft transition hover:bg-cream hover:text-ink focus:outline-none focus:ring-2 focus:ring-brand-400">Marcar pendiente</button>
+                                        <button class="rounded-xl border border-line bg-white px-3.5 py-2 text-xs font-medium text-ink-soft transition hover:bg-cream hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">Marcar pendiente</button>
                                     </form>
                                 @endif
                             </div>

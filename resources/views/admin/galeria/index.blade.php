@@ -38,7 +38,7 @@
                             <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-xs transition hover:border-peach-300 hover:shadow-soft group h-full flex flex-col justify-between">
                                 <div>
                                     <div class="relative h-44 w-full overflow-hidden bg-stone-100">
-                                        <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
+                                        <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-full w-full object-cover transition duration-200 group-hover:scale-105">
                                     </div>
                                     <div class="p-4 pb-2">
                                         <h3 class="truncate text-sm font-semibold text-ink">{{ $imagen->titulo ?: 'Sin título' }}</h3>

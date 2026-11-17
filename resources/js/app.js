@@ -40,6 +40,56 @@ if (document.readyState === 'loading') {
     iniciarRevelado();
 }
 
+// Botón "enviando": al enviar un formulario, el botón muestra un indicador,
+// se desactiva y (si tiene data-loading-text) cambia su texto. Evita envíos
+// dobles y confirma que el sistema recibió el clic.
+// - Respeta formularios cancelados (confirm() o @submit.prevent de Alpine).
+// - Se omite con data-sin-carga en el <form>.
+function restaurarBoton(boton) {
+    if (!boton || boton.dataset.loading === undefined) return;
+    delete boton.dataset.loading;
+    boton.removeAttribute('aria-busy');
+    boton.querySelector(':scope > .btn-spinner')?.remove();
+    if (boton.dataset.textoOriginal !== undefined) {
+        const etiqueta = boton.querySelector(':scope > [data-loading-label]');
+        if (etiqueta) etiqueta.textContent = boton.dataset.textoOriginal;
+        delete boton.dataset.textoOriginal;
+    }
+}
+
+document.addEventListener('submit', (event) => {
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement) || event.defaultPrevented || form.hasAttribute('data-sin-carga')) return;
+
+    const boton = event.submitter ?? form.querySelector('button[type="submit"]:not(.sr-only)');
+    if (!boton || boton.dataset.loading !== undefined) return;
+
+    boton.dataset.loading = '';
+    boton.setAttribute('aria-busy', 'true');
+
+    const spinner = document.createElement('span');
+    spinner.className = 'btn-spinner';
+    spinner.setAttribute('aria-hidden', 'true');
+    boton.prepend(spinner);
+
+    const etiqueta = boton.querySelector(':scope > [data-loading-label]');
+    if (etiqueta && boton.dataset.loadingText) {
+        boton.dataset.textoOriginal = etiqueta.textContent;
+        etiqueta.textContent = boton.dataset.loadingText;
+    }
+
+    // Seguridad: si la página no cambia (descarga, error de red), se libera.
+    setTimeout(() => restaurarBoton(boton), 12000);
+});
+
+// Al volver con el botón "Atrás", el navegador puede restaurar la página
+// tal como quedó: liberamos los botones que seguían "enviando".
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        document.querySelectorAll('[data-loading]').forEach(restaurarBoton);
+    }
+});
+
 window.cargarHorariosDisponibles = async function (tratamientoId, fecha, excludeCitaId) {
     if (!tratamientoId || !fecha) {
         return [];
