@@ -33,15 +33,15 @@
         @if (session('success'))
             <main class="flex min-h-[100dvh] items-center justify-center px-4 py-10">
                 <div class="w-full max-w-md rounded-4xl border border-line bg-white p-8 text-center shadow-lift sm:p-10">
-                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sage-50 text-sage-600 ring-8 ring-sage-50/60">
+                    <div class="conf-circulo mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sage-50 text-sage-600 ring-8 ring-sage-50/60">
                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7" />
+                            <path class="conf-check" pathLength="1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <p class="mt-6 firma text-2xl text-brand-600">Melissa López N.</p>
-                    <h1 class="mt-3 text-title-2 text-ink">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
+                    <p class="conf-titulo mt-6 firma text-2xl text-brand-600">Melissa López N.</p>
+                    <h1 class="conf-titulo mt-3 text-title-2 text-ink">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
                     @if ($resumen = session('cita_resumen'))
-                        <dl class="mt-6 divide-y divide-line/80 rounded-2xl border border-line bg-cream text-left text-sm">
+                        <dl class="conf-resumen mt-6 divide-y divide-line/80 rounded-2xl border border-line bg-cream text-left text-sm">
                             <div class="px-5 py-3.5">
                                 <dt class="text-xs font-semibold uppercase tracking-label text-muted">Tratamiento</dt>
                                 <dd class="mt-1 font-semibold text-ink">{{ $resumen['tratamiento'] }}</dd>
@@ -52,8 +52,8 @@
                             </div>
                         </dl>
                     @endif
-                    <p class="mt-5 text-callout text-muted">Tu cita quedó registrada en el consultorio. Guarda estos datos o toma una captura; si necesitas cambiarla, comunícate con el consultorio.</p>
-                    <a href="/" class="btn-brand mt-8 w-full py-3 sm:w-auto sm:px-8">
+                    <p class="conf-cierre mt-5 text-callout text-muted">Tu cita quedó registrada en el consultorio. Guarda estos datos o toma una captura; si necesitas cambiarla, comunícate con el consultorio.</p>
+                    <a href="/" class="conf-cierre btn-brand mt-8 w-full py-3 sm:w-auto sm:px-8">
                         Volver al inicio
                     </a>
                 </div>
@@ -119,8 +119,12 @@
                     get tratamientoSeleccionado() {
                         return this.servicioSeleccionado?.tratamientos.find(t => t.id === Number(this.idTratamiento)) ?? null;
                     },
-                    siguiente() { this.paso = Math.min(this.paso + 1, this.pasos.length - 1); },
-                    anterior() { this.paso = Math.max(this.paso - 1, 0); },
+                    // Dirección y primera interacción: solo para la animación entre pasos.
+                    direccion: 'adelante',
+                    interactuado: false,
+                    mover(direccion) { this.direccion = direccion; this.interactuado = true; },
+                    siguiente() { this.mover('adelante'); this.paso = Math.min(this.paso + 1, this.pasos.length - 1); },
+                    anterior() { this.mover('atras'); this.paso = Math.max(this.paso - 1, 0); },
                     formatoDuracion(minutos) {
                         const m = Number(minutos) || 0;
                         if (m < 60) return `${m} min`;
@@ -135,6 +139,8 @@
                         this.loadingHorarios = false;
                     },
                  }"
+                 :class="{ 'pasos-animados': interactuado }"
+                 :data-direccion="direccion"
                  x-init="$watch('paso', () => { if ($refs.tarjeta.getBoundingClientRect().top < 0) $refs.tarjeta.scrollIntoView({ block: 'start' }) })"
             >
                 <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.75fr)] lg:gap-8">
@@ -166,10 +172,10 @@
                             <div class="p-5 sm:p-8">
                                 <!-- Especialidades -->
                                 <template x-if="!servicioSeleccionado">
-                                    <div class="grid gap-3">
+                                    <div class="paso-anim grid gap-3">
                                         <template x-for="servicio in servicios" :key="servicio.id">
                                             <button type="button"
-                                                    @click="idServicio = servicio.id; idTratamiento = ''"
+                                                    @click="mover('adelante'); idServicio = servicio.id; idTratamiento = ''"
                                                     class="group flex w-full items-center gap-4 rounded-2xl border border-line bg-white p-4 text-left transition-[border-color,background-color,transform] duration-150 ease-out hover:border-peach-300 hover:bg-peach-50/50 active:scale-[0.99] sm:p-5">
                                                 <span class="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200 transition-colors group-hover:bg-white sm:flex">
                                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -188,14 +194,14 @@
 
                                 <!-- Tratamientos de la especialidad elegida -->
                                 <template x-if="servicioSeleccionado">
-                                    <div>
+                                    <div class="paso-anim">
                                         <div class="mb-6 flex items-center justify-between gap-3 rounded-2xl bg-cream p-3 pl-4 ring-1 ring-inset ring-line">
                                             <div class="min-w-0">
                                                 <p class="text-xs font-semibold uppercase tracking-label text-muted">Especialidad elegida</p>
                                                 <p class="font-serif text-title-3 text-ink" x-text="servicioSeleccionado.nombre"></p>
                                             </div>
                                             <button type="button"
-                                                    @click="idServicio = ''; idTratamiento = ''"
+                                                    @click="mover('atras'); idServicio = ''; idTratamiento = ''"
                                                     class="inline-flex min-h-11 shrink-0 items-center rounded-full bg-white px-4 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-line transition-colors hover:ring-peach-300">
                                                 Cambiar
                                             </button>
@@ -216,7 +222,8 @@
                                                     <span class="flex min-w-0 items-start gap-3">
                                                         <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors"
                                                               :class="Number(idTratamiento) === tratamiento.id ? 'border-brand-600 bg-brand-600' : 'border-line bg-white'">
-                                                            <span class="h-1.5 w-1.5 rounded-full bg-white" x-show="Number(idTratamiento) === tratamiento.id"></span>
+                                                            <span class="h-1.5 w-1.5 rounded-full bg-white" x-show="Number(idTratamiento) === tratamiento.id"
+                                                                  x-transition:enter="transition-[opacity,transform] duration-[120ms] ease-out" x-transition:enter-start="opacity-0 scale-50 motion-reduce:scale-100" x-transition:enter-end="opacity-100 scale-100"></span>
                                                         </span>
                                                         <span class="min-w-0">
                                                             <span class="block text-callout font-semibold text-ink" x-text="tratamiento.nombre"></span>
@@ -234,7 +241,7 @@
                                         <template x-if="servicioSeleccionado.tratamientos.length === 0">
                                             <div class="rounded-2xl bg-cream px-4 py-5 text-center">
                                                 <p class="text-callout text-ink-soft">Por ahora no hay procedimientos para agendar en línea en esta especialidad.</p>
-                                                <button type="button" @click="idServicio = ''; idTratamiento = ''" class="btn-secondary mt-3">Elegir otra especialidad</button>
+                                                <button type="button" @click="mover('atras'); idServicio = ''; idTratamiento = ''" class="btn-secondary mt-3">Elegir otra especialidad</button>
                                             </div>
                                         </template>
 
@@ -252,7 +259,7 @@
 
                         <!-- PASO 1: SELECCIONAR FECHA -->
                         <template x-if="paso === 1">
-                            <div class="space-y-6 p-5 sm:p-8">
+                            <div class="paso-anim space-y-6 p-5 sm:p-8">
                                 <div>
                                     <label for="fecha-picker" class="{{ $claseEtiqueta }}">Selecciona el día</label>
                                     <input id="fecha-picker" type="date" min="{{ now()->toDateString() }}"
@@ -271,7 +278,7 @@
 
                         <!-- PASO 2: ELEGIR HORA -->
                         <template x-if="paso === 2">
-                            <div class="space-y-6 p-5 sm:p-8">
+                            <div class="paso-anim space-y-6 p-5 sm:p-8">
                                 <div>
                                     <p class="mb-3 text-sm font-semibold text-ink">Horarios disponibles para el día seleccionado</p>
                                     @include('partials.disponibilidad-picker')
@@ -287,7 +294,7 @@
 
                         <!-- PASO 3: RESUMEN DE LA CITA -->
                         <template x-if="paso === 3">
-                            <div class="space-y-6 p-5 sm:p-8">
+                            <div class="paso-anim space-y-6 p-5 sm:p-8">
                                 <div class="overflow-hidden rounded-3xl border border-line">
                                     <div class="bg-cream px-5 py-4">
                                         <p class="text-xs font-semibold uppercase tracking-label text-muted">Consulta en Dentissa</p>
@@ -314,7 +321,7 @@
 
                         <!-- PASO 4: DATOS DEL PACIENTE -->
                         <template x-if="paso === 4">
-                            <form method="POST" action="{{ route('citas.publica.store') }}" class="space-y-5 p-5 sm:p-8"
+                            <form method="POST" action="{{ route('citas.publica.store') }}" class="paso-anim space-y-5 p-5 sm:p-8"
                                   x-init="$nextTick(() => $el.querySelector('[aria-invalid=true]')?.focus())">
                                 @csrf
 

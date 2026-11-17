@@ -454,7 +454,24 @@ if (updatesUrl) {
 
         toast.append(title, message);
         region.append(toast);
-        window.setTimeout(() => toast.remove(), 8000);
+
+        // Entra desde arriba (el aviso vive arriba a la derecha) y sale por el
+        // mismo camino. Con "reducir movimiento" solo hay un fundido breve.
+        const reducir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const oculto = reducir ? { opacity: 0 } : { opacity: 0, transform: 'translateY(-8px)' };
+        const visible = reducir ? { opacity: 1 } : { opacity: 1, transform: 'none' };
+        const curva = 'cubic-bezier(0.23, 1, 0.32, 1)';
+
+        toast.animate?.([oculto, visible], { duration: reducir ? 150 : 220, easing: curva });
+
+        window.setTimeout(() => {
+            const salida = toast.animate?.([visible, oculto], { duration: 150, easing: curva, fill: 'forwards' });
+            if (salida) {
+                salida.onfinish = () => toast.remove();
+            } else {
+                toast.remove();
+            }
+        }, 8000);
     };
 
     const receiveNotification = (notification) => {

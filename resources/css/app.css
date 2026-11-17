@@ -583,3 +583,147 @@ html::-webkit-scrollbar {
         bottom: 5.5rem;
     }
 }
+
+/* ===================== Fase 5: animaciones con propósito ===================== */
+
+/*
+ * #1 Pasos de agendar cita. Solo después de la primera interacción
+ * (.pasos-animados), para no animar la carga inicial. Al avanzar el
+ * contenido entra desde la derecha; al regresar, desde la izquierda.
+ */
+.pasos-animados .paso-anim {
+    transition:
+        opacity 200ms var(--ease-out),
+        transform 240ms var(--ease-out);
+}
+
+@starting-style {
+    .pasos-animados .paso-anim {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+
+    .pasos-animados[data-direccion='atras'] .paso-anim {
+        transform: translateX(-16px);
+    }
+}
+
+/*
+ * #2 Confirmación de cita: círculo → palomita dibujada → título → resumen
+ * → texto y botón, solapados como un solo gesto (~630 ms en total).
+ */
+@keyframes conf-aparece {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+@keyframes conf-sube {
+    from {
+        opacity: 0;
+        transform: translateY(var(--conf-distancia, 8px));
+    }
+}
+
+@keyframes conf-dibuja {
+    from {
+        stroke-dashoffset: 1;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.conf-circulo {
+    animation: conf-aparece 300ms var(--ease-out) backwards;
+}
+
+.conf-check {
+    stroke-dasharray: 1;
+    animation: conf-dibuja 320ms var(--ease-out) 120ms backwards;
+}
+
+.conf-titulo,
+.conf-resumen,
+.conf-cierre {
+    /* backwards: solo el estado inicial; al terminar no retiene transform
+       (así el botón conserva su efecto al presionar). */
+    animation: conf-sube 400ms var(--ease-out) backwards;
+}
+
+.conf-titulo {
+    animation-delay: 160ms;
+}
+
+.conf-resumen {
+    --conf-distancia: 6px;
+    animation-duration: 380ms;
+    animation-delay: 220ms;
+}
+
+.conf-cierre {
+    --conf-distancia: 4px;
+    animation-duration: 360ms;
+    animation-delay: 270ms;
+}
+
+/*
+ * #4 Menú "Más acciones" de la agenda: aparece desde su botón (esquina
+ * superior derecha, o inferior si abre hacia arriba). Se cierra al instante.
+ */
+.menu-acciones {
+    transform-origin: top right;
+    transition:
+        opacity 150ms var(--ease-out),
+        transform 150ms var(--ease-out);
+}
+
+.menu-acciones.bottom-full {
+    transform-origin: bottom right;
+}
+
+@starting-style {
+    .menu-acciones {
+        opacity: 0;
+        transform: scale(0.97);
+    }
+}
+
+/* Movimiento reducido: sin desplazamientos; solo fundidos breves y juntos. */
+@media (prefers-reduced-motion: reduce) {
+    .pasos-animados .paso-anim {
+        transition: opacity 150ms ease;
+    }
+
+    @starting-style {
+        .pasos-animados .paso-anim,
+        .pasos-animados[data-direccion='atras'] .paso-anim {
+            transform: none;
+        }
+    }
+
+    .conf-circulo,
+    .conf-titulo,
+    .conf-resumen,
+    .conf-cierre {
+        animation: fade-in 200ms ease backwards;
+    }
+
+    .conf-check {
+        animation: none;
+        stroke-dasharray: none;
+    }
+
+    @starting-style {
+        .menu-acciones {
+            transform: none;
+        }
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
