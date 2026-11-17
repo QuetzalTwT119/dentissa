@@ -138,24 +138,25 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                     </div>
                                 </td>
                                 @if ($esPersonal)
-                                    <td class="px-6 py-4 font-medium text-ink">
+                                    <td class="min-w-[15rem] px-6 py-4 font-medium text-ink">
                                         <div class="flex items-center gap-2.5">
                                             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold uppercase text-brand-800">
-                                                {{ substr($cita->paciente->nombre, 0, 1) }}{{ substr($cita->paciente->apellido, 0, 1) }}
+                                                {{ \App\Support\Iniciales::de($cita->paciente->nombre, $cita->paciente->apellido) }}
                                             </span>
-                                            <div>
+                                            <div class="min-w-0">
                                                 <p class="text-sm font-semibold text-ink">{{ $cita->paciente->nombre }} {{ $cita->paciente->apellido }}</p>
-                                                <p class="text-xs text-muted">{{ $cita->paciente->telefono ?: $cita->paciente->email }}</p>
+                                                <p class="text-xs text-muted [overflow-wrap:anywhere]">{{ $cita->paciente->telefono ?: ($cita->paciente->email ?: '—') }}</p>
                                             </div>
                                         </div>
                                     </td>
                                 @endif
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex items-center rounded-full bg-cream px-2.5 py-1 text-xs font-medium text-ink ring-1 ring-inset ring-line">
-                                        {{ $cita->servicio->nombre ?? '—' }}
-                                    </span>
+                                    {{-- Nombres largos: máximo 2 renglones; el texto completo queda en title. --}}
+                                    <span class="line-clamp-2 max-w-[13rem] rounded-lg bg-cream px-2.5 py-1 text-xs font-medium text-ink ring-1 ring-inset ring-line" title="{{ $cita->servicio->nombre ?? '' }}">{{ $cita->servicio->nombre ?? '—' }}</span>
                                 </td>
-                                <td class="px-6 py-4 text-ink-soft font-medium">{{ $cita->tratamiento->nombre ?? '—' }}</td>
+                                <td class="min-w-[11rem] px-6 py-4 font-medium text-ink-soft">
+                                    <span class="line-clamp-2 max-w-[16rem]" title="{{ $cita->tratamiento->nombre ?? '' }}">{{ $cita->tratamiento->nombre ?? '—' }}</span>
+                                </td>
                                 <td class="px-6 py-4">
                                     <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold {{ $estadoClase[$cita->estado->value] }}">
                                         <span class="h-1.5 w-1.5 rounded-full {{ $estadoDot[$cita->estado->value] ?? 'bg-muted' }}"></span>

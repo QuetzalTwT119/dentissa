@@ -77,7 +77,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                     @if ($usuario->foto_perfil)
                         <img src="{{ route('profile.photo.show') }}" alt="" class="h-8 w-8 shrink-0 rounded-full object-cover" width="32" height="32">
                     @else
-                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold text-brand-800" aria-hidden="true">{{ strtoupper(substr($usuario->nombre, 0, 1).substr($usuario->apellido, 0, 1)) }}</span>
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold text-brand-800" aria-hidden="true">{{ \App\Support\Iniciales::de($usuario->nombre, $usuario->apellido) }}</span>
                     @endif
                     <span class="truncate">{{ $usuario->nombre }} {{ $usuario->apellido }}</span>
                     <svg class="h-4 w-4 shrink-0 text-muted" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
@@ -150,7 +150,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 @if ($usuario->foto_perfil)
                     <img src="{{ route('profile.photo.show') }}" alt="" class="h-10 w-10 shrink-0 rounded-full object-cover" width="40" height="40">
                 @else
-                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700" aria-hidden="true">{{ strtoupper(substr($usuario->nombre, 0, 1).substr($usuario->apellido, 0, 1)) }}</span>
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700" aria-hidden="true">{{ \App\Support\Iniciales::de($usuario->nombre, $usuario->apellido) }}</span>
                 @endif
                 <div class="min-w-0">
                     <p class="truncate text-sm font-semibold text-ink">{{ $usuario->nombre }} {{ $usuario->apellido }}</p>

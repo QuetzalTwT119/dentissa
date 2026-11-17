@@ -89,12 +89,12 @@
                 <div aria-hidden="true" class="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-brand-200/40 blur-3xl"></div>
 
                 <div class="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-                    <div class="flex items-center gap-4 sm:gap-5">
+                    <div class="flex items-start gap-4 sm:items-center sm:gap-5">
                         @if ($usuario->foto_perfil)
                             <img src="{{ route('profile.photo.show') }}" alt="" class="h-16 w-16 shrink-0 rounded-full object-cover ring-4 ring-white sm:h-20 sm:w-20">
                         @else
                             <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-white font-serif text-2xl text-brand-700 shadow-soft ring-4 ring-white/70 sm:h-20 sm:w-20 sm:text-3xl" aria-hidden="true">
-                                {{ strtoupper(substr($usuario->nombre, 0, 1) . substr($usuario->apellido ?? 'L', 0, 1)) }}
+                                {{ \App\Support\Iniciales::de($usuario->nombre, $usuario->apellido) }}
                             </span>
                         @endif
 

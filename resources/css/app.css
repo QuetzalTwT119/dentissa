@@ -160,12 +160,14 @@
         font-family: 'Fraunces', Georgia, Cambria, serif;
         font-weight: 500;
         letter-spacing: -0.015em;
-        text-wrap: balance;
+        /* Solo el estilo de salto: text-wrap (abreviado) reactivaría el salto
+           de línea y anularía un white-space: nowrap heredado. */
+        text-wrap-style: balance;
         font-kerning: normal;
     }
 
     p {
-        text-wrap: pretty;
+        text-wrap-style: pretty;
     }
 
     /* Campo con error: borde y anillo rosados (lo marca <x-text-input> o aria-invalid). */

@@ -2,6 +2,11 @@
 
 @if ($items && $items->total() > 0)
     @php
+        // "1 cita" / "1,284 citas": singular cuando hay exactamente uno y
+        // separador de miles al estilo de México.
+        $singulares = ['imágenes' => 'imagen', 'notificaciones' => 'notificación', 'mensajes' => 'mensaje', 'pacientes' => 'paciente'];
+        $etiquetaTotal = $items->total() === 1 ? ($singulares[$label] ?? preg_replace('/s$/u', '', $label)) : $label;
+        $totalFormateado = number_format($items->total(), 0, '.', ',');
         $paginator = $items->withQueryString();
         $hasPages = $paginator->hasPages();
         $perPageActual = $paginator->perPage();
@@ -15,7 +20,7 @@
                         <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true"></span>
                         <span>
                             Mostrando <strong class="font-semibold text-ink">{{ $paginator->firstItem() }}–{{ $paginator->lastItem() }}</strong>
-                            de <strong class="font-semibold text-ink">{{ $paginator->total() }}</strong> {{ $label }}
+                            de <strong class="font-semibold tabular-nums text-ink">{{ $totalFormateado }}</strong> {{ $etiquetaTotal }}
                         </span>
                     </p>
 
@@ -123,7 +128,7 @@
                         <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true"></span>
                         <span>
                             Mostrando <strong class="font-semibold text-ink">{{ $paginator->firstItem() }}–{{ $paginator->lastItem() }}</strong>
-                            de <strong class="font-semibold text-ink">{{ $paginator->total() }}</strong> {{ $label }}
+                            de <strong class="font-semibold tabular-nums text-ink">{{ $totalFormateado }}</strong> {{ $etiquetaTotal }}
                         </span>
                     </p>
 

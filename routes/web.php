@@ -262,3 +262,12 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
 });
 
 require __DIR__.'/auth.php';
+
+/*
+ * SOLO DESARROLLO: revisión de casos extremos de la interfaz (Fase 4 del pulido).
+ * Dibuja las pantallas con datos "peor caso" en memoria; no existe fuera de local.
+ */
+if (app()->environment('local')) {
+    Route::get('/dev/casos-extremos/{pantalla}', \App\Http\Controllers\Dev\CasosExtremosController::class)
+        ->name('dev.casos-extremos');
+}

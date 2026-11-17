@@ -121,6 +121,12 @@
                     },
                     siguiente() { this.paso = Math.min(this.paso + 1, this.pasos.length - 1); },
                     anterior() { this.paso = Math.max(this.paso - 1, 0); },
+                    formatoDuracion(minutos) {
+                        const m = Number(minutos) || 0;
+                        if (m < 60) return `${m} min`;
+                        const h = Math.floor(m / 60), resto = m % 60;
+                        return resto ? `${h} h ${resto} min` : `${h} h`;
+                    },
                     async cargarHorarios() {
                         this.hora = null;
                         if (!this.idTratamiento || !this.fecha) { this.horarios = []; return; }
@@ -138,10 +144,10 @@
 
                         <!-- Encabezado del paso actual (uno solo para los 5 pasos) -->
                         <div class="border-b border-line/80 bg-gradient-to-b from-peach-50 to-white px-5 pb-6 pt-6 sm:px-8 sm:pt-8">
-                            <p class="eyebrow">
-                                <span x-text="`Paso ${paso + 1} de ${pasos.length}`">Paso 1 de 5</span>
+                            <p class="eyebrow flex-wrap gap-x-2 gap-y-1">
+                                <span class="whitespace-nowrap" x-text="`Paso ${paso + 1} de ${pasos.length}`">Paso 1 de 5</span>
                                 <span aria-hidden="true">·</span>
-                                <span x-text="encabezados[paso].etiqueta">Selección clínica</span>
+                                <span class="whitespace-nowrap" x-text="encabezados[paso].etiqueta">Selección clínica</span>
                             </p>
                             <h1 class="mt-3 text-title-2 text-ink"
                                 x-text="paso === 0 && servicioSeleccionado ? 'Elige un tratamiento' : encabezados[paso].titulo">¿Qué tipo de atención necesitas?</h1>
@@ -195,7 +201,7 @@
                                             </button>
                                         </div>
 
-                                        <p id="titulo-tratamientos" class="mb-3 text-sm font-semibold text-ink">Selecciona el procedimiento específico</p>
+                                        <p id="titulo-tratamientos" x-show="servicioSeleccionado.tratamientos.length > 0" class="mb-3 text-sm font-semibold text-ink">Selecciona el procedimiento específico</p>
 
                                         <div class="grid gap-2.5" role="radiogroup" aria-labelledby="titulo-tratamientos">
                                             <template x-for="tratamiento in servicioSeleccionado.tratamientos" :key="tratamiento.id">
@@ -203,26 +209,36 @@
                                                         role="radio"
                                                         :aria-checked="(Number(idTratamiento) === tratamiento.id).toString()"
                                                         @click="idTratamiento = tratamiento.id"
-                                                        class="flex w-full items-center justify-between gap-3 rounded-2xl border p-4 text-left transition-[border-color,background-color] duration-150"
+                                                        class="flex w-full items-start justify-between gap-3 rounded-2xl border p-4 text-left transition-[border-color,background-color] duration-150"
                                                         :class="Number(idTratamiento) === tratamiento.id
                                                             ? 'border-brand-400 bg-brand-50/60 ring-1 ring-brand-400'
                                                             : 'border-line bg-white hover:border-peach-300'">
-                                                    <span class="flex min-w-0 items-center gap-3">
-                                                        <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors"
+                                                    <span class="flex min-w-0 items-start gap-3">
+                                                        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors"
                                                               :class="Number(idTratamiento) === tratamiento.id ? 'border-brand-600 bg-brand-600' : 'border-line bg-white'">
                                                             <span class="h-1.5 w-1.5 rounded-full bg-white" x-show="Number(idTratamiento) === tratamiento.id"></span>
                                                         </span>
-                                                        <span class="text-callout font-semibold text-ink" x-text="tratamiento.nombre"></span>
+                                                        <span class="min-w-0">
+                                                            <span class="block text-callout font-semibold text-ink" x-text="tratamiento.nombre"></span>
+                                                            <span class="mt-0.5 block text-footnote text-muted sm:hidden" x-text="formatoDuracion(tratamiento.duracion_estimada)"></span>
+                                                        </span>
                                                     </span>
-                                                    <span class="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-muted">
+                                                    <span class="mt-0.5 hidden shrink-0 items-center gap-1 whitespace-nowrap text-xs font-medium text-muted sm:inline-flex">
                                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                        <span x-text="tratamiento.duracion_estimada + ' min'"></span>
+                                                        <span x-text="formatoDuracion(tratamiento.duracion_estimada)"></span>
                                                     </span>
                                                 </button>
                                             </template>
                                         </div>
 
-                                        <p x-show="!idTratamiento" class="mt-5 text-footnote text-muted sm:text-right" aria-live="polite">Elige un procedimiento para continuar.</p>
+                                        <template x-if="servicioSeleccionado.tratamientos.length === 0">
+                                            <div class="rounded-2xl bg-cream px-4 py-5 text-center">
+                                                <p class="text-callout text-ink-soft">Por ahora no hay procedimientos para agendar en línea en esta especialidad.</p>
+                                                <button type="button" @click="idServicio = ''; idTratamiento = ''" class="btn-secondary mt-3">Elegir otra especialidad</button>
+                                            </div>
+                                        </template>
+
+                                        <p x-show="!idTratamiento && servicioSeleccionado.tratamientos.length > 0" class="mt-5 text-footnote text-muted sm:text-right" aria-live="polite">Elige un procedimiento para continuar.</p>
                                         <div class="{{ $claseBarra }} mt-3">
                                             <button type="button" :disabled="!idTratamiento" @click="siguiente()" class="btn-brand w-full py-3 sm:ml-auto sm:w-auto sm:px-8">
                                                 <span>Continuar a fecha y horario</span>
@@ -369,7 +385,7 @@
 
                                 <div>
                                     <label for="motivo" class="{{ $claseEtiqueta }}">Motivo de la visita <span class="font-normal text-muted">(opcional)</span></label>
-                                    <textarea id="motivo" name="motivo" placeholder="Cuéntanos brevemente si tienes alguna molestia o si es revisión de rutina..." rows="3"
+                                    <textarea id="motivo" name="motivo" maxlength="1000" placeholder="Cuéntanos brevemente si tienes alguna molestia o si es revisión de rutina..." rows="3"
                                               class="{{ $claseCampo }} py-3">{{ old('motivo') }}</textarea>
                                 </div>
 

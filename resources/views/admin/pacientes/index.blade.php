@@ -63,7 +63,7 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <span class="inline-flex items-center justify-center min-w-[2.25rem] rounded-full bg-cream px-2.5 py-1 text-xs font-semibold text-ink border border-line">
-                                    {{ $paciente->historial_clinico_count }}
+                                    {{ number_format($paciente->historial_clinico_count, 0, '.', ',') }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right">
