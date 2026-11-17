@@ -337,7 +337,7 @@
         </section>
 
         <!-- ============ La clínica ============ -->
-        <section id="nosotros" class="border-y border-line/80 bg-white">
+        <section id="nosotros" class="overflow-x-clip border-y border-line/80 bg-white">
             <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8 lg:py-28">
 
                 <figure class="relative mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none">

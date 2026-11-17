@@ -57,7 +57,7 @@
                                         :aria-expanded="open.toString()"
                                         aria-haspopup="listbox"
                                         aria-label="Cantidad de registros por página: actualmente {{ $perPageActual }}"
-                                        class="group inline-flex items-center justify-between gap-1.5 rounded-xl border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink shadow-2xs transition duration-150 hover:border-brand-300 hover:bg-cream hover:text-brand-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
+                                        class="group inline-flex min-h-11 items-center justify-between gap-1.5 rounded-xl border border-line bg-white px-3 py-1 text-xs sm:min-h-0 font-semibold text-ink shadow-2xs transition duration-150 hover:border-brand-300 hover:bg-cream hover:text-brand-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
                                     <span x-text="perPage" class="tabular-nums font-semibold">{{ $perPageActual }}</span>
                                     <svg class="h-3.5 w-3.5 text-muted transition-transform duration-200 group-hover:text-brand-500"
                                          :class="{ 'rotate-180 text-brand-500': open }"
@@ -164,7 +164,7 @@
                                         :aria-expanded="open.toString()"
                                         aria-haspopup="listbox"
                                         aria-label="Cantidad de registros por página: actualmente {{ $perPageActual }}"
-                                        class="group inline-flex items-center justify-between gap-1.5 rounded-xl border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink shadow-2xs transition duration-150 hover:border-brand-300 hover:bg-cream hover:text-brand-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
+                                        class="group inline-flex min-h-11 items-center justify-between gap-1.5 rounded-xl border border-line bg-white px-3 py-1 text-xs sm:min-h-0 font-semibold text-ink shadow-2xs transition duration-150 hover:border-brand-300 hover:bg-cream hover:text-brand-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
                                     <span x-text="perPage" class="tabular-nums font-semibold">{{ $perPageActual }}</span>
                                     <svg class="h-3.5 w-3.5 text-muted transition-transform duration-200 group-hover:text-brand-500"
                                          :class="{ 'rotate-180 text-brand-500': open }"

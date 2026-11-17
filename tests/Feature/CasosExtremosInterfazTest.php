@@ -137,4 +137,17 @@ class CasosExtremosInterfazTest extends TestCase
 
         $this->get(route('citas.publica.create'))->assertSee('maxlength="1000"', false);
     }
+
+    public function test_los_mensajes_de_validacion_estan_en_espanol(): void
+    {
+        $this->post(route('citas.publica.store'), ['telefono' => ''])
+            ->assertSessionHasErrors(['telefono' => 'El teléfono es obligatorio.']);
+    }
+
+    public function test_los_titulos_del_panel_son_h1(): void
+    {
+        $html = $this->blade('<x-admin.header title="Pacientes" />');
+
+        $html->assertSee('<h1', false)->assertDontSee('<h2', false);
+    }
 }

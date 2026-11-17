@@ -23,7 +23,7 @@
             <div class="flex items-center justify-between gap-3">
                 <x-input-label for="password" value="Contraseña" />
                 @if (Route::has('password.request'))
-                    <a class="link text-sm" href="{{ route('password.request') }}">¿La olvidaste?</a>
+                    <a class="link inline-flex min-h-11 items-center text-sm sm:min-h-0" href="{{ route('password.request') }}">¿La olvidaste?</a>
                 @endif
             </div>
             <div class="relative mt-2">
