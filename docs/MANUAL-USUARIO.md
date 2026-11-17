@@ -99,16 +99,34 @@ tanto en escritorio como en el menú móvil.
 
 ## 2. Agendamiento público
 
+El proceso tiene 5 pasos. Arriba siempre se ve "Paso X de 5".
+
 1. Abre `/agendar-cita`.
-2. Selecciona un servicio.
-3. La lista de servicios se sustituye por los tratamientos disponibles. Si
-   cambias de opinión, pulsa el recuadro del servicio seleccionado para volver
-   a la lista.
-4. Elige una fecha futura. Debajo del calendario aparece el horario regular,
-   tomado de la configuración de **Horarios** del consultorio.
-5. Selecciona un horario disponible.
-6. Escribe nombre, apellido, teléfono y correo.
-7. Pulsa **Agendar cita**.
+2. **Selección clínica:** elige la especialidad. La lista cambia por los
+   tratamientos de esa especialidad, cada uno con su duración aproximada. Si
+   cambias de opinión, pulsa el recuadro de la especialidad para volver a la
+   lista. Solo aparecen las especialidades que tienen tratamientos activos.
+3. **Calendario:** elige una fecha. Debajo aparece el horario regular, tomado de
+   la configuración de **Horarios** del consultorio. Pulsa **Continuar a
+   horario**.
+4. **Horario:** elige una hora disponible y pulsa **Revisar resumen**.
+5. **Confirmación:** revisa el tratamiento, la fecha y la hora. Pulsa
+   **Continuar a mis datos**.
+6. **Datos de contacto:** escribe nombre, apellido, teléfono y correo. Acepta
+   el aviso de privacidad. El motivo es opcional, de hasta 1000 caracteres.
+7. Pulsa **Agendar cita**. El botón cambia a "Agendando…" y se desactiva
+   mientras se guarda, para no crear la cita dos veces.
+8. Aparece la pantalla **"¡Listo! Tu cita quedó confirmada"** con el resumen.
+
+En cualquier paso, **Atrás** regresa al anterior sin perder lo elegido. Los
+botones para avanzar se activan cuando el paso está completo. En el celular,
+**Atrás** y el botón para avanzar quedan fijos en la parte de abajo de la
+pantalla.
+
+Si falta un dato o tiene un error, arriba del formulario aparece un aviso como
+"Revisa los 2 datos marcados para poder agendar tu cita". El campo con error se
+marca en rojo y muestra el mensaje en español, por ejemplo "El teléfono es
+obligatorio.".
 
 El resumen muestra la fecha completa (por ejemplo, "miércoles 18 de noviembre
 de 2026") y el calendario solo permite elegir desde el día de hoy según la hora
@@ -487,4 +505,22 @@ Dentissa cuenta con una interfaz visual unificada con paleta cálida (rosa `#d75
    - Los campos de captura cuentan con bordes suaves, enfoque en color rosa de marca y mensajes de ayuda legibles para evitar errores durante el registro de datos clínicos o citas.
 4. **Asistente flotante no invasivo:**
    - El widget del asistente virtual se reposiciona dinámicamente para nunca tapar botones de acción, formularios ni tarjetas de selección.
-
+5. **Textos y botones cómodos en el celular:**
+   - Ningún texto mide menos de 12 px y los botones y enlaces miden al menos
+     44 px de alto, el tamaño recomendado para el dedo.
+   - Al escribir en un campo, el celular no hace zoom.
+   - En teléfonos con muesca, el contenido no queda debajo de ella.
+6. **Avisos y estados claros:**
+   - Los avisos de éxito, error, advertencia e información tienen el mismo
+     diseño en todo el sistema.
+   - Los botones que guardan muestran un texto de espera (por ejemplo
+     "Agendando…") y no se pueden pulsar dos veces.
+   - Los mensajes de error de los formularios están en español.
+7. **Movimiento con propósito:**
+   - Solo se anima lo que ayuda a entender qué pasó: el cambio entre pasos al
+     agendar, la confirmación de la cita, los avisos emergentes y el menú de
+     acciones.
+   - Si el celular o la computadora tiene activada la opción "reducir
+     movimiento", estas animaciones se suavizan o desaparecen.
+8. **Nombre de la doctora:** "Dra. Melissa López" se muestra con la tipografía
+   Fraunces itálica en la portada, el encabezado y el acceso.

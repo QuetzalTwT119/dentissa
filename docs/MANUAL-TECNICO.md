@@ -897,7 +897,7 @@ Se completó el rediseño visual de todo el ecosistema de Dentissa (sitio públi
 
 - **Componentes y arquitectura de interfaz:**
   - Componentes atómicos en `resources/views/components/`: botones primarios (`bg-brand-600`, esquinas redondeadas `rounded-xl`, sombra suave), secundarios con borde cálido, inputs y selects consistentes, modales con desenfoque de fondo y alertas amigables.
-  - Vistas públicas (`welcome`, agenda pública wizard por pasos, galería, ofertas): tipografía Figtree y Alex Brush locales precargadas, carrusel de servicios optimizado y menú responsivo desplegable para móvil y tablet. En la portada, el scroll-spy de `welcome.blade.php` sincroniza enlaces de escritorio/móvil con la sección bajo el encabezado fijo mediante `aria-current="location"`; ese estado da el acento rosa únicamente al enlace activo y se actualiza en `requestAnimationFrame`.
+  - Vistas públicas (`welcome`, agenda pública wizard por pasos, galería, ofertas): tipografía Figtree y Fraunces locales precargadas (ver sección 26), servicios en cuadrícula y menú responsivo desplegable para móvil y tablet. En la portada, el scroll-spy de `welcome.blade.php` sincroniza enlaces de escritorio/móvil con la sección bajo el encabezado fijo mediante `aria-current="location"`; ese estado da el acento rosa únicamente al enlace activo y se actualiza en `requestAnimationFrame`.
   - Vistas de acceso (`guest`, `login`, recuperación de contraseña): tarjetas centradas de estilo boutique con fondo ambiental cálido y enlaces visibles.
   - Panel administrativo (`layouts/app`, `navigation`, `dashboard`, citas, pacientes, historial clínico con fotos/radiografías, catálogo de servicios y tratamientos, horarios, usuarios, reportes, auditoría, mensajes, testimonios, casos y preguntas frecuentes): tablas con encabezados claros en `#FAF6F6`, badges de estado legibles, filtros organizados y scroll horizontal en móviles (`min-w-[760px]`).
   - Total preservación de lógica de negocio, nombres de campos, CSRF, validaciones y roles. La suite de pruebas completa pasó con 158 pruebas aprobadas y 0 fallos.
@@ -1275,3 +1275,100 @@ php artisan dentissa:diagnostico --remoto
 falta y la salida con error; administrador sin verificación; revisión remota
 (Meta, número del bot y falta de Drive); token rechazado por Meta; y que la
 salida no contiene ningún secreto.
+
+## 26. Pulido de la interfaz (fases 1 a 7)
+
+**Por qué:** después del rediseño (sección 19) quedaban textos de 10–11 px,
+botones pequeños para el dedo, avisos distintos en cada vista y pantallas que
+se rompían con datos extremos. El pulido se hizo en 7 fases, cada una con su
+commit en la rama `rediseno`.
+
+### Tipografía (fase 1)
+
+- **Fuentes locales** en `public/fonts/`: Figtree para el texto y Fraunces
+  (500 y 600, más 500 itálica) para los títulos. No se cargan desde Google, así
+  que funcionan sin internet y sin enviar datos a terceros.
+- **Escala única** en `tailwind.config.js`: `display`, `title-1`, `title-2`,
+  `title-3`, `headline`, `lead`, `body`, `callout`, `footnote` y `caption`.
+  Cada nivel trae su interlineado y espaciado. El tamaño mínimo es 12 px.
+- **Nombre de la doctora:** la clase `.firma` (Fraunces itálica) se usa en la
+  portada, el encabezado y el acceso.
+- `h1` y `h2` usan `text-wrap-style: balance` y los párrafos `pretty`. Se usa
+  `text-wrap-style` y no `text-wrap`, porque este último anula `whitespace-nowrap`.
+
+### Tokens de color
+
+Los colores neutros viven en `resources/css/app.css` como canales RGB
+(`--c-cream`, `--c-shell`, `--c-line`, `--c-ink`, `--c-ink-soft`, `--c-muted`,
+`--c-field`). Así Tailwind puede aplicar transparencias (`bg-cream/50`).
+`--c-field` es el borde de los campos, con contraste 3.3:1 sobre blanco.
+
+### Estados y avisos (fase 2)
+
+- `<x-alert type="success|error|warning|info">`: un solo componente para todos
+  los avisos de éxito o error.
+- `<x-text-input>` marca `aria-invalid` automáticamente si el campo tiene error,
+  y `<x-input-error>` muestra el mensaje con ícono.
+- **Botones con carga:** `resources/js/app.js` desactiva el botón al enviar un
+  formulario y cambia el texto por `data-loading-text` (por ejemplo
+  "Agendando…"). Evita citas dobles. Se restablece al volver con el botón
+  "atrás" del navegador o tras 12 s. Un formulario lo omite con `data-sin-carga`.
+- El foco visible solo aparece con teclado (`:focus-visible`).
+
+### Celular (fase 3)
+
+- `viewport-fit=cover` y márgenes `env(safe-area-inset-*)` para la muesca.
+- En pantallas táctiles (`@media (pointer: coarse)`) los campos miden 16 px
+  para que el teléfono no haga zoom al escribir.
+- Objetivos táctiles de 44 px como mínimo (`min-h-11`), con `sm:min-h-0`
+  cuando el tamaño de escritorio debe quedar igual.
+- Agendar cita tiene una barra de acciones fija abajo, y el asistente flotante
+  sube para no taparla (`.agenda-publica .asistente-flotante`).
+
+### Casos extremos (fase 4)
+
+- `App\Support\Iniciales`: iniciales que respetan acentos y omiten emoji
+  (antes mostraban `��`).
+- Contadores en singular ("1 cita") y con separador de miles ("1,284").
+- Agendar oculta las especialidades sin tratamientos activos.
+- El motivo de la cita acepta hasta 1000 caracteres.
+- **Herramienta de revisión** (solo con `APP_ENV=local`):
+  `/dev/casos-extremos/{agenda|pacientes|agendar|confirmacion|dashboard}?datos=demo|peor|vacio|uno|muchos`.
+  Dibuja la pantalla con datos de prueba en memoria, sin tocar la base. Los
+  datos están en `App\Support\Dev\CasosExtremos`.
+
+### Animaciones (fases 5 y 6)
+
+- **Se conservan solo 5, con propósito:**
+  - el cambio entre pasos al agendar (`@starting-style`, con dirección);
+  - la confirmación de la cita (círculo, palomita y textos en secuencia);
+  - los avisos emergentes (Web Animations API);
+  - el menú de acciones;
+  - el estado de carga de los botones.
+- **Se quitaron:** apariciones al hacer scroll, carrusel, punto que latía sin
+  parar, zoom lento en imágenes y animación de ancho del asistente.
+- **Solo se anima `transform` y `opacity`.** Curva común: `--ease-out`
+  (`cubic-bezier(0.23, 1, 0.32, 1)`).
+- Con "reducir movimiento" activado en el sistema, las animaciones se acortan o
+  desaparecen y el scroll de la portada es instantáneo.
+
+### Revisión final (fase 7)
+
+- **Idioma:** `config/app.php` usa `es` por omisión, y las traducciones están en
+  `lang/es/` (`validation`, `auth`, `passwords`, `pagination`).
+- **Nombres legibles de campos:** `validation.php` traduce los campos dentro de
+  los mensajes (`telefono` → "el teléfono").
+- **Al agregar un campo nuevo:** súmalo a `attributes` en ese archivo.
+- **Títulos del panel:** `<x-admin.header>` dibuja el título como `h1`, para que
+  cada página tenga un solo título principal.
+
+### Pruebas
+
+- **`CasosExtremosInterfazTest` (27):** dibuja las pantallas con cada conjunto de
+  datos y revisa:
+  - iniciales y plurales;
+  - especialidades vacías y el límite del motivo;
+  - mensajes en español y títulos `h1`.
+- **`TipografiaEstableTest`:** precarga de fuentes.
+- **`NavegacionResponsivaTest` y `AsistenteVistasPublicasTest`:** clases de
+  diseño responsivo.
