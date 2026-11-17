@@ -166,6 +166,22 @@ Antes de generar un dominio público:
 
 ## Lista de verificación de despliegue y operación
 
+**Atajo:** después de cada despliegue o cambio de variables, abre en Railway
+el servicio `dentissa` → **Console** y ejecuta:
+
+```bash
+php artisan dentissa:diagnostico --remoto
+```
+
+Revisa la configuración y, con `--remoto`, le pregunta a Meta y a Google si
+las credenciales funcionan:
+- ✅ correcto;
+- ❗ aviso (funciona, pero conviene completarlo);
+- ❌ error (algo no va a funcionar).
+
+**Nunca muestra el valor de un secreto**, solo si existe y si sirve. Termina
+con error si hay algún ❌. Detalle en el Manual Técnico, sección 25.
+
 1. Confirmar propietario, precio vigente y límite de consumo desde el panel.
    No compartir credenciales ni datos de pago en el repositorio o el chat.
 2. Crear un servicio MySQL administrado y conectar el repositorio al servicio
