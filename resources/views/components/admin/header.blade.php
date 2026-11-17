@@ -14,7 +14,7 @@
         @if ($badge)
             <p class="eyebrow">{{ $badge }}</p>
         @endif
-        <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+        <h2 class="mt-1.5 text-title-2 text-ink">
             {{ $title }}
         </h2>
         @if ($desc)

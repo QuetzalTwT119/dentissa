@@ -22,7 +22,7 @@
                 >
                     <x-slot:actions>
                         <form method="GET" action="{{ route('admin.mensajes.index') }}" class="flex items-center gap-2.5">
-                            <label for="filtro_leido" class="text-xs font-semibold uppercase tracking-wider text-muted">Filtrar:</label>
+                            <label for="filtro_leido" class="text-xs font-semibold uppercase tracking-label text-muted">Filtrar:</label>
                             <select id="filtro_leido" name="leido" onchange="this.form.submit()" aria-label="Filtrar por estado del mensaje"
                                     class="rounded-xl border border-line bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                 <option value="">Todos</option>

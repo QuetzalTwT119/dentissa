@@ -45,9 +45,9 @@
                                 <div class="flex items-center gap-3">
                                     <x-admin.user-avatar :name="$paciente->nombre . ' ' . $paciente->apellido" />
                                     <div>
-                                        <p class="font-bold text-ink group-hover:text-brand-700 transition-colors">{{ $paciente->nombre }} {{ $paciente->apellido }}</p>
+                                        <p class="font-semibold text-ink group-hover:text-brand-700 transition-colors">{{ $paciente->nombre }} {{ $paciente->apellido }}</p>
                                         @if (!empty($paciente->tutor_id) && $paciente->tutor)
-                                            <p class="text-[11px] text-muted flex items-center gap-1 mt-0.5">
+                                            <p class="text-caption text-muted flex items-center gap-1 mt-0.5">
                                                 <span class="inline-block h-1.5 w-1.5 rounded-full bg-peach-400"></span>
                                                 Tutor: {{ $paciente->tutor->nombre }} {{ $paciente->tutor->apellido }}
                                             </p>
@@ -62,7 +62,7 @@
                                 {{ $paciente->telefono ?? '—' }}
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span class="inline-flex items-center justify-center min-w-[2.25rem] rounded-full bg-cream px-2.5 py-1 text-xs font-bold text-ink border border-line">
+                                <span class="inline-flex items-center justify-center min-w-[2.25rem] rounded-full bg-cream px-2.5 py-1 text-xs font-semibold text-ink border border-line">
                                     {{ $paciente->historial_clinico_count }}
                                 </span>
                             </td>

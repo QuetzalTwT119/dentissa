@@ -8,7 +8,7 @@
         @if ($title || $description)
             <div>
                 @if ($title)
-                    <h3 class="text-base font-semibold text-ink">{{ $title }}</h3>
+                    <h3 class="text-headline font-semibold text-ink">{{ $title }}</h3>
                 @endif
                 @if ($description)
                     <p class="mt-0.5 text-sm text-muted">{{ $description }}</p>

@@ -65,8 +65,8 @@
 
                     <p class="eyebrow mt-6 justify-center">Portal de Paciente &bull; Dentissa</p>
                     <p class="mt-4 text-sm text-muted">Hola, {{ $usuario->nombre }}.</p>
-                    <h1 class="mt-1 text-[2rem] leading-tight text-ink sm:text-[2.5rem]">Tu espacio de atención</h1>
-                    <p class="mx-auto mt-3 max-w-md leading-7 text-ink-soft">Consulta tus citas y continúa con el asistente de agenda cuando lo necesites.</p>
+                    <h1 class="mt-1 text-title-1 text-ink">Tu espacio de atención</h1>
+                    <p class="mx-auto mt-3 max-w-md text-body text-ink-soft">Consulta tus citas y continúa con el asistente de agenda cuando lo necesites.</p>
 
                     <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
                         <a href="{{ route('citas.index') }}" class="btn-brand px-7 py-3">
@@ -100,7 +100,7 @@
 
                         <div class="min-w-0">
                             <p class="eyebrow">Panel de administración</p>
-                            <h1 class="mt-2 text-[1.9rem] leading-tight text-ink sm:text-[2.6rem]">{{ $saludo }}, {{ $usuario->nombre }}.</h1>
+                            <h1 class="mt-2 text-title-1 text-ink">{{ $saludo }}, {{ $usuario->nombre }}.</h1>
                             <p class="mt-1 text-sm text-ink-soft">{{ $fechaHoy }} · Gestiona la agenda, pacientes y contenido de la clínica desde un solo lugar.</p>
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                     ] as [$url, $etiqueta, $texto])
                         <a href="{{ $url }}" class="group flex min-h-16 items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-inset ring-white transition-[background-color,box-shadow] duration-150 hover:bg-white hover:shadow-soft">
                             <span>
-                                <span class="block text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-brand-700">{{ $etiqueta }}</span>
+                                <span class="block text-caption font-semibold uppercase tracking-label text-brand-700">{{ $etiqueta }}</span>
                                 <span class="mt-0.5 block text-sm font-semibold text-ink">{{ $texto }}</span>
                             </span>
                             <svg class="h-4 w-4 shrink-0 text-muted transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
@@ -134,7 +134,7 @@
                 <div class="flex items-end justify-between gap-4">
                     <div>
                         <p class="eyebrow">Accesos rápidos</p>
-                        <h2 class="mt-2 text-[1.7rem] leading-tight text-ink sm:text-3xl">¿Qué necesitas hacer?</h2>
+                        <h2 class="mt-2 text-title-2 text-ink">¿Qué necesitas hacer?</h2>
                     </div>
                     <a href="{{ route('citas.index') }}" class="hidden min-h-11 items-center gap-1 text-sm font-semibold text-brand-700 transition-colors hover:text-brand-800 sm:inline-flex">
                         Ver agenda completa
@@ -152,8 +152,8 @@
                             ])>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="h-6 w-6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $acceso['icono'] }}"/></svg>
                             </span>
-                            <h3 class="mt-5 font-serif text-xl text-ink">{{ $acceso['titulo'] }}</h3>
-                            <p class="mt-1.5 flex-1 text-sm leading-6 text-muted">{{ $acceso['texto'] }}</p>
+                            <h3 class="mt-5 font-serif text-title-3 text-ink">{{ $acceso['titulo'] }}</h3>
+                            <p class="mt-1.5 flex-1 text-callout text-muted">{{ $acceso['texto'] }}</p>
                             <span class="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-brand-700">
                                 {{ $acceso['accion'] }}
                                 <svg class="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
@@ -171,7 +171,7 @@
                     </span>
                     <div>
                         <p class="font-semibold text-ink">Consejo de operación clínica</p>
-                        <p class="mt-0.5 text-sm leading-6 text-ink-soft">Revisa la agenda y los horarios configurados antes de iniciar la jornada para optimizar los tiempos de esterilización y sillón.</p>
+                        <p class="mt-0.5 text-callout text-ink-soft">Revisa la agenda y los horarios configurados antes de iniciar la jornada para optimizar los tiempos de esterilización y sillón.</p>
                     </div>
                 </div>
                 <a href="{{ route('admin.horarios.edit') }}" class="btn-secondary shrink-0">Configurar horarios</a>

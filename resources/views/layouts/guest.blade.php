@@ -37,17 +37,17 @@
                         </span>
                         <div class="leading-tight drop-shadow-md">
                             <p class="firma text-xl text-white sm:text-[1.4rem]">Melissa López N.</p>
-                            <p class="mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-white/90">Odontología integral</p>
+                            <p class="mt-1 text-caption font-semibold uppercase tracking-label text-white/90">Odontología integral</p>
                         </div>
                     </div>
 
                     <div class="relative mt-8 hidden max-w-lg sm:block">
-                        <p class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-sm">
+                        <p class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-caption font-semibold uppercase tracking-label text-white backdrop-blur-sm">
                             <span class="h-1.5 w-1.5 rounded-full bg-peach-300" aria-hidden="true"></span>
                             Espacio de trabajo Dentissa
                         </p>
-                        <h1 class="mt-4 text-3xl leading-tight sm:text-[2.6rem]">Cada cita merece una atención bien coordinada.</h1>
-                        <p class="mt-3 max-w-md text-sm leading-6 text-white/85 sm:text-base sm:leading-7">Agenda, pacientes y solicitudes del consultorio, organizados para el equipo.</p>
+                        <h1 class="mt-4 text-title-1">Cada cita merece una atención bien coordinada.</h1>
+                        <p class="mt-3 max-w-md text-callout text-white/85 sm:text-body">Agenda, pacientes y solicitudes del consultorio, organizados para el equipo.</p>
                     </div>
 
                     <p class="relative mt-5 hidden items-center gap-2 text-xs font-medium text-white/85 sm:inline-flex sm:text-sm">

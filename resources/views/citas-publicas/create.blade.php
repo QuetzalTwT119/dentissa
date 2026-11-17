@@ -20,7 +20,7 @@
 
         @php
             // Clases compartidas del formulario (se definen una vez y se reutilizan).
-            $claseCampo = 'block w-full min-h-12 rounded-xl border-line bg-white px-3.5 text-[0.95rem] text-ink shadow-2xs placeholder:text-muted/70 transition-[border-color,box-shadow] duration-150 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-rose-400';
+            $claseCampo = 'block w-full min-h-12 rounded-xl border-line bg-white px-3.5 text-callout text-ink shadow-2xs placeholder:text-muted/70 transition-[border-color,box-shadow] duration-150 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/15 aria-[invalid=true]:border-rose-400';
             $claseEtiqueta = 'mb-1.5 block text-sm font-semibold text-ink';
             $claseError = 'mt-1.5 text-xs font-medium text-rose-700';
             $claseAtras = 'btn-secondary flex-1 py-3 sm:flex-none sm:px-6';
@@ -36,20 +36,20 @@
                         </svg>
                     </div>
                     <p class="mt-6 firma text-2xl text-brand-600">Melissa López N.</p>
-                    <h1 class="mt-3 text-[1.75rem] leading-tight text-ink">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
+                    <h1 class="mt-3 text-title-2 text-ink">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
                     @if ($resumen = session('cita_resumen'))
                         <dl class="mt-6 divide-y divide-line/80 rounded-2xl border border-line bg-cream text-left text-sm">
                             <div class="px-5 py-3.5">
-                                <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Tratamiento</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-label text-muted">Tratamiento</dt>
                                 <dd class="mt-1 font-semibold text-ink">{{ $resumen['tratamiento'] }}</dd>
                             </div>
                             <div class="px-5 py-3.5">
-                                <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Fecha y hora</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-label text-muted">Fecha y hora</dt>
                                 <dd class="mt-1 font-semibold text-brand-700">{{ ucfirst($resumen['fecha']) }} · {{ $resumen['hora'] }} hrs</dd>
                             </div>
                         </dl>
                     @endif
-                    <p class="mt-5 text-sm leading-6 text-muted">Tu cita quedó registrada en el consultorio. Guarda estos datos o toma una captura; si necesitas cambiarla, comunícate con el consultorio.</p>
+                    <p class="mt-5 text-callout text-muted">Tu cita quedó registrada en el consultorio. Guarda estos datos o toma una captura; si necesitas cambiarla, comunícate con el consultorio.</p>
                     <a href="/" class="btn-brand mt-8 w-full py-3 sm:w-auto sm:px-8">
                         Volver al inicio
                     </a>
@@ -63,7 +63,7 @@
                         <img src="/images/brand/logo-rosa-transparente.png" alt="Dentissa" class="h-10 w-10 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-peach-200">
                         <span class="min-w-0 leading-none">
                             <span class="block truncate firma text-[1.1rem] leading-none text-brand-700 sm:text-[1.2rem]">Dra. Melissa López N.</span>
-                            <span class="mt-1 hidden text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-muted sm:block">Odontología Integral & Armonización</span>
+                            <span class="mt-1 hidden text-caption font-semibold uppercase tracking-label text-muted sm:block">Odontología Integral & Armonización</span>
                         </span>
                     </a>
 
@@ -140,9 +140,9 @@
                                 <span aria-hidden="true">·</span>
                                 <span x-text="encabezados[paso].etiqueta">Selección clínica</span>
                             </p>
-                            <h1 class="mt-3 text-[1.75rem] leading-tight text-ink sm:text-[2.1rem]"
+                            <h1 class="mt-3 text-title-2 text-ink"
                                 x-text="paso === 0 && servicioSeleccionado ? 'Elige un tratamiento' : encabezados[paso].titulo">¿Qué tipo de atención necesitas?</h1>
-                            <p class="mt-2 max-w-lg text-sm leading-6 text-muted" x-text="paso === 0 && servicioSeleccionado ? 'Selecciona el procedimiento que necesitas; cada uno muestra su duración aproximada.' : encabezados[paso].texto">Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.</p>
+                            <p class="mt-2 max-w-lg text-callout text-muted" x-text="paso === 0 && servicioSeleccionado ? 'Selecciona el procedimiento que necesitas; cada uno muestra su duración aproximada.' : encabezados[paso].texto">Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.</p>
 
                             <div class="mt-5 flex gap-1.5" aria-hidden="true">
                                 <template x-for="(p, i) in pasos" :key="i">
@@ -168,7 +168,7 @@
                                                     </svg>
                                                 </span>
                                                 <span class="min-w-0 flex-1">
-                                                    <span class="block font-serif text-lg leading-snug text-ink" x-text="servicio.nombre"></span>
+                                                    <span class="block font-serif text-title-3 text-ink" x-text="servicio.nombre"></span>
                                                     <span class="mt-0.5 block text-sm leading-5 text-muted line-clamp-2" x-text="descripciones[servicio.nombre] || 'Atención personalizada y diagnóstico oportuno'"></span>
                                                 </span>
                                                 <svg class="h-5 w-5 shrink-0 text-muted transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
@@ -182,8 +182,8 @@
                                     <div>
                                         <div class="mb-6 flex items-center justify-between gap-3 rounded-2xl bg-cream p-3 pl-4 ring-1 ring-inset ring-line">
                                             <div class="min-w-0">
-                                                <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Especialidad elegida</p>
-                                                <p class="font-serif text-lg leading-snug text-ink" x-text="servicioSeleccionado.nombre"></p>
+                                                <p class="text-xs font-semibold uppercase tracking-label text-muted">Especialidad elegida</p>
+                                                <p class="font-serif text-title-3 text-ink" x-text="servicioSeleccionado.nombre"></p>
                                             </div>
                                             <button type="button"
                                                     @click="idServicio = ''; idTratamiento = ''"
@@ -209,7 +209,7 @@
                                                               :class="Number(idTratamiento) === tratamiento.id ? 'border-brand-600 bg-brand-600' : 'border-line bg-white'">
                                                             <span class="h-1.5 w-1.5 rounded-full bg-white" x-show="Number(idTratamiento) === tratamiento.id"></span>
                                                         </span>
-                                                        <span class="text-[0.95rem] font-semibold text-ink" x-text="tratamiento.nombre"></span>
+                                                        <span class="text-callout font-semibold text-ink" x-text="tratamiento.nombre"></span>
                                                     </span>
                                                     <span class="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-muted">
                                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -268,16 +268,16 @@
                             <div class="space-y-6 p-5 sm:p-8">
                                 <div class="overflow-hidden rounded-3xl border border-line">
                                     <div class="bg-cream px-5 py-4">
-                                        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Consulta en Dentissa</p>
-                                        <h3 class="mt-1 font-serif text-xl text-ink" x-text="tratamientoSeleccionado?.nombre"></h3>
+                                        <p class="text-xs font-semibold uppercase tracking-label text-muted">Consulta en Dentissa</p>
+                                        <h3 class="mt-1 font-serif text-title-3 text-ink" x-text="tratamientoSeleccionado?.nombre"></h3>
                                     </div>
                                     <dl class="grid grid-cols-1 divide-y divide-line/80 border-t border-line sm:grid-cols-2 sm:divide-x sm:divide-y-0">
                                         <div class="px-5 py-4">
-                                            <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Especialidad</dt>
+                                            <dt class="text-xs font-semibold uppercase tracking-label text-muted">Especialidad</dt>
                                             <dd class="mt-1 font-semibold text-ink" x-text="servicioSeleccionado?.nombre"></dd>
                                         </div>
                                         <div class="px-5 py-4">
-                                            <dt class="text-xs font-semibold uppercase tracking-[0.12em] text-muted">Fecha y hora</dt>
+                                            <dt class="text-xs font-semibold uppercase tracking-label text-muted">Fecha y hora</dt>
                                             <dd class="mt-1 font-semibold text-brand-700" x-text="fechaLegible + ' — ' + hora + ' hrs'"></dd>
                                         </div>
                                     </dl>
@@ -357,7 +357,7 @@
 
                                 {{-- Consentimiento expreso: el motivo puede contener datos de salud. --}}
                                 <div>
-                                    <label for="acepta_aviso" class="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-line bg-cream/60 px-4 py-3 text-sm leading-6 text-ink-soft">
+                                    <label for="acepta_aviso" class="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-line bg-cream/60 px-4 py-3 text-callout text-ink-soft">
                                         <input id="acepta_aviso" type="checkbox" name="acepta_aviso" value="1" required
                                                @checked(old('acepta_aviso'))
                                                aria-invalid="{{ $errors->has('acepta_aviso') ? 'true' : 'false' }}"
@@ -393,14 +393,14 @@
                         <div class="flex items-start justify-between gap-4">
                             <div>
                                 <p class="eyebrow">Agenda en línea</p>
-                                <h2 class="mt-2 text-2xl text-ink">Tu cita, paso a paso</h2>
+                                <h2 class="mt-2 text-title-3 text-ink">Tu cita, paso a paso</h2>
                             </div>
                             <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             </span>
                         </div>
 
-                        <p class="mt-2 text-sm leading-6 text-muted">Elige lo que necesitas y revisa la disponibilidad antes de confirmar.</p>
+                        <p class="mt-2 text-callout text-muted">Elige lo que necesitas y revisa la disponibilidad antes de confirmar.</p>
 
                         <!-- Progreso -->
                         <div class="mt-5 hidden rounded-2xl bg-cream p-4 lg:block" role="progressbar" aria-label="Progreso de la cita" aria-valuemin="1" :aria-valuemax="pasos.length" :aria-valuenow="paso + 1">
@@ -413,7 +413,7 @@
 
                         <!-- Datos seleccionados -->
                         <div class="mt-5 rounded-2xl border border-dashed border-peach-300 p-4" aria-live="polite">
-                            <p class="text-xs font-semibold uppercase tracking-[0.12em] text-brand-700">Resumen de la cita</p>
+                            <p class="text-xs font-semibold uppercase tracking-label text-brand-700">Resumen de la cita</p>
                             <dl class="mt-2 divide-y divide-line/80 text-sm">
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Servicio</dt>
@@ -434,7 +434,7 @@
                             </dl>
                         </div>
 
-                        <p class="mt-4 text-center text-xs leading-5 text-muted">Elige un horario disponible y completa tus datos para reservar tu cita.</p>
+                        <p class="mt-4 text-center text-footnote text-muted">Elige un horario disponible y completa tus datos para reservar tu cita.</p>
                     </aside>
                 </div>
             </main>

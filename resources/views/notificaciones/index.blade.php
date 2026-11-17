@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <p class="eyebrow">Centro de actividad</p>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">Notificaciones</h2>
+                <h2 class="mt-1.5 text-title-2 text-ink">Notificaciones</h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Avisos internos de citas para el equipo de la clínica.</p>
             </div>
 
@@ -19,7 +19,7 @@
                     <form method="POST" action="{{ route('notificaciones.leidas') }}">
                         @csrf
                         @method('PATCH')
-                        <button class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-white shadow-soft transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
+                        <button class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold uppercase tracking-label text-white shadow-soft transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2">
                             Marcar todas como leídas
                         </button>
                     </form>
@@ -41,15 +41,15 @@
 
             <section class="grid gap-4 sm:grid-cols-3" aria-label="Resumen de notificaciones">
                 <article class="rounded-3xl border border-line bg-white p-5 shadow-soft">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-muted">Total de avisos</p>
+                    <p class="text-xs font-semibold uppercase tracking-label text-muted">Total de avisos</p>
                     <p class="mt-2 font-serif text-3xl font-medium text-ink">{{ $total }}</p>
                 </article>
                 <article class="rounded-3xl border border-brand-200/70 bg-white p-5 shadow-soft">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Pendientes</p>
+                    <p class="text-xs font-semibold uppercase tracking-label text-brand-700">Pendientes</p>
                     <p class="mt-2 font-serif text-3xl font-medium text-brand-600">{{ $noLeidas }}</p>
                 </article>
                 <article class="rounded-3xl border border-line bg-white p-5 shadow-soft">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-muted">Leídas</p>
+                    <p class="text-xs font-semibold uppercase tracking-label text-muted">Leídas</p>
                     <p class="mt-2 font-serif text-3xl font-medium text-ink-soft">{{ $leidas }}</p>
                 </article>
             </section>
@@ -62,13 +62,13 @@
                         'leidas' => ['label' => 'Leídas', 'count' => $leidas],
                     ] as $estado => $filtro)
                         <a href="{{ route('notificaciones.index', ['estado' => $estado]) }}" @class([
-                            'inline-flex shrink-0 items-center gap-2 rounded-t-xl border-b-2 px-4 py-3 text-xs font-semibold uppercase tracking-wider transition',
+                            'inline-flex shrink-0 items-center gap-2 rounded-t-xl border-b-2 px-4 py-3 text-xs font-semibold uppercase tracking-label transition',
                             'border-brand-600 text-brand-700 bg-brand-50/50' => $estadoActual === $estado,
                             'border-transparent text-ink-soft hover:border-line hover:text-ink' => $estadoActual !== $estado,
                         ]) @if ($estadoActual === $estado) aria-current="page" @endif>
                             {{ $filtro['label'] }}
                             <span @class([
-                                'rounded-full px-2 py-0.5 text-[10px] font-bold',
+                                'rounded-full px-2 py-0.5 text-caption font-semibold',
                                 'bg-brand-600 text-white' => $estadoActual === $estado,
                                 'bg-cream text-muted border border-line' => $estadoActual !== $estado,
                             ])>{{ $filtro['count'] }}</span>
@@ -82,7 +82,7 @@
                     @foreach ($gruposNotificaciones as $fecha => $grupo)
                         <div class="space-y-3">
                             <div class="flex items-center gap-3 px-1">
-                                <h3 class="text-xs font-bold uppercase tracking-[0.16em] text-muted">{{ $fecha }}</h3>
+                                <h3 class="text-xs font-semibold uppercase tracking-label text-muted">{{ $fecha }}</h3>
                                 <span class="h-px flex-1 bg-line"></span>
                             </div>
                             @foreach ($grupo as $notificacion)
@@ -109,19 +109,19 @@
                                     <div class="flex flex-wrap items-center gap-2">
                                         <h3 class="font-semibold text-ink">{{ $notificacion->titulo }}</h3>
                                         <span @class([
-                                            'rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider border',
+                                            'rounded-full px-2.5 py-0.5 text-caption font-semibold uppercase tracking-label border',
                                             'border-rose-200 bg-rose-50 text-rose-700' => $prioritaria,
                                             'border-amber-200 bg-amber-50 text-amber-700' => $notificacion->evento === 'reagendada',
                                             'border-sage-100 bg-sage-50 text-sage-700' => in_array($notificacion->evento, ['confirmada', 'completada', 'asistencia_confirmada'], true),
                                             'border-brand-200/60 bg-brand-50 text-brand-700' => ! $prioritaria && ! in_array($notificacion->evento, ['reagendada', 'confirmada', 'completada', 'asistencia_confirmada'], true),
                                         ])>{{ $notificacion->etiquetaEvento() }}</span>
                                         <span @class([
-                                            'rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
+                                            'rounded-full px-2.5 py-0.5 text-caption font-semibold uppercase tracking-label',
                                             'bg-rose-50 text-brand-700 border border-rose-200/60' => $pendiente,
                                             'bg-stone-100 text-muted border border-stone-200/60' => ! $pendiente,
                                         ])>{{ $pendiente ? 'Pendiente' : 'Leída' }}</span>
                                     </div>
-                                    <p class="mt-1 text-sm leading-relaxed text-ink-soft">{{ $notificacion->mensaje }}</p>
+                                    <p class="mt-1 text-callout text-ink-soft">{{ $notificacion->mensaje }}</p>
                                     <time class="mt-2 block text-xs text-muted" datetime="{{ $notificacion->created_at->toIso8601String() }}" title="{{ $notificacion->created_at->translatedFormat('l d F Y, H:i') }}">
                                         {{ $notificacion->created_at->diffForHumans() }} · {{ $notificacion->created_at->translatedFormat('d M Y, H:i') }}
                                     </time>
@@ -129,7 +129,7 @@
                             </div>
 
                             <div class="flex shrink-0 flex-wrap items-center gap-2 pl-[3.25rem] sm:pl-0">
-                                <a href="{{ $notificacion->url ?: route('citas.index') }}" class="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-brand-600 transition hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-400">
+                                <a href="{{ $notificacion->url ?: route('citas.index') }}" class="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold uppercase tracking-label text-brand-600 transition hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-400">
                                     Ver cita
                                     <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="M5 10a.75.75 0 0 1 .75-.75h7.69L10.22 6.03a.75.75 0 1 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 1 1-1.06-1.06l3.22-3.22H5.75A.75.75 0 0 1 5 10Z" clip-rule="evenodd" />
@@ -168,11 +168,11 @@
                         @elseif ($estadoActual === 'pendientes')
                             <h3 class="mt-4 font-semibold text-ink">No tienes avisos pendientes</h3>
                             <p class="mt-1 text-sm text-muted">Las notificaciones nuevas aparecerán aquí en tiempo real.</p>
-                            <a href="{{ route('notificaciones.index', ['estado' => 'todas']) }}" class="mt-4 inline-flex rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider text-brand-600 hover:bg-brand-50 transition">Ver todas</a>
+                            <a href="{{ route('notificaciones.index', ['estado' => 'todas']) }}" class="mt-4 inline-flex rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-label text-brand-600 hover:bg-brand-50 transition">Ver todas</a>
                         @else
                             <h3 class="mt-4 font-semibold text-ink">No hay avisos leídos</h3>
                             <p class="mt-1 text-sm text-muted">Los avisos que marques como leídos se mostrarán en esta sección.</p>
-                            <a href="{{ route('notificaciones.index', ['estado' => 'todas']) }}" class="mt-4 inline-flex rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider text-brand-600 hover:bg-brand-50 transition">Ver todas</a>
+                            <a href="{{ route('notificaciones.index', ['estado' => 'todas']) }}" class="mt-4 inline-flex rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-label text-brand-600 hover:bg-brand-50 transition">Ver todas</a>
                         @endif
                     </div>
                 @endif

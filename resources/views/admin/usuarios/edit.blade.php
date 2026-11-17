@@ -61,7 +61,7 @@
                             <div class="w-full border-t border-line"></div>
                         </div>
                         <div class="relative flex justify-start">
-                            <span class="bg-white pr-3 text-xs font-semibold uppercase tracking-wider text-muted">Cambio de contraseña (opcional)</span>
+                            <span class="bg-white pr-3 text-xs font-semibold uppercase tracking-label text-muted">Cambio de contraseña (opcional)</span>
                         </div>
                     </div>
 

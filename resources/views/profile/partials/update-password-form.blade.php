@@ -4,8 +4,8 @@
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4.5" y="10" width="15" height="10.5" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v2"/></svg>
         </span>
         <div>
-            <h2 class="text-xl text-ink">Actualizar contraseña</h2>
-            <p class="mt-1 text-sm leading-6 text-ink-soft">Usa una contraseña larga y única para proteger el acceso a tu cuenta.</p>
+            <h2 class="text-title-3 text-ink">Actualizar contraseña</h2>
+            <p class="mt-1 text-callout text-ink-soft">Usa una contraseña larga y única para proteger el acceso a tu cuenta.</p>
         </div>
     </header>
 

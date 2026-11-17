@@ -93,7 +93,7 @@
                     <span aria-hidden="true" class="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-sage-500"></span>
                 </span>
                 <div class="min-w-0">
-                    <h2 class="text-lg leading-tight text-ink">Dentissa Asistente</h2>
+                    <h2 class="text-title-3 leading-tight text-ink">Dentissa Asistente</h2>
                     <p class="mt-0.5 text-xs text-muted">Aquí para orientarte</p>
                 </div>
             </div>

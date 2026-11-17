@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="mb-8">
         <p class="eyebrow">Verificación en dos pasos</p>
-        <h2 class="mt-3 text-[2rem] leading-tight text-ink sm:text-[2.5rem]">Un paso más</h2>
-        <p class="mt-2 text-sm leading-6 text-muted">Abre tu app de autenticación y escribe el código de 6 dígitos de Dentissa. Si no tienes el celular, usa uno de tus códigos de recuperación.</p>
+        <h2 class="mt-3 text-title-1 text-ink">Un paso más</h2>
+        <p class="mt-2 text-callout text-muted">Abre tu app de autenticación y escribe el código de 6 dígitos de Dentissa. Si no tienes el celular, usa uno de tus códigos de recuperación.</p>
     </div>
 
     <form method="POST" action="{{ route('dos-pasos.verificar') }}" class="space-y-5">
@@ -11,7 +11,7 @@
         <div>
             <x-input-label for="codigo" value="Código" />
             {{-- one-time-code: el celular puede proponer el código automáticamente. --}}
-            <x-text-input id="codigo" class="mt-2 block w-full tracking-[0.3em]" type="text" name="codigo" required autofocus
+            <x-text-input id="codigo" class="mt-2 block w-full tracking-label" type="text" name="codigo" required autofocus
                           autocomplete="one-time-code" inputmode="text" maxlength="20" placeholder="123456" />
             <x-input-error :messages="$errors->get('codigo')" />
         </div>

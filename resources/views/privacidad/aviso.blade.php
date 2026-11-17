@@ -32,16 +32,16 @@
 
             <article class="mt-6 rounded-4xl border border-line bg-white p-6 shadow-soft sm:p-10" data-aviso-version="{{ $privacidad['version'] }}">
                 <p class="firma text-xl text-brand-600">Melissa López N.</p>
-                <h1 class="mt-2 text-[1.9rem] leading-tight">Aviso de privacidad integral</h1>
+                <h1 class="mt-2 text-title-1">Aviso de privacidad integral</h1>
                 <p class="mt-2 text-sm text-muted">Versión {{ $privacidad['version'] }}</p>
 
                 @unless ($privacidad['revisado'])
-                    <p role="note" class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900" data-aviso-borrador>
+                    <p role="note" class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-callout text-amber-900" data-aviso-borrador>
                         <strong>Borrador pendiente de revisión legal.</strong> Este texto es una plantilla preparada por el equipo de desarrollo; debe revisarlo un abogado o la clínica antes de usar el sistema con pacientes reales.
                     </p>
                 @endunless
 
-                <div class="mt-8 space-y-8 text-[0.95rem] leading-7 text-ink-soft [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-ink [&_li]:ml-5 [&_li]:list-disc">
+                <div class="mt-8 space-y-8 text-body text-ink-soft [&_h2]:mb-2 [&_h2]:text-title-3 [&_h2]:font-medium [&_h2]:text-ink [&_li]:ml-5 [&_li]:list-disc">
                     <section>
                         <h2>1. Responsable de tus datos</h2>
                         <p>{!! $dato($privacidad['responsable'], 'nombre del responsable') !!}, con domicilio en {!! $dato($privacidad['domicilio'], 'domicilio') !!}, es responsable del tratamiento de tus datos personales conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>

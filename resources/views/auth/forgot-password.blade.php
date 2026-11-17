@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="mb-6">
         <p class="eyebrow">Seguridad de cuenta</p>
-        <h2 class="mt-3 text-[2rem] leading-tight text-ink sm:text-[2.4rem]">Recuperar contraseña</h2>
-        <p class="mt-2 text-sm leading-6 text-muted">
+        <h2 class="mt-3 text-title-1 text-ink">Recuperar contraseña</h2>
+        <p class="mt-2 text-callout text-muted">
             ¿Olvidaste tu contraseña? No hay problema. Solo indícanos tu correo electrónico y te enviaremos un enlace para restablecerla.
         </p>
     </div>

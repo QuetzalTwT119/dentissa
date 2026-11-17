@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+                <h2 class="mt-1.5 text-title-2 text-ink">
                     Editar servicio
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Configuración del servicio y asignación de tratamientos.</p>
@@ -72,7 +72,7 @@
             </div>
 
             <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <h3 class="text-lg font-semibold text-ink">Tratamientos asignados</h3>
+                <h3 class="text-headline font-semibold text-ink">Tratamientos asignados</h3>
                 <p class="mt-1 text-xs text-muted">Selecciona los tratamientos disponibles para este servicio en la agenda.</p>
 
                 <form method="POST" action="{{ route('admin.servicios.tratamientos.sync', $servicio) }}" class="mt-6 space-y-3">

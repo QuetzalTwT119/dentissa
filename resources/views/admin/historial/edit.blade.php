@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+                <h2 class="mt-1.5 text-title-2 text-ink">
                     Editar consulta — {{ $paciente->nombre }} {{ $paciente->apellido }}
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Modificación de notas clínicas y gestión de adjuntos.</p>
@@ -33,7 +33,7 @@
             </div>
 
             <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <h3 class="text-lg font-semibold text-ink">Documentos y radiografías</h3>
+                <h3 class="text-headline font-semibold text-ink">Documentos y radiografías</h3>
                 <p class="mt-1 text-xs text-muted">Archivos clínicos complementarios vinculados a esta sesión.</p>
 
                 <ul class="mt-4 space-y-2.5">

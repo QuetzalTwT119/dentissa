@@ -109,7 +109,7 @@
                     <img src="{{ asset('images/9.jpg') }}" alt="Logo Dentissa" class="h-11 w-11 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-peach-200" width="44" height="44">
                     <span class="min-w-0 leading-none">
                         <span class="block truncate firma text-[1.2rem] leading-none text-brand-700 sm:text-[1.35rem]">Dra. Melissa López</span>
-                        <span class="mt-1 block text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-muted">Odontología Integral</span>
+                        <span class="mt-1 block text-caption font-semibold uppercase tracking-label text-muted">Odontología Integral</span>
                     </span>
                 </a>
 
@@ -189,22 +189,22 @@
                 <div class="lg:col-span-6">
                     <p class="eyebrow">Espacio de alta estética dental y bienestar</p>
 
-                    <h1 class="mt-5 text-[2.5rem] leading-[1.06] text-ink sm:text-[3.25rem] lg:text-[3.9rem]">
+                    <h1 class="mt-5 text-display text-ink">
                         Tu sonrisa merece una experiencia
                         <em class="font-medium italic text-brand-600">cálida, delicada</em>
                         y sin dolor.
                     </h1>
 
-                    <p class="mt-6 max-w-xl text-base leading-7 text-ink-soft sm:text-lg sm:leading-8">
+                    <p class="mt-6 max-w-xl text-body text-ink-soft sm:text-lead">
                         Combinamos tecnología de precisión y un trato profundamente humano para que recuperar tu salud y estética dental sea un momento de bienestar.
                     </p>
 
                     <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                        <a href="{{ route('citas.publica.create') }}" class="btn-brand group px-7 py-3.5 text-[0.95rem]">
+                        <a href="{{ route('citas.publica.create') }}" class="btn-brand group px-7 py-3.5 text-callout">
                             <span>Reservar mi valoración</span>
                             <span class="transition-transform duration-200 ease-out group-hover:translate-x-0.5">{!! $iconoFlecha !!}</span>
                         </a>
-                        <a href="{{ route('citas.publica.create') }}" class="btn-secondary px-7 py-3.5 text-[0.95rem]">
+                        <a href="{{ route('citas.publica.create') }}" class="btn-secondary px-7 py-3.5 text-callout">
                             Elegir fecha y horario
                         </a>
                     </div>
@@ -212,17 +212,17 @@
                     <dl class="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-line pt-6">
                         <div>
                             <dt class="sr-only">Atención</dt>
-                            <dd class="font-serif text-2xl text-brand-600 sm:text-[1.7rem]">100%</dd>
+                            <dd class="font-serif text-title-3 text-brand-600 sm:text-title-2">100%</dd>
                             <dd class="mt-1 text-xs leading-tight text-muted">Personalizado</dd>
                         </div>
                         <div>
                             <dt class="sr-only">Expediente</dt>
-                            <dd class="font-serif text-2xl text-sage-600 sm:text-[1.7rem]">Digital</dd>
+                            <dd class="font-serif text-title-3 text-sage-600 sm:text-title-2">Digital</dd>
                             <dd class="mt-1 text-xs leading-tight text-muted">Expediente seguro</dd>
                         </div>
                         <div>
                             <dt class="sr-only">Trato</dt>
-                            <dd class="font-serif text-2xl text-brand-600 sm:text-[1.7rem]">Humana</dd>
+                            <dd class="font-serif text-title-3 text-brand-600 sm:text-title-2">Humana</dd>
                             <dd class="mt-1 text-xs leading-tight text-muted">Atención cercana</dd>
                         </div>
                     </dl>
@@ -246,8 +246,8 @@
                                 <span class="h-1.5 w-1.5 rounded-full bg-sage-500" aria-hidden="true"></span>
                                 Agenda en línea
                             </span>
-                            <p class="mt-1.5 font-serif text-lg leading-snug text-ink">Estética & Salud Dental Integral</p>
-                            <p class="mt-1 text-xs leading-5 text-muted">Diagnóstico claro y tratamientos conservadores desde tu primera consulta.</p>
+                            <p class="mt-1.5 font-serif text-title-3 text-ink">Estética & Salud Dental Integral</p>
+                            <p class="mt-1 text-footnote text-muted">Diagnóstico claro y tratamientos conservadores desde tu primera consulta.</p>
                         </figcaption>
                     </figure>
                 </div>
@@ -263,8 +263,8 @@
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="{{ $beneficio['icono'] }}"/></svg>
                         </span>
                         <div class="min-w-0">
-                            <h3 class="font-serif text-lg font-medium text-ink">{{ $beneficio['titulo'] }}</h3>
-                            <p class="mt-1.5 text-sm leading-6 text-muted">{{ $beneficio['texto'] }}</p>
+                            <h3 class="font-serif text-title-3 font-medium text-ink">{{ $beneficio['titulo'] }}</h3>
+                            <p class="mt-1.5 text-callout text-muted">{{ $beneficio['texto'] }}</p>
                         </div>
                     </div>
                 @endforeach
@@ -275,10 +275,10 @@
         <section id="servicios" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
             <div data-reveal class="max-w-2xl">
                 <p class="eyebrow">Cuidado Especializado</p>
-                <h2 class="mt-4 text-[2rem] leading-tight text-ink sm:text-[2.6rem]">
+                <h2 class="mt-4 text-title-1 text-ink">
                     Tratamientos diseñados para tu salud y armonía
                 </h2>
-                <p class="mt-4 text-base leading-7 text-muted">
+                <p class="mt-4 text-body text-muted">
                     Sesiones programadas con tiempo y dedicación para brindarte una atención puntual, cómoda y sin prisas.
                 </p>
             </div>
@@ -291,7 +291,7 @@
                         'bg-brand-700 text-white shadow-lift' => $destacado,
                     ])>
                         @if ($destacado)
-                            <span class="absolute right-6 top-6 rounded-full bg-white/15 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white ring-1 ring-inset ring-white/25">Más solicitado</span>
+                            <span class="absolute right-6 top-6 rounded-full bg-white/15 px-3 py-1 text-caption font-semibold uppercase tracking-label text-white ring-1 ring-inset ring-white/25">Más solicitado</span>
                         @endif
 
                         <div class="flex items-center gap-3">
@@ -303,12 +303,12 @@
                             </span>
                         </div>
 
-                        <h3 @class(['mt-6 font-serif text-[1.45rem] font-medium leading-snug', 'text-ink' => ! $destacado])>{{ $titulo }}</h3>
-                        <p @class(['mt-3 flex-1 text-sm leading-6', 'text-muted' => ! $destacado, 'text-white/80' => $destacado])>{{ $texto }}</p>
+                        <h3 @class(['mt-6 font-serif text-title-3 font-medium', 'text-ink' => ! $destacado])>{{ $titulo }}</h3>
+                        <p @class(['mt-3 flex-1 text-callout', 'text-muted' => ! $destacado, 'text-white/80' => $destacado])>{{ $texto }}</p>
 
                         <div @class(['mt-6 flex items-end justify-between gap-4 border-t pt-5', 'border-line/80' => ! $destacado, 'border-white/20' => $destacado])>
                             <div>
-                                <span @class(['block text-[0.68rem] font-semibold uppercase tracking-[0.12em]', 'text-muted' => ! $destacado, 'text-white/65' => $destacado])>{{ $etiqueta }}</span>
+                                <span @class(['block text-caption font-semibold uppercase tracking-label', 'text-muted' => ! $destacado, 'text-white/65' => $destacado])>{{ $etiqueta }}</span>
                                 <span class="mt-0.5 block text-sm font-semibold">{{ $valor }}</span>
                             </div>
                             <a href="{{ route('citas.publica.create') }}" @class([
@@ -328,9 +328,9 @@
                     <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/90 via-[#2b1a20]/40 to-transparent"></div>
 
                     <div class="relative">
-                        <span class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-peach-200">Bioseguridad de Grado Clínico</span>
-                        <h3 class="mt-2 font-serif text-[1.45rem] font-medium leading-snug">Instrumental Estéril Garantizado</h3>
-                        <p class="mt-2 text-sm leading-6 text-white/80">Cada set de instrumental es sellado y esterilizado individualmente para tu máxima protección.</p>
+                        <span class="text-caption font-semibold uppercase tracking-label text-peach-200">Bioseguridad de Grado Clínico</span>
+                        <h3 class="mt-2 font-serif text-title-3 font-medium">Instrumental Estéril Garantizado</h3>
+                        <p class="mt-2 text-callout text-white/80">Cada set de instrumental es sellado y esterilizado individualmente para tu máxima protección.</p>
                         <a href="{{ route('citas.publica.create') }}" class="mt-4 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-peach-200 transition-colors hover:text-white">
                             Agendar consulta {!! $iconoFlecha !!}
                         </a>
@@ -349,7 +349,7 @@
                         <img src="{{ asset('images/4.jpg') }}" alt="Uniforme Dra. Melissa López N." class="h-full w-full object-cover" loading="lazy">
                         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/85 via-transparent to-transparent"></div>
                         <figcaption class="absolute inset-x-0 bottom-0 p-6 text-white">
-                            <span class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-peach-200">Directora Médica</span>
+                            <span class="text-caption font-semibold uppercase tracking-label text-peach-200">Directora Médica</span>
                             <span class="mt-1 block firma text-[1.75rem] leading-tight">Dra. Melissa López N.</span>
                             <span class="mt-1.5 block text-sm text-white/80">Odontología Integral & Armonización</span>
                         </figcaption>
@@ -359,10 +359,10 @@
                 <div class="lg:col-span-7">
                     <div data-reveal>
                         <p class="eyebrow">Nuestra Filosofía</p>
-                        <h2 class="mt-4 text-[2rem] leading-tight text-ink sm:text-[2.6rem]">
+                        <h2 class="mt-4 text-title-1 text-ink">
                             Cuidado dental personalizado en un ambiente de absoluta serenidad
                         </h2>
-                        <p class="mt-5 max-w-2xl text-base leading-7 text-ink-soft">
+                        <p class="mt-5 max-w-2xl text-body text-ink-soft">
                             En Dentissa rediseñamos la consulta dental para que olvides el estrés: iluminación cálida, instrumental suave y, sobre todo, una comunicación honesta y pausada en cada paso.
                         </p>
                     </div>
@@ -373,7 +373,7 @@
                                 <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sage-50 text-sage-600 ring-1 ring-inset ring-sage-500/20">
                                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                                 </span>
-                                <p class="text-[0.95rem] leading-7 text-ink-soft"><strong class="font-semibold text-ink">{{ $fuerte }}</strong> {{ $detalle }}</p>
+                                <p class="text-body text-ink-soft"><strong class="font-semibold text-ink">{{ $fuerte }}</strong> {{ $detalle }}</p>
                             </li>
                         @endforeach
                     </ul>
@@ -386,7 +386,7 @@
             <div data-reveal class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
                     <p class="eyebrow">Ambiente Boutique</p>
-                    <h2 class="mt-4 text-[2rem] leading-tight text-ink sm:text-[2.6rem]">
+                    <h2 class="mt-4 text-title-1 text-ink">
                         Cada detalle pensado para que te sientas en casa
                     </h2>
                 </div>
@@ -401,9 +401,9 @@
                         <img src="{{ asset('images/'.$imagen) }}" alt="{{ $alt }}" class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]" loading="lazy">
                         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/85 via-[#2b1a20]/20 to-transparent"></div>
                         <figcaption class="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
-                            <span class="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-peach-200">{{ $etiqueta }}</span>
-                            <span class="mt-1.5 block font-serif text-xl sm:text-2xl">{{ $titulo }}</span>
-                            <span class="mt-1.5 block max-w-md text-sm leading-6 text-white/80">{{ $texto }}</span>
+                            <span class="text-caption font-semibold uppercase tracking-label text-peach-200">{{ $etiqueta }}</span>
+                            <span class="mt-1.5 block font-serif text-title-3">{{ $titulo }}</span>
+                            <span class="mt-1.5 block max-w-md text-callout text-white/80">{{ $texto }}</span>
                         </figcaption>
                     </figure>
                 @endforeach
@@ -415,10 +415,10 @@
             <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
                 <div data-reveal class="mx-auto max-w-2xl text-center">
                     <p class="eyebrow justify-center">Experiencias de pacientes</p>
-                    <h2 class="mt-4 text-[2rem] leading-tight text-ink sm:text-[2.6rem]">
+                    <h2 class="mt-4 text-title-1 text-ink">
                         Sonrisas que hablan por nosotros
                     </h2>
-                    <p class="mt-4 text-sm leading-6 text-muted">
+                    <p class="mt-4 text-callout text-muted">
                         Las opiniones se publican únicamente cuando cuentan con autorización de la clínica y de la persona titular.
                     </p>
                 </div>
@@ -427,12 +427,12 @@
                     @foreach ($testimoniosPendientes as [$iniciales, $detalle])
                         <figure data-reveal style="transition-delay: {{ $loop->index * 60 }}ms" class="card-boutique flex h-full flex-col p-6 sm:p-7">
                             <svg class="h-7 w-7 text-peach-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.6 6C6.5 7.3 4.5 10 4.5 13.4V18h6v-6H7.6c.2-1.9 1.4-3.4 3.2-4.2L9.6 6Zm9 0c-3.1 1.3-5.1 4-5.1 7.4V18h6v-6h-2.9c.2-1.9 1.4-3.4 3.2-4.2L18.6 6Z"/></svg>
-                            <div class="mt-3 flex text-sm tracking-widest text-amber-400" aria-label="5 estrellas">★★★★★</div>
-                            <blockquote class="mt-3 flex-1 font-serif text-lg italic leading-relaxed text-ink">
+                            <div class="mt-3 flex text-sm tracking-label text-amber-400" aria-label="5 estrellas">★★★★★</div>
+                            <blockquote class="mt-3 flex-1 font-serif text-title-3 italic text-ink">
                                 “Testimonio pendiente de autorización para publicación.”
                             </blockquote>
                             <figcaption class="mt-6 flex items-center gap-3 border-t border-line/80 pt-5">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-bold text-brand-800" aria-hidden="true">{{ $iniciales }}</span>
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold text-brand-800" aria-hidden="true">{{ $iniciales }}</span>
                                 <span class="min-w-0">
                                     <span class="block truncate text-sm font-semibold text-ink">Testimonio pendiente</span>
                                     <span class="block truncate text-xs text-muted">{{ $detalle }}</span>
@@ -451,15 +451,15 @@
                 <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-peach-300/30 blur-3xl"></div>
 
                 <div class="relative">
-                    <p class="text-xs font-semibold uppercase tracking-[0.16em] text-peach-200">Reserva Fácil & Rápida</p>
-                    <h2 class="mx-auto mt-4 max-w-2xl text-[2rem] leading-tight sm:text-[2.75rem]">
+                    <p class="text-xs font-semibold uppercase tracking-label text-peach-200">Reserva Fácil & Rápida</p>
+                    <h2 class="mx-auto mt-4 max-w-2xl text-title-1">
                         Comienza tu camino hacia una mejor sonrisa
                     </h2>
-                    <p class="mx-auto mt-4 max-w-lg text-base leading-7 text-white/80">
+                    <p class="mx-auto mt-4 max-w-lg text-body text-white/80">
                         Elige el tratamiento, la fecha y el horario que mejor se adapten a tu día para tu valoración en Dentissa.
                     </p>
 
-                    <a href="{{ route('citas.publica.create') }}" class="mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-8 text-[0.95rem] font-semibold text-brand-700 shadow-lg transition-[background-color,transform] duration-150 ease-out hover:bg-peach-50 active:scale-[0.97] sm:w-auto">
+                    <a href="{{ route('citas.publica.create') }}" class="mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-8 text-callout font-semibold text-brand-700 shadow-lg transition-[background-color,transform] duration-150 ease-out hover:bg-peach-50 active:scale-[0.97] sm:w-auto">
                         {!! $iconoCalendario !!}
                         <span>Elegir fecha y horario</span>
                     </a>
@@ -481,13 +481,13 @@
                             <span class="mt-1 block firma text-lg leading-none text-peach-200">Dra. Melissa López</span>
                         </div>
                     </div>
-                    <p class="max-w-sm text-sm leading-6 text-white/65">
+                    <p class="max-w-sm text-callout text-white/65">
                         Atención odontológica integral, estética y preventiva en un ambiente cálido y seguro.
                     </p>
                 </div>
 
                 <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-peach-200">Tratamientos</h3>
+                    <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Tratamientos</h3>
                     <ul class="mt-4 space-y-1 text-sm text-white/70">
                         @foreach (['Valoración Integral', 'Limpieza Profiláctica', 'Resinas Biocompatibles', 'Extracciones Suaves'] as $tratamiento)
                             <li><a href="#servicios" class="inline-flex min-h-9 items-center transition-colors hover:text-white">{{ $tratamiento }}</a></li>
@@ -496,7 +496,7 @@
                 </div>
 
                 <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-peach-200">Horarios</h3>
+                    <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Horarios</h3>
                     <ul class="mt-4 space-y-2 text-sm text-white/70">
                         <li>Horarios por confirmar</li>
                         <li class="font-semibold text-peach-200">Atención con previa cita</li>
@@ -504,7 +504,7 @@
                 </div>
 
                 <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-peach-200">Contacto y citas</h3>
+                    <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Contacto y citas</h3>
                     <ul class="mt-4 space-y-1 text-sm text-white/70">
                         <li><a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-9 items-center transition-colors hover:text-white">{{ $contacto['telefono'] }}</a></li>
                         <li><a href="mailto:trabajout745@gmail.com" class="inline-flex min-h-9 items-center break-all transition-colors hover:text-white">trabajout745@gmail.com</a></li>

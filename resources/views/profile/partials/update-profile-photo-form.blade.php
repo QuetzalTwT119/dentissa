@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
     <div>
-        <h2 class="text-xl text-ink">Foto de perfil</h2>
-        <p class="mt-1 text-sm leading-6 text-ink-soft">Personaliza tu cuenta con una imagen JPG, PNG o WebP de hasta 5 MB.</p>
+        <h2 class="text-title-3 text-ink">Foto de perfil</h2>
+        <p class="mt-1 text-callout text-ink-soft">Personaliza tu cuenta con una imagen JPG, PNG o WebP de hasta 5 MB.</p>
     </div>
 
     <div class="flex flex-wrap items-center gap-3">

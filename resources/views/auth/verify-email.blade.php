@@ -1,8 +1,8 @@
 <x-guest-layout>
     <div class="mb-6">
         <p class="eyebrow">Verificación de cuenta</p>
-        <h2 class="mt-3 text-[2rem] leading-tight text-ink sm:text-[2.4rem]">Verifica tu correo</h2>
-        <p class="mt-2 text-sm leading-6 text-muted">
+        <h2 class="mt-3 text-title-1 text-ink">Verifica tu correo</h2>
+        <p class="mt-2 text-callout text-muted">
             ¡Gracias por registrarte! Antes de comenzar, ¿podrías verificar tu correo electrónico haciendo clic en el enlace que te acabamos de enviar? Si no recibiste el correo, con gusto te enviaremos otro.
         </p>
     </div>

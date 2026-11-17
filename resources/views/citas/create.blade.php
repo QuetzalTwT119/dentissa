@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <p class="eyebrow">Gestión de Agenda</p>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+                <h2 class="mt-1.5 text-title-2 text-ink">
                     Agendar cita en consultorio
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Registro directo de consulta médica para pacientes registrados.</p>
@@ -44,8 +44,8 @@
                     <!-- Paso 1: Paciente -->
                     <div class="rounded-xl bg-cream/60 p-4 sm:p-5 border border-line/70 space-y-4">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1.5">
-                                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">1</span>
+                            <span class="text-xs font-semibold uppercase tracking-label text-brand-600 flex items-center gap-1.5">
+                                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-700">1</span>
                                 Selección de Paciente
                             </span>
                         </div>
@@ -67,8 +67,8 @@
 
                     <!-- Paso 2: Servicio y Tratamiento -->
                     <div class="rounded-xl bg-white p-4 sm:p-5 border border-line/70 space-y-4">
-                        <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1.5">
-                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">2</span>
+                        <span class="text-xs font-semibold uppercase tracking-label text-brand-600 flex items-center gap-1.5">
+                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-700">2</span>
                             Servicio y Procedimiento
                         </span>
 
@@ -105,8 +105,8 @@
 
                     <!-- Paso 3: Fecha y Horario -->
                     <div class="rounded-xl bg-white p-4 sm:p-5 border border-line/70 space-y-4">
-                        <span class="text-xs font-bold uppercase tracking-wider text-brand-600 flex items-center gap-1.5">
-                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-[11px] font-bold text-brand-700">3</span>
+                        <span class="text-xs font-semibold uppercase tracking-label text-brand-600 flex items-center gap-1.5">
+                            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-700">3</span>
                             Fecha y Horario
                         </span>
 

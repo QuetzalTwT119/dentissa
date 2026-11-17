@@ -41,7 +41,7 @@
                                         <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
                                     </div>
                                     <div class="p-4 pb-2">
-                                        <h3 class="truncate text-sm font-bold text-ink">{{ $imagen->titulo ?: 'Sin título' }}</h3>
+                                        <h3 class="truncate text-sm font-semibold text-ink">{{ $imagen->titulo ?: 'Sin título' }}</h3>
                                         <div class="mt-1.5 flex items-center justify-between text-xs text-muted">
                                             <span>Orden: <strong class="text-ink">{{ $imagen->orden }}</strong></span>
                                             <x-admin.status-badge :active="$imagen->activa" />
@@ -67,7 +67,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                 </div>
-                                <h4 class="font-bold text-ink">No hay imágenes en la galería todavía</h4>
+                                <h4 class="font-semibold text-ink">No hay imágenes en la galería todavía</h4>
                                 <p class="mt-1 text-xs">Sube fotos de las instalaciones, equipo y espacios de la clínica.</p>
                             </div>
                         @endforelse

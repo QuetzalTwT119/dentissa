@@ -90,7 +90,7 @@ $etiquetasTabla = [
                 <div class="border-b border-line/80 p-6 bg-gradient-to-r from-white via-white to-cream/50">
                     <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                         <div class="max-w-2xl">
-                            <h3 class="text-base font-bold text-ink">Actividad registrada</h3>
+                            <h3 class="text-headline font-semibold text-ink">Actividad registrada</h3>
                             <p class="mt-1 text-sm text-ink-soft">
                                 Consulta de solo lectura para administración. Solo se registran acciones hechas por cuentas
                                 del personal. Las solicitudes del portal o Telegram no se muestran aquí. Los detalles no incluyen contraseñas ni notas clínicas.
@@ -100,7 +100,7 @@ $etiquetasTabla = [
                         <!-- Conteo de eventos accesible -->
                         <div class="flex flex-wrap items-center gap-2 shrink-0 self-start lg:self-auto" role="status">
                             @if (!empty($filtros['desde']) || !empty($filtros['hasta']) || !empty($filtros['usuario_id']) || !empty($filtros['accion']))
-                                <span class="inline-flex items-center gap-1 rounded-full bg-peach-50 px-2.5 py-0.5 text-[11px] font-semibold text-brand-600 border border-peach-300/60">
+                                <span class="inline-flex items-center gap-1 rounded-full bg-peach-50 px-2.5 py-0.5 text-caption font-semibold text-brand-600 border border-peach-300/60">
                                     <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
                                     Filtros activos
                                 </span>
@@ -213,10 +213,10 @@ $etiquetasTabla = [
                                     @endphp
                                     <x-admin.user-avatar :name="$nombreUsuario" />
                                     <div>
-                                        <p class="font-bold text-ink group-hover:text-brand-700 transition-colors">
+                                        <p class="font-semibold text-ink group-hover:text-brand-700 transition-colors">
                                             {{ $registro->usuario ? $registro->usuario->nombre.' '.$registro->usuario->apellido : ($registro->actor_nombre ?? 'Usuario no disponible') }}
                                         </p>
-                                        <p class="text-[11px] text-muted">
+                                        <p class="text-caption text-muted">
                                             {{ $registro->actor_rol ? ucfirst($registro->actor_rol) : ($registro->usuario ? ucfirst($registro->usuario->rol?->value ?? 'Personal') : 'Personal') }}
                                         </p>
                                     </div>
@@ -256,7 +256,7 @@ $etiquetasTabla = [
                                                     <div class="rounded-xl border {{ $titulo === 'Antes' ? 'border-amber-200/70 bg-amber-50/40' : 'border-sage-500/20 bg-sage-50/40' }} p-2.5">
                                                         <div class="flex items-center gap-1.5 mb-1.5">
                                                             <span class="h-1.5 w-1.5 rounded-full {{ $titulo === 'Antes' ? 'bg-amber-500' : 'bg-sage-500' }}"></span>
-                                                            <h4 class="text-[10px] font-bold uppercase tracking-wider {{ $titulo === 'Antes' ? 'text-amber-800' : 'text-sage-500' }}">{{ $titulo }}</h4>
+                                                            <h4 class="text-caption font-semibold uppercase tracking-label {{ $titulo === 'Antes' ? 'text-amber-800' : 'text-sage-500' }}">{{ $titulo }}</h4>
                                                         </div>
                                                         <dl class="space-y-1 text-xs">
                                                             @foreach ($datos as $campo => $valor)

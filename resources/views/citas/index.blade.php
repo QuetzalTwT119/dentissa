@@ -118,7 +118,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
             <div data-citas-results aria-live="polite" aria-busy="false" class="overflow-hidden rounded-3xl border border-line bg-white shadow-soft">
                 <div class="overflow-x-auto">
                 <table class="w-full min-w-[1100px] text-left text-sm">
-                    <thead class="border-b border-line bg-shell/50 text-[0.72rem] font-semibold uppercase tracking-[0.06em] text-ink-soft">
+                    <thead class="border-b border-line bg-shell/50 text-caption font-semibold uppercase tracking-label text-ink-soft">
                         <tr>
                             <th class="px-6 py-3.5">Fecha y hora</th>
                             @if ($esPersonal)
@@ -147,7 +147,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                 @if ($esPersonal)
                                     <td class="px-6 py-4 font-medium text-ink">
                                         <div class="flex items-center gap-2.5">
-                                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-bold uppercase text-brand-800">
+                                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold uppercase text-brand-800">
                                                 {{ substr($cita->paciente->nombre, 0, 1) }}{{ substr($cita->paciente->apellido, 0, 1) }}
                                             </span>
                                             <div>
@@ -216,7 +216,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                                     <svg class="h-3.5 w-3.5 text-muted transition group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 011.06 0L10 10.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 8.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
                                                 </summary>
                                                 <div x-data="{}" x-init="$nextTick(() => { const detail = $el.closest('details'); detail?.addEventListener('toggle', () => { if (!detail.open) return; const trigger = detail.querySelector('summary').getBoundingClientRect(); const scrollArea = detail.closest('.overflow-x-auto')?.getBoundingClientRect(); const top = scrollArea?.top ?? 0; const bottom = scrollArea?.bottom ?? window.innerHeight; const roomBelow = bottom - trigger.bottom; const roomAbove = trigger.top - top; $el.classList.toggle('bottom-full', roomBelow < 220 && roomAbove > roomBelow); $el.classList.toggle('top-full', !(roomBelow < 220 && roomAbove > roomBelow)); $el.classList.toggle('mb-2', roomBelow < 220 && roomAbove > roomBelow); $el.classList.toggle('mt-2', !(roomBelow < 220 && roomAbove > roomBelow)); }); })" class="absolute right-0 top-full z-30 mt-2 flex min-w-48 flex-col rounded-2xl border border-line bg-white p-1.5 shadow-lift">
-                                                    <p class="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">Gestionar cita</p>
+                                                    <p class="px-3 pb-2 pt-1 text-caption font-semibold uppercase tracking-label text-muted">Gestionar cita</p>
                                                     {{-- Misma regla que CitaController@noShow: solo después de la hora de la cita. --}}
                                                     @if ($cita->estado->value === 'confirmada' && ! $cita->fecha_hora->isFuture())
                                                         <form method="POST" action="{{ route('citas.no-show', $cita) }}"
@@ -264,7 +264,7 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
                                     <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200">
                                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                     </div>
-                                    <p class="font-serif text-lg text-ink">No hay citas registradas para este criterio.</p>
+                                    <p class="font-serif text-title-3 text-ink">No hay citas registradas para este criterio.</p>
                                     <p class="mt-1 text-sm">Puedes utilizar los filtros superiores o agendar una nueva cita.</p>
                                 </td>
                             </tr>

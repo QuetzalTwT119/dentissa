@@ -53,7 +53,7 @@
                                         aria-haspopup="listbox"
                                         aria-label="Cantidad de registros por página: actualmente {{ $perPageActual }}"
                                         class="group inline-flex items-center justify-between gap-1.5 rounded-xl border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink shadow-2xs transition-all duration-150 hover:border-brand-300 hover:bg-cream hover:text-brand-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
-                                    <span x-text="perPage" class="tabular-nums font-bold">{{ $perPageActual }}</span>
+                                    <span x-text="perPage" class="tabular-nums font-semibold">{{ $perPageActual }}</span>
                                     <svg class="h-3.5 w-3.5 text-muted transition-transform duration-200 group-hover:text-brand-500"
                                          :class="{ 'rotate-180 text-brand-500': open }"
                                          fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
@@ -78,7 +78,7 @@
                                             :aria-selected="perPage === 20"
                                             @click="if (perPage !== 20) { perPage = 20; $refs.nativeSelect.value = 20; open = false; $nextTick(() => $refs.formPerPage.submit()); } else { open = false; }"
                                             class="flex w-full items-center justify-between gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-colors"
-                                            :class="perPage === 20 ? 'bg-brand-50 text-brand-500 font-bold' : 'text-ink hover:bg-cream hover:text-ink'">
+                                            :class="perPage === 20 ? 'bg-brand-50 text-brand-500 font-semibold' : 'text-ink hover:bg-cream hover:text-ink'">
                                         <span class="tabular-nums">20</span>
                                         <svg x-show="perPage === 20" class="h-3.5 w-3.5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -90,7 +90,7 @@
                                             :aria-selected="perPage === 50"
                                             @click="if (perPage !== 50) { perPage = 50; $refs.nativeSelect.value = 50; open = false; $nextTick(() => $refs.formPerPage.submit()); } else { open = false; }"
                                             class="flex w-full items-center justify-between gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-colors"
-                                            :class="perPage === 50 ? 'bg-brand-50 text-brand-500 font-bold' : 'text-ink hover:bg-cream hover:text-ink'">
+                                            :class="perPage === 50 ? 'bg-brand-50 text-brand-500 font-semibold' : 'text-ink hover:bg-cream hover:text-ink'">
                                         <span class="tabular-nums">50</span>
                                         <svg x-show="perPage === 50" class="h-3.5 w-3.5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -109,7 +109,7 @@
                         {{ $paginator->onEachSide(1)->links('vendor.pagination.dentissa') }}
                     </div>
                 @else
-                    <span class="hidden sm:inline-block text-[11px] font-medium text-muted/75">
+                    <span class="hidden sm:inline-block text-caption font-medium text-muted/75">
                         Página 1 de 1
                     </span>
                 @endif
@@ -160,7 +160,7 @@
                                         aria-haspopup="listbox"
                                         aria-label="Cantidad de registros por página: actualmente {{ $perPageActual }}"
                                         class="group inline-flex items-center justify-between gap-1.5 rounded-xl border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink shadow-2xs transition-all duration-150 hover:border-brand-300 hover:bg-cream hover:text-brand-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/25">
-                                    <span x-text="perPage" class="tabular-nums font-bold">{{ $perPageActual }}</span>
+                                    <span x-text="perPage" class="tabular-nums font-semibold">{{ $perPageActual }}</span>
                                     <svg class="h-3.5 w-3.5 text-muted transition-transform duration-200 group-hover:text-brand-500"
                                          :class="{ 'rotate-180 text-brand-500': open }"
                                          fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
@@ -185,7 +185,7 @@
                                             :aria-selected="perPage === 20"
                                             @click="if (perPage !== 20) { perPage = 20; $refs.nativeSelectStandalone.value = 20; open = false; $nextTick(() => $refs.formPerPageStandalone.submit()); } else { open = false; }"
                                             class="flex w-full items-center justify-between gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-colors"
-                                            :class="perPage === 20 ? 'bg-brand-50 text-brand-500 font-bold' : 'text-ink hover:bg-cream hover:text-ink'">
+                                            :class="perPage === 20 ? 'bg-brand-50 text-brand-500 font-semibold' : 'text-ink hover:bg-cream hover:text-ink'">
                                         <span class="tabular-nums">20</span>
                                         <svg x-show="perPage === 20" class="h-3.5 w-3.5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -197,7 +197,7 @@
                                             :aria-selected="perPage === 50"
                                             @click="if (perPage !== 50) { perPage = 50; $refs.nativeSelectStandalone.value = 50; open = false; $nextTick(() => $refs.formPerPageStandalone.submit()); } else { open = false; }"
                                             class="flex w-full items-center justify-between gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-colors"
-                                            :class="perPage === 50 ? 'bg-brand-50 text-brand-500 font-bold' : 'text-ink hover:bg-cream hover:text-ink'">
+                                            :class="perPage === 50 ? 'bg-brand-50 text-brand-500 font-semibold' : 'text-ink hover:bg-cream hover:text-ink'">
                                         <span class="tabular-nums">50</span>
                                         <svg x-show="perPage === 50" class="h-3.5 w-3.5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -216,7 +216,7 @@
                         {{ $paginator->onEachSide(1)->links('vendor.pagination.dentissa') }}
                     </div>
                 @else
-                    <span class="hidden sm:inline-block text-[11px] font-medium text-muted/75">
+                    <span class="hidden sm:inline-block text-caption font-medium text-muted/75">
                         Página 1 de 1
                     </span>
                 @endif

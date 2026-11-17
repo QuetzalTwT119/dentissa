@@ -82,7 +82,7 @@ $tipoConsultaLabel = [
                                         {{ \Illuminate\Support\Carbon::parse($consulta->fecha_consulta)->translatedFormat('d M Y') }}
                                     </p>
                                 </div>
-                                <h3 class="mt-2 text-base font-bold text-ink">{{ $consulta->motivo_consulta }}</h3>
+                                <h3 class="mt-2 text-headline font-semibold text-ink">{{ $consulta->motivo_consulta }}</h3>
                                 @if ($consulta->diagnostico)
                                     <p class="mt-1 text-sm text-ink-soft">
                                         <span class="font-semibold text-ink">Diagnóstico:</span> {{ $consulta->diagnostico }}
@@ -111,7 +111,7 @@ $tipoConsultaLabel = [
                     </div>
                 @empty
                     <div class="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-sm text-muted shadow-soft">
-                        <p class="font-bold text-ink">Este paciente todavía no tiene consultas registradas.</p>
+                        <p class="font-semibold text-ink">Este paciente todavía no tiene consultas registradas.</p>
                         <p class="mt-1">El PDF estará disponible cuando registres la primera consulta.</p>
                     </div>
                 @endforelse

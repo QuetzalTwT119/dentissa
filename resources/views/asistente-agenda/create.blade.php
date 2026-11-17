@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+        <h2 class="mt-1.5 text-title-2 text-ink">
             Asistente de agenda
         </h2>
     </x-slot>
@@ -84,7 +84,7 @@
 
             @isset($propuesta)
                 <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                    <h3 class="text-lg font-semibold text-ink">Propuesta para {{ $propuesta['paciente']->nombre_completo }}</h3>
+                    <h3 class="text-headline font-semibold text-ink">Propuesta para {{ $propuesta['paciente']->nombre_completo }}</h3>
                     <p class="mt-1 text-sm text-ink-soft">
                         {{ $propuesta['tratamiento']->nombre }} · {{ $propuesta['tratamiento']->duracion_estimada }} minutos · {{ \Illuminate\Support\Carbon::parse($propuesta['fecha'])->translatedFormat('l d \d\e F') }}
                     </p>

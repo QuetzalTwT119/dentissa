@@ -41,7 +41,7 @@
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                         </a>
                     </div>
-                    <h2 id="titulo-semana" class="font-serif text-xl text-ink">{{ $rango }}</h2>
+                    <h2 id="titulo-semana" class="font-serif text-title-3 text-ink">{{ $rango }}</h2>
                     <a href="{{ route('citas.create') }}" class="btn-brand h-11 shrink-0 px-5">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                         <span>Agendar cita</span>
@@ -93,7 +93,7 @@
                                                ])>
                                                 <span class="flex items-center justify-between gap-2">
                                                     <span class="font-semibold tabular-nums text-ink">{{ $cita->fecha_hora->format('H:i') }}</span>
-                                                    <span class="rounded-full px-2 py-0.5 text-[0.7rem] font-semibold {{ $cita->estado->claseInsignia() }}">{{ $cita->estado->etiqueta() }}</span>
+                                                    <span class="rounded-full px-2 py-0.5 text-caption font-semibold {{ $cita->estado->claseInsignia() }}">{{ $cita->estado->etiqueta() }}</span>
                                                 </span>
                                                 <span @class(['mt-1 block truncate font-medium text-ink', 'line-through' => $cita->estado->esInactiva()])>{{ $cita->paciente?->nombre_completo ?? 'Paciente' }}</span>
                                                 <span class="block truncate text-xs text-muted">{{ $cita->tratamiento?->nombre ?? 'Sin tratamiento' }}</span>

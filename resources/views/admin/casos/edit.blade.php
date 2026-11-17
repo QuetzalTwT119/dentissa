@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-[1.7rem] leading-tight text-ink sm:text-3xl">
+                <h2 class="mt-1.5 text-title-2 text-ink">
                     Editar caso — {{ $caso->titulo }}
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Gestión de información y fotografías del caso clínico.</p>
@@ -61,7 +61,7 @@
             </div>
 
             <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <h3 class="text-lg font-semibold text-ink">Fotos (antes/después)</h3>
+                <h3 class="text-headline font-semibold text-ink">Fotos (antes/después)</h3>
                 <p class="mt-1 text-xs text-muted">Imágenes comparativas del caso para la galería pública.</p>
 
                 <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
