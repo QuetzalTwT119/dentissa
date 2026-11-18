@@ -25,4 +25,18 @@ class DashboardVisualTest extends TestCase
             ->assertSee('Gestión')
             ->assertSee('logo-rosa-transparente.png');
     }
+
+    public function test_assistant_dashboard_speaks_to_the_staff_not_to_patients(): void
+    {
+        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+
+        $this->actingAs($asistente)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Panel de asistencia')
+            ->assertSee('Tu espacio de trabajo')
+            ->assertSee('Ver agenda')
+            ->assertDontSee('Portal de Paciente')
+            ->assertDontSee('Ver mis citas');
+    }
 }
