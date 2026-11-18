@@ -137,6 +137,10 @@ la cita de otra persona."
 **Plan B:**
 - Si la respuesta del bot tarda más de 10 segundos, seguir con la laptop: la
   cita igual aparece confirmada.
+- Si el recordatorio de T-1 no llegó, el presentador B puede mandarlo en ese
+  momento desde Railway → Console:
+  `php artisan dentissa:probar-recordatorio <id_cita> --confirmar`.
+  Llega en segundos, con los mismos botones.
 - Si el mensaje de WhatsApp no llegó, usar el **correo del recordatorio**, que
   trae los mismos tres botones: pulsar **Sí, asistiré** y confirmar en la
   página. *Decir:* "El correo es el respaldo; cada canal funciona por su
