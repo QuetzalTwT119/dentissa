@@ -2,10 +2,10 @@
 
 ## Objetivo
 
-Entregar una versión estable y demostrable de Dentissa antes del **31 de
-octubre de 2026**. El usuario confirmó el 16/10/2026 que la fecha de entrega se
-adelantó al final de este mes; este calendario acelerado reemplaza la fecha
-anterior del 5 de diciembre.
+Entregar Dentissa v1.0 estable, demostrable y desplegable el **5 de diciembre
+de 2026**, con cero defectos críticos abiertos. El 17/11/2026 el usuario
+confirmó esta fecha. El adelanto al 31 de octubre registrado el 16/10/2026 ya no
+aplica; el calendario acelerado de octubre queda solo como referencia histórica.
 
 La meta inmediata es cerrar el MVP funcional antes de agregar funciones
 nuevas.
@@ -39,7 +39,29 @@ nuevas.
 
 ## Calendario de trabajo
 
-### Calendario acelerado — 16 al 31 de octubre
+### Calendario vigente — 17 de noviembre al 5 de diciembre
+
+Estado el 17/11/2026: el rediseño y el pulido de la interfaz ya están en
+`master` (PR #35 y #51; matriz QA-67 y QA-68). Lo que falta pesa más en
+operación que en diseño.
+
+- **17–21 nov — Respaldo y restauración (bloqueante):** cerrar el ensayo
+  cifrado con datos ficticios y recuperar sin tocar la base activa (QA-23, 27,
+  31 y 32).
+- **22–26 nov — Despliegue:** configurar Railway, comprobar
+  `php artisan dentissa:diagnostico --remoto` y probar el respaldo a Google
+  Drive desde el servidor (QA-50 y QA-66).
+- **27–29 nov — Aceptación en dispositivos reales:** recorrer en teléfono
+  físico y tableta la portada, agendar cita, el panel por rol, las tablas y la
+  galería (QA-44 a 48, 56 a 58 y 67), registrando la evidencia en la matriz.
+- **30 nov – 2 dic — Candidato de entrega:** congelar funciones nuevas,
+  regresión completa (SQLite, MySQL y CI), revisar manuales y ensayar el guion
+  de `GUION-DEMO.md`.
+- **3–4 dic — Margen:** solo defectos críticos; confirmar que repositorio,
+  imagen Docker, despliegue y documentación coinciden.
+- **5 dic:** entrega de Dentissa v1.0.
+
+### Calendario acelerado — 16 al 31 de octubre (histórico)
 
 - **16–19 oct:** cerrar defectos bloqueantes, alinear Docker con el código
   vigente y completar pruebas de agenda, auditoría, permisos y datos.
