@@ -121,7 +121,9 @@ return [
         // Aunque sean viejas, nunca se borran las copias más recientes.
         'minimo_conservar' => 3,
         // Archivos privados que se respaldan (imágenes clínicas, fotos de perfil).
-        'directorio_archivos' => storage_path('app/private'),
+        // DENTISSA_RESPALDO_DIRECTORIO solo sirve para ensayar con archivos
+        // ficticios; en el servidor se deja vacío.
+        'directorio_archivos' => env('DENTISSA_RESPALDO_DIRECTORIO') ?: storage_path('app/private'),
         // Credenciales que nunca deben salir del servidor, ni cifradas.
         'excluir' => ['google-oauth-client.json', 'google-oauth-token.json'],
     ],

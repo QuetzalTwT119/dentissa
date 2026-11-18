@@ -10,10 +10,12 @@ use App\Services\Respaldo\CifradoRespaldo;
 use App\Services\Respaldo\DestinoRespaldo;
 use App\Services\Respaldo\GoogleDriveDestino;
 use App\Services\Respaldo\RespaldoService;
+use App\Services\Respaldo\VolcadoBaseDatos;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -202,6 +204,50 @@ class RespaldoTest extends TestCase
         $this->expectExceptionMessage('permiso de Drive');
 
         app(GoogleDriveDestino::class)->listar();
+    }
+
+    public function test_si_la_api_de_drive_esta_desactivada_el_error_dice_como_activarla(): void
+    {
+        Cache::flush();
+        config(['services.gmail.client_id' => 'id', 'services.gmail.client_secret' => 'secreto', 'services.gmail.refresh_token' => 'refresco']);
+        Http::fake([
+            'oauth2.googleapis.com/token' => Http::response(['access_token' => 'token-de-prueba']),
+            'www.googleapis.com/*' => Http::response(['error' => [
+                'status' => 'PERMISSION_DENIED',
+                'errors' => [['reason' => 'accessNotConfigured', 'message' => 'Proyecto 123456 sin la API']],
+            ]], 403),
+        ]);
+
+        try {
+            app(GoogleDriveDestino::class)->listar();
+            $this->fail('Se esperaba un error de Drive.');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('API de Google Drive está desactivada', $e->getMessage());
+            $this->assertStringNotContainsString('google-oauth.ps1', $e->getMessage());
+            // El cuerpo de Google (número de proyecto) no se copia al mensaje.
+            $this->assertStringNotContainsString('123456', $e->getMessage());
+        }
+    }
+
+    public function test_el_volcado_mysql_guarda_las_horas_en_utc_sin_cambiar_la_zona_de_la_conexion(): void
+    {
+        if (DB::connection()->getDriverName() !== 'mysql') {
+            $this->markTestSkipped('Solo aplica al volcado de MySQL (job de MySQL del CI).');
+        }
+
+        // Un servidor con otra zona: 09:00 a -06:00 son las 15:00 en UTC.
+        DB::statement("SET time_zone = '-06:00'");
+        $paciente = Paciente::create(['nombre' => 'Hora', 'apellido' => 'Exacta', 'telefono' => '5512345678', 'email' => 'hora@example.test']);
+        DB::table('pacientes')->where('id', $paciente->id)->update(['created_at' => '2030-01-15 09:00:00']);
+
+        $directorio = $this->temporal.'/volcado';
+        File::ensureDirectoryExists($directorio);
+        app(VolcadoBaseDatos::class)->exportar($directorio);
+        $sql = File::get($directorio.'/base.sql');
+
+        $this->assertStringContainsString("SET time_zone = '+00:00';", $sql);
+        $this->assertStringContainsString("'2030-01-15 15:00:00'", $sql);
+        $this->assertSame('-06:00', DB::selectOne('SELECT @@session.time_zone AS zona')->zona);
     }
 
     /** @return array<string, mixed> */

@@ -121,10 +121,14 @@ class GoogleDriveDestino implements DestinoRespaldo
     private function exigir(Response $respuesta, string $accion): void
     {
         if ($respuesta->failed()) {
-            // Solo el código HTTP: el cuerpo puede traer datos de la cuenta.
-            $pista = $respuesta->status() === 403
-                ? ' Revisa que la cuenta de Google se autorizara con el permiso de Drive (scripts/google-oauth.ps1).'
-                : '';
+            // Solo el código HTTP y el motivo de Google: el resto del cuerpo
+            // puede traer datos de la cuenta.
+            $motivo = $respuesta->json('error.errors.0.reason');
+            $pista = match (true) {
+                $respuesta->status() === 403 && $motivo === 'accessNotConfigured' => ' La API de Google Drive está desactivada en el proyecto de Google Cloud: actívala en "APIs y servicios" > "Biblioteca" > "Google Drive API".',
+                $respuesta->status() === 403 => ' Revisa que la cuenta de Google se autorizara con el permiso de Drive (scripts/google-oauth.ps1).',
+                default => '',
+            };
 
             throw new RuntimeException("Google Drive no pudo {$accion} (HTTP {$respuesta->status()}).{$pista}");
         }

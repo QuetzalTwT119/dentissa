@@ -589,7 +589,8 @@ aprobada para no eliminar copias históricas.
 La restauración de prueba sólo permite un destino que no exista bajo el disco
 externo; comprueba que se recuperen el manifiesto y el dump. No importa ni
 sobrescribe la base activa. Estos scripts quedan para respaldos manuales del
-entorno local; en el servidor se usa el respaldo automático de la sección 14.1.
+entorno local y no se ensayaron (QA-31 y QA-32 diferidos); en el servidor se
+usa el respaldo automático de la sección 14.1, ensayado en la 14.2.
 
 ### 14.1 Respaldo automático cifrado a Google Drive (servidor)
 
@@ -619,6 +620,10 @@ credenciales google-oauth-*.json)    CifradoRespaldo (XChaCha20-Poly1305)
   `START TRANSACTION WITH CONSISTENT SNAPSHOT`, una sentencia por línea. Las
   tablas efímeras (`sessions`, `cache`, `jobs`, `password_reset_tokens`…)
   solo guardan su estructura.
+- **Horas en UTC:** MySQL convierte las columnas `TIMESTAMP` según la zona
+  horaria de la sesión. El volcado fija `time_zone = '+00:00'` (y lo escribe
+  al inicio del archivo) para que, al restaurar en un servidor con otra zona,
+  las horas no se recorran. Al terminar, la conexión vuelve a su zona.
 - **Cifrado antes de salir del servidor:** `sodium` secretstream con una llave
   de 32 bytes en `DENTISSA_RESPALDO_CLAVE`. Cada bloque está autenticado: un
   byte alterado o un archivo cortado hacen fallar el descifrado. Google solo
@@ -655,6 +660,13 @@ toca la base ni los archivos activos.**
 
 **Configuración en Railway**
 
+1. En Google Cloud, en el mismo proyecto de las credenciales OAuth, habilitar
+   **Google Drive API** ("APIs y servicios" > "Biblioteca"). Sin ella Drive
+   responde 403 `accessNotConfigured` y el comando lo explica.
+2. Autorizar la cuenta con `scripts/google-oauth.ps1` (permisos `gmail.send` y
+   `drive.file`) y copiar el refresh token nuevo a `GMAIL_OAUTH_REFRESH_TOKEN`.
+3. Generar la llave:
+
 ```bash
 php artisan dentissa:respaldo-llave
 ```
@@ -675,14 +687,53 @@ php artisan dentissa:restaurar-prueba
 
 Hay que repetir la restauración de prueba al menos una vez al mes.
 
-**Pruebas:** `RespaldoTest` (8 pruebas): paquete cifrado sin datos en claro ni
+**Pruebas:** `RespaldoTest` (10 pruebas): paquete cifrado sin datos en claro ni
 credenciales; restauración que no toca la base activa; archivo alterado o llave
 distinta rechazados; retención con mínimo de 3; alerta solo al administrador y
-sin temporales; horario 03:00; subida reanudable a Drive con `Http::fake`; y
-mensaje claro si falta el permiso de Drive. En el job de MySQL del CI las
-mismas pruebas ejercitan el volcado PDO y el esquema aislado. Ensayo local el
-16/11/2026 sobre una copia de SQLite: respaldo de 12.5 KB, restauración con
-conteos idénticos, 0.3 s y sin temporales.
+sin temporales; horario 03:00; subida reanudable a Drive con `Http::fake`;
+mensaje claro si falta el permiso de Drive o si la API está desactivada; y
+volcado MySQL en UTC (solo corre en MySQL; en SQLite se omite). En el job de
+MySQL del CI las mismas pruebas ejercitan el volcado PDO y el esquema aislado.
+Ensayo local el 16/11/2026 sobre una copia de SQLite: respaldo de 12.5 KB,
+restauración con conteos idénticos, 0.3 s y sin temporales.
+
+### 14.2 Ensayo con Google Drive real y datos ficticios
+
+**Por qué así:** la base local tiene pacientes reales, y un ensayo no debe
+subirlos a Drive ni arriesgar la base activa. Se usa una base y una carpeta de
+archivos de mentira, una llave temporal y una carpeta de Drive aparte.
+
+1. Con el usuario `root` de MySQL (una sola vez), crear `dentissa_ensayo` y
+   `dentissa_ensayo_restauracion_prueba` y dar `GRANT ALL` sobre ambas al
+   usuario de la aplicación.
+2. Migrar `dentissa_ensayo` y cargar datos ficticios (correos
+   `@example.invalid`, textos con acentos, comillas y saltos de línea).
+3. Ejecutar los comandos con variables de entorno del proceso, sin tocar
+   `.env`: `DB_DATABASE=dentissa_ensayo`, `DB_HOST=127.0.0.1`,
+   `DB_PORT=3307`, `DENTISSA_RESPALDO_DIRECTORIO=<carpeta con archivos
+   ficticios>`, `DENTISSA_RESPALDO_CARPETA="Dentissa respaldos ENSAYO"`,
+   `DENTISSA_RESPALDO_CLAVE=<llave temporal>` y `MAIL_MAILER=log`. Antes de
+   respaldar, comprobar con `DB::connection()->getDatabaseName()` que apunta a
+   `dentissa_ensayo`.
+4. `php artisan dentissa:respaldar` y luego `php artisan
+   dentissa:restaurar-prueba`.
+
+`DENTISSA_RESPALDO_DIRECTORIO` existe solo para estos ensayos; en el servidor
+se deja vacía y se respalda `storage/app/private`.
+
+**Resultado del 18/11/2026 (MySQL 8.4 en Docker):** 2 usuarios, 26 pacientes,
+50 citas, 25 historiales, 5 imágenes y 2 archivos privados. Respaldo cifrado de
+256.6 KB subido en 11 s; el token OAuth falso de la carpeta quedó fuera. La
+restauración desde Drive tardó 13 s con conteos y huellas idénticos. Una
+verificación independiente descargó la copia, confirmó que no hay texto en
+claro, la importó en el esquema aislado con la sesión en −06:00 y comparó con
+`CHECKSUM TABLE`: 18/18 tablas idénticas y archivos iguales byte a byte. La base
+activa no registró escrituras durante el ensayo.
+
+**Problemas encontrados y su arreglo:** el token anterior solo tenía permiso de
+Gmail (se reautorizó), la Google Drive API estaba desactivada en el proyecto (se
+habilitó; ahora el error lo indica) y las horas `TIMESTAMP` dependían de la zona
+de la sesión (el volcado ahora fija UTC).
 
 ## 15. Widget público en móvil y acceso por LAN
 

@@ -47,7 +47,8 @@ operación que en diseño.
 
 - **17–21 nov — Respaldo y restauración (bloqueante):** cerrar el ensayo
   cifrado con datos ficticios y recuperar sin tocar la base activa (QA-23, 27,
-  31 y 32).
+  31 y 32). **Hecho el 18/11/2026** con Google Drive real (Manual Técnico
+  14.2); QA-31 y 32 (Restic) quedan diferidos porque los sustituye QA-66.
 - **22–26 nov — Despliegue:** configurar Railway, comprobar
   `php artisan dentissa:diagnostico --remoto` y probar el respaldo a Google
   Drive desde el servidor (QA-50 y QA-66).
