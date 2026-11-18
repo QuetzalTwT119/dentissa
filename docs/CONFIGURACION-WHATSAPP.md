@@ -167,6 +167,26 @@ no envían mensajes reales.
 
 ## 6. Probar
 
+**Probar el recordatorio sin esperar 24 h.** En cuanto Meta apruebe
+`cita_recordatorio`, agenda una cita de prueba con tu teléfono y, en Railway →
+Console, ejecuta:
+
+```bash
+php artisan dentissa:probar-recordatorio ID_DE_LA_CITA
+```
+
+Sin `--confirmar` solo muestra la cita, con el teléfono y el correo
+enmascarados. Para enviarlo de verdad:
+
+```bash
+php artisan dentissa:probar-recordatorio ID_DE_LA_CITA --confirmar
+```
+
+Manda en ese momento el recordatorio por WhatsApp y correo, y marca la cita para
+que el envío programado no lo repita. Si WhatsApp no sale, avisa que revises que
+la plantilla esté aprobada. El ID de la cita aparece en la dirección al abrirla
+desde el panel (`/citas/ID/editar`).
+
 1. Con las credenciales del número de prueba en `.env`, envía primero la
    plantilla que Meta ya incluye para pruebas. Sustituye el teléfono por el
    destinatario que agregaste y verificaste en el panel de Meta:
