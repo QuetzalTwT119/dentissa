@@ -480,7 +480,11 @@ paciente** u **Horario liberado** (destacados) cuando cancela o pide reagendar.
 Solo el administrador recibe **Respaldo fallido** (destacado, también por
 correo) si la copia de seguridad nocturna no se completó. Ese aviso no se debe
 ignorar: avisa al equipo técnico el mismo día, porque mientras siga fallando no
-hay copia reciente de citas ni historiales.
+hay copia reciente de citas ni historiales. La copia se guarda cifrada en la
+carpeta **Dentissa respaldos** del Google Drive de la clínica: no se debe
+mover, renombrar ni borrar a mano, y abrirla en Drive no muestra nada legible
+(es normal). Una vez al mes, el equipo técnico comprueba que la copia más
+reciente se puede recuperar sin tocar los datos en uso.
 Con la sesión abierta, la notificación aparece al instante en un aviso
 emergente y el contador se actualiza sin recargar la página. Si el canal en
 vivo se desconecta temporalmente, el sistema revisa novedades cada pocos

@@ -77,13 +77,18 @@ class VolcadoBaseDatos
         $pdo = $conexion->getPdo();
         $destino = $directorio.DIRECTORY_SEPARATOR.'base.sql';
         $salida = fopen($destino, 'wb');
+        // Las columnas TIMESTAMP se leen y escriben en la zona de la sesión: el
+        // volcado se hace en UTC y la restauración también, para que las horas
+        // de las citas no se muevan si el otro servidor usa otra zona.
+        $zonaOriginal = (string) $pdo->query('SELECT @@session.time_zone')->fetchColumn();
 
         try {
+            $pdo->exec("SET time_zone = '+00:00'");
             $pdo->exec('SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ');
             $pdo->exec('START TRANSACTION WITH CONSISTENT SNAPSHOT');
 
             // Una sentencia por línea: así la restauración las lee sin un parser SQL.
-            fwrite($salida, "SET FOREIGN_KEY_CHECKS=0;\nSET NAMES utf8mb4;\n");
+            fwrite($salida, "SET FOREIGN_KEY_CHECKS=0;\nSET NAMES utf8mb4;\nSET time_zone = '+00:00';\n");
 
             $tablas = $pdo->query("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'")->fetchAll(PDO::FETCH_COLUMN);
             foreach ($tablas as $tabla) {
@@ -110,6 +115,8 @@ class VolcadoBaseDatos
             throw $e;
         } finally {
             fclose($salida);
+            // La conexión sigue en uso después del respaldo: vuelve a su zona.
+            $pdo->exec('SET time_zone = '.$pdo->quote($zonaOriginal));
         }
 
         return ['motor' => 'mysql', 'archivo' => 'base.sql', 'conteos' => $conteos];
