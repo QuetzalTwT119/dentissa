@@ -735,6 +735,36 @@ Gmail (se reautorizó), la Google Drive API estaba desactivada en el proyecto (s
 habilitó; ahora el error lo indica) y las horas `TIMESTAMP` dependían de la zona
 de la sesión (el volcado ahora fija UTC).
 
+### 14.3 Primera ejecución en Railway
+
+Desde la pestaña **Console** del servicio `dentissa` (terminal dentro del
+contenedor, en `/var/www/html`), el 18/11/2026, con el despliegue del PR #54:
+
+1. `php artisan dentissa:diagnostico --remoto` marcó que Google no entregaba
+   token: el `GMAIL_OAUTH_REFRESH_TOKEN` de Railway había caducado. Se copió
+   el nuevo al portapapeles sin mostrarlo:
+
+   ```powershell
+   (Get-Content 'C:\laragon\www\dentissa\storage\app\private\google-oauth-token.json' -Raw | ConvertFrom-Json).refresh_token | Set-Clipboard
+   ```
+
+   Se pegó en la variable, se volvió a desplegar y se limpió el portapapeles
+   con `Set-Clipboard -Value ' '`. El diagnóstico quedó en 0 errores.
+2. `php artisan dentissa:respaldar` subió la primera copia real en 2.2 s.
+3. `php artisan dentissa:restaurar-prueba` la restauró en el esquema aislado
+   con conteos idénticos en 4.7 s, sin tocar la base activa.
+4. `php artisan schedule:list` muestra el respaldo a las 03:00 (hora de
+   México); supervisord mantiene `schedule:work` encendido.
+
+**Si los tokens caducan cada semana:** la pantalla de consentimiento de OAuth
+está en modo "Prueba", y Google invalida los refresh tokens a los 7 días.
+Publicar la app ("Publicar app") lo evita; para una app de una sola cuenta no
+hace falta la verificación de Google.
+
+**Operación:** la llave `DENTISSA_RESPALDO_CLAVE` debe existir también fuera de
+Railway (gestor de contraseñas). Repetir `dentissa:restaurar-prueba` cada mes y
+revisar que la campana no muestre "Respaldo fallido".
+
 ## 15. Widget público en móvil y acceso por LAN
 
 El widget crea un UUID de conversación para que el servidor pueda relacionar
