@@ -81,12 +81,11 @@
 
             <main class="pt-6 pb-28 sm:pb-16 sm:pt-10"
                  x-data="{
-                    paso: {{ $errors->any() ? 4 : 0 }},
-                    pasos: ['Tipo de atención', 'Fecha', 'Hora', 'Resumen', 'Datos'],
+                    paso: {{ $errors->any() ? 3 : 0 }},
+                    pasos: ['Tipo de atención', 'Fecha y hora', 'Resumen', 'Datos'],
                     encabezados: [
                         { etiqueta: 'Selección clínica', titulo: '¿Qué tipo de atención necesitas?', texto: 'Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.' },
-                        { etiqueta: 'Calendario', titulo: 'Seleccionar una fecha', texto: 'Elige el día en el que deseas programar tu valoración en Dentissa.' },
-                        { etiqueta: 'Horario', titulo: 'Elige una hora', texto: 'Turnos confirmados en tiempo real con la agenda del consultorio.' },
+                        { etiqueta: 'Calendario', titulo: '¿Cuándo te queda mejor?', texto: 'Elige un día con lugar y después tu horario. La agenda se confirma en tiempo real con el consultorio.' },
                         { etiqueta: 'Confirmación', titulo: 'Resumen de la cita', texto: 'Revisa el tratamiento, la fecha y la hora antes de continuar' },
                         { etiqueta: 'Datos de contacto', titulo: 'Datos para agendar', texto: 'Los usamos para confirmar tu cita médica y enviarte recordatorios.' },
                     ],
@@ -257,34 +256,15 @@
                             </div>
                         </template>
 
-                        <!-- PASO 1: SELECCIONAR FECHA -->
+                        <!-- PASO 1: FECHA Y HORA (calendario del mes + horarios del día) -->
                         <template x-if="paso === 1">
                             <div class="paso-anim space-y-6 p-5 sm:p-8">
                                 <div>
-                                    <label for="fecha-picker" class="{{ $claseEtiqueta }}">Selecciona el día</label>
-                                    <input id="fecha-picker" type="date" min="{{ now()->toDateString() }}"
-                                           x-model="fecha" @change="cargarHorarios()"
-                                           class="{{ $claseCampo }} font-semibold">
-                                    <p class="mt-2 text-sm text-muted">Horario regular: {{ $horarioRegular }}</p>
-                                </div>
-
-                                <p x-show="!fecha" class="-mb-3 text-footnote text-muted sm:text-right" aria-live="polite">Elige un día para continuar.</p>
-                                <div class="{{ $claseBarra }}">
-                                    <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
-                                    <button type="button" :disabled="!fecha" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a horario</button>
-                                </div>
-                            </div>
-                        </template>
-
-                        <!-- PASO 2: ELEGIR HORA -->
-                        <template x-if="paso === 2">
-                            <div class="paso-anim space-y-6 p-5 sm:p-8">
-                                <div>
-                                    <p class="mb-3 text-sm font-semibold text-ink">Horarios disponibles para el día seleccionado</p>
                                     @include('partials.disponibilidad-picker')
+                                    <p class="mt-4 text-footnote text-muted">Horario regular: {{ $horarioRegular }}</p>
                                 </div>
 
-                                <p x-show="!hora" class="-mb-3 text-footnote text-muted sm:text-right" aria-live="polite">Elige un horario para continuar.</p>
+                                <p x-show="!hora" class="-mb-3 text-footnote text-muted sm:text-right" aria-live="polite" x-text="fecha ? 'Elige un horario para continuar.' : 'Elige un día para continuar.'"></p>
                                 <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="button" :disabled="!hora" @click="siguiente()" class="{{ $claseSiguiente }}">Revisar resumen</button>
@@ -292,8 +272,8 @@
                             </div>
                         </template>
 
-                        <!-- PASO 3: RESUMEN DE LA CITA -->
-                        <template x-if="paso === 3">
+                        <!-- PASO 2: RESUMEN DE LA CITA -->
+                        <template x-if="paso === 2">
                             <div class="paso-anim space-y-6 p-5 sm:p-8">
                                 <div class="overflow-hidden rounded-3xl border border-line">
                                     <div class="bg-cream px-5 py-4">
@@ -319,8 +299,8 @@
                             </div>
                         </template>
 
-                        <!-- PASO 4: DATOS DEL PACIENTE -->
-                        <template x-if="paso === 4">
+                        <!-- PASO 3: DATOS DEL PACIENTE -->
+                        <template x-if="paso === 3">
                             <form method="POST" action="{{ route('citas.publica.store') }}" class="paso-anim space-y-5 p-5 sm:p-8"
                                   x-init="$nextTick(() => $el.querySelector('[aria-invalid=true]')?.focus())">
                                 @csrf

@@ -82,7 +82,8 @@ class AsistenteVistasPublicasTest extends TestCase
         $this->assertStringContainsString('x-if="!servicioSeleccionado"', $contenido);
         $this->assertStringContainsString('@click="mover(\'atras\'); idServicio = \'\'; idTratamiento = \'\'"', $contenido);
         $this->assertStringNotContainsString('>×</span>', $contenido);
-        $this->assertStringContainsString('grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5', $contenido);
+        $this->assertStringContainsString('x-data="calendarioDisponibilidad(', $contenido);
+        $this->assertStringContainsString('md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]', $contenido);
         $this->assertStringContainsString('x-text="servicioSeleccionado?.nombre ?? \'Pendiente\'"', $contenido);
         $this->assertStringContainsString('x-text="tratamientoSeleccionado?.nombre ?? \'Pendiente\'"', $contenido);
     }
