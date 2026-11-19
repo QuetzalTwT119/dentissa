@@ -143,8 +143,9 @@ class CitaReglasTest extends TestCase
             ]);
         }
 
+        // La paginación vive en "Todas las fechas"; la vista por día muestra el día completo.
         $this->actingAs($admin)
-            ->get(route('citas.index'))
+            ->get(route('citas.index', ['todas' => 1]))
             ->assertOk()
             ->assertSee('Mostrando')
             ->assertSee('1–20', false)
@@ -152,7 +153,7 @@ class CitaReglasTest extends TestCase
             ->assertSee('<option value="20" selected>20</option>', false);
 
         $this->actingAs($admin)
-            ->get(route('citas.index', ['per_page' => 50]))
+            ->get(route('citas.index', ['todas' => 1, 'per_page' => 50]))
             ->assertOk()
             ->assertSee('1–21', false)
             ->assertSee('<option value="50" selected>50</option>', false);
@@ -307,7 +308,7 @@ class CitaReglasTest extends TestCase
         ]);
 
         $this->actingAs($admin)
-            ->get(route('citas.index'))
+            ->get(route('citas.index', ['fecha' => $cita->fecha_hora->toDateString()]))
             ->assertOk()
             ->assertSee('Completar')
             ->assertDontSee('Más acciones')
@@ -410,7 +411,7 @@ class CitaReglasTest extends TestCase
         ]);
 
         $this->actingAs($admin)
-            ->get(route('citas.index'))
+            ->get(route('citas.index', ['fecha' => $cita->fecha_hora->toDateString()]))
             ->assertOk()
             ->assertSee('Confirmar')
             ->assertSee('Más acciones')
@@ -423,7 +424,7 @@ class CitaReglasTest extends TestCase
             ->assertRedirect(route('citas.index'))
             ->assertSessionHas('success', 'Cita confirmada correctamente.');
 
-        $this->get(route('citas.index'))
+        $this->get(route('citas.index', ['fecha' => $cita->fecha_hora->toDateString()]))
             ->assertOk()
             ->assertSee('Cita confirmada correctamente.')
             ->assertSee('Confirmada')

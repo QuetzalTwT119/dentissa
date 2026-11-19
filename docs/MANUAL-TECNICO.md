@@ -1053,10 +1053,40 @@ administrador y el asistente gestionan los demás cambios desde el panel
   versión acotada: el enlace firmado del recordatorio, que solo sirve para esa
   cita y deja de aceptar respuestas a la hora de la cita.
 
+### Lista de citas por pestañas (`GET /citas`)
+
+Se eligió en dos rondas de prototipos: primero "Tabla por día" frente a una
+vista "Ahora" y un tablero por estado; después, para desplazarse menos,
+"Por pestañas" frente a una versión compacta y otra desplegable. En el
+prototipo, el día de hoy (11 citas) pasó de unos 1700 px a 1124 px en celular
+porque solo se ve un día y lo ya atendido se pliega.
+
+- **Por día (predeterminado):** `?fecha=AAAA-MM-DD` (hoy si falta). Muestra
+  todas las citas de ese día en orden de hora, sin paginación, y el filtro
+  `?estado` actúa dentro del día. Arriba, una pestaña por día de la semana del
+  día elegido (lunes a sábado; domingo solo si abre, tiene citas o es el día
+  elegido) con sus citas activas y las que siguen **por confirmar**
+  (`CitaController::pestanasDeLaSemana()`, una sola consulta). Las flechas
+  mueven una semana conservando el día de la semana.
+- **Plegado:** mientras queden citas por atender, las completadas, canceladas
+  y no asistidas se agrupan en un `<details>` ("4 ya atendidas o canceladas")
+  cerrado por defecto. Si el día ya no tiene pendientes, se muestran todas.
+- **Todas las fechas:** `?buscar=` o `?todas=1` muestran citas de cualquier
+  fecha, de la más reciente a la más antigua, agrupadas por día y paginadas
+  (20 o 50). La búsqueda ignora `fecha` a propósito: buscar a un paciente debe
+  encontrar todo su historial.
+- **Vistas:** `citas/index.blade.php` decide el modo con `isset($dia)`;
+  `citas/partials/fila.blade.php` dibuja cada cita (tabla desde 1024 px,
+  tarjeta en celular, clases `.fila-cita` de `app.css`) y
+  `citas/partials/acciones.blade.php` conserva los botones de antes
+  (Confirmar, Iniciar, Completar y "Más acciones").
+- **Pruebas:** `ListaCitasPorDiaTest`. Varias pruebas anteriores ahora abren el
+  día de la cita (`?fecha=`) o `?todas=1`, porque la lista ya no mezcla días.
+
 ## 21. Vista semanal de la agenda (RF03)
 
 `GET /citas?vista=semana&semana=AAAA-MM-DD` muestra la agenda de la semana; sin
-`vista` se conserva la lista con filtros. Ambas vistas comparten el selector
+`vista` se muestra la lista por pestañas (ver arriba). Ambas vistas comparten el selector
 `citas/partials/selector-vista.blade.php`.
 
 - **Controlador:** `CitaController::index` delega en `semana()` cuando

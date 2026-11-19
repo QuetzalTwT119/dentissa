@@ -94,14 +94,15 @@ class CasosExtremosInterfazTest extends TestCase
         $this->assertSame('?', Iniciales::de('😊', ''));
     }
 
-    public function test_la_agenda_no_muestra_caracteres_rotos_en_las_iniciales(): void
+    public function test_la_agenda_no_muestra_caracteres_rotos_en_los_nombres(): void
     {
         Auth::setUser(CasosExtremos::usuario('peor'));
 
         $html = view('citas.index', ['citas' => CasosExtremos::citas('peor'), 'filtros' => []])->render();
 
         $this->assertStringNotContainsString("\u{FFFD}", $html);
-        $this->assertStringContainsString('ÑÖ', $html);
+        // La lista ya no dibuja iniciales; el nombre completo debe llegar intacto.
+        $this->assertStringContainsString('Ñandú Ötzi Ybáñez', $html);
     }
 
     public function test_los_contadores_usan_singular_y_separador_de_miles(): void
