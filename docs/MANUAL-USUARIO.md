@@ -266,10 +266,19 @@ Después de una acción válida, la agenda muestra el estado actualizado y un
 aviso de confirmación; si la operación no procede, muestra el motivo del error.
 En pantallas angostas, la tabla conserva las acciones en una sola línea y permite
 desplazamiento horizontal para consultar sus columnas sin comprimir los controles.
-Las listas administrativas de pacientes, usuarios, citas y catálogo también
-conservan sus columnas y ofrecen desplazamiento horizontal cuando la pantalla no
-alcanza; los formularios con campos relacionados se apilan en móvil y se vuelven
-a distribuir en columnas al tener más espacio.
+Las listas administrativas siguen una regla según su tamaño:
+
+- **Tablas cortas** (Pacientes, Usuarios, Servicios, Testimonios, Preguntas
+  frecuentes, Casos y Horarios): nunca se desplazan de lado. En celular y
+  tableta cada registro es una tarjeta: el nombre arriba, cada dato con el
+  título de su columna y los botones abajo. En computadora son tablas normales.
+- **Tablas largas** (Auditoría, Mensajes de contacto, Ofertas y Tratamientos):
+  conservan sus columnas y se desplazan de lado solo cuando no caben. La
+  primera columna se queda fija y arriba aparece "Desliza para ver más
+  columnas".
+
+Los formularios con campos relacionados se apilan en móvil y se vuelven a
+distribuir en columnas al tener más espacio.
 
 Al agendar o reagendar, el sistema vuelve a comprobar que el servicio y el
 tratamiento estén activos, que el tratamiento pertenezca al servicio y que la
@@ -503,8 +512,8 @@ Dentissa cuenta con una interfaz visual unificada con paleta cálida (rosa `#d75
 1. **Navegación fluida y adaptativa:**
    - En computadoras de escritorio, la barra superior permanece accesible con accesos directos claros a Inicio, Agenda, Asistente y a los menús agrupados de Gestión, Catálogo, Contenido y Configuración.
    - En celulares y tablets, el botón de menú con ícono de tres líneas permite desplegar todas las secciones en un panel vertical accesible sin saturar la pantalla.
-2. **Tablas con desplazamiento lateral seguro:**
-   - En pantallas angostas, las listas de citas, pacientes, usuarios, testimonios y reportes conservan todas sus columnas e información legible mediante desplazamiento horizontal, evitando columnas comprimidas o textos cortados.
+2. **Tablas que se adaptan a su tamaño:**
+   - Las tablas cortas se convierten en tarjetas en celular y tableta, sin desplazamiento lateral; las largas (por ejemplo Auditoría) se desplazan de lado lo mínimo, con la primera columna fija para no perder de qué registro se trata.
 3. **Formularios confortables y claros:**
    - Los campos de captura cuentan con bordes suaves, enfoque en color rosa de marca y mensajes de ayuda legibles para evitar errores durante el registro de datos clínicos o citas.
 4. **Asistente flotante no invasivo:**

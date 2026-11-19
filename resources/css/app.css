@@ -664,3 +664,97 @@ html::-webkit-scrollbar {
         opacity: 0;
     }
 }
+
+/*
+ * Tablas del panel en modo "Mixta" (components/admin/table.blade.php).
+ *
+ * Corta (.tabla-apilable): en celular y tableta (< 1024 px) cada fila es una
+ * tarjeta. La primera columna va arriba sin título; las demás muestran el
+ * título de su columna (data-label) a la izquierda y el valor a la derecha;
+ * "Acciones" va abajo. Desde 1024 px es una tabla normal que cabe completa.
+ */
+@media (max-width: 1023px) {
+    .tabla-apilable thead {
+        display: none;
+    }
+
+    .tabla-apilable,
+    .tabla-apilable tbody,
+    .tabla-apilable tbody tr,
+    .tabla-apilable tbody td {
+        display: block;
+        width: 100%;
+    }
+
+    .tabla-apilable tbody tr {
+        padding: 0.875rem 1rem;
+    }
+
+    .tabla-apilable tbody td {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.3rem 0;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .tabla-apilable tbody td::before {
+        content: attr(data-label);
+        max-width: 45%;
+        flex-shrink: 0;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgb(var(--c-muted));
+    }
+
+    .tabla-apilable tbody td:first-child {
+        display: block;
+        padding-bottom: 0.5rem;
+        text-align: left;
+    }
+
+    .tabla-apilable tbody td:first-child::before,
+    .tabla-apilable tbody td[data-acciones]::before,
+    .tabla-apilable tbody td[colspan]::before {
+        content: none;
+    }
+
+    .tabla-apilable tbody td[data-acciones] {
+        justify-content: flex-start;
+        padding-top: 0.625rem;
+        text-align: left;
+    }
+
+    .tabla-apilable tbody td[colspan] {
+        display: block;
+        text-align: center;
+    }
+}
+
+/*
+ * Larga (.tabla-larga): se desplaza de lado y la primera columna queda fija
+ * para no perder de qué registro se trata. El fondo opaco evita que el
+ * contenido se vea por debajo al desplazarse.
+ */
+.tabla-larga table > thead > tr > :first-child,
+.tabla-larga table > tbody > tr > :first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: #fff;
+}
+
+.tabla-larga table > thead > tr > :first-child {
+    background-color: #f9f3ef;
+}
+
+.tabla-larga[data-desplazada] table > thead > tr > :first-child,
+.tabla-larga[data-desplazada] table > tbody > tr > :first-child {
+    box-shadow: 6px 0 8px -6px rgb(43 34 36 / 0.18);
+}

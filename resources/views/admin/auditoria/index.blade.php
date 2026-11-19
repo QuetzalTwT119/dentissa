@@ -189,7 +189,7 @@ $etiquetasTabla = [
                 </div>
 
                 <!-- Tabla (Directamente integrada en el contenedor igual que Pacientes y Mensajes) -->
-                <x-admin.table minWidth="min-w-[850px]">
+                <x-admin.table minWidth="min-w-[850px]" :larga="true">
                     <x-slot:head>
                         <tr>
                             <th class="px-6 py-4">Fecha y hora</th>

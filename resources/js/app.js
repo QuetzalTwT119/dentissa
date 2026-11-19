@@ -177,6 +177,58 @@ Alpine.data('ofertaCarousel', (total) => ({
     },
 }));
 
+/*
+ * Tablas del panel (components/admin/table.blade.php), modo "Mixta".
+ *
+ * tablaApilable: en celular cada fila se apila como tarjeta. Copia el título
+ * de cada columna de <thead> a sus celdas (data-label, que el CSS muestra con
+ * ::before) y marca la columna "Acciones". Al apilarse, display:block quita la
+ * semántica de tabla en algunos lectores de pantalla; los roles la conservan.
+ */
+Alpine.data('tablaApilable', () => ({
+    init() {
+        const tabla = this.$el.querySelector('table');
+        const titulos = [...tabla.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+
+        tabla.setAttribute('role', 'table');
+        tabla.querySelectorAll('tr').forEach((fila) => fila.setAttribute('role', 'row'));
+        tabla.querySelectorAll('thead th').forEach((th) => th.setAttribute('role', 'columnheader'));
+        tabla.querySelectorAll('tbody tr').forEach((fila) => {
+            let columna = 0;
+            [...fila.children].forEach((celda) => {
+                celda.setAttribute('role', 'cell');
+                const titulo = titulos[columna] ?? '';
+                if (celda.colSpan === 1 && titulo) celda.dataset.label = titulo;
+                if (titulo === 'Acciones') celda.dataset.acciones = '';
+                columna += celda.colSpan || 1;
+            });
+        });
+    },
+}));
+
+/*
+ * tablaLarga: la tabla se desplaza de lado solo si no cabe. "desborda" muestra
+ * la pista "Desliza para ver más columnas"; "desplazada" da sombra a la
+ * primera columna (fija) cuando ya se movió.
+ */
+Alpine.data('tablaLarga', () => ({
+    desborda: false,
+    desplazada: false,
+
+    init() {
+        this.medir();
+        if ('ResizeObserver' in window) {
+            new ResizeObserver(() => this.medir()).observe(this.$refs.desplazable);
+        }
+    },
+
+    medir() {
+        const caja = this.$refs.desplazable;
+        this.desborda = caja.scrollWidth > caja.clientWidth + 1;
+        this.desplazada = caja.scrollLeft > 0;
+    },
+}));
+
 Alpine.start();
 
 window.Pusher = Pusher;
