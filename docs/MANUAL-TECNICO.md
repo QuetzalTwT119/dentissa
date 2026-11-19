@@ -756,10 +756,22 @@ contenedor, en `/var/www/html`), el 18/11/2026, con el despliegue del PR #54:
 4. `php artisan schedule:list` muestra el respaldo a las 03:00 (hora de
    México); supervisord mantiene `schedule:work` encendido.
 
-**Si los tokens caducan cada semana:** la pantalla de consentimiento de OAuth
-está en modo "Prueba", y Google invalida los refresh tokens a los 7 días.
-Publicar la app ("Publicar app") lo evita; para una app de una sola cuenta no
-hace falta la verificación de Google.
+5. El 19/11/2026 a las 03:00 (hora de México) el scheduler creó solo
+   `dentissa-respaldo-20261119-030000.dntb` en la carpeta "Dentissa respaldos"
+   de Drive.
+
+**Tokens que caducan cada semana:** con la app de Google en modo "Prueba",
+Google invalida los refresh tokens a los 7 días. El 18/11/2026 la app se
+publicó en Google Auth Platform → "Público" → "Publicar app" (estado "En
+producción"). Para publicar, "Información de la marca" exige nombre, correo de
+asistencia, página principal (`https://dentissa-production-11db.up.railway.app/`)
+y política de privacidad (`/aviso-de-privacidad`), con ese dominio en
+"Dominios autorizados". El aviso "Tu app requiere una verificación" se puede
+ignorar: es una app de una sola cuenta, y sin verificar solo se ve la pantalla
+de "app no verificada" al autorizar. **Los tokens emitidos mientras la app
+estaba en prueba siguen caducando**, así que después de publicar se volvió a
+ejecutar `scripts/google-oauth.ps1` y se actualizó `GMAIL_OAUTH_REFRESH_TOKEN`
+en Railway.
 
 **Operación:** la llave `DENTISSA_RESPALDO_CLAVE` debe existir también fuera de
 Railway (gestor de contraseñas). Repetir `dentissa:restaurar-prueba` cada mes y
