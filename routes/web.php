@@ -30,6 +30,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RespuestaRecordatorioController;
 use App\Http\Controllers\WhatsappWebhookController;
 use App\Models\Caso;
+use App\Models\HorarioAtencion;
 use App\Models\Imagen;
 use App\Models\Oferta;
 use App\Models\PreguntaFrecuente;
@@ -122,6 +123,7 @@ Route::get('/', function () {
 
     return view('welcome', [
         'canLogin' => Route::has('login'),
+        'estadoConsultorio' => HorarioAtencion::estadoActual(),
         'servicios' => Servicio::where('activo', true)->orderBy('orden')->get(),
         'ofertas' => Oferta::with('tratamiento:id,nombre')
             ->where('activa', true)

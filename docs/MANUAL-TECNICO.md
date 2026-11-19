@@ -35,6 +35,20 @@ fuentes y scripts tienen una duración larga y las imágenes se conservan un dí
 La portada también precarga su imagen principal para evitar que llegue después
 del texto.
 
+**Bienvenida de la portada (hero "Panorámica").** Se eligió en una ronda de
+prototipos frente a una versión con reserva integrada y otra centrada en la
+doctora. Usa `public/images/dentissa/hero-inicio.jpg` (1376×768, con
+`fetchpriority="high"` y `width`/`height` para no mover el contenido al
+cargar). En escritorio la foto ocupa del 44 % al borde derecho y su orilla se
+funde con el color crema; el texto se limita al 40 % izquierdo para no tapar a
+las personas. En celular y tableta la foto va arriba. Solo el texto tiene
+animación de entrada (`.hero-entra` en `app.css`); la foto no se anima porque es
+el elemento más grande de la página (LCP). El teléfono sale de
+`config('dentissa.contacto')` y el aviso "Abierto hoy hasta las 18:00" de
+`HorarioAtencion::estadoActual()`, que lee `horarios_atencion` con la hora de la
+clínica (`EstadoConsultorioTest`). La imagen pesa unos 600 KB; convertirla a
+WebP reduciría la carga en celular.
+
 El ícono de la pestaña del navegador se define una sola vez en
 `resources/views/partials/favicon.blade.php` y usa el recurso de marca
 `public/images/brand/pwa-icon-192.png`. El layout autenticado ya lo hereda por
