@@ -301,73 +301,77 @@
 
                         <!-- PASO 3: DATOS DEL PACIENTE -->
                         <template x-if="paso === 3">
-                            <form method="POST" action="{{ route('citas.publica.store') }}" class="paso-anim space-y-5 p-5 sm:p-8"
+                            @php
+                                // Errores del servidor (si el envío volvió con errores) para el componente.
+                                $erroresServidor = collect(['nombre', 'apellido', 'telefono', 'email', 'acepta_aviso'])
+                                    ->filter(fn ($campo) => $errors->has($campo))
+                                    ->mapWithKeys(fn ($campo) => [$campo === 'acepta_aviso' ? 'aviso' : $campo => $errors->first($campo)])
+                                    ->all();
+                                $camposConError = count($erroresServidor);
+                                $datosIniciales = [
+                                    'nombre' => old('nombre', ''),
+                                    'apellido' => old('apellido', ''),
+                                    'telefono' => old('telefono', ''),
+                                    'email' => old('email', ''),
+                                    'aviso' => (bool) old('acepta_aviso'),
+                                    'errores' => (object) $erroresServidor,
+                                ];
+                                // Palomita verde dentro del campo cuando el dato ya está bien.
+                                $palomita = '<span aria-hidden="true" class="pointer-events-none absolute right-3 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-sage-50 text-xs font-bold text-sage-600">✓</span>';
+                            @endphp
+                            <form method="POST" action="{{ route('citas.publica.store') }}" class="paso-anim space-y-5 p-5 sm:p-8" novalidate
+                                  x-data="datosPaciente(@js($datosIniciales))"
+                                  x-on:submit="enviar($event)"
                                   x-init="$nextTick(() => $el.querySelector('[aria-invalid=true]')?.focus())">
                                 @csrf
 
-                                @php
-                                    $camposConError = collect(['nombre', 'apellido', 'telefono', 'email', 'acepta_aviso'])
-                                        ->filter(fn ($campo) => $errors->has($campo))
-                                        ->count();
-                                @endphp
-                                @if ($camposConError > 0)
+                                {{-- Recordatorio de la cita que se está agendando; "Cambiar" regresa a fecha y hora. --}}
+                                <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-2xl border border-line bg-cream px-4 py-3 text-sm text-ink-soft">
+                                    <span>
+                                        <span class="font-semibold text-ink" x-text="tratamientoSeleccionado?.nombre"></span>
+                                        · <span x-text="fechaLegible"></span>
+                                        · <span class="font-semibold tabular-nums text-ink" x-text="hora ? `${hora} hrs` : ''"></span>
+                                    </span>
+                                    <button type="button" @click="mover('atras'); paso = 1" class="link inline-flex min-h-11 items-center text-footnote">Cambiar</button>
+                                </div>
+
+                                <div x-show="intentado && cuentaErrores > 0" role="alert" @if ($camposConError === 0) style="display: none" @endif>
                                     <x-alert type="error">
-                                        {{ $camposConError === 1 ? 'Revisa el dato marcado para poder agendar tu cita.' : "Revisa los {$camposConError} datos marcados para poder agendar tu cita." }}
+                                        <span x-text="cuentaErrores === 1 ? 'Revisa el dato marcado para poder agendar tu cita.' : `Revisa los ${cuentaErrores} datos marcados para poder agendar tu cita.`">{{ $camposConError === 1 ? 'Revisa el dato marcado para poder agendar tu cita.' : "Revisa los {$camposConError} datos marcados para poder agendar tu cita." }}</span>
                                     </x-alert>
-                                @endif
+                                </div>
                                 <input type="hidden" name="id_servicio" :value="idServicio">
                                 <input type="hidden" name="id_tratamiento" :value="idTratamiento">
                                 <input type="hidden" name="fecha" :value="fecha">
                                 <input type="hidden" name="hora" :value="hora">
 
                                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                                    <div>
-                                        <label for="nombre" class="{{ $claseEtiqueta }}">Nombre <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="nombre" enterkeyhint="next" type="text" name="nombre" autocomplete="given-name" maxlength="100" required
-                                               placeholder="Ej. Ana" value="{{ old('nombre') }}"
-                                               aria-invalid="{{ $errors->has('nombre') ? 'true' : 'false' }}"
-                                               @if ($errors->has('nombre')) aria-describedby="nombre-error" @endif
-                                               class="{{ $claseCampo }}">
-                                        @error('nombre')
-                                            <p id="nombre-error" role="alert" class="{{ $claseError }}">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-
-                                    <div>
-                                        <label for="apellido" class="{{ $claseEtiqueta }}">Apellido <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="apellido" enterkeyhint="next" type="text" name="apellido" autocomplete="family-name" maxlength="100" required
-                                               placeholder="Ej. Pérez" value="{{ old('apellido') }}"
-                                               aria-invalid="{{ $errors->has('apellido') ? 'true' : 'false' }}"
-                                               @if ($errors->has('apellido')) aria-describedby="apellido-error" @endif
-                                               class="{{ $claseCampo }}">
-                                        @error('apellido')
-                                            <p id="apellido-error" role="alert" class="{{ $claseError }}">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-
-                                    <div>
-                                        <label for="telefono" class="{{ $claseEtiqueta }}">Teléfono <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="telefono" enterkeyhint="next" type="tel" name="telefono" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="Ingresa exactamente 10 dígitos numéricos." required oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
-                                               placeholder="Ej. 5512345678" value="{{ old('telefono') }}"
-                                               aria-invalid="{{ $errors->has('telefono') ? 'true' : 'false' }}"
-                                               @if ($errors->has('telefono')) aria-describedby="telefono-error" @endif
-                                               class="{{ $claseCampo }}">
-                                        @error('telefono')
-                                            <p id="telefono-error" role="alert" class="{{ $claseError }}">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-
-                                    <div>
-                                        <label for="email" class="{{ $claseEtiqueta }}">Correo electrónico <span class="text-brand-600" aria-hidden="true">*</span></label>
-                                        <input id="email" enterkeyhint="next" type="email" name="email" autocomplete="email" maxlength="100" required
-                                               placeholder="Ej. ana@correo.com" value="{{ old('email') }}"
-                                               aria-invalid="{{ $errors->has('email') ? 'true' : 'false' }}"
-                                               @if ($errors->has('email')) aria-describedby="email-error" @endif
-                                               class="{{ $claseCampo }}">
-                                        @error('email')
-                                            <p id="email-error" role="alert" class="{{ $claseError }}">{{ $message }}</p>
-                                        @enderror
-                                    </div>
+                                    @foreach ([
+                                        ['nombre', 'Nombre', 'text', 'given-name', 'text', 'Ej. Ana', 100],
+                                        ['apellido', 'Apellido', 'text', 'family-name', 'text', 'Ej. Pérez', 100],
+                                        ['telefono', 'Teléfono (WhatsApp)', 'tel', 'tel-national', 'numeric', '55 1234 5678', 12],
+                                        ['email', 'Correo electrónico', 'email', 'email', 'email', 'Ej. ana@correo.com', 100],
+                                    ] as [$campo, $etiqueta, $tipo, $autocompletar, $teclado, $ejemplo, $maximo])
+                                        <div>
+                                            <label for="{{ $campo }}" class="{{ $claseEtiqueta }}">{{ $etiqueta }} <span class="text-brand-600" aria-hidden="true">*</span></label>
+                                            <div class="relative">
+                                                <input id="{{ $campo }}" enterkeyhint="next" type="{{ $tipo }}" name="{{ $campo }}" autocomplete="{{ $autocompletar }}" inputmode="{{ $teclado }}" maxlength="{{ $maximo }}" required
+                                                       placeholder="{{ $ejemplo }}" value="{{ old($campo) }}"
+                                                       @if ($campo === 'telefono')
+                                                           :value="valores.telefono" x-on:input="escribirTelefono($event)"
+                                                       @else
+                                                           x-model="valores.{{ $campo }}" x-on:input="alEscribir('{{ $campo }}')"
+                                                       @endif
+                                                       x-on:blur="alSalir('{{ $campo }}')"
+                                                       aria-invalid="{{ $errors->has($campo) ? 'true' : 'false' }}" :aria-invalid="(!!errores.{{ $campo }}).toString()"
+                                                       aria-describedby="{{ $campo }}-error"
+                                                       class="{{ $claseCampo }} pr-10">
+                                                <template x-if="bien('{{ $campo }}')">{!! $palomita !!}</template>
+                                            </div>
+                                            <p id="{{ $campo }}-error" role="alert" class="{{ $claseError }}" x-show="errores.{{ $campo }}" x-text="errores.{{ $campo }}"
+                                               @unless ($errors->has($campo)) style="display: none" @endunless>{{ $errors->first($campo) }}</p>
+                                        </div>
+                                    @endforeach
                                 </div>
 
                                 <div>
@@ -378,19 +382,20 @@
 
                                 {{-- Consentimiento expreso: el motivo puede contener datos de salud. --}}
                                 <div>
-                                    <label for="acepta_aviso" class="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-line bg-cream/60 px-4 py-3 text-callout text-ink-soft">
+                                    <label for="acepta_aviso" class="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border bg-cream/60 px-4 py-3 text-callout text-ink-soft transition-colors"
+                                           :class="errores.aviso ? 'border-rose-400' : 'border-line'">
                                         <input id="acepta_aviso" type="checkbox" name="acepta_aviso" value="1" required
                                                @checked(old('acepta_aviso'))
-                                               aria-invalid="{{ $errors->has('acepta_aviso') ? 'true' : 'false' }}"
-                                               @if ($errors->has('acepta_aviso')) aria-describedby="acepta_aviso-error" @endif
+                                               x-model="valores.aviso" x-on:change="validar('aviso')"
+                                               aria-invalid="{{ $errors->has('acepta_aviso') ? 'true' : 'false' }}" :aria-invalid="(!!errores.aviso).toString()"
+                                               aria-describedby="acepta_aviso-error"
                                                class="mt-1 h-5 w-5 shrink-0 rounded border-line text-brand-600 focus:ring-brand-500">
                                         <span>
                                             He leído y acepto el <a href="{{ route('privacidad.aviso') }}" target="_blank" rel="noopener" class="link">aviso de privacidad</a>, y doy mi consentimiento para el tratamiento de mis datos, incluidos los de salud. <span class="text-brand-600" aria-hidden="true">*</span>
                                         </span>
                                     </label>
-                                    @error('acepta_aviso')
-                                        <p id="acepta_aviso-error" role="alert" class="{{ $claseError }}">{{ $message }}</p>
-                                    @enderror
+                                    <p id="acepta_aviso-error" role="alert" class="{{ $claseError }}" x-show="errores.aviso" x-text="errores.aviso"
+                                       @unless ($errors->has('acepta_aviso')) style="display: none" @endunless>{{ $errors->first('acepta_aviso') }}</p>
                                 </div>
 
                                 @error('hora')

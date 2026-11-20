@@ -341,6 +341,84 @@ Alpine.data('ofertaCarousel', (total) => ({
     },
 }));
 
+/*
+ * Paso "Datos" de la agenda pública (citas-publicas/create). Valida en el
+ * navegador con las mismas reglas que CitaPublicaController@store para avisar
+ * antes de enviar; el servidor vuelve a validar siempre.
+ *
+ * - El error de un campo aparece al salir de él (no mientras se escribe) y se
+ *   quita en cuanto el dato queda bien.
+ * - El teléfono se muestra como "55 1234 5678"; el servidor quita los espacios.
+ */
+const formatoTelefono = (valor) => {
+    const d = String(valor ?? '').replace(/\D/g, '').slice(0, 10);
+    return [d.slice(0, 2), d.slice(2, 6), d.slice(6)].filter(Boolean).join(' ');
+};
+
+Alpine.data('datosPaciente', (inicial = {}) => ({
+    valores: {
+        nombre: inicial.nombre ?? '',
+        apellido: inicial.apellido ?? '',
+        telefono: formatoTelefono(inicial.telefono),
+        email: inicial.email ?? '',
+        aviso: Boolean(inicial.aviso),
+    },
+    errores: { ...(inicial.errores ?? {}) },
+    intentado: Object.keys(inicial.errores ?? {}).length > 0,
+
+    reglas: {
+        nombre: (v) => (!v.trim() ? 'Escribe tu nombre.' : ''),
+        apellido: (v) => (!v.trim() ? 'Escribe tu apellido.' : ''),
+        telefono: (v) => {
+            const digitos = v.replace(/\D/g, '').length;
+            if (!digitos) return 'Escribe tu teléfono.';
+            return digitos === 10 ? '' : `Faltan ${10 - digitos} ${10 - digitos === 1 ? 'dígito' : 'dígitos'}: ingresa exactamente 10 dígitos numéricos.`;
+        },
+        email: (v) => {
+            if (!v.trim()) return 'Escribe tu correo.';
+            return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Revisa el correo: falta algo como "@gmail.com".';
+        },
+        aviso: (v) => (v ? '' : 'Para agendar necesitamos que aceptes el aviso de privacidad.'),
+    },
+
+    validar(campo) {
+        this.errores[campo] = this.reglas[campo](this.valores[campo]);
+        return !this.errores[campo];
+    },
+
+    alSalir(campo) {
+        if (String(this.valores[campo]).trim() !== '') this.validar(campo);
+    },
+
+    alEscribir(campo) {
+        if (this.errores[campo]) this.validar(campo);
+    },
+
+    escribirTelefono(evento) {
+        this.valores.telefono = formatoTelefono(evento.target.value);
+        evento.target.value = this.valores.telefono;
+        this.alEscribir('telefono');
+    },
+
+    // Palomita verde: el dato ya cumple la regla.
+    bien(campo) {
+        return String(this.valores[campo]).trim() !== '' && !this.reglas[campo](this.valores[campo]);
+    },
+
+    get cuentaErrores() {
+        return Object.values(this.errores).filter(Boolean).length;
+    },
+
+    enviar(evento) {
+        const malos = ['nombre', 'apellido', 'telefono', 'email', 'aviso'].filter((campo) => !this.validar(campo));
+        if (!malos.length) return;
+
+        evento.preventDefault();
+        this.intentado = true;
+        this.$nextTick(() => this.$el.querySelector(`[name="${malos[0] === 'aviso' ? 'acepta_aviso' : malos[0]}"]`)?.focus());
+    },
+}));
+
 Alpine.start();
 
 window.Pusher = Pusher;

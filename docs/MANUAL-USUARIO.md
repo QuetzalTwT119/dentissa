@@ -118,8 +118,15 @@ El proceso tiene 4 pasos. Arriba siempre se ve "Paso X de 4".
      regular, tomado de la configuración de **Horarios** del consultorio.
 4. **Confirmación:** revisa el tratamiento, la fecha y la hora. Pulsa
    **Continuar a mis datos**.
-5. **Datos de contacto:** escribe nombre, apellido, teléfono y correo. Acepta
-   el aviso de privacidad. El motivo es opcional, de hasta 1000 caracteres.
+5. **Datos de contacto:** arriba aparece un recordatorio de la cita
+   (tratamiento, fecha y hora); **Cambiar** regresa a elegir fecha y hora.
+   Escribe nombre, apellido, teléfono y correo, y acepta el aviso de
+   privacidad. El motivo es opcional, de hasta 1000 caracteres.
+   - El teléfono es el de WhatsApp, a 10 dígitos; se acomoda solo como
+     "55 1234 5678" mientras lo escribes.
+   - Cada dato se revisa al pasar al siguiente campo: si algo falta, aparece
+     el mensaje debajo (por ejemplo "Faltan 6 dígitos…"); cuando ya está
+     bien, aparece una palomita verde.
 6. Pulsa **Agendar cita**. El botón cambia a "Agendando…" y se desactiva
    mientras se guarda, para no crear la cita dos veces.
 7. Aparece la pantalla **"¡Listo! Tu cita quedó confirmada"** con el resumen.
@@ -129,10 +136,12 @@ botones para avanzar se activan cuando el paso está completo. En el celular,
 **Atrás** y el botón para avanzar quedan fijos en la parte de abajo de la
 pantalla.
 
-Si falta un dato o tiene un error, arriba del formulario aparece un aviso como
-"Revisa los 2 datos marcados para poder agendar tu cita". El campo con error se
-marca en rojo y muestra el mensaje en español, por ejemplo "El teléfono es
-obligatorio.".
+Si falta un dato o tiene un error, al pulsar **Agendar cita** no se envía nada:
+arriba del formulario aparece un aviso como "Revisa los 2 datos marcados para
+poder agendar tu cita", el cursor salta al primer dato con error y cada campo
+marcado en rojo muestra su mensaje en español. Si el error lo detecta el
+consultorio al guardar, el formulario vuelve con los mismos avisos y conserva
+lo que ya estaba bien.
 
 El resumen muestra la fecha completa (por ejemplo, "miércoles 18 de noviembre
 de 2026") y el calendario solo permite elegir desde el día de hoy según la hora
