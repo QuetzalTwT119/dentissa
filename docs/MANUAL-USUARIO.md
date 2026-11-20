@@ -206,14 +206,22 @@ una sola vez cada 12 horas por número, y el sistema no guarda lo que escribió.
 Arriba de `/citas` hay un selector **Lista | Semana**:
 
 - **Lista** (predeterminada): tabla con búsqueda y filtros por fecha y estado.
-- **Semana**: agenda de lunes a sábado. Cada día muestra su horario de atención
-  (o **Cerrado**) y sus citas ordenadas por hora, con paciente, tratamiento y
-  estado en su color. Las canceladas y las inasistencias se ven atenuadas y
-  tachadas. El día de hoy aparece resaltado.
+- **Semana**: un mapa de lunes a sábado que muestra qué tan llena está cada
+  parte de la semana. Cada día se divide en bloques de 2 horas:
+  - **Blanco:** libre. **Rosa claro:** tiene citas pero aún hay lugar.
+    **Rosa:** lleno. Los bloques que ya pasaron se ven más tenues.
+  - Al tocar un bloque aparece su detalle (a la derecha en computadora, abajo
+    en el celular): el horario del día, **Dónde cabe una cita** con las horas
+    libres y la lista de citas de ese bloque. Al tocar una hora libre se abre
+    **Agendar cita** con esa fecha ya elegida; al tocar una cita se abre su
+    edición, donde están las acciones.
+  - Al entrar se abre el bloque actual o, si hoy ya terminó, el siguiente.
+  - Un día cerrado que tenga citas muestra **Cerrado · N citas**; al tocarlo
+    aparecen esas citas.
   - Usa **←**, **Hoy** y **→** para cambiar de semana. El enlace de la página
     conserva la semana, así que se puede recargar o compartir.
-  - Al tocar una cita se abre su edición, donde están las acciones.
-  - En celular se ve un día a la vez; cambia de día con las flechas.
+  - Las horas libres son una guía: al agendar, el sistema vuelve a revisar el
+    horario con la duración del tratamiento elegido.
 
 Desde `/citas`, el personal puede:
 

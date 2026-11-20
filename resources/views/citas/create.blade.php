@@ -21,7 +21,8 @@
                  x-data="{
                     idServicio: @js(old('id_servicio', '')),
                     idTratamiento: @js(old('id_tratamiento', '')),
-                    fecha: @js(old('fecha', '')),
+                    {{-- ?fecha=AAAA-MM-DD llega desde los horarios libres de la vista semanal. --}}
+                    fecha: @js(old('fecha', preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) request()->query('fecha')) ? request()->query('fecha') : '')),
                     hora: @js(old('hora', null)),
                     horarios: [],
                     loadingHorarios: false,
