@@ -114,6 +114,11 @@ Route::post('/webhooks/whatsapp', [WhatsappWebhookController::class, 'recibir'])
     ->middleware('throttle:120,1')
     ->name('webhooks.whatsapp.recibir');
 Route::get('/disponibilidad', [DisponibilidadController::class, 'index'])->name('disponibilidad.index');
+// Calcula un mes entero (un cálculo por día): límite propio para que no se use
+// como forma barata de cargar el servidor.
+Route::get('/disponibilidad/mes', [DisponibilidadController::class, 'mes'])
+    ->middleware('throttle:60,1')
+    ->name('disponibilidad.mes');
 Route::post('/asistente-paciente/responder', [AsistentePacienteController::class, 'responder'])
     ->middleware('throttle:30,1')
     ->name('asistente-paciente.responder');

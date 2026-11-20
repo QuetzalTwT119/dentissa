@@ -40,7 +40,7 @@ $tipoLabel = [
                     </x-slot:actions>
                 </x-admin.card-header>
 
-                <x-admin.table minWidth="min-w-[760px]">
+                <x-admin.table minWidth="min-w-[760px]" :larga="true">
                     <x-slot:head>
                         <tr>
                             <th class="px-6 py-3.5">Título</th>

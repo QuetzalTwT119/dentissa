@@ -89,6 +89,170 @@ window.cargarHorariosDisponibles = async function (tratamientoId, fecha, exclude
     return data.horarios ?? [];
 };
 
+// Resumen de un mes para el calendario: { mes, duracion_minutos, dias: { 'YYYY-MM-DD': { horarios, estado } } }.
+// Devuelve null si falla, para que el calendario muestre "reintentar".
+window.cargarDisponibilidadMes = async function (tratamientoId, mes, excludeCitaId) {
+    const params = new URLSearchParams({ tratamiento_id: tratamientoId, mes });
+
+    if (excludeCitaId) {
+        params.set('exclude_cita_id', excludeCitaId);
+    }
+
+    try {
+        const response = await fetch(`/disponibilidad/mes?${params.toString()}`, {
+            headers: { Accept: 'application/json' },
+        });
+
+        return response.ok ? await response.json() : null;
+    } catch {
+        return null;
+    }
+};
+
+const aMinutos = (hora) => {
+    const [h, m] = hora.split(':').map(Number);
+    return h * 60 + m;
+};
+const aHora = (minutos) => `${String(Math.floor(minutos / 60)).padStart(2, '0')}:${String(minutos % 60).padStart(2, '0')}`;
+const conMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1);
+// Fechas 'YYYY-MM-DD' a mediodía local: así la zona horaria nunca cambia el día.
+const fechaLocal = (fecha) => {
+    const [anio, mes, dia] = fecha.split('-').map(Number);
+    return new Date(anio, mes - 1, dia, 12);
+};
+const sumarMeses = (mes, n) => {
+    const [anio, m] = mes.split('-').map(Number);
+    const d = new Date(anio, m - 1 + n, 1, 12);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+};
+
+/*
+ * Calendario de disponibilidad (partials/disponibilidad-picker).
+ *
+ * Vive DENTRO del x-data del formulario y comparte sus datos: idTratamiento,
+ * fecha, hora, horarios, loadingHorarios y cargarHorarios(). Alpine resuelve
+ * `this.fecha` en el formulario padre porque este componente no la define.
+ * Aquí solo vive lo propio del calendario: el mes visible y su resumen.
+ */
+Alpine.data('calendarioDisponibilidad', ({ hoy, excluirCitaId = null, mesesAdelante = 12 }) => ({
+    hoy,
+    mes: '',
+    dias: {},
+    duracion: 0,
+    cargandoMes: false,
+    errorMes: false,
+    pedido: 0,
+    nombresDias: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+
+    init() {
+        this.mes = (this.fecha || hoy).slice(0, 7);
+        this.cargarMes();
+        this.$watch('idTratamiento', () => this.cargarMes());
+    },
+
+    async cargarMes() {
+        // Si el paciente cambia de mes rápido, solo vale la última respuesta.
+        const pedido = ++this.pedido;
+
+        if (!this.idTratamiento) {
+            this.dias = {};
+            this.cargandoMes = false;
+            return;
+        }
+
+        this.cargandoMes = true;
+        this.errorMes = false;
+        const datos = await window.cargarDisponibilidadMes(this.idTratamiento, this.mes, excluirCitaId);
+
+        if (pedido !== this.pedido) return;
+
+        this.cargandoMes = false;
+        this.errorMes = !datos;
+        this.dias = datos?.dias ?? {};
+        this.duracion = datos?.duracion_minutos ?? 0;
+    },
+
+    get etiquetaMes() {
+        return conMayuscula(fechaLocal(`${this.mes}-01`).toLocaleDateString('es-MX', { month: 'long', year: 'numeric' }));
+    },
+
+    get puedeRetroceder() {
+        return this.mes > hoy.slice(0, 7);
+    },
+
+    get puedeAvanzar() {
+        return this.mes < sumarMeses(hoy.slice(0, 7), mesesAdelante);
+    },
+
+    cambiarMes(paso) {
+        if ((paso < 0 && !this.puedeRetroceder) || (paso > 0 && !this.puedeAvanzar)) return;
+        this.mes = sumarMeses(this.mes, paso);
+        this.cargarMes();
+    },
+
+    // Celdas del mes, con huecos al inicio para que la semana empiece en lunes.
+    get celdas() {
+        const primero = fechaLocal(`${this.mes}-01`);
+        const huecos = (primero.getDay() + 6) % 7;
+        const total = new Date(primero.getFullYear(), primero.getMonth() + 1, 0).getDate();
+        const celdas = Array.from({ length: huecos }, (_, i) => ({ clave: `hueco-${i}`, hueco: true }));
+
+        for (let dia = 1; dia <= total; dia++) {
+            const fecha = `${this.mes}-${String(dia).padStart(2, '0')}`;
+            const info = this.dias[fecha] ?? { horarios: 0, estado: 'cargando' };
+            celdas.push({ clave: fecha, hueco: false, fecha, numero: dia, ...info });
+        }
+
+        return celdas;
+    },
+
+    etiquetaDia(celda) {
+        const estados = {
+            disponible: `${celda.horarios} ${celda.horarios === 1 ? 'horario disponible' : 'horarios disponibles'}`,
+            sin_horarios: 'sin horarios disponibles',
+            cerrado: 'consultorio cerrado',
+            pasado: 'fecha pasada',
+            cargando: 'consultando disponibilidad',
+        };
+        const fecha = fechaLocal(celda.fecha).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+
+        return `${conMayuscula(fecha)}, ${estados[celda.estado] ?? ''}`;
+    },
+
+    elegirDia(fecha) {
+        if (this.fecha === fecha) return;
+        this.fecha = fecha;
+        this.cargarHorarios();
+    },
+
+    // Flechas dentro del calendario: ←/→ día anterior/siguiente con horarios, ↑/↓ misma columna.
+    moverFoco(evento) {
+        const pasos = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+        const paso = pasos[evento.key];
+        if (!paso || !evento.target.dataset.fecha) return;
+
+        evento.preventDefault();
+        const botones = [...this.$refs.dias.querySelectorAll('[data-fecha]')];
+        let indice = botones.indexOf(evento.target) + paso;
+
+        while (botones[indice]?.disabled) {
+            indice += paso;
+        }
+
+        botones[indice]?.focus();
+    },
+
+    get fechaElegidaLegible() {
+        return this.fecha
+            ? conMayuscula(fechaLocal(this.fecha).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' }))
+            : '';
+    },
+
+    finHora(hora) {
+        return this.duracion ? aHora(aMinutos(hora) + this.duracion) : '';
+    },
+}));
+
 Alpine.data('ofertaCarousel', (total) => ({
     activeIndex: 0,
     isPaused: false,
@@ -174,6 +338,136 @@ Alpine.data('ofertaCarousel', (total) => ({
         });
 
         this.activeIndex = closestIndex;
+    },
+}));
+
+/*
+ * Paso "Datos" de la agenda pública (citas-publicas/create). Valida en el
+ * navegador con las mismas reglas que CitaPublicaController@store para avisar
+ * antes de enviar; el servidor vuelve a validar siempre.
+ *
+ * - El error de un campo aparece al salir de él (no mientras se escribe) y se
+ *   quita en cuanto el dato queda bien.
+ * - El teléfono se muestra como "55 1234 5678"; el servidor quita los espacios.
+ */
+const formatoTelefono = (valor) => {
+    const d = String(valor ?? '').replace(/\D/g, '').slice(0, 10);
+    return [d.slice(0, 2), d.slice(2, 6), d.slice(6)].filter(Boolean).join(' ');
+};
+
+Alpine.data('datosPaciente', (inicial = {}) => ({
+    valores: {
+        nombre: inicial.nombre ?? '',
+        apellido: inicial.apellido ?? '',
+        telefono: formatoTelefono(inicial.telefono),
+        email: inicial.email ?? '',
+        aviso: Boolean(inicial.aviso),
+    },
+    errores: { ...(inicial.errores ?? {}) },
+    intentado: Object.keys(inicial.errores ?? {}).length > 0,
+
+    reglas: {
+        nombre: (v) => (!v.trim() ? 'Escribe tu nombre.' : ''),
+        apellido: (v) => (!v.trim() ? 'Escribe tu apellido.' : ''),
+        telefono: (v) => {
+            const digitos = v.replace(/\D/g, '').length;
+            if (!digitos) return 'Escribe tu teléfono.';
+            return digitos === 10 ? '' : `Faltan ${10 - digitos} ${10 - digitos === 1 ? 'dígito' : 'dígitos'}: ingresa exactamente 10 dígitos numéricos.`;
+        },
+        email: (v) => {
+            if (!v.trim()) return 'Escribe tu correo.';
+            return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Revisa el correo: falta algo como "@gmail.com".';
+        },
+        aviso: (v) => (v ? '' : 'Para agendar necesitamos que aceptes el aviso de privacidad.'),
+    },
+
+    validar(campo) {
+        this.errores[campo] = this.reglas[campo](this.valores[campo]);
+        return !this.errores[campo];
+    },
+
+    alSalir(campo) {
+        if (String(this.valores[campo]).trim() !== '') this.validar(campo);
+    },
+
+    alEscribir(campo) {
+        if (this.errores[campo]) this.validar(campo);
+    },
+
+    escribirTelefono(evento) {
+        this.valores.telefono = formatoTelefono(evento.target.value);
+        evento.target.value = this.valores.telefono;
+        this.alEscribir('telefono');
+    },
+
+    // Palomita verde: el dato ya cumple la regla.
+    bien(campo) {
+        return String(this.valores[campo]).trim() !== '' && !this.reglas[campo](this.valores[campo]);
+    },
+
+    get cuentaErrores() {
+        return Object.values(this.errores).filter(Boolean).length;
+    },
+
+    enviar(evento) {
+        const malos = ['nombre', 'apellido', 'telefono', 'email', 'aviso'].filter((campo) => !this.validar(campo));
+        if (!malos.length) return;
+
+        evento.preventDefault();
+        this.intentado = true;
+        this.$nextTick(() => this.$el.querySelector(`[name="${malos[0] === 'aviso' ? 'acepta_aviso' : malos[0]}"]`)?.focus());
+    },
+}));
+
+/*
+ * Tablas del panel (components/admin/table.blade.php), modo "Mixta".
+ *
+ * tablaApilable: en celular cada fila se apila como tarjeta. Copia el título
+ * de cada columna de <thead> a sus celdas (data-label, que el CSS muestra con
+ * ::before) y marca la columna "Acciones". Al apilarse, display:block quita la
+ * semántica de tabla en algunos lectores de pantalla; los roles la conservan.
+ */
+Alpine.data('tablaApilable', () => ({
+    init() {
+        const tabla = this.$el.querySelector('table');
+        const titulos = [...tabla.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+
+        tabla.setAttribute('role', 'table');
+        tabla.querySelectorAll('tr').forEach((fila) => fila.setAttribute('role', 'row'));
+        tabla.querySelectorAll('thead th').forEach((th) => th.setAttribute('role', 'columnheader'));
+        tabla.querySelectorAll('tbody tr').forEach((fila) => {
+            let columna = 0;
+            [...fila.children].forEach((celda) => {
+                celda.setAttribute('role', 'cell');
+                const titulo = titulos[columna] ?? '';
+                if (celda.colSpan === 1 && titulo) celda.dataset.label = titulo;
+                if (titulo === 'Acciones') celda.dataset.acciones = '';
+                columna += celda.colSpan || 1;
+            });
+        });
+    },
+}));
+
+/*
+ * tablaLarga: la tabla se desplaza de lado solo si no cabe. "desborda" muestra
+ * la pista "Desliza para ver más columnas"; "desplazada" da sombra a la
+ * primera columna (fija) cuando ya se movió.
+ */
+Alpine.data('tablaLarga', () => ({
+    desborda: false,
+    desplazada: false,
+
+    init() {
+        this.medir();
+        if ('ResizeObserver' in window) {
+            new ResizeObserver(() => this.medir()).observe(this.$refs.desplazable);
+        }
+    },
+
+    medir() {
+        const caja = this.$refs.desplazable;
+        this.desborda = caja.scrollWidth > caja.clientWidth + 1;
+        this.desplazada = caja.scrollLeft > 0;
     },
 }));
 
