@@ -3,9 +3,9 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <p class="eyebrow">Reasignación de Agenda</p>
-                <h2 class="mt-1.5 text-title-2 text-ink">
+                <h1 class="mt-1.5 text-title-2 text-ink">
                     Reagendar cita
-                </h2>
+                </h1>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Selecciona una nueva fecha y horario disponible para esta consulta.</p>
             </div>
             <a href="{{ route('citas.index') }}" class="btn-secondary hidden sm:inline-flex">

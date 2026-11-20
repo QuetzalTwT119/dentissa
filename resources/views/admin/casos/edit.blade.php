@@ -2,9 +2,9 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-title-2 text-ink">
+                <h1 class="mt-1.5 text-title-2 text-ink">
                     Editar caso — {{ $caso->titulo }}
-                </h2>
+                </h1>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Gestión de información y fotografías del caso clínico.</p>
             </div>
             <a href="{{ route('admin.casos.index') }}" class="hidden sm:inline-block">
@@ -43,7 +43,7 @@
                         <div>
                             <x-input-label for="activo" value="Estado" />
                             <select id="activo" name="activo"
-                                    class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                    class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                 <option value="1" @selected(old('activo', $caso->activo ? '1' : '0') == '1')>Activo</option>
                                 <option value="0" @selected(old('activo', $caso->activo ? '1' : '0') == '0')>Inactivo</option>
                             </select>

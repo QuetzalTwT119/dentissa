@@ -2,9 +2,9 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-title-2 text-ink">
+                <h1 class="mt-1.5 text-title-2 text-ink">
                     Editar servicio
-                </h2>
+                </h1>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Configuración del servicio y asignación de tratamientos.</p>
             </div>
             <a href="{{ route('admin.servicios.index') }}" class="hidden sm:inline-block">

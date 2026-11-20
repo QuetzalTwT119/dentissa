@@ -2,9 +2,9 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-title-2 text-ink">
+                <h1 class="mt-1.5 text-title-2 text-ink">
                     Editar oferta
-                </h2>
+                </h1>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Ajuste de cupos, vigencia y precios de promoción.</p>
             </div>
             <a href="{{ route('admin.ofertas.index') }}" class="hidden sm:inline-block">

@@ -126,7 +126,7 @@ $etiquetasTabla = [
                                 </label>
                                 <input id="filtro_desde" type="date" name="desde" value="{{ $filtros['desde'] ?? '' }}"
                                        aria-label="Fecha inicial desde"
-                                       class="block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                       class="min-h-11 block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                             </div>
 
                             <!-- Hasta -->
@@ -136,7 +136,7 @@ $etiquetasTabla = [
                                 </label>
                                 <input id="filtro_hasta" type="date" name="hasta" value="{{ $filtros['hasta'] ?? '' }}"
                                        aria-label="Fecha final hasta"
-                                       class="block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                       class="min-h-11 block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                             </div>
 
                             <!-- Usuario -->
@@ -146,7 +146,7 @@ $etiquetasTabla = [
                                 </label>
                                 <select id="filtro_usuario" name="usuario_id"
                                         aria-label="Filtrar por usuario"
-                                        class="block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                        class="min-h-11 block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                                     <option value="">Todos los usuarios</option>
                                     @foreach ($usuarios as $usuario)
                                         <option value="{{ $usuario->id }}" @selected((string) ($filtros['usuario_id'] ?? '') === (string) $usuario->id)>
@@ -163,7 +163,7 @@ $etiquetasTabla = [
                                 </label>
                                 <select id="filtro_accion" name="accion"
                                         aria-label="Filtrar por acción"
-                                        class="block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                        class="min-h-11 block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
                                     <option value="">Todas las acciones</option>
                                     @foreach ($acciones as $accion)
                                         <option value="{{ $accion }}" @selected(($filtros['accion'] ?? '') === $accion)>

@@ -27,7 +27,7 @@
             </a>
 
             <div class="relative grid w-full max-w-5xl overflow-hidden rounded-4xl border border-line bg-white shadow-lift lg:grid-cols-[0.95fr_1.05fr]">
-                <aside class="relative flex flex-col justify-between overflow-hidden bg-gray-900 p-5 text-white sm:min-h-56 sm:p-8 lg:min-h-[560px] lg:p-10">
+                <aside class="relative flex flex-col justify-between overflow-hidden bg-[#2b1a20] p-5 text-white sm:min-h-56 sm:p-8 lg:min-h-[560px] lg:p-10">
                     <img src="/images/dentissa/hero-inicio.jpg" alt="Odontóloga conversando con una paciente en el consultorio" class="absolute inset-0 h-full w-full object-cover object-[62%_center]">
                     <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/90 via-[#2b1a20]/40 to-[#2b1a20]/10"></div>
 

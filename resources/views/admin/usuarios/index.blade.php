@@ -41,13 +41,13 @@ $rolClase = [
                     <x-slot:actions>
                         <form method="GET" action="{{ route('admin.usuarios.index') }}" class="flex flex-wrap items-center gap-2.5">
                             <select name="rol" aria-label="Filtrar por rol" onchange="this.form.submit()"
-                                    class="rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                    class="min-h-11 rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                 <option value="">Todos los roles</option>
                                 <option value="asistente" @selected(($filtros['rol'] ?? '') === 'asistente')>Asistente</option>
                                 <option value="admin" @selected(($filtros['rol'] ?? '') === 'admin')>Admin</option>
                             </select>
                             <select name="activo" aria-label="Filtrar por estado" onchange="this.form.submit()"
-                                    class="rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                    class="min-h-11 rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                 <option value="">Todos los estados</option>
                                 <option value="1" @selected(($filtros['activo'] ?? '') === '1')>Activos</option>
                                 <option value="0" @selected(($filtros['activo'] ?? '') === '0')>Inactivos</option>
