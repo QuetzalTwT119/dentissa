@@ -55,19 +55,13 @@ class NotificacionSistemaController extends Controller
             ->where('id', '>', $validated['desde_id'] ?? 0)
             ->oldest('id')
             ->limit(20)
-            ->get(['id', 'titulo', 'mensaje', 'url', 'created_at']);
+            ->with('cita.paciente')
+            ->get();
 
         return response()->json([
             'no_vistas' => $request->user()->notificacionesSistema()->whereNull('vista_en')->count(),
             'ultima_id' => $notificaciones->max('id') ?? ($validated['desde_id'] ?? 0),
-            'notificaciones' => $notificaciones->map(fn (NotificacionSistema $notificacion) => [
-                'id' => $notificacion->id,
-                'titulo' => $notificacion->titulo,
-                'mensaje' => $notificacion->mensaje,
-                'url' => $notificacion->url ?: route('notificaciones.index', [], false),
-                'leida_url' => route('notificaciones.leida', $notificacion, false),
-                'creada' => $notificacion->created_at->toIso8601String(),
-            ])->values(),
+            'notificaciones' => $notificaciones->map(fn (NotificacionSistema $notificacion) => $notificacion->datosEnVivo())->values(),
         ])->header('Cache-Control', 'no-store, private');
     }
 
@@ -85,6 +79,32 @@ class NotificacionSistemaController extends Controller
         }
 
         return back()->with('success', 'Notificación marcada como leída.');
+    }
+
+    /**
+     * "Ya lo atendí": el aviso sale de "Por atender" y pasa a informativas.
+     * Devuelve el fragmento nuevo para que el panel lo mueva sin recargar.
+     */
+    public function marcarAtendida(Request $request, NotificacionSistema $notificacion): RedirectResponse|JsonResponse
+    {
+        abort_unless($notificacion->user_id === $request->user()->id, 404);
+        abort_unless($notificacion->esPrioritaria(), 422);
+
+        $notificacion->update([
+            'atendida_en' => $notificacion->atendida_en ?? now(),
+            'leida_en' => $notificacion->leida_en ?? now(),
+            'vista_en' => $notificacion->vista_en ?? now(),
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'html' => $notificacion->htmlPanel(),
+                'por_atender' => $request->user()->notificacionesSistema()->porAtender()->count(),
+                'no_vistas' => $request->user()->notificacionesSistema()->whereNull('vista_en')->count(),
+            ]);
+        }
+
+        return back()->with('success', 'Aviso marcado como atendido.');
     }
 
     public function marcarPendiente(Request $request, NotificacionSistema $notificacion): RedirectResponse

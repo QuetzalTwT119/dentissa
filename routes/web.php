@@ -172,6 +172,8 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
         ->middleware('role:admin,asistente')->name('notificaciones.actualizaciones');
     Route::patch('/notificaciones/{notificacion}/leida', [NotificacionSistemaController::class, 'marcarLeida'])
         ->middleware('role:admin,asistente')->name('notificaciones.leida');
+    Route::patch('/notificaciones/{notificacion}/atendida', [NotificacionSistemaController::class, 'marcarAtendida'])
+        ->middleware('role:admin,asistente')->name('notificaciones.atendida');
     Route::patch('/notificaciones/{notificacion}/pendiente', [NotificacionSistemaController::class, 'marcarPendiente'])
         ->middleware('role:admin,asistente')->name('notificaciones.pendiente');
     Route::patch('/notificaciones/leidas', [NotificacionSistemaController::class, 'marcarTodasLeidas'])

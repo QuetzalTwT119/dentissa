@@ -639,57 +639,48 @@ if (updatesUrl) {
         });
     };
 
-    const updateNotificationPreview = (notification) => {
-        const list = document.querySelector('[data-notification-preview-list]');
-        const notificationId = Number(notification.id || 0);
+    // El servidor manda el aviso ya armado (notificaciones/partials/aviso-panel):
+    // así el avatar, la insignia y los botones son idénticos a los de la carga inicial.
+    const fragmentoAviso = (html) => {
+        const plantilla = document.createElement('template');
+        plantilla.innerHTML = String(html || '').trim();
+        return plantilla.content.firstElementChild;
+    };
 
-        if (!list || !notificationId || list.querySelector(`[data-notification-preview="${notificationId}"]`)) {
+    const actualizarPorAtender = (total) => {
+        const lista = document.querySelector('[data-notification-tasks-list]');
+        const cuenta = document.querySelector('[data-notification-tasks-count]');
+        const vacio = document.querySelector('[data-notification-tasks-empty]');
+        const pendientes = total ?? lista?.children.length ?? 0;
+
+        if (cuenta) {
+            cuenta.textContent = pendientes ? `${pendientes} ${pendientes === 1 ? 'pendiente' : 'pendientes'}` : '';
+        }
+        vacio?.classList.toggle('hidden', pendientes > 0);
+    };
+
+    const updateNotificationPreview = (notification) => {
+        const notificationId = Number(notification.id || 0);
+        const item = fragmentoAviso(notification.html);
+
+        if (!item || !notificationId || document.querySelector(`[data-notification-preview="${notificationId}"]`)) {
+            return;
+        }
+
+        const list = document.querySelector(notification.por_atender ? '[data-notification-tasks-list]' : '[data-notification-preview-list]');
+        if (!list) {
             return;
         }
 
         list.querySelector('[data-notification-preview-empty]')?.remove();
-
-        const item = document.createElement('a');
-        item.dataset.notificationPreview = String(notificationId);
-        item.dataset.notificationReadUrl = notification.leida_url || notificationsBody.dataset.notificationsReadUrl?.replace('__NOTIFICATION_ID__', String(notificationId)) || '';
-        item.href = notification.url || '/notificaciones';
-        item.className = 'flex gap-3 px-4 py-3.5 transition hover:bg-cream focus:bg-cream focus:outline-none';
-
-        const dot = document.createElement('span');
-        dot.dataset.notificationPreviewDot = '';
-        dot.className = 'mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-brand-600 ring-4 ring-brand-100';
-        dot.setAttribute('aria-label', 'Notificación nueva');
-
-        const content = document.createElement('span');
-        content.className = 'min-w-0 flex-1';
-
-        const heading = document.createElement('span');
-        heading.className = 'flex items-start justify-between gap-3';
-
-        const title = document.createElement('span');
-        title.dataset.notificationPreviewTitle = '';
-        title.className = 'notification-preview-title text-sm font-semibold text-ink';
-        title.textContent = notification.titulo || 'Nueva notificación';
-
-        const time = document.createElement('time');
-        time.className = 'shrink-0 text-xs text-muted';
-        if (notification.creada) {
-            time.dateTime = notification.creada;
-        }
-        time.textContent = 'Ahora';
-
-        const message = document.createElement('span');
-        message.dataset.notificationPreviewMessage = '';
-        message.className = 'notification-preview-message mt-1 text-sm leading-5 text-ink-soft';
-        message.textContent = notification.mensaje || '';
-
-        heading.append(title, time);
-        content.append(heading, message);
-        item.append(dot, content);
         list.prepend(item);
 
         while (list.children.length > 5) {
             list.lastElementChild.remove();
+        }
+
+        if (notification.por_atender) {
+            actualizarPorAtender();
         }
     };
 
@@ -747,6 +738,50 @@ if (updatesUrl) {
             // La navegación continúa aunque la red impida actualizar el estado visual.
         } finally {
             window.location.assign(link.href);
+        }
+    });
+
+    // "Ya lo atendí": el aviso pasa de "Por atender" a informativas sin recargar.
+    document.addEventListener('click', async (event) => {
+        const boton = event.target.closest('[data-notification-attend-url]');
+        if (!boton || boton.disabled) {
+            return;
+        }
+
+        boton.disabled = true;
+
+        try {
+            const response = await fetch(boton.dataset.notificationAttendUrl, {
+                method: 'PATCH',
+                headers: {
+                    Accept: 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                },
+                credentials: 'same-origin',
+                cache: 'no-store',
+            });
+            const data = response.ok ? await response.json() : null;
+
+            if (!data) {
+                boton.disabled = false;
+                return;
+            }
+
+            const tarjeta = boton.closest('[data-notification-preview]');
+            const informativas = document.querySelector('[data-notification-preview-list]');
+            const nuevo = fragmentoAviso(data.html);
+
+            tarjeta?.remove();
+            if (informativas && nuevo) {
+                informativas.querySelector('[data-notification-preview-empty]')?.remove();
+                informativas.prepend(nuevo);
+            }
+
+            actualizarPorAtender(Number(data.por_atender));
+            updateNotificationBadges(Number(data.no_vistas));
+        } catch (error) {
+            // Sin red el aviso se queda en "Por atender"; se puede volver a intentar.
+            boton.disabled = false;
         }
     });
 
