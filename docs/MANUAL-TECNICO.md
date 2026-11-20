@@ -1407,6 +1407,16 @@ Los colores neutros viven en `resources/css/app.css` como canales RGB
   "Agendando…"). Evita citas dobles. Se restablece al volver con el botón
   "atrás" del navegador o tras 12 s. Un formulario lo omite con `data-sin-carga`.
 - El foco visible solo aparece con teclado (`:focus-visible`).
+- **Datos del paciente en la agenda pública (variante "Clásica"):** elegida en
+  una ronda de prototipos frente a "Conversacional" y "Boleto". El formulario usa
+  `novalidate` y el componente Alpine `datosPaciente` (`app.js`) valida con las
+  mismas reglas que `CitaPublicaController@store`: el error aparece al salir del
+  campo y se quita al corregirlo; al enviar con errores se cancela el envío
+  (el botón "Agendando…" no se activa porque respeta `defaultPrevented`), se
+  cuenta lo pendiente y se enfoca el primer campo. Los errores del servidor
+  llegan al mismo componente. El teléfono se muestra como "55 1234 5678";
+  `store()` quita solo los espacios antes de validar, así que `+52…`, guiones o
+  paréntesis siguen rechazándose. Pruebas: `DatosPacientePublicoTest`.
 
 ### Celular (fase 3)
 

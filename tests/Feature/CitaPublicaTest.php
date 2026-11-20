@@ -127,11 +127,11 @@ class CitaPublicaTest extends TestCase
             ->assertSee('for="telefono"', false)
             ->assertSee('for="email"', false)
             ->assertSee('for="motivo"', false)
-            ->assertSee('name="nombre" autocomplete="given-name" maxlength="100" required', false)
-            ->assertSee('name="apellido" autocomplete="family-name" maxlength="100" required', false)
-            ->assertSee('name="telefono" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}"', false)
-            ->assertSee('Ingresa exactamente 10 dígitos numéricos.', false)
-            ->assertSee('name="email" autocomplete="email" maxlength="100" required', false)
+            ->assertSee('name="nombre" autocomplete="given-name" inputmode="text" maxlength="100" required', false)
+            ->assertSee('name="apellido" autocomplete="family-name" inputmode="text" maxlength="100" required', false)
+            ->assertSee('name="telefono" autocomplete="tel-national" inputmode="numeric" maxlength="12" required', false)
+            ->assertSee('placeholder="55 1234 5678"', false)
+            ->assertSee('name="email" autocomplete="email" inputmode="email" maxlength="100" required', false)
             ->assertSee('Resumen de la cita')
             ->assertSee('Continuar a mis datos');
     }
@@ -250,9 +250,9 @@ class CitaPublicaTest extends TestCase
             ->assertOk()
             ->assertSee('Tu cita, paso a paso')
             ->assertSee('aria-label="Volver al inicio"', false)
-            ->assertSee('inputmode="numeric" maxlength="10" pattern="[0-9]{10}"', false)
-            ->assertSee('oninput=', false)
-            ->assertSee('slice(0, 10)', false);
+            ->assertSee('inputmode="numeric" maxlength="12"', false)
+            // "55 1234 5678" mientras se escribe (datosPaciente en app.js); el servidor quita los espacios.
+            ->assertSee('escribirTelefono($event)', false);
     }
 
     public function test_la_agenda_publica_rechaza_telefonos_que_no_sean_de_diez_digitos(): void
