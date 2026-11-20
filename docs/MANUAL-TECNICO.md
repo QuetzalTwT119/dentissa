@@ -1146,12 +1146,31 @@ porque solo se ve un día y lo ya atendido se pliega.
   calcula con la zona horaria de la aplicación (`America/Mexico_City`).
 - **Estados:** `EstadoCita::etiqueta()`, `claseInsignia()` y `esInactiva()`
   centralizan textos y colores; la lista y la semana los comparten.
-- **Vista:** `citas/semana.blade.php`, sin librerías de calendario. En escritorio
-  usa una columna por día; en celular, Alpine muestra un día a la vez y, sin
-  JavaScript, los días quedan apilados.
+- **Vista ("Bloques"):** `citas/semana.blade.php`, sin librerías de calendario.
+  Se eligió tras tres rondas de prototipos (Columnas, Cuadrícula y Ocupación;
+  luego versiones menos saturadas de Ocupación). Es un mapa de días × bloques de
+  2 horas: blanco libre, rosa claro con citas y lugar, rosa lleno; los bloques
+  que ya terminaron se atenúan. Al tocar un bloque, Alpine muestra a la derecha
+  (abajo en celular) su detalle: horarios donde todavía cabe una cita (enlazan a
+  **Agendar cita** con `?fecha=`) y sus citas (enlazan a la edición). Sin
+  JavaScript se ve el detalle que eligió el servidor.
+- **Cálculo:** `OcupacionSemanalService::calcular()` recibe los días y
+  `HorarioAtencion`. Por bloque: ocupación = minutos-cita ÷ (minutos del bloque
+  × `capacidad_simultanea`), sin contar canceladas ni inasistencias; horarios
+  con lugar = inicios cada `dentissa.intervalo_minutos` que no han pasado y con
+  menos citas que la capacidad; "lleno" si ocupación ≥ 90 % o ya no queda lugar.
+  Es solo consulta: al agendar, `DisponibilidadService` vuelve a validar con el
+  tratamiento y su margen reales.
+- **Bloque inicial:** el primero de la semana que todavía no termina (el actual
+  si es hoy o el siguiente aunque sea otro día); en una semana ya pasada, el
+  primero abierto.
+- **Días cerrados con citas:** no tienen bloques, pero su encabezado muestra
+  "Cerrado · N citas" y abre la lista de esas citas.
 - **Pruebas:** `AgendaSemanalTest` cubre acceso, rango de la semana, orden por
   hora, datos de cada cita, navegación, fecha inválida, días cerrados y que la
-  lista siga siendo la vista predeterminada.
+  lista siga siendo la vista predeterminada. `OcupacionSemanalTest` cubre
+  niveles, canceladas, horarios con lugar, sábado corto, bloque inicial, días
+  cerrados con citas y la fecha prellenada al agendar.
 
 ## 22. Recordatorio 24 h antes y respuesta del paciente (etapa 1)
 

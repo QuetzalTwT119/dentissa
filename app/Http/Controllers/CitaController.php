@@ -12,6 +12,7 @@ use App\Services\CitaReglasService;
 use App\Services\DisponibilidadService;
 use App\Services\NotificacionInternaService;
 use App\Services\NotificacionService;
+use App\Services\OcupacionSemanalService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -174,6 +175,7 @@ class CitaController extends Controller
         return view('citas.semana', [
             'lunes' => $lunes,
             'dias' => $dias,
+            'ocupacion' => app(OcupacionSemanalService::class)->calcular($dias, $horarios),
             'semanaAnterior' => $lunes->copy()->subWeek()->toDateString(),
             'semanaSiguiente' => $lunes->copy()->addWeek()->toDateString(),
         ]);
