@@ -136,7 +136,7 @@ class CasosExtremosInterfazTest extends TestCase
         $this->post(route('citas.publica.store'), ['motivo' => str_repeat('a', 1001)])
             ->assertSessionHasErrors('motivo');
 
-        $this->get(route('citas.publica.create'))->assertSee('maxlength="1000"', false);
+        // El campo ya no se muestra (se platica en la consulta); el servidor mantiene el límite.
     }
 
     public function test_los_mensajes_de_validacion_estan_en_espanol(): void

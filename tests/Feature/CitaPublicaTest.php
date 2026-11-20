@@ -126,13 +126,15 @@ class CitaPublicaTest extends TestCase
             ->assertSee('for="apellido"', false)
             ->assertSee('for="telefono"', false)
             ->assertSee('for="email"', false)
-            ->assertSee('for="motivo"', false)
+            ->assertDontSee('for="motivo"', false) // se platica en la consulta
             ->assertSee('name="nombre" autocomplete="given-name" inputmode="text" maxlength="100" required', false)
             ->assertSee('name="apellido" autocomplete="family-name" inputmode="text" maxlength="100" required', false)
             ->assertSee('name="telefono" autocomplete="tel-national" inputmode="numeric" maxlength="12" required', false)
-            ->assertSee('placeholder="55 1234 5678"', false)
-            ->assertSee('name="email" autocomplete="email" inputmode="email" maxlength="100" required', false)
-            ->assertSee('Resumen de la cita')
+            ->assertSee('placeholder="755 123 4567"', false)
+            ->assertSee('name="email" autocomplete="email" inputmode="email" maxlength="100"', false)
+            ->assertDontSee('name="email" autocomplete="email" inputmode="email" maxlength="100" required', false) // correo opcional
+            ->assertSee('Resumen de la cita') // tarjeta lateral
+            ->assertSee('Elegir hora')
             ->assertSee('Continuar a mis datos');
     }
 
@@ -162,10 +164,45 @@ class CitaPublicaTest extends TestCase
             'fecha' => $fecha->toDateString(),
             'hora' => '09:00',
         ])
-            ->assertSessionHasErrors(['nombre', 'apellido', 'telefono', 'email']);
+            ->assertSessionHasErrors(['nombre', 'apellido', 'telefono'])
+            ->assertSessionDoesntHaveErrors('email'); // opcional desde el 20/11/2026
 
         $this->assertDatabaseCount('pacientes', 0);
         $this->assertDatabaseCount('citas', 0);
+    }
+
+    public function test_sin_correo_se_agenda_y_el_celular_identifica_al_paciente(): void
+    {
+        $servicio = Servicio::create(['nombre' => 'Odontología General', 'orden' => 1, 'activo' => true]);
+        $tratamiento = Tratamiento::create(['nombre' => 'Limpieza Dental', 'duracion_estimada' => 60, 'categoria' => 'Preventiva', 'activo' => true]);
+        $servicio->tratamientos()->attach($tratamiento);
+        $fecha = Carbon::tomorrow();
+        while ($fecha->isSunday()) {
+            $fecha->addDay();
+        }
+        $datos = fn (string $hora, string $email = '') => [
+            'id_servicio' => $servicio->id, 'id_tratamiento' => $tratamiento->id, 'fecha' => $fecha->toDateString(), 'hora' => $hora,
+            'nombre' => 'Luis', 'apellido' => 'Sincorreo', 'telefono' => '55 4444 3333', 'email' => $email, 'acepta_aviso' => '1',
+        ];
+
+        $this->post(route('citas.publica.store'), $datos('09:00'))->assertSessionHasNoErrors()->assertSessionHas('success');
+        $this->assertNull(Paciente::firstOrFail()->email);
+
+        // Segunda cita con el mismo celular: mismo paciente; si ahora da correo, se le guarda.
+        $this->post(route('citas.publica.store'), $datos('11:00', 'luis@example.test'))->assertSessionHasNoErrors();
+        $this->assertSame(1, Paciente::count());
+        $this->assertSame('luis@example.test', Paciente::firstOrFail()->email);
+        $this->assertSame(2, Cita::count());
+    }
+
+    public function test_las_horas_van_en_cuadricula_y_se_pueden_deseleccionar(): void
+    {
+        $this->get(route('citas.publica.create'))
+            ->assertOk()
+            ->assertSee('grid-cols-3 sm:grid-cols-5 lg:grid-cols-6', false)
+            ->assertSee('Elegir hora')
+            ->assertSee('hora = hora === horario ? null : horario', false)
+            ->assertDontSee('max-h-[23.5rem]', false);
     }
 
     public function test_la_agenda_publica_limita_los_envios_repetidos_desde_la_misma_ip(): void
@@ -405,7 +442,10 @@ class CitaPublicaTest extends TestCase
 
         $this->get(route('citas.publica.create'))
             ->assertOk()
-            ->assertSee('Horario regular: Lunes a viernes de 8:00 a 18:00 hrs • Sábado de 9:00 a 14:00 hrs.')
+            // Una línea por grupo en el recuadro "Horario del consultorio" del paso Día.
+            ->assertSee('Horario del consultorio')
+            ->assertSee('Lunes a viernes de 8:00 a 18:00 hrs')
+            ->assertSee('Sábado de 9:00 a 14:00 hrs')
             ->assertDontSee('9:00 a 19:00');
 
         HorarioAtencion::where('dia_semana', 3)->update(['abierto' => false]);

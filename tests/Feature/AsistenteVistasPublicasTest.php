@@ -83,7 +83,9 @@ class AsistenteVistasPublicasTest extends TestCase
         $this->assertStringContainsString('@click="mover(\'atras\'); idServicio = \'\'; idTratamiento = \'\'"', $contenido);
         $this->assertStringNotContainsString('>×</span>', $contenido);
         $this->assertStringContainsString('x-data="calendarioDisponibilidad(', $contenido);
-        $this->assertStringContainsString('md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]', $contenido);
+        // Día y hora en pasos separados (H-27): el mes centrado y las horas a lo ancho.
+        $this->assertStringContainsString('mx-auto max-w-md', $contenido);
+        $this->assertStringContainsString('grid-cols-3 sm:grid-cols-5 lg:grid-cols-6', $contenido);
         $this->assertStringContainsString('x-text="servicioSeleccionado?.nombre ?? \'Pendiente\'"', $contenido);
         $this->assertStringContainsString('x-text="tratamientoSeleccionado?.nombre ?? \'Pendiente\'"', $contenido);
     }

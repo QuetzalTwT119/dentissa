@@ -1140,6 +1140,16 @@ Un barrido de 41 pantallas a 375 y 1280 px dejó cuatro reglas, protegidas por
   a los 6 s; el de error se queda hasta cerrarlo. Cada acción de crear, guardar,
   eliminar, aprobar o activar envía un mensaje que dice qué y a cuál («Tratamiento
   «Valoración» creado.»). Las pantallas no pintan copias propias.
+- **En PC la pantalla se adapta al alto de la ventana, no a px fijos.** (20/11/2026,
+  agenda en línea.) Se mide con la ventana real del usuario (1920×1080 al 125 %
+  con barra de marcadores ≈ 1536×748), no con el alto del monitor. Patrón: el
+  `<main>` mide `calc(100dvh - barra superior)`, la tarjeta `max-h-full flex
+  flex-col` crece con su contenido hasta ese tope, el cuerpo del paso es
+  `flex-1 min-h-0 overflow-y-auto` y la barra de botones `sticky` con
+  `-bottom-6` (compensa el relleno). Si el contenido no cabe (pantallas bajas o
+  listas largas), se desplaza solo el interior y los botones siguen a la vista.
+  Textos de ayuda secundarios se ocultan con `lg:[@media(max-height:820px)]:hidden`.
+  En celular el flujo es normal con la barra fija abajo.
 - **Validación del navegador con el diseño propio.** `app.js` escucha `invalid`
   en captura, cancela la burbuja genérica y escribe el error en rojo debajo del
   campo (o de su envoltorio `.relative`), con `aria-invalid` y foco en el primero.

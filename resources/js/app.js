@@ -220,8 +220,8 @@ Alpine.data('calendarioDisponibilidad', ({ hoy, excluirCitaId = null, mesesAdela
     },
 
     elegirDia(fecha) {
-        if (this.fecha === fecha) return;
-        this.fecha = fecha;
+        // Tocar otra vez el día elegido lo quita (y con él la hora).
+        this.fecha = this.fecha === fecha ? '' : fecha;
         this.cargarHorarios();
     },
 
@@ -352,7 +352,8 @@ Alpine.data('ofertaCarousel', (total) => ({
  */
 const formatoTelefono = (valor) => {
     const d = String(valor ?? '').replace(/\D/g, '').slice(0, 10);
-    return [d.slice(0, 2), d.slice(2, 6), d.slice(6)].filter(Boolean).join(' ');
+    // 3-3-4 ("755 113 1833"): sirve para cualquier lada; antes 2-4-4 suponía la de CDMX (55).
+    return [d.slice(0, 3), d.slice(3, 6), d.slice(6)].filter(Boolean).join(' ');
 };
 
 Alpine.data('datosPaciente', (inicial = {}) => ({
@@ -375,7 +376,7 @@ Alpine.data('datosPaciente', (inicial = {}) => ({
             return digitos === 10 ? '' : `Faltan ${10 - digitos} ${10 - digitos === 1 ? 'dígito' : 'dígitos'}: ingresa exactamente 10 dígitos numéricos.`;
         },
         email: (v) => {
-            if (!v.trim()) return 'Escribe tu correo.';
+            if (!v.trim()) return ''; // opcional: sin correo se avisa por WhatsApp
             return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Revisa el correo: falta algo como "@gmail.com".';
         },
         aviso: (v) => (v ? '' : 'Para agendar necesitamos que aceptes el aviso de privacidad.'),

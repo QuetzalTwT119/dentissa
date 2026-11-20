@@ -150,6 +150,9 @@ El proceso tiene 4 pasos. Arriba siempre se ve "Paso X de 4".
      quedan pocos lugares (3 o menos). Los días tachados ya no tienen
      horarios; los días grises son pasados o el consultorio no abre.
    - Cambia de mes con las flechas **‹ ›** (hasta 12 meses adelante).
+   - Los pasos son: tipo de atención → día → hora → datos. Las horas libres
+     aparecen en cuadrícula; tocar otra vez el día o la hora elegidos los quita. El correo es opcional (sin correo se avisa por WhatsApp); el
+     celular de 10 dígitos es obligatorio.
    - Al pulsar un día aparecen sus horarios, cada uno con su hora de término
      (por ejemplo, "09:30 a 10:15"). En el celular aparecen debajo del
      calendario.

@@ -50,14 +50,7 @@ class CrearCitaService
                     return ['cita' => null, 'creada' => false];
                 }
 
-                $paciente = Paciente::firstOrCreate(
-                    ['email' => $datos['email']],
-                    [
-                        'nombre' => $datos['nombre'],
-                        'apellido' => $datos['apellido'],
-                        'telefono' => $datos['telefono'],
-                    ],
-                );
+                $paciente = $this->buscarOCrearPaciente($datos);
 
                 // Evidencia del consentimiento: fecha y versión del aviso aceptado.
                 $paciente->forceFill([
@@ -105,5 +98,35 @@ class CrearCitaService
 
             throw $e;
         }
+    }
+
+    /**
+     * El correo es opcional desde el 20/11/2026: se busca por correo si lo hay;
+     * si no, por celular (el que no tiene correo vuelve a ser el mismo paciente).
+     * Si se encontró por celular y ahora dio correo, se le guarda.
+     */
+    private function buscarOCrearPaciente(array $datos): Paciente
+    {
+        $email = trim((string) ($datos['email'] ?? '')) ?: null;
+
+        $paciente = $email ? Paciente::where('email', $email)->first() : null;
+        $paciente ??= Paciente::where('telefono', $datos['telefono'])
+            ->when($email, fn ($q) => $q->whereNull('email'))
+            ->first();
+
+        if (! $paciente) {
+            return Paciente::create([
+                'nombre' => $datos['nombre'],
+                'apellido' => $datos['apellido'],
+                'telefono' => $datos['telefono'],
+                'email' => $email,
+            ]);
+        }
+
+        if ($email && ! $paciente->email) {
+            $paciente->update(['email' => $email]);
+        }
+
+        return $paciente;
     }
 }
