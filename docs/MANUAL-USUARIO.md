@@ -99,34 +99,49 @@ tanto en escritorio como en el menú móvil.
 
 ## 2. Agendamiento público
 
-El proceso tiene 5 pasos. Arriba siempre se ve "Paso X de 5".
+El proceso tiene 4 pasos. Arriba siempre se ve "Paso X de 4".
 
 1. Abre `/agendar-cita`.
 2. **Selección clínica:** elige la especialidad. La lista cambia por los
    tratamientos de esa especialidad, cada uno con su duración aproximada. Si
    cambias de opinión, pulsa el recuadro de la especialidad para volver a la
    lista. Solo aparecen las especialidades que tienen tratamientos activos.
-3. **Calendario:** elige una fecha. Debajo aparece el horario regular, tomado de
-   la configuración de **Horarios** del consultorio. Pulsa **Continuar a
-   horario**.
-4. **Horario:** elige una hora disponible y pulsa **Revisar resumen**.
-5. **Confirmación:** revisa el tratamiento, la fecha y la hora. Pulsa
+3. **Fecha y hora:** se muestra el calendario del mes.
+   - Los días con lugar tienen un **punto verde**; con **punto durazno**
+     quedan pocos lugares (3 o menos). Los días tachados ya no tienen
+     horarios; los días grises son pasados o el consultorio no abre.
+   - Cambia de mes con las flechas **‹ ›** (hasta 12 meses adelante).
+   - Al pulsar un día aparecen sus horarios, cada uno con su hora de término
+     (por ejemplo, "09:30 a 10:15"). En el celular aparecen debajo del
+     calendario.
+   - Elige un horario y pulsa **Revisar resumen**. Debajo aparece el horario
+     regular, tomado de la configuración de **Horarios** del consultorio.
+4. **Confirmación:** revisa el tratamiento, la fecha y la hora. Pulsa
    **Continuar a mis datos**.
-6. **Datos de contacto:** escribe nombre, apellido, teléfono y correo. Acepta
-   el aviso de privacidad. El motivo es opcional, de hasta 1000 caracteres.
-7. Pulsa **Agendar cita**. El botón cambia a "Agendando…" y se desactiva
+5. **Datos de contacto:** arriba aparece un recordatorio de la cita
+   (tratamiento, fecha y hora); **Cambiar** regresa a elegir fecha y hora.
+   Escribe nombre, apellido, teléfono y correo, y acepta el aviso de
+   privacidad. El motivo es opcional, de hasta 1000 caracteres.
+   - El teléfono es el de WhatsApp, a 10 dígitos; se acomoda solo como
+     "55 1234 5678" mientras lo escribes.
+   - Cada dato se revisa al pasar al siguiente campo: si algo falta, aparece
+     el mensaje debajo (por ejemplo "Faltan 6 dígitos…"); cuando ya está
+     bien, aparece una palomita verde.
+6. Pulsa **Agendar cita**. El botón cambia a "Agendando…" y se desactiva
    mientras se guarda, para no crear la cita dos veces.
-8. Aparece la pantalla **"¡Listo! Tu cita quedó confirmada"** con el resumen.
+7. Aparece la pantalla **"¡Listo! Tu cita quedó confirmada"** con el resumen.
 
 En cualquier paso, **Atrás** regresa al anterior sin perder lo elegido. Los
 botones para avanzar se activan cuando el paso está completo. En el celular,
 **Atrás** y el botón para avanzar quedan fijos en la parte de abajo de la
 pantalla.
 
-Si falta un dato o tiene un error, arriba del formulario aparece un aviso como
-"Revisa los 2 datos marcados para poder agendar tu cita". El campo con error se
-marca en rojo y muestra el mensaje en español, por ejemplo "El teléfono es
-obligatorio.".
+Si falta un dato o tiene un error, al pulsar **Agendar cita** no se envía nada:
+arriba del formulario aparece un aviso como "Revisa los 2 datos marcados para
+poder agendar tu cita", el cursor salta al primer dato con error y cada campo
+marcado en rojo muestra su mensaje en español. Si el error lo detecta el
+consultorio al guardar, el formulario vuelve con los mismos avisos y conserva
+lo que ya estaba bien.
 
 El resumen muestra la fecha completa (por ejemplo, "miércoles 18 de noviembre
 de 2026") y el calendario solo permite elegir desde el día de hoy según la hora
@@ -232,11 +247,13 @@ Arriba de `/citas` hay un selector **Lista | Semana**:
 
 Desde `/citas`, el personal puede:
 
-- crear una cita seleccionando paciente, servicio, tratamiento, fecha y hora;
+- crear una cita seleccionando paciente, servicio y tratamiento, y después el
+  día y la hora en el mismo calendario de la agenda pública;
 - las citas nuevas creadas aquí quedan confirmadas en cuanto el horario se
   reserva; las citas históricas que sigan agendadas conservan la opción de
   confirmación manual;
-- reagendar una cita a otro horario disponible;
+- reagendar una cita a otro horario disponible con ese calendario (el horario
+  actual de la cita cuenta como libre mientras se reagenda);
 - iniciar la atención de una cita confirmada;
 - marcar una cita confirmada como **No asistió**, solo desde la hora programada;
 - completar una cita;

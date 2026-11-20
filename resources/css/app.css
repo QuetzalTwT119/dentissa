@@ -666,6 +666,28 @@ html::-webkit-scrollbar {
 }
 
 /*
+ * #3 Calendario de disponibilidad: al elegir un día, su lista de horarios
+ * entra con un fundido corto. Responde a un clic, así que es breve (200 ms)
+ * y solo usa opacity/transform.
+ */
+@keyframes horarios-aparecen {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+.horarios-dia {
+    animation: horarios-aparecen 200ms var(--ease-out) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .horarios-dia {
+        animation: fade-in 150ms ease backwards;
+    }
+}
+
+/*
  * Lista de citas por día (citas/partials/fila). En celular cada cita es una
  * tarjeta de tres renglones: hora | paciente | estado, luego el tratamiento y
  * abajo las acciones. Desde 1024 px es una fila de tabla con encabezado.
