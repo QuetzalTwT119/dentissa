@@ -35,7 +35,7 @@ class NotificacionService
             canal: CanalNotificacion::CitaAgendada,
             plantilla: 'cita_agendada',
             titulo: 'Tu cita quedó agendada',
-            mensaje: "Hola {$cita->paciente->nombre}, tu cita de {$tratamiento} quedó agendada para el {$fecha}. Te esperamos.",
+            mensaje: "Hola {$cita->paciente->nombre}, tu cita de {$tratamiento} quedó agendada para el {$fecha}. El pago se realiza en el consultorio el día de tu cita. Te esperamos.",
             parametrosPlantilla: [$cita->paciente->nombre, $tratamiento, $fecha],
         );
     }
@@ -49,7 +49,7 @@ class NotificacionService
             canal: CanalNotificacion::CitaConfirmada,
             plantilla: 'cita_confirmada',
             titulo: 'Tu cita fue confirmada',
-            mensaje: "Hola {$cita->paciente->nombre}, confirmamos tu cita del {$fecha}. Te esperamos.",
+            mensaje: "Hola {$cita->paciente->nombre}, confirmamos tu cita del {$fecha}. El pago se realiza en el consultorio el día de tu cita. Te esperamos.",
             parametrosPlantilla: [$cita->paciente->nombre, $fecha],
         );
     }
@@ -80,7 +80,7 @@ class NotificacionService
             canal: CanalNotificacion::CitaReagendada,
             plantilla: 'cita_reagendada',
             titulo: 'Tu cita fue reagendada',
-            mensaje: "Hola {$cita->paciente->nombre}, tu cita se movió al {$fecha}. Te esperamos en el nuevo horario.",
+            mensaje: "Hola {$cita->paciente->nombre}, tu cita se movió al {$fecha}. El pago se realiza en el consultorio el día de tu cita. Te esperamos en el nuevo horario.",
             parametrosPlantilla: [$cita->paciente->nombre, $fecha],
         );
     }

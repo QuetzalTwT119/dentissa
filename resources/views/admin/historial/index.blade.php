@@ -67,6 +67,8 @@ $tipoConsultaLabel = [
                 <x-alert type="info" :message="session('status')" />
             @endif
 
+            <x-pagination-summary :items="$consultas" label="consultas" :integrated="false" />
+
             <div class="space-y-4">
                 @forelse ($consultas as $consulta)
                     <div class="rounded-2xl border border-line bg-white p-6 shadow-soft transition hover:border-peach-300">
@@ -99,7 +101,7 @@ $tipoConsultaLabel = [
                                     Editar
                                 </a>
                                 <form method="POST" action="{{ route('admin.pacientes.historial.destroy', [$paciente, $consulta]) }}"
-                                      onsubmit="return confirm('¿Eliminar esta consulta del historial? Esta acción no se puede deshacer.');">
+                                      data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar esta consulta del historial?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
                                     @csrf
                                     @method('delete')
                                     <button type="submit" class="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">Eliminar</button>
@@ -114,7 +116,7 @@ $tipoConsultaLabel = [
                     </div>
                 @endforelse
             </div>
-            <x-pagination-summary :items="$consultas" label="consultas" :integrated="false" />
+            <x-pagination-summary :items="$consultas" label="consultas" :integrated="false" posicion="abajo" />
         </div>
     </div>
 </x-app-layout>

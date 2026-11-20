@@ -30,9 +30,6 @@
 
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8">
-            @if (session('success'))
-                <x-alert type="success" :message="session('success')" />
-            @endif
 
             <section class="grid gap-4 sm:grid-cols-3" aria-label="Resumen de notificaciones">
                 <article class="rounded-3xl border border-line bg-white p-5 shadow-soft">
@@ -71,6 +68,8 @@
                     @endforeach
                 </nav>
             </section>
+
+            <x-pagination-summary :items="$notificaciones" label="notificaciones" :integrated="false" />
 
             <section class="space-y-6" aria-label="Lista de notificaciones" aria-live="polite">
                 @if ($notificaciones->isNotEmpty())
@@ -171,7 +170,7 @@
                         @endif
                     </div>
                 @endif
-                <x-pagination-summary :items="$notificaciones" label="notificaciones" />
+                <x-pagination-summary :items="$notificaciones" label="notificaciones" :integrated="false" posicion="abajo" />
             </section>
         </div>
     </div>

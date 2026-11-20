@@ -70,7 +70,7 @@
                         <div class="relative overflow-hidden rounded-xl border border-line shadow-2xs group">
                             <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-32 w-full object-cover">
                             <form method="POST" action="{{ route('admin.casos.imagenes.destroy', [$caso, $imagen]) }}"
-                                  onsubmit="return confirm('¿Eliminar esta foto?');" class="absolute right-2 top-2">
+                                  data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar esta foto?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro" class="absolute right-2 top-2">
                                 @csrf
                                 @method('delete')
                                 <button type="submit" title="Eliminar foto" aria-label="Eliminar foto"

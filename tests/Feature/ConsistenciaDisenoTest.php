@@ -98,6 +98,43 @@ class ConsistenciaDisenoTest extends TestCase
             ->assertSee('inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line', false);
     }
 
+    public function test_las_confirmaciones_usan_el_dialogo_propio_y_no_el_del_navegador(): void
+    {
+        // Ninguna vista llama a confirm(), prompt() o alert() del navegador.
+        $nativos = collect(File::allFiles(resource_path('views')))
+            ->filter(fn ($archivo) => str_ends_with($archivo->getFilename(), '.blade.php'))
+            ->reject(fn ($archivo) => $archivo->getFilename() === 'dialogo-confirmar.blade.php')
+            ->filter(fn ($archivo) => preg_match('/\b(confirm|prompt|alert)\(/', $archivo->getContents()))
+            ->map(fn ($archivo) => $archivo->getRelativePathname())
+            ->values()
+            ->all();
+        $this->assertSame([], $nativos, 'Usa data-confirmar="…" (components/dialogo-confirmar).');
+
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        \App\Models\Servicio::create(['nombre' => 'Odontología General', 'orden' => 1, 'activo' => true]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.servicios.index'))
+            ->assertOk()
+            ->assertSee('data-dialogo-confirmar', false)
+            ->assertSee('data-confirmar-titulo="¿Eliminar el servicio «Odontología General»?"', false)
+            ->assertSee('data-confirmar-boton="Sí, eliminar"', false);
+    }
+
+    public function test_cada_lista_tiene_un_solo_boton_para_crear(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        foreach (['casos', 'galeria', 'ofertas', 'preguntas-frecuentes', 'servicios', 'testimonios', 'tratamientos', 'usuarios'] as $modulo) {
+            $html = $this->actingAs($admin)->get(route("admin.{$modulo}.index"))->assertOk()->getContent();
+            $crear = route("admin.{$modulo}.create");
+
+            // El botón del encabezado; el estado vacío puede sumar uno solo si la lista no tiene registros.
+            $this->assertLessThanOrEqual(2, substr_count($html, 'href="'.$crear.'"'), "{$modulo}: botones de crear repetidos.");
+            $this->assertStringNotContainsString('href="'.$crear.'" class="hidden sm:inline-block"', $html, "{$modulo}: quedó la copia del botón en la tarjeta.");
+        }
+    }
+
     public function test_el_asistente_de_chat_solo_esta_en_las_paginas_publicas(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);

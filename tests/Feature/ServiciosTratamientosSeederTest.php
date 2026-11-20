@@ -32,7 +32,10 @@ class ServiciosTratamientosSeederTest extends TestCase
         ksort($esperados);
 
         $this->assertSame($esperados, $activos);
-        $this->assertSame(0, Tratamiento::whereNotNull('precio_referencia')->count(), 'Sin precios inventados.');
+        // Decisión del 20/11/2026: sin precio no se publica, así que el catálogo trae
+        // precios de demostración que la clínica debe confirmar.
+        $this->assertSame(0, Tratamiento::where('activo', true)->where(fn ($q) => $q->whereNull('precio_referencia')->orWhere('precio_referencia', '<=', 0))->count(), 'Todo tratamiento activo tiene precio.');
+        $this->assertSame('$3,500', Tratamiento::where('nombre', 'Blanqueamiento Dental')->first()->precioFormateado());
     }
 
     public function test_agrupa_los_tratamientos_en_servicios_activos(): void
@@ -64,12 +67,13 @@ class ServiciosTratamientosSeederTest extends TestCase
         $this->assertSame(2, (int) $general->tratamientos()->whereKey($limpieza->id)->first()->pivot->orden);
     }
 
-    public function test_el_panel_ofrece_las_mismas_categorias_que_usa_el_catalogo(): void
+    public function test_la_categoria_se_conserva_en_los_datos_pero_el_panel_ya_no_la_pide(): void
     {
         $this->seed(ServiciosTratamientosSeeder::class);
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
         $valoracion = Tratamiento::where('nombre', 'Valoración')->firstOrFail();
 
+        // Decisión del 20/11/2026: la categoría no se usaba en ningún lado; el dato se conserva.
         foreach (Tratamiento::where('activo', true)->pluck('categoria') as $categoria) {
             $this->assertContains($categoria, Tratamiento::CATEGORIAS);
         }
@@ -77,12 +81,7 @@ class ServiciosTratamientosSeederTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.tratamientos.edit', $valoracion))
             ->assertOk()
-            ->assertSee('<option value="Diagnóstico" selected>', false);
-
-        $this->actingAs($admin)
-            ->get(route('admin.tratamientos.create'))
-            ->assertOk()
-            ->assertSee('<option value="Diagnóstico"', false);
+            ->assertDontSee('name="categoria"', false);
     }
 
     public function test_desactiva_el_catalogo_de_ejemplo_anterior_sin_borrarlo_y_respeta_lo_creado_por_la_clinica(): void

@@ -189,6 +189,7 @@ $etiquetasTabla = [
                 </div>
 
                 <!-- Tabla (Directamente integrada en el contenedor igual que Pacientes y Mensajes) -->
+                <x-pagination-summary :items="$registros" label="eventos" />
                 <x-admin.table minWidth="min-w-[850px]" :larga="true">
                     <x-slot:head>
                         <tr>
@@ -294,7 +295,7 @@ $etiquetasTabla = [
                         </tr>
                     @endforelse
                 </x-admin.table>
-                <x-pagination-summary :items="$registros" label="eventos" />
+                <x-pagination-summary :items="$registros" label="eventos" posicion="abajo" />
             </x-admin.card>
         </div>
     </div>

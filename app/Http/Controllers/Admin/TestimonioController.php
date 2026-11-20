@@ -56,7 +56,7 @@ class TestimonioController extends Controller
             fn () => Testimonio::create($data),
         );
 
-        return Redirect::route('admin.testimonios.index');
+        return Redirect::route('admin.testimonios.index')->with('success', 'Testimonio creado.');
     }
 
     public function edit(Testimonio $testimonio): View
@@ -83,7 +83,7 @@ class TestimonioController extends Controller
             fn () => $testimonio->update($data),
         );
 
-        return Redirect::route('admin.testimonios.index');
+        return Redirect::route('admin.testimonios.index')->with('success', 'Testimonio guardado.');
     }
 
     public function aprobar(Request $request, Testimonio $testimonio, AuditoriaService $auditoria): RedirectResponse
@@ -99,7 +99,7 @@ class TestimonioController extends Controller
             ]),
         );
 
-        return Redirect::route('admin.testimonios.index');
+        return Redirect::route('admin.testimonios.index')->with('success', 'Testimonio aprobado: ya se ve en la portada.');
     }
 
     public function rechazar(Request $request, Testimonio $testimonio, AuditoriaService $auditoria): RedirectResponse
@@ -112,7 +112,7 @@ class TestimonioController extends Controller
             fn () => $testimonio->update(['estado' => EstadoTestimonio::Rechazado]),
         );
 
-        return Redirect::route('admin.testimonios.index');
+        return Redirect::route('admin.testimonios.index')->with('success', 'Testimonio rechazado: no se mostrará en la portada.');
     }
 
     public function destroy(Request $request, Testimonio $testimonio, AuditoriaService $auditoria): RedirectResponse
@@ -126,7 +126,7 @@ class TestimonioController extends Controller
             eliminado: true,
         );
 
-        return Redirect::route('admin.testimonios.index');
+        return Redirect::route('admin.testimonios.index')->with('success', 'Testimonio eliminado.');
     }
 
     private function pacientes()

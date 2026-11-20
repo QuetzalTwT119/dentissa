@@ -43,7 +43,7 @@ class OfertaController extends Controller
             fn () => Oferta::create($data),
         );
 
-        return Redirect::route('admin.ofertas.index');
+        return Redirect::route('admin.ofertas.index')->with('success', "Oferta «{$request->input('titulo')}» creada.");
     }
 
     public function edit(Oferta $oferta): View
@@ -72,7 +72,7 @@ class OfertaController extends Controller
             fn () => $oferta->update($data),
         );
 
-        return Redirect::route('admin.ofertas.index');
+        return Redirect::route('admin.ofertas.index')->with('success', "Oferta «{$oferta->titulo}» guardada.");
     }
 
     public function destroy(Request $request, Oferta $oferta, AuditoriaService $auditoria): RedirectResponse
@@ -86,7 +86,7 @@ class OfertaController extends Controller
             eliminado: true,
         );
 
-        return Redirect::route('admin.ofertas.index');
+        return Redirect::route('admin.ofertas.index')->with('success', "Oferta «{$oferta->titulo}» eliminada.");
     }
 
     private function validated(Request $request): array
@@ -104,6 +104,9 @@ class OfertaController extends Controller
             'cupo_total' => ['nullable', 'integer', 'min:0'],
             'imagen' => ['nullable', 'image', 'max:2048'],
             'activa' => ['boolean'],
-        ]);
+        ]) + [
+            // Casilla desmarcada = no se envía: se lee explícitamente como false.
+            'activa' => $request->boolean('activa'),
+        ];
     }
 }

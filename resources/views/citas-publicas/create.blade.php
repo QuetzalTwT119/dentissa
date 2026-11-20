@@ -50,6 +50,13 @@
                                 <dt class="text-xs font-semibold uppercase tracking-label text-muted">Fecha y hora</dt>
                                 <dd class="mt-1 font-semibold text-brand-700">{{ ucfirst($resumen['fecha']) }} · {{ $resumen['hora'] }} hrs</dd>
                             </div>
+                            @if (! empty($resumen['precio']))
+                                <div class="px-5 py-3.5" data-aviso-pago>
+                                    <dt class="text-xs font-semibold uppercase tracking-label text-muted">Precio</dt>
+                                    <dd class="mt-1 font-semibold text-ink">{{ $resumen['precio'] }}</dd>
+                                    <dd class="mt-0.5 text-footnote text-muted">Se paga en el consultorio el día de tu cita.</dd>
+                                </div>
+                            @endif
                         </dl>
                     @endif
                     <p class="conf-cierre mt-5 text-callout text-muted">Tu cita quedó registrada en el consultorio. Guarda estos datos o toma una captura; si necesitas cambiarla, comunícate con el consultorio.</p>
@@ -124,6 +131,10 @@
                     mover(direccion) { this.direccion = direccion; this.interactuado = true; },
                     siguiente() { this.mover('adelante'); this.paso = Math.min(this.paso + 1, this.pasos.length - 1); },
                     anterior() { this.mover('atras'); this.paso = Math.max(this.paso - 1, 0); },
+                    formatoPrecio(valor) {
+                        const p = Number(valor) || 0;
+                        return p > 0 ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: p % 1 ? 2 : 0 }).format(p) : '';
+                    },
                     formatoDuracion(minutos) {
                         const m = Number(minutos) || 0;
                         if (m < 60) return `${m} min`;
@@ -226,16 +237,22 @@
                                                         </span>
                                                         <span class="min-w-0">
                                                             <span class="block text-callout font-semibold text-ink" x-text="tratamiento.nombre"></span>
-                                                            <span class="mt-0.5 block text-footnote text-muted sm:hidden" x-text="formatoDuracion(tratamiento.duracion_estimada)"></span>
+                                                            <span class="mt-0.5 block text-footnote text-muted sm:hidden" x-text="[formatoDuracion(tratamiento.duracion_estimada), formatoPrecio(tratamiento.precio_referencia)].filter(Boolean).join(' · ')"></span>
                                                         </span>
                                                     </span>
                                                     <span class="mt-0.5 hidden shrink-0 items-center gap-1 whitespace-nowrap text-xs font-medium text-muted sm:inline-flex">
                                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                         <span x-text="formatoDuracion(tratamiento.duracion_estimada)"></span>
+                                                        <span class="ml-2 text-callout font-semibold text-ink" data-precio-tratamiento x-text="formatoPrecio(tratamiento.precio_referencia)"></span>
                                                     </span>
                                                 </button>
                                             </template>
                                         </div>
+
+                                        <p x-show="servicioSeleccionado.tratamientos.length > 0" data-aviso-pago class="mt-3 flex items-center gap-2 text-footnote text-muted">
+                                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg>
+                                            El pago se realiza en el consultorio el día de tu cita.
+                                        </p>
 
                                         <template x-if="servicioSeleccionado.tratamientos.length === 0">
                                             <div class="rounded-2xl bg-cream px-4 py-5 text-center">
@@ -448,6 +465,13 @@
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Tratamiento</dt>
                                     <dd class="min-w-0 text-right font-semibold text-ink" :class="!tratamientoSeleccionado && 'font-normal text-muted'" x-text="tratamientoSeleccionado?.nombre ?? 'Pendiente'"></dd>
+                                </div>
+                                <div class="flex justify-between gap-4 py-2.5" x-show="tratamientoSeleccionado && formatoPrecio(tratamientoSeleccionado.precio_referencia)">
+                                    <dt class="shrink-0 text-muted">Precio</dt>
+                                    <dd class="min-w-0 text-right">
+                                        <span class="block font-semibold text-ink" x-text="tratamientoSeleccionado ? formatoPrecio(tratamientoSeleccionado.precio_referencia) : ''"></span>
+                                        <span class="block text-xs text-muted">Se paga en el consultorio</span>
+                                    </dd>
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Fecha</dt>

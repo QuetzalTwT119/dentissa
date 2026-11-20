@@ -28,6 +28,7 @@
                 </x-admin.card-header>
 
                 <!-- Tabla con scroll horizontal responsivo -->
+                <x-pagination-summary :items="$pacientes" label="pacientes" />
                 <x-admin.table minWidth="min-w-[760px]">
                     <x-slot:head>
                         <tr>
@@ -97,7 +98,7 @@
                         </x-admin.empty-state>
                     @endforelse
                 </x-admin.table>
-                <x-pagination-summary :items="$pacientes" label="pacientes" />
+                <x-pagination-summary :items="$pacientes" label="pacientes" posicion="abajo" />
             </x-admin.card>
         </div>
     </div>

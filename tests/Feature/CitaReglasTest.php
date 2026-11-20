@@ -313,7 +313,8 @@ class CitaReglasTest extends TestCase
             ->assertSee('Completar')
             ->assertDontSee('Más acciones')
             ->assertDontSee('Reagendar')
-            ->assertDontSee('Cancelar')
+            // "Cancelar" a secas existe en el diálogo de confirmación de todo el panel.
+            ->assertDontSee('Cancelar cita')
             ->assertDontSee('Sin acciones');
     }
 
@@ -438,7 +439,8 @@ class CitaReglasTest extends TestCase
             $this->get(route('citas.index', ['fecha' => $cita->fecha_hora->toDateString()]))
                 ->assertOk()
                 ->assertSee(route('citas.no-show', $cita), false)
-                ->assertSee('¿Marcar esta cita como no asistida? Esta acción no se puede deshacer.', false);
+                ->assertSee('data-confirmar-titulo="¿Marcar esta cita como no asistida?"', false)
+                ->assertSee('data-confirmar="Esta acción no se puede deshacer."', false);
         } finally {
             Carbon::setTestNow();
         }

@@ -47,7 +47,7 @@ class ServicioController extends Controller
             fn () => Servicio::create($data),
         );
 
-        return Redirect::route('admin.servicios.index');
+        return Redirect::route('admin.servicios.index')->with('success', "Servicio «{$request->input('nombre')}» creado. Ábrelo para asignarle tratamientos.");
     }
 
     public function edit(Servicio $servicio): View
@@ -92,7 +92,7 @@ class ServicioController extends Controller
     {
         $this->sincronizarTratamientos($request, $servicio, $auditoria);
 
-        return Redirect::route('admin.servicios.edit', $servicio);
+        return Redirect::route('admin.servicios.edit', $servicio)->with('success', 'Tratamientos del servicio guardados.');
     }
 
     private function sincronizarTratamientos(Request $request, Servicio $servicio, AuditoriaService $auditoria): void
@@ -171,7 +171,7 @@ class ServicioController extends Controller
             eliminado: true,
         );
 
-        return Redirect::route('admin.servicios.index');
+        return Redirect::route('admin.servicios.index')->with('success', "Servicio «{$servicio->nombre}» eliminado.");
     }
 
     private function validated(Request $request, ?int $ignoreId = null): array
@@ -183,6 +183,9 @@ class ServicioController extends Controller
             'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'activo' => ['boolean'],
             'orden' => ['integer', 'min:0'],
-        ]);
+        ]) + [
+            // Casilla desmarcada = no se envía: se lee explícitamente como false.
+            'activo' => $request->boolean('activo'),
+        ];
     }
 }

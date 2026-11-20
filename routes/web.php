@@ -219,6 +219,7 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::patch('servicios/{servicio}/mover/{direccion}', [ServicioController::class, 'mover'])
         ->whereIn('direccion', ['arriba', 'abajo'])->name('servicios.mover');
     Route::resource('servicios', ServicioController::class)->except('show');
+    Route::patch('tratamientos/{tratamiento}/estado', [TratamientoController::class, 'alternarEstado'])->name('tratamientos.estado');
     Route::resource('tratamientos', TratamientoController::class)->except('show');
 
     Route::get('pacientes', [PacienteController::class, 'index'])->name('pacientes.index');

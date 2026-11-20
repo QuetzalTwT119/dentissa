@@ -9,6 +9,8 @@
 
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+            <x-pagination-summary :items="$imagenes" label="imágenes" :integrated="false" />
+
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6 items-stretch">
                 @forelse ($imagenes as $imagen)
                     <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:border-peach-300 h-full flex flex-col justify-between group">
@@ -40,7 +42,7 @@
                     </div>
                 @endforelse
             </div>
-            <x-pagination-summary :items="$imagenes" label="imágenes" :integrated="false" />
+            <x-pagination-summary :items="$imagenes" label="imágenes" :integrated="false" posicion="abajo" />
         </div>
     </div>
 </x-app-layout>

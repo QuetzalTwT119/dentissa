@@ -36,7 +36,7 @@ class CasoController extends Controller
             fn () => Caso::create($this->validated($request)),
         );
 
-        return Redirect::route('admin.casos.edit', $caso);
+        return Redirect::route('admin.casos.edit', $caso)->with('success', "Caso «{$caso->titulo}» creado. Ahora agrega sus fotos de antes y después.");
     }
 
     public function edit(Caso $caso): View
@@ -56,7 +56,7 @@ class CasoController extends Controller
             fn () => $caso->update($this->validated($request)),
         );
 
-        return Redirect::route('admin.casos.index');
+        return Redirect::route('admin.casos.index')->with('success', "Caso «{$caso->titulo}» guardado.");
     }
 
     public function destroy(Request $request, Caso $caso, AuditoriaService $auditoria): RedirectResponse
@@ -70,7 +70,7 @@ class CasoController extends Controller
             eliminado: true,
         );
 
-        return Redirect::route('admin.casos.index');
+        return Redirect::route('admin.casos.index')->with('success', "Caso «{$caso->titulo}» eliminado.");
     }
 
     public function storeImagen(Request $request, Caso $caso, AuditoriaService $auditoria): RedirectResponse
@@ -92,7 +92,7 @@ class CasoController extends Controller
             ]),
         );
 
-        return Redirect::route('admin.casos.edit', $caso);
+        return Redirect::route('admin.casos.edit', $caso)->with('success', 'Foto agregada al caso.');
     }
 
     public function destroyImagen(Request $request, Caso $caso, Imagen $imagen, AuditoriaService $auditoria): RedirectResponse
@@ -108,7 +108,7 @@ class CasoController extends Controller
             eliminado: true,
         );
 
-        return Redirect::route('admin.casos.edit', $caso);
+        return Redirect::route('admin.casos.edit', $caso)->with('success', 'Foto eliminada del caso.');
     }
 
     private function validated(Request $request): array
