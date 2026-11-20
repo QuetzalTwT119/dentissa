@@ -388,7 +388,7 @@ class CitaPublicaTest extends TestCase
         try {
             $this->get(route('citas.publica.create'))
                 ->assertOk()
-                ->assertSee('min="2030-01-09"', false)
+                ->assertSee("hoy: '2030-01-09'", false)
                 ->assertDontSee('toISOString', false)
                 ->assertSee('get fechaLegible()', false)
                 ->assertSee('x-text="fechaLegible || \'Pendiente\'"', false);
