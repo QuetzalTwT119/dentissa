@@ -686,3 +686,51 @@ html::-webkit-scrollbar {
         animation: fade-in 150ms ease backwards;
     }
 }
+
+/*
+ * Lista de citas por día (citas/partials/fila). En celular cada cita es una
+ * tarjeta de tres renglones: hora | paciente | estado, luego el tratamiento y
+ * abajo las acciones. Desde 1024 px es una fila de tabla con encabezado.
+ */
+.fila-cita {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+    grid-template-areas:
+        'hora paciente estado'
+        'hora tratamiento tratamiento'
+        'acciones acciones acciones';
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    padding: 0.75rem 0.875rem;
+}
+
+.fila-cita-hora { grid-area: hora; align-self: start; }
+.fila-cita-paciente { grid-area: paciente; }
+.fila-cita-tratamiento { grid-area: tratamiento; }
+.fila-cita-estado { grid-area: estado; align-self: start; justify-self: end; text-align: right; }
+.fila-cita-acciones { grid-area: acciones; padding-top: 0.25rem; }
+
+/* Lo ya atendido se atenúa, salvo sus acciones. */
+.fila-cita-terminada > :not(.fila-cita-acciones) {
+    opacity: 0.6;
+}
+
+.fila-cita-cabecera {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .fila-cita,
+    .fila-cita-cabecera {
+        grid-template-columns: 4.5rem minmax(0, 1.4fr) minmax(0, 1.25fr) 9.5rem minmax(15rem, auto);
+        grid-template-areas: 'hora paciente tratamiento estado acciones';
+        gap: 1rem;
+        padding: 0.625rem 1.25rem;
+    }
+
+    .fila-cita { min-height: 4rem; }
+    .fila-cita-cabecera { display: grid; align-items: center; padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .fila-cita-estado { justify-self: start; text-align: left; align-self: center; }
+    .fila-cita-hora { align-self: center; }
+    .fila-cita-acciones { padding-top: 0; justify-self: end; }
+}

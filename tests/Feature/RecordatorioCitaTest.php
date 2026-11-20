@@ -227,7 +227,7 @@ class RecordatorioCitaTest extends TestCase
         $this->cita('2030-01-10 09:30');
         $this->post($this->enlace($confirmada, 'confirmar', 'citas.recordatorio.responder'));
 
-        $this->actingAs($admin)->get(route('citas.index'))
+        $this->actingAs($admin)->get(route('citas.index', ['fecha' => '2030-01-10']))
             ->assertOk()
             ->assertSee('Paciente confirmó asistencia');
         $this->actingAs($admin)->get(route('citas.index', ['vista' => 'semana', 'semana' => '2030-01-07']))

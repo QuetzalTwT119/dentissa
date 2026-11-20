@@ -220,7 +220,22 @@ una sola vez cada 12 horas por número, y el sistema no guarda lo que escribió.
 
 Arriba de `/citas` hay un selector **Lista | Semana**:
 
-- **Lista** (predeterminada): tabla con búsqueda y filtros por fecha y estado.
+- **Lista** (predeterminada): las citas de **un día a la vez**, en orden de
+  hora. Se abre en el día de hoy.
+  - Arriba hay una pestaña por día de la semana con cuántas citas tiene y
+    cuántas faltan **por confirmar** (en ámbar). Toca una pestaña para ver ese
+    día; las flechas **‹ ›** (o "Semana anterior / siguiente" en el celular)
+    cambian de semana e **Ir a hoy** regresa al día actual.
+  - Mientras queden citas por atender, las ya completadas, canceladas o sin
+    asistencia se agrupan en un renglón ("4 ya atendidas o canceladas");
+    pulsa **Mostrar** para verlas.
+  - La cita en curso aparece resaltada con una franja rosa.
+  - **Buscar en todas las fechas** encuentra a un paciente (nombre, teléfono,
+    correo), servicio o tratamiento en cualquier fecha, agrupado por día.
+    **Todas las fechas** muestra el historial completo, 20 o 50 por página.
+  - **Estado** filtra las citas del día elegido (o de la búsqueda).
+  - En el celular, cada cita es una tarjeta: hora y paciente arriba,
+    tratamiento en medio y los botones abajo, sin desplazarse de lado.
 - **Semana**: agenda de lunes a sábado. Cada día muestra su horario de atención
   (o **Cerrado**) y sus citas ordenadas por hora, con paciente, tratamiento y
   estado en su color. Las canceladas y las inasistencias se ven atenuadas y
