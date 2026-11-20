@@ -53,6 +53,8 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*'),
+            // /disponibilidad* solo la consulta JavaScript: un error debe llegar
+            // como JSON 422, no como redirección a una página HTML.
+            fn (Request $request) => $request->is('api/*', 'disponibilidad', 'disponibilidad/*'),
         );
     })->create();

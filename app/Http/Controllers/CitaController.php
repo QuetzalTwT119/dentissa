@@ -24,6 +24,15 @@ use Illuminate\Validation\Rule;
 
 class CitaController extends Controller
 {
+    /**
+     * Lista de citas.
+     *
+     * - Por día (predeterminado): una pestaña por día de la semana de ?fecha
+     *   (hoy si no viene). Muestra todas las citas de ese día en orden de hora.
+     * - Todas las fechas: al buscar (?buscar) o con ?todas=1, resultados de
+     *   cualquier fecha, del más reciente al más antiguo, paginados. Así se
+     *   sigue encontrando el historial de un paciente.
+     */
     public function index(Request $request): View
     {
         if ($request->query('vista') === 'semana') {
@@ -34,13 +43,45 @@ class CitaController extends Controller
             'fecha' => ['nullable', 'date'],
             'estado' => ['nullable', Rule::enum(EstadoCita::class)],
             'buscar' => ['nullable', 'string', 'max:100'],
+            'todas' => ['nullable', 'boolean'],
         ]);
 
-        $terminos = preg_split('/\s+/', trim($validated['buscar'] ?? ''), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $filtros = $request->only(['fecha', 'estado', 'buscar']);
+        $estado = $validated['estado'] ?? null;
 
-        $query = Cita::with(['paciente', 'servicio', 'tratamiento'])
-            ->when($request->filled('fecha'), fn ($q) => $q->whereDate('fecha_hora', $validated['fecha']))
-            ->when($request->filled('estado'), fn ($q) => $q->where('estado', $validated['estado']))
+        if (filled($validated['buscar'] ?? null) || $request->boolean('todas')) {
+            return view('citas.index', [
+                'citas' => $this->buscarCitas($validated['buscar'] ?? '', $estado)
+                    ->orderByDesc('fecha_hora')
+                    ->paginate($this->paginationPageSize($request))
+                    ->withQueryString(),
+                'filtros' => $filtros,
+            ]);
+        }
+
+        $dia = isset($validated['fecha']) ? Carbon::parse($validated['fecha'])->startOfDay() : Carbon::today();
+
+        return view('citas.index', [
+            'dia' => $dia,
+            'citasDelDia' => Cita::with(['paciente', 'servicio', 'tratamiento'])
+                ->whereDate('fecha_hora', $dia)
+                ->when($estado, fn ($q) => $q->where('estado', $estado))
+                ->orderBy('fecha_hora')
+                ->get(),
+            'pestanas' => $this->pestanasDeLaSemana($dia),
+            'semanaAnterior' => $dia->copy()->subWeek()->toDateString(),
+            'semanaSiguiente' => $dia->copy()->addWeek()->toDateString(),
+            'filtros' => $filtros,
+        ]);
+    }
+
+    /** Búsqueda por paciente (nombre, teléfono, correo), servicio o tratamiento. */
+    private function buscarCitas(string $buscar, ?string $estado)
+    {
+        $terminos = preg_split('/\s+/', trim($buscar), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        return Cita::with(['paciente', 'servicio', 'tratamiento'])
+            ->when($estado, fn ($q) => $q->where('estado', $estado))
             ->when($terminos !== [], function ($q) use ($terminos) {
                 foreach ($terminos as $termino) {
                     $coincidencia = '%'.$termino.'%';
@@ -56,11 +97,41 @@ class CitaController extends Controller
                     });
                 }
             });
+    }
 
-        return view('citas.index', [
-            'citas' => $query->orderByDesc('fecha_hora')->paginate($this->paginationPageSize($request))->withQueryString(),
-            'filtros' => $request->only(['fecha', 'estado', 'buscar']),
-        ]);
+    /**
+     * Pestañas de la lista: los días de la semana de $dia (lunes a sábado, y
+     * domingo solo si abre o tiene citas), con cuántas citas activas tiene
+     * cada uno y cuántas siguen por confirmar. Una sola consulta.
+     */
+    private function pestanasDeLaSemana(Carbon $dia)
+    {
+        $lunes = $dia->copy()->startOfWeek(Carbon::MONDAY);
+        $porDia = Cita::query()
+            ->whereBetween('fecha_hora', [$lunes, $lunes->copy()->addDays(6)->endOfDay()])
+            ->get(['fecha_hora', 'estado'])
+            ->groupBy(fn (Cita $cita) => $cita->fecha_hora->toDateString());
+        $horarios = HorarioAtencion::all()->keyBy('dia_semana');
+
+        return collect(range(0, 6))
+            ->map(fn (int $desplazamiento) => $lunes->copy()->addDays($desplazamiento))
+            ->filter(fn (Carbon $fecha) => ! $fecha->isSunday()
+                || $horarios->get(0)?->abierto
+                || $porDia->has($fecha->toDateString())
+                || $fecha->isSameDay($dia))
+            ->map(function (Carbon $fecha) use ($dia, $porDia, $horarios) {
+                $citas = $porDia->get($fecha->toDateString(), collect());
+
+                return [
+                    'fecha' => $fecha,
+                    'esHoy' => $fecha->isToday(),
+                    'seleccionada' => $fecha->isSameDay($dia),
+                    'abierto' => (bool) $horarios->get($fecha->dayOfWeek)?->abierto,
+                    'total' => $citas->reject(fn (Cita $cita) => $cita->estado->esInactiva())->count(),
+                    'porConfirmar' => $citas->where('estado', EstadoCita::Agendada)->count(),
+                ];
+            })
+            ->values();
     }
 
     /**

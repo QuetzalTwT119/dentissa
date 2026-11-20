@@ -327,6 +327,52 @@ tratamiento, el margen entre citas, la capacidad simultánea y las citas ya
 registradas. Antes de guardar una cita vuelve a validar el horario dentro de
 una transacción para evitar reservas duplicadas.
 
+### Calendario de disponibilidad (`partials/disponibilidad-picker`)
+
+La agenda pública, **Nueva cita** y **Reagendar** comparten un mismo selector:
+el mes a la izquierda y los horarios del día elegido a la derecha (en celular,
+uno debajo del otro). Se eligió en una ronda de prototipos frente a una tira
+semanal y una lista de "lo más pronto", porque deja ver de un vistazo qué días
+tienen lugar y sirve igual para quien agenda para mañana que para quien planea
+con semanas de anticipación.
+
+Usa dos consultas:
+
+| Ruta | Para qué | Respuesta |
+| --- | --- | --- |
+| `GET /disponibilidad?tratamiento_id&fecha` | Horarios del día elegido | `{"horarios": ["09:00", ...]}` |
+| `GET /disponibilidad/mes?tratamiento_id&mes=YYYY-MM` | Puntos del calendario | `{"mes", "duracion_minutos", "dias": {"2026-11-19": {"horarios": 8, "estado": "disponible"}}}` |
+
+- `DisponibilidadService::resumenMensual()` recorre el mes y llama a
+  `horariosDisponibles()` por cada día abierto: el número del calendario es
+  exactamente la lista que verá el paciente al elegir ese día.
+- Estados por día: `pasado`, `cerrado` (el consultorio no abre ese día de la
+  semana), `sin_horarios` (abre, pero no queda cupo) y `disponible`. La
+  interfaz marca con punto verde los días con lugar, con punto durazno los de
+  3 horarios o menos y tacha los días sin horarios.
+- Solo acepta del mes actual a 12 meses adelante
+  (`DisponibilidadController::MESES_ADELANTE`) y tiene límite propio de 60
+  consultas por minuto, porque cada consulta calcula hasta 31 días.
+- Igual que la consulta por día, `exclude_cita_id` solo lo acepta el personal
+  autorizado a editar esa cita (reagendar); la agenda pública recibe 403.
+- Las rutas `/disponibilidad*` responden los errores de validación como JSON
+  422 (`bootstrap/app.php`), porque solo las consulta JavaScript.
+- En el navegador, el componente Alpine `calendarioDisponibilidad`
+  (`resources/js/app.js`) vive dentro del `x-data` del formulario y comparte
+  sus datos (`idTratamiento`, `fecha`, `hora`, `horarios`, `cargarHorarios()`).
+  Cada formulario envía `fecha` y `hora` con `<input type="hidden">`. Si el
+  paciente cambia de mes rápido, solo se aplica la última respuesta.
+- Accesibilidad: cada día es un botón con etiqueta completa ("Jueves, 19 de
+  noviembre, 8 horarios disponibles"); las flechas del teclado mueven el foco
+  entre días con lugar y los horarios son un grupo de opciones (`radiogroup`).
+
+Pruebas: `tests/Feature/DisponibilidadMesTest.php`.
+
+```powershell
+docker compose --profile qa build qa
+docker compose --profile qa run --rm --no-deps --entrypoint php qa artisan test --filter=DisponibilidadMesTest
+```
+
 La zona horaria de la aplicación se configura con `APP_TIMEZONE` y por defecto
 es `America/Mexico_City`. Debe corresponder a la ubicación de la clínica:
 horarios configurados como 9:00–14:00 se interpretan como hora local, no UTC.
@@ -1053,10 +1099,40 @@ administrador y el asistente gestionan los demás cambios desde el panel
   versión acotada: el enlace firmado del recordatorio, que solo sirve para esa
   cita y deja de aceptar respuestas a la hora de la cita.
 
+### Lista de citas por pestañas (`GET /citas`)
+
+Se eligió en dos rondas de prototipos: primero "Tabla por día" frente a una
+vista "Ahora" y un tablero por estado; después, para desplazarse menos,
+"Por pestañas" frente a una versión compacta y otra desplegable. En el
+prototipo, el día de hoy (11 citas) pasó de unos 1700 px a 1124 px en celular
+porque solo se ve un día y lo ya atendido se pliega.
+
+- **Por día (predeterminado):** `?fecha=AAAA-MM-DD` (hoy si falta). Muestra
+  todas las citas de ese día en orden de hora, sin paginación, y el filtro
+  `?estado` actúa dentro del día. Arriba, una pestaña por día de la semana del
+  día elegido (lunes a sábado; domingo solo si abre, tiene citas o es el día
+  elegido) con sus citas activas y las que siguen **por confirmar**
+  (`CitaController::pestanasDeLaSemana()`, una sola consulta). Las flechas
+  mueven una semana conservando el día de la semana.
+- **Plegado:** mientras queden citas por atender, las completadas, canceladas
+  y no asistidas se agrupan en un `<details>` ("4 ya atendidas o canceladas")
+  cerrado por defecto. Si el día ya no tiene pendientes, se muestran todas.
+- **Todas las fechas:** `?buscar=` o `?todas=1` muestran citas de cualquier
+  fecha, de la más reciente a la más antigua, agrupadas por día y paginadas
+  (20 o 50). La búsqueda ignora `fecha` a propósito: buscar a un paciente debe
+  encontrar todo su historial.
+- **Vistas:** `citas/index.blade.php` decide el modo con `isset($dia)`;
+  `citas/partials/fila.blade.php` dibuja cada cita (tabla desde 1024 px,
+  tarjeta en celular, clases `.fila-cita` de `app.css`) y
+  `citas/partials/acciones.blade.php` conserva los botones de antes
+  (Confirmar, Iniciar, Completar y "Más acciones").
+- **Pruebas:** `ListaCitasPorDiaTest`. Varias pruebas anteriores ahora abren el
+  día de la cita (`?fecha=`) o `?todas=1`, porque la lista ya no mezcla días.
+
 ## 21. Vista semanal de la agenda (RF03)
 
 `GET /citas?vista=semana&semana=AAAA-MM-DD` muestra la agenda de la semana; sin
-`vista` se conserva la lista con filtros. Ambas vistas comparten el selector
+`vista` se muestra la lista por pestañas (ver arriba). Ambas vistas comparten el selector
 `citas/partials/selector-vista.blade.php`.
 
 - **Controlador:** `CitaController::index` delega en `semana()` cuando
@@ -1426,6 +1502,16 @@ Los colores neutros viven en `resources/css/app.css` como canales RGB
   "Agendando…"). Evita citas dobles. Se restablece al volver con el botón
   "atrás" del navegador o tras 12 s. Un formulario lo omite con `data-sin-carga`.
 - El foco visible solo aparece con teclado (`:focus-visible`).
+- **Datos del paciente en la agenda pública (variante "Clásica"):** elegida en
+  una ronda de prototipos frente a "Conversacional" y "Boleto". El formulario usa
+  `novalidate` y el componente Alpine `datosPaciente` (`app.js`) valida con las
+  mismas reglas que `CitaPublicaController@store`: el error aparece al salir del
+  campo y se quita al corregirlo; al enviar con errores se cancela el envío
+  (el botón "Agendando…" no se activa porque respeta `defaultPrevented`), se
+  cuenta lo pendiente y se enfoca el primer campo. Los errores del servidor
+  llegan al mismo componente. El teléfono se muestra como "55 1234 5678";
+  `store()` quita solo los espacios antes de validar, así que `+52…`, guiones o
+  paréntesis siguen rechazándose. Pruebas: `DatosPacientePublicoTest`.
 
 ### Celular (fase 3)
 
