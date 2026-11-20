@@ -86,9 +86,24 @@ debe apagar o eliminar el servicio de Railway desde el panel.
 
 
 La página principal presenta una portada cálida para Dentissa con fotografía,
-servicios, galería y un acceso directo a la agenda. El botón **Elegir fecha y
-horario** abre el flujo público validado; ahí se seleccionan tratamiento, fecha
-y hora antes de solicitar la cita. La portada no crea citas por sí misma ni usa
+servicios, galería y un acceso directo a la agenda.
+
+Lo primero que se ve es la bienvenida: la fotografía del consultorio a la
+derecha (arriba en el celular), el mensaje "Una consulta sin prisas, explicada
+paso a paso" y dos formas de contacto:
+
+- **Agendar mi valoración** abre la agenda en línea.
+- **¿Prefieres llamar?** muestra el teléfono del consultorio; en el celular,
+  al tocarlo se marca directamente. Es el mismo número del pie de página
+  (`DENTISSA_TELEFONO`).
+- Debajo aparece si el consultorio está abierto en este momento, por ejemplo
+  "Abierto hoy hasta las 18:00" o "Cerrado ahora · abre el lunes a las 8:00".
+  Se calcula con la hora de la clínica a partir de **Horarios**: si el
+  administrador cambia el horario, la portada lo refleja sin más pasos.
+
+Los botones **Agendar mi valoración** y **Elegir fecha y horario** (al final
+de la portada) abren el flujo público validado; ahí se seleccionan tratamiento,
+fecha y hora antes de solicitar la cita. La portada no crea citas por sí misma ni usa
 teléfonos, correos, horarios, calificaciones o testimonios como si ya fueran
 datos oficiales. La clínica debe aprobar ese contenido antes de publicarlo.
 

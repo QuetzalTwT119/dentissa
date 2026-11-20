@@ -828,3 +828,26 @@ html::-webkit-scrollbar {
 .tabla-larga[data-desplazada] table > tbody > tr > :first-child {
     box-shadow: 6px 0 8px -6px rgb(43 34 36 / 0.18);
 }
+
+/*
+ * #4 Bienvenida de la portada: el texto sube 8 px y aparece, escalonado de
+ * 50 en 50 ms (animation-delay en la vista). Una sola vez por visita. La foto
+ * no se anima: es el elemento más grande de la página y debe pintarse de
+ * inmediato (LCP).
+ */
+@keyframes hero-sube {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+.hero-entra {
+    animation: hero-sube 300ms var(--ease-out) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-entra {
+        animation: fade-in 150ms ease backwards;
+    }
+}

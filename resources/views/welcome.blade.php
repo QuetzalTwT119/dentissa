@@ -177,77 +177,51 @@
 
     <main>
         <!-- ============ Hero ============ -->
-        <section id="inicio" class="relative overflow-hidden">
-            <div aria-hidden="true" class="pointer-events-none absolute -right-40 -top-24 h-[34rem] w-[34rem] rounded-full bg-peach-200/50 blur-3xl"></div>
-            <div aria-hidden="true" class="pointer-events-none absolute -left-40 bottom-0 h-80 w-80 rounded-full bg-brand-100/60 blur-3xl"></div>
+        {{--
+            "Panorámica": la foto real del consultorio ocupa la derecha y su orilla
+            izquierda se funde con la crema; el texto vive en el 40 % izquierdo para
+            no quedar nunca encima de la doctora ni de la paciente. En celular y
+            tableta la foto va arriba y el texto debajo.
+        --}}
+        <section id="inicio" aria-labelledby="titulo-inicio" class="relative overflow-hidden lg:flex lg:min-h-[min(46rem,calc(100dvh-4.5rem))] lg:items-center">
+            <div class="relative aspect-[4/3] sm:aspect-[16/9] lg:absolute lg:inset-y-0 lg:left-[44%] lg:right-0 lg:aspect-auto">
+                <img src="{{ asset('images/dentissa/hero-inicio.jpg') }}"
+                     alt="La doctora conversa con una paciente sentada en el sillón dental del consultorio"
+                     width="1376" height="768" fetchpriority="high"
+                     class="absolute inset-0 h-full w-full object-cover object-[70%_40%] lg:object-[72%_40%]">
+                <div aria-hidden="true" class="absolute inset-0 hidden bg-[linear-gradient(90deg,rgb(var(--c-cream))_0%,rgb(var(--c-cream)/0.7)_12%,rgb(var(--c-cream)/0)_32%)] lg:block"></div>
+            </div>
 
-            <div class="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pb-14 pt-10 sm:px-6 sm:pt-14 lg:grid-cols-12 lg:gap-14 lg:px-8 lg:pb-24 lg:pt-20">
+            <div class="relative mx-auto w-full max-w-7xl px-4 pb-14 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:py-20">
+                <div class="max-w-xl lg:max-w-[min(34rem,40%)]">
+                    <p class="hero-entra eyebrow">Odontología integral y estética</p>
 
-                <div class="lg:col-span-6">
-                    <p class="eyebrow">Espacio de alta estética dental y bienestar</p>
-
-                    <h1 class="mt-5 text-display text-ink">
-                        Tu sonrisa merece una experiencia
-                        <em class="font-medium italic text-brand-600">cálida, delicada</em>
-                        y sin dolor.
+                    <h1 id="titulo-inicio" class="hero-entra mt-5 max-w-[13ch] text-display text-ink [animation-delay:50ms]">
+                        Una consulta <em class="font-medium italic text-brand-600">sin prisas</em>, explicada paso a paso.
                     </h1>
 
-                    <p class="mt-6 max-w-xl text-body text-ink-soft sm:text-lead">
-                        Combinamos tecnología de precisión y un trato profundamente humano para que recuperar tu salud y estética dental sea un momento de bienestar.
+                    <p class="hero-entra mt-5 text-body text-ink-soft [animation-delay:100ms] sm:text-lead">
+                        Te escuchamos, te explicamos tu diagnóstico con calma y decides sin presión. Así se siente ir al dentista con la Dra. Melissa López.
                     </p>
-
-                    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                        <a href="{{ route('citas.publica.create') }}" class="btn-brand group px-7 py-3.5 text-callout">
-                            <span>Reservar mi valoración</span>
-                            <span class="transition-transform duration-200 ease-out group-hover:translate-x-0.5">{!! $iconoFlecha !!}</span>
-                        </a>
-                        <a href="{{ route('citas.publica.create') }}" class="btn-secondary px-7 py-3.5 text-callout">
-                            Elegir fecha y horario
-                        </a>
-                    </div>
-
-                    <dl class="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-line pt-6">
-                        <div>
-                            <dt class="sr-only">Atención</dt>
-                            <dd class="font-serif text-title-3 text-brand-600 sm:text-title-2">100%</dd>
-                            <dd class="mt-1 text-xs leading-tight text-muted">Personalizado</dd>
-                        </div>
-                        <div>
-                            <dt class="sr-only">Expediente</dt>
-                            <dd class="font-serif text-title-3 text-sage-600 sm:text-title-2">Digital</dd>
-                            <dd class="mt-1 text-xs leading-tight text-muted">Expediente seguro</dd>
-                        </div>
-                        <div>
-                            <dt class="sr-only">Trato</dt>
-                            <dd class="font-serif text-title-3 text-brand-600 sm:text-title-2">Humana</dd>
-                            <dd class="mt-1 text-xs leading-tight text-muted">Atención cercana</dd>
-                        </div>
-                    </dl>
                 </div>
 
-                <!-- Fotografía principal -->
-                <div class="lg:col-span-6">
-                    <figure class="relative mx-auto max-w-md lg:max-w-none">
-                        <div class="relative aspect-[4/5] overflow-hidden rounded-[2.25rem] bg-shell shadow-lift sm:aspect-[5/6] lg:rounded-[2.75rem]">
-                            <img src="{{ asset('images/5.jpg') }}" alt="Sonrisa Radiante Dentissa" class="h-full w-full object-cover" fetchpriority="high">
-                            <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/55 via-transparent to-transparent"></div>
-
-                            <span class="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full bg-white/95 py-1 pl-1 pr-3 text-xs font-semibold text-brand-700 shadow-xs backdrop-blur sm:left-5 sm:top-5">
-                                <img src="{{ asset('images/9.jpg') }}" class="h-6 w-6 rounded-full" alt="">
-                                Dra. Melissa López N.
-                            </span>
-                        </div>
-
-                        <figcaption class="absolute -bottom-6 left-4 right-4 rounded-3xl border border-white/70 bg-white/95 p-4 shadow-lift backdrop-blur sm:left-6 sm:right-auto sm:max-w-xs lg:-left-8">
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sage-700">
-                                <span class="h-1.5 w-1.5 rounded-full bg-sage-500" aria-hidden="true"></span>
-                                Agenda en línea
-                            </span>
-                            <p class="mt-1.5 font-serif text-title-3 text-ink">Estética & Salud Dental Integral</p>
-                            <p class="mt-1 text-footnote text-muted">Diagnóstico claro y tratamientos conservadores desde tu primera consulta.</p>
-                        </figcaption>
-                    </figure>
+                <div class="hero-entra mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 [animation-delay:150ms]">
+                    <a href="{{ route('citas.publica.create') }}" class="btn-brand group px-7 py-3.5 text-callout">
+                        <span>Agendar mi valoración</span>
+                        <span class="transition-transform duration-200 ease-out group-hover:translate-x-0.5">{!! $iconoFlecha !!}</span>
+                    </a>
+                    <a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-11 flex-col justify-center rounded-lg text-footnote text-muted transition-colors hover:text-brand-700">
+                        ¿Prefieres llamar?
+                        <span class="text-callout font-semibold tabular-nums text-ink">{{ $contacto['telefono'] }}</span>
+                    </a>
                 </div>
+
+                @if ($estadoConsultorio)
+                    <p class="hero-entra mt-7 inline-flex items-center gap-2 text-sm text-ink-soft [animation-delay:200ms]">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full {{ $estadoConsultorio['abierto'] ? 'bg-sage-500' : 'bg-field' }}" aria-hidden="true"></span>
+                        {{ $estadoConsultorio['texto'] }}
+                    </p>
+                @endif
             </div>
         </section>
 
