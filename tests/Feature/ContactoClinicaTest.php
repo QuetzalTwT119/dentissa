@@ -61,7 +61,9 @@ class ContactoClinicaTest extends TestCase
             'id_paciente' => $paciente->id,
             'id_servicio' => $servicio->id,
             'id_tratamiento' => $tratamiento->id,
-            'fecha_hora' => now()->subDay(),
+            // Ya pasó (no admite cambios), pero su enlace sigue vigente: caduca un día
+            // después de la cita. Con subDay() caducaba en el mismo segundo de la prueba.
+            'fecha_hora' => now()->subHours(2),
             'duracion_estimada' => 60,
             'estado' => EstadoCita::Confirmada,
         ]);
