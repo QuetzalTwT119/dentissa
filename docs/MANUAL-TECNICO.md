@@ -510,16 +510,40 @@ cuenta solo consulta y marca sus propios avisos. La bandeja está protegida por
 `auth` y `role:admin,asistente`; filtra por estado conservando el usuario
 propietario y pagina los resultados. Las transiciones de lectura verifican
 también que el aviso pertenezca a la cuenta autenticada. Su contador se muestra
-en navegación de escritorio y móvil. La campana ofrece una vista previa de hasta
-cinco avisos pendientes de la propia cuenta, y las nuevas notificaciones se
-insertan en esa lista en vivo. Una falla al persistir una notificación no
+en navegación de escritorio y móvil. Una falla al persistir una notificación no
 revierte la cita y queda registrada en el log de aplicación.
+
+**Panel de la campana "Por atender" con avatares.** El panel separa dos
+secciones: **Por atender** (eventos de `NotificacionSistema::EVENTOS_PRIORITARIOS`
+—cancelación, cancelación del paciente, petición de reagendar, inasistencia y
+respaldo fallido— sin `atendida_en`) y **Informativas** (lo demás, plegado en un
+`<details>` que se abre solo cuando no hay pendientes). Cada sección muestra
+hasta cinco avisos (scopes `porAtender()` e `informativas()`).
+
+- `NotificacionInternaService::cambioCita` guarda `id_cita` (FK nula,
+  `nullOnDelete`), así el aviso conoce al paciente. La figura es un avatar con
+  sus iniciales; el tono (`tonoAvatar()`, 6 tonos) se deriva del nombre con
+  `crc32` para que el mismo paciente tenga siempre el mismo color. Una insignia
+  en la esquina indica qué pasó (`insignia()`); los avisos sin persona (respaldo)
+  usan un marco punteado.
+- Los avisos por atender ofrecen **Ver en la agenda** (`/citas?fecha=` del día de
+  la cita), **Llamar** (`tel:` con el teléfono del paciente) y **Ya lo atendí**
+  (`PATCH notificaciones.atendida`, que marca `atendida_en`, `leida_en` y
+  `vista_en` y responde 422 para avisos informativos y 404 para ajenos).
+- El aviso se dibuja en un solo parcial, `notificaciones/partials/aviso-panel`.
+  `NotificacionSistema::datosEnVivo()` incluye ese HTML (`html`) y la sección
+  (`por_atender`) tanto en el evento de Reverb como en el sondeo, y el navegador
+  lo inserta con un `<template>`: la carga inicial y la llegada en vivo se ven
+  idénticas sin duplicar marcado en JavaScript.
+- Las clases `avatar-tono-N` y `aviso-tono-*` se escriben fuera de `@layer` en
+  `app.css`: se arman en PHP y Tailwind eliminaría las que no ve escritas.
 
 `NotificacionSistemaCreada` transmite cada aviso inmediatamente mediante
 Laravel Reverb y Echo, por el canal privado `users.{id}`. La autorización del
 canal exige que la sesión pertenezca a la misma cuenta activa de admin o
-asistente; el evento solo transmite título, mensaje, vínculo y contador, nunca
-datos clínicos. Además del WebSocket, el navegador consulta
+asistente; el evento transmite título, mensaje, vínculo, contador y el
+fragmento del panel (nombre y teléfono del paciente para el avatar y el botón
+**Llamar**, que el personal ya puede ver en la agenda), nunca datos clínicos. Además del WebSocket, el navegador consulta
 `notificaciones.actualizaciones` cada 3 segundos: así un fallo de suscripción,
 una reconexión o un reinicio de Reverb no puede ocultar avisos nuevos. El
 endpoint filtra por la cuenta autenticada y no almacena la respuesta en caché.

@@ -2,7 +2,10 @@
 $usuario = auth()->user();
 $esAdmin = $usuario->rol === \App\Enums\RolUsuario::Admin;
 $notificacionesNuevas = $usuario->notificacionesSistema()->whereNull('vista_en')->count();
-$notificacionesRecientes = $usuario->notificacionesSistema()->latest('id')->limit(5)->get();
+// Panel de la campana: primero lo que pide una acción, luego lo informativo.
+$avisosPorAtender = $usuario->notificacionesSistema()->porAtender()->with('cita.paciente')->latest('id')->limit(5)->get();
+$totalPorAtender = $avisosPorAtender->count() < 5 ? $avisosPorAtender->count() : $usuario->notificacionesSistema()->porAtender()->count();
+$avisosInformativos = $usuario->notificacionesSistema()->informativas()->with('cita.paciente')->latest('id')->limit(5)->get();
 $clasesEnlace = 'inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-ink-soft transition-colors duration-150 hover:bg-white hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300';
 $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-50 px-4 text-sm font-semibold text-brand-700 ring-1 ring-inset ring-brand-200/70 transition-colors duration-150 hover:bg-brand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400';
 @endphp
@@ -106,12 +109,37 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 <div><h2 class="text-title-3 text-ink">Notificaciones recientes</h2><p class="mt-0.5 text-xs text-muted"><span data-notification-count-summary>{{ $notificacionesNuevas }}</span> nuevas</p></div>
                 <button type="button" @click="notificationsOpen = false" class="inline-flex h-11 w-11 items-center justify-center rounded-full text-muted transition hover:bg-white hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" aria-label="Cerrar notificaciones"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 0 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 0 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" /></svg></button>
             </header>
-            <div data-notification-preview-list class="max-h-[min(60dvh,26rem)] overscroll-contain divide-y divide-line/60 overflow-y-auto">
-                @forelse ($notificacionesRecientes as $notificacion)
-                    <a data-notification-preview="{{ $notificacion->id }}" data-notification-read-url="{{ route('notificaciones.leida', $notificacion, false) }}" href="{{ $notificacion->url ?: route('citas.index', [], false) }}" @click="notificationsOpen = false" class="flex gap-3 px-4 py-3.5 transition hover:bg-cream focus:bg-cream focus:outline-none"><span data-notification-preview-dot class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full {{ $notificacion->leida_en ? 'bg-line' : 'bg-brand-600 ring-4 ring-brand-100' }}" aria-label="{{ $notificacion->leida_en ? 'Notificación leída' : 'Notificación nueva' }}"></span><span class="min-w-0 flex-1"><span class="flex items-start justify-between gap-3"><span data-notification-preview-title class="notification-preview-title text-sm font-semibold text-ink">{{ $notificacion->titulo }}</span><time class="shrink-0 text-xs text-muted" datetime="{{ $notificacion->created_at->toIso8601String() }}">{{ $notificacion->created_at->diffForHumans() }}</time></span><span data-notification-preview-message class="notification-preview-message mt-1 text-sm leading-5 text-ink-soft">{{ $notificacion->mensaje }}</span></span></a>
-                @empty
-                    <p data-notification-preview-empty class="px-4 py-8 text-center text-sm text-muted">No hay notificaciones recientes.</p>
-                @endforelse
+            <div class="max-h-[min(65dvh,30rem)] overflow-y-auto overscroll-contain">
+                {{-- Por atender: avisos que piden una acción; "Ya lo atendí" los pasa a informativas. --}}
+                <div data-notification-tasks>
+                    <p class="flex items-center justify-between px-4 pb-1.5 pt-3 text-caption font-semibold uppercase tracking-label text-amber-800">
+                        Por atender
+                        <span class="text-xs font-medium normal-case tracking-normal text-muted" data-notification-tasks-count>{{ $totalPorAtender ? $totalPorAtender.' '.($totalPorAtender === 1 ? 'pendiente' : 'pendientes') : '' }}</span>
+                    </p>
+                    <div data-notification-tasks-list>
+                        @foreach ($avisosPorAtender as $notificacion)
+                            @include('notificaciones.partials.aviso-panel', ['notificacion' => $notificacion])
+                        @endforeach
+                    </div>
+                    <p data-notification-tasks-empty @class(['mx-3 mb-3 flex items-center gap-2 rounded-2xl bg-sage-50 px-3.5 py-3 text-sm font-medium text-sage-700', 'hidden' => $avisosPorAtender->isNotEmpty()])>
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 12.5l4 4 9-9"/></svg>
+                        No hay nada pendiente.
+                    </p>
+                </div>
+
+                <details class="group border-t border-line/70" @if ($avisosPorAtender->isEmpty()) open @endif>
+                    <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between px-4 text-sm font-semibold text-ink-soft hover:text-ink [&::-webkit-details-marker]:hidden">
+                        Informativas
+                        <svg class="h-4 w-4 transition-transform duration-200 ease-out group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 011.06 0L10 10.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 8.28a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+                    </summary>
+                    <div data-notification-preview-list class="divide-y divide-line/60">
+                        @forelse ($avisosInformativos as $notificacion)
+                            @include('notificaciones.partials.aviso-panel', ['notificacion' => $notificacion])
+                        @empty
+                            <p data-notification-preview-empty class="px-4 py-6 text-center text-sm text-muted">No hay notificaciones recientes.</p>
+                        @endforelse
+                    </div>
+                </details>
             </div>
             <footer class="border-t border-line/70 bg-cream px-4 py-3 text-center"><a href="{{ route('notificaciones.index') }}" class="text-sm font-semibold text-brand-700 hover:text-brand-800 transition" @click="notificationsOpen = false">Ver todas las notificaciones</a></footer>
         </section>

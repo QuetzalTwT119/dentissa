@@ -76,6 +76,7 @@ class NotificacionInternaService
             foreach ($destinatarios as $userId) {
                 $notificacion = NotificacionSistema::create([
                     'user_id' => $userId,
+                    'id_cita' => $cita->id,
                     'evento' => $evento,
                     'titulo' => $titulo,
                     'mensaje' => "{$prefijo} {$fecha}.",

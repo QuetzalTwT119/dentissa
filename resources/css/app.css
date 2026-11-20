@@ -851,3 +851,48 @@ html::-webkit-scrollbar {
         animation: fade-in 150ms ease backwards;
     }
 }
+
+/*
+ * Panel de notificaciones: avatar del paciente con insignia de lo que pasó.
+ * El tono del avatar se deriva del nombre (NotificacionSistema::tonoAvatar),
+ * así el mismo paciente tiene siempre el mismo color.
+ */
+@layer components {
+    .aviso-avatar {
+        @apply relative grid h-[2.625rem] w-[2.625rem] shrink-0 place-items-center rounded-full text-sm font-semibold tracking-wide;
+    }
+
+    .aviso-insignia {
+        @apply absolute -bottom-1 -right-1 grid h-5 w-5 place-items-center rounded-full;
+        box-shadow: 0 0 0 2px #fff;
+    }
+
+    [data-notification-task] .aviso-insignia {
+        box-shadow: 0 0 0 2px #fffbeb;
+    }
+
+    .aviso-sistema {
+        @apply grid h-[2.625rem] w-[2.625rem] shrink-0 place-items-center rounded-[0.8rem] border-[1.5px] border-dashed border-current;
+    }
+
+    .aviso-leido .aviso-avatar,
+    .aviso-leido .aviso-sistema {
+        opacity: 0.7;
+    }
+}
+
+/*
+ * Tonos del avatar y de la insignia. Van fuera de @layer porque la clase se arma
+ * en PHP ("avatar-tono-".$n) y Tailwind descartaría las que no ve escritas.
+ */
+.avatar-tono-0 { background: #f6c2d1; color: #a12a54; }
+.avatar-tono-1 { background: #cfe6da; color: #335f4e; }
+.avatar-tono-2 { background: #fde4c8; color: #92400e; }
+.avatar-tono-3 { background: #dbe7f6; color: #1e4f86; }
+.avatar-tono-4 { background: #e9dcf3; color: #5d3a7e; }
+.avatar-tono-5 { background: #f9d7cf; color: #9a3b28; }
+.aviso-tono-nueva { background: #fdf1f4; color: #a12a54; }
+.aviso-tono-ok { background: #eef6f1; color: #335f4e; }
+.aviso-tono-alerta { background: #fffbeb; color: #92400e; }
+.aviso-tono-baja { background: #fff1f2; color: #be123c; }
+.aviso-tono-sistema { background: #f6eee9; color: #5c4e52; }
