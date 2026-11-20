@@ -16,7 +16,7 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-2xl space-y-6 px-4 sm:px-6 lg:px-8">
             <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <form method="POST" action="{{ route('admin.casos.update', $caso) }}" class="space-y-6">
+                <form method="POST" action="{{ route('admin.casos.update', $caso) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del caso?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="space-y-6">
                     @csrf
                     @method('put')
 

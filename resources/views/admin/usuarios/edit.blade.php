@@ -16,7 +16,7 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
             <x-admin.card class="p-6 sm:p-8">
-                <form method="POST" action="{{ route('admin.usuarios.update', $usuario) }}" class="space-y-6">
+                <form method="POST" action="{{ route('admin.usuarios.update', $usuario) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del usuario?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="space-y-6">
                     @csrf
                     @method('put')
 

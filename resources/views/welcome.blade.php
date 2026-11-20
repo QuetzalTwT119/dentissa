@@ -89,11 +89,6 @@
             ['Puntualidad en tu agenda:', 'Bloqueo dinámico de horarios para evitar esperas innecesarias en sala de recepción.'],
         ];
 
-        $testimoniosPendientes = [
-            ['MC', 'Información por confirmar'],
-            ['RG', 'Blanqueamiento Dental'],
-            ['SV', 'Información por confirmar'],
-        ];
     @endphp
 
     <!-- ============ Navegación ============ -->
@@ -444,39 +439,11 @@
             </div>
         </section>
 
-        <!-- ============ Testimonios ============ -->
-        <section id="testimonios" class="border-y border-line/80 bg-peach-50/60">
-            <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-                <div class="mx-auto max-w-2xl text-center">
-                    <p class="eyebrow justify-center">Experiencias de pacientes</p>
-                    <h2 class="mt-4 text-title-1 text-ink">
-                        Sonrisas que hablan por nosotros
-                    </h2>
-                    <p class="mt-4 text-callout text-muted">
-                        Las opiniones se publican únicamente cuando cuentan con autorización de la clínica y de la persona titular.
-                    </p>
-                </div>
+        <!-- ============ Promociones (solo si hay vigentes) ============ -->
+        @include('partials.portada-promociones')
 
-                <div class="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
-                    @foreach ($testimoniosPendientes as [$iniciales, $detalle])
-                        <figure class="card-boutique flex h-full flex-col p-6 sm:p-7">
-                            <svg class="h-7 w-7 text-peach-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.6 6C6.5 7.3 4.5 10 4.5 13.4V18h6v-6H7.6c.2-1.9 1.4-3.4 3.2-4.2L9.6 6Zm9 0c-3.1 1.3-5.1 4-5.1 7.4V18h6v-6h-2.9c.2-1.9 1.4-3.4 3.2-4.2L18.6 6Z"/></svg>
-                            <div class="mt-3 flex text-sm tracking-label text-amber-400" aria-label="5 estrellas">★★★★★</div>
-                            <blockquote class="mt-3 flex-1 font-serif text-title-3 italic text-ink">
-                                “Testimonio pendiente de autorización para publicación.”
-                            </blockquote>
-                            <figcaption class="mt-6 flex items-center gap-3 border-t border-line/80 pt-5">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold text-brand-800" aria-hidden="true">{{ $iniciales }}</span>
-                                <span class="min-w-0">
-                                    <span class="block truncate text-sm font-semibold text-ink">Testimonio pendiente</span>
-                                    <span class="block truncate text-xs text-muted">{{ $detalle }}</span>
-                                </span>
-                            </figcaption>
-                        </figure>
-                    @endforeach
-                </div>
-            </div>
-        </section>
+        <!-- ============ Testimonios ============ -->
+        @include('partials.portada-testimonios')
 
         <!-- ============ Llamada a agendar ============ -->
         <section id="agendar" class="px-4 py-20 sm:px-6 lg:px-8 lg:py-24">

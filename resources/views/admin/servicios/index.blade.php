@@ -39,12 +39,13 @@
                                 $posicion = $servicios->firstItem() + $loop->index;
                                 $esPrimero = $posicion === 1;
                                 $esUltimo = $posicion === $servicios->total();
-                                $claseFlecha = 'inline-flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-white text-ink-soft transition hover:border-peach-300 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-line disabled:hover:text-ink-soft lg:h-9 lg:w-9';
+                                $claseFlecha = 'grid h-11 w-11 place-items-center rounded-full text-muted transition-colors duration-150 hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 disabled:cursor-default disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-muted lg:h-8 lg:w-8';
                             @endphp
                             {{-- Las flechas intercambian el servicio con su vecino (ServicioController@mover). --}}
                             <td class="px-6 py-4 whitespace-nowrap" data-posicion-servicio="{{ $posicion }}">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="w-6 text-sm font-semibold text-ink-soft tabular-nums">{{ $posicion }}</span>
+                                <div class="flex items-center gap-3">
+                                    <span class="grid h-7 w-7 place-items-center rounded-full bg-brand-50 text-xs font-semibold tabular-nums text-brand-700">{{ $posicion }}</span>
+                                    <div class="inline-flex items-center rounded-full border border-line bg-white p-0.5 shadow-2xs">
                                     <form method="POST" action="{{ route('admin.servicios.mover', [$servicio, 'arriba']) }}">
                                         @csrf
                                         @method('patch')
@@ -53,6 +54,7 @@
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
                                         </button>
                                     </form>
+                                    <span class="h-4 w-px bg-line" aria-hidden="true"></span>
                                     <form method="POST" action="{{ route('admin.servicios.mover', [$servicio, 'abajo']) }}">
                                         @csrf
                                         @method('patch')
@@ -61,6 +63,7 @@
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                                         </button>
                                     </form>
+                                    </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">

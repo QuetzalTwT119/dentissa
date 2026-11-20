@@ -36,7 +36,7 @@
     </x-slot>
 
     <div class="pb-8 pt-4">
-        <form id="form-servicio" method="POST" action="{{ route('admin.servicios.update', $servicio) }}" enctype="multipart/form-data"
+        <form id="form-servicio" method="POST" action="{{ route('admin.servicios.update', $servicio) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del servicio?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" enctype="multipart/form-data"
               x-data="{ vistaPrevia: null, nombreArchivo: '', seleccionados: {{ $asignadosActuales->count() }}, nombre: @js(old('nombre', $servicio->nombre)), descripcion: @js((string) old('descripcion', $servicio->descripcion)), predeterminada: @js((string) $descripcionPredeterminada) }"
               class="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:px-8">
             @csrf
@@ -54,7 +54,7 @@
 
                         {{-- Interruptor: ocupa la esquina en lugar de un renglón entero. --}}
                         <label for="activo" class="inline-flex min-h-11 cursor-pointer items-center gap-3 rounded-full border border-line bg-cream/40 py-1.5 pl-4 pr-2">
-                            <span class="text-sm font-medium text-ink">Visible en la portada</span>
+                            <span class="text-sm font-medium text-ink" title="Disponible: aparece en la portada, en la agenda en línea, al crear citas en el panel, en el asistente y en el bot de Telegram. Apagado: se oculta en todos esos lugares.">Disponible para agendar</span>
                             <input type="hidden" name="activo" value="0">
                             <input id="activo" name="activo" type="checkbox" value="1" role="switch" class="peer sr-only" @checked(old('activo', $servicio->activo))>
                             <span aria-hidden="true" class="relative h-6 w-11 rounded-full bg-line transition-colors duration-200 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-sm after:transition-transform after:duration-200 after:ease-out peer-checked:bg-sage-600 peer-checked:after:translate-x-5 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-300 motion-reduce:after:transition-none"></span>
@@ -95,7 +95,15 @@
                                 <x-checkbox id="tratamiento-{{ $tratamiento->id }}" name="tratamiento_ids[]" value="{{ $tratamiento->id }}"
                                             :checked="$asignadosActuales->contains($tratamiento->id)"
                                             x-on:change="seleccionados += $event.target.checked ? 1 : -1" />
-                                <span class="min-w-0 text-sm font-medium text-ink">{{ $tratamiento->nombre }}</span>
+                                <span class="min-w-0 text-sm font-medium text-ink">
+                                    {{ $tratamiento->nombre }}
+                                    {{-- Puede estar en varios servicios: se avisa sin saturar (un nombre + contador). --}}
+                                    @if ($tratamiento->servicios->isNotEmpty())
+                                        <span class="block text-xs font-normal text-muted" data-tambien-en title="También en: {{ $tratamiento->servicios->pluck('nombre')->implode(', ') }}">
+                                            También en {{ $tratamiento->servicios->first()->nombre }}@if ($tratamiento->servicios->count() > 1) +{{ $tratamiento->servicios->count() - 1 }}@endif
+                                        </span>
+                                    @endif
+                                </span>
                             </label>
                         @empty
                             <p class="col-span-full text-sm text-muted">Todavía no hay tratamientos activos. Créalos en Catálogo → Tratamientos.</p>

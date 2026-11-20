@@ -24,6 +24,7 @@ use App\Http\Controllers\DosPasosController;
 use App\Http\Controllers\GaleriaController;
 use App\Http\Controllers\HistorialImagenController;
 use App\Http\Controllers\MensajeContactoController;
+use App\Http\Controllers\TestimonioPublicoController;
 use App\Http\Controllers\NotificacionSistemaController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\ProfileController;
@@ -41,6 +42,8 @@ use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 
 Route::post('/contacto', [MensajeContactoController::class, 'store'])->name('contacto.store');
+// Testimonio del paciente: entra pendiente; máximo 5 envíos por hora por visitante.
+Route::post('/testimonios', [TestimonioPublicoController::class, 'store'])->middleware('throttle:5,60')->name('testimonios.publico.store');
 
 Route::get('/version', function () {
     $railwayCommit = env('RAILWAY_GIT_COMMIT_SHA');

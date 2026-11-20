@@ -19,7 +19,7 @@ $diaLabel = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 =
                     description="Define para cada día si la clínica atiende, el horario y cuántas citas pueden coincidir al mismo tiempo."
                 />
 
-                <form method="POST" action="{{ route('admin.horarios.update') }}">
+                <form method="POST" action="{{ route('admin.horarios.update') }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los horarios?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal">
                     @csrf
                     @method('put')
 

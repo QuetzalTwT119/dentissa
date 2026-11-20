@@ -66,7 +66,7 @@ class ServicioEdicionTest extends TestCase
                 'tratamientos_enviados' => '1',
                 'tratamiento_ids' => [$valoracion->id, $limpieza->id],
             ])
-            ->assertRedirect(route('admin.servicios.edit', $servicio))
+            ->assertRedirect(route('admin.servicios.index'))
             ->assertSessionHas('success');
 
         $servicio->refresh();
@@ -93,7 +93,7 @@ class ServicioEdicionTest extends TestCase
                 'activo' => '0',
                 'tratamientos_enviados' => '1',
             ])
-            ->assertRedirect(route('admin.servicios.edit', $servicio));
+            ->assertRedirect(route('admin.servicios.index'));
 
         $this->assertFalse($servicio->fresh()->activo);
         $this->assertSame(0, $servicio->tratamientos()->count());
@@ -147,6 +147,26 @@ class ServicioEdicionTest extends TestCase
             ->get(route('admin.servicios.edit', $servicio))
             ->assertSee('Selladores de Fisuras')
             ->assertSee('seleccionados: 2', false);
+    }
+
+    public function test_avisa_si_un_tratamiento_tambien_esta_en_otros_servicios_sin_saturar(): void
+    {
+        $general = Servicio::create(['nombre' => 'Odontología General', 'orden' => 1, 'activo' => true]);
+        $ortodoncia = Servicio::create(['nombre' => 'Ortodoncia', 'orden' => 2, 'activo' => true]);
+        $periodoncia = Servicio::create(['nombre' => 'Periodoncia', 'orden' => 3, 'activo' => true]);
+        $valoracion = Tratamiento::create(['nombre' => 'Valoración', 'duracion_estimada' => 30, 'activo' => true]);
+        Tratamiento::create(['nombre' => 'Retiro de Caries', 'duracion_estimada' => 60, 'activo' => true]);
+        foreach ([$general, $ortodoncia, $periodoncia] as $i => $servicio) {
+            $servicio->tratamientos()->attach($valoracion->id, ['orden' => $i + 1]);
+        }
+
+        $html = $this->actingAs($this->admin)->get(route('admin.servicios.edit', $general))->assertOk()->getContent();
+
+        // Un nombre + contador; la lista completa en el title. No se menciona el propio servicio.
+        $this->assertStringContainsString('También en Ortodoncia +1', $html);
+        $this->assertStringContainsString('title="También en: Ortodoncia, Periodoncia"', $html);
+        // Un tratamiento que no está en otro servicio no lleva nota.
+        $this->assertSame(1, substr_count($html, 'data-tambien-en'));
     }
 
     public function test_la_ruta_anterior_de_tratamientos_sigue_funcionando(): void

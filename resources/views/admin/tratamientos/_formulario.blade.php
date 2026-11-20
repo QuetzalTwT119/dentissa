@@ -24,6 +24,9 @@
 
 <div class="pb-8 pt-4">
     <form id="form-tratamiento" method="POST" action="{{ $accion }}"
+          data-confirmar="{{ $editando ? 'Los cambios se aplicarán de inmediato.' : 'Se guardará y quedará disponible en el panel.' }}"
+          data-confirmar-titulo="{{ $editando ? '¿Guardar los cambios del tratamiento?' : '¿Crear el tratamiento?' }}"
+          data-confirmar-boton="{{ $editando ? 'Sí, guardar' : 'Sí, crear' }}" data-confirmar-tono="normal"
           x-data="{
               nombre: @js((string) $valor('nombre', '')),
               duracion: @js((string) $valor('duracion_estimada', '')),
@@ -72,15 +75,17 @@
             {{-- Así lo verá el paciente en la agenda en línea (se actualiza al escribir). --}}
             <section class="rounded-3xl border border-line bg-white p-5 shadow-soft" aria-labelledby="titulo-vista-previa" data-vista-previa-tratamiento>
                 <h2 id="titulo-vista-previa" class="text-headline font-semibold text-ink">Así lo verá el paciente</h2>
-                <div class="mt-4 flex items-start justify-between gap-3 rounded-2xl border-2 border-brand-600 bg-brand-50/50 p-4" aria-hidden="true">
-                    <span class="flex min-w-0 items-start gap-3">
-                        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-brand-600 bg-brand-600"><span class="h-1.5 w-1.5 rounded-full bg-white"></span></span>
-                        <span class="min-w-0">
-                            <span class="block break-words text-callout font-semibold text-ink" x-text="nombre.trim() || 'Nombre del tratamiento'">{{ $valor('nombre') ?: 'Nombre del tratamiento' }}</span>
-                            <span class="mt-0.5 block text-footnote text-muted" x-text="duracionTexto"></span>
+                {{-- Columna angosta: se muestra como en celular, con el nombre a todo lo ancho. --}}
+                <div class="mt-4 flex items-start gap-3 rounded-2xl border-2 border-brand-600 bg-brand-50/50 p-4" aria-hidden="true">
+                    <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-brand-600 bg-brand-600"><span class="h-1.5 w-1.5 rounded-full bg-white"></span></span>
+                    <span class="min-w-0 flex-1">
+                        <span class="block text-callout font-semibold text-ink [overflow-wrap:anywhere]" x-text="nombre.trim() || 'Nombre del tratamiento'">{{ $valor('nombre') ?: 'Nombre del tratamiento' }}</span>
+                        <span class="mt-0.5 block text-footnote">
+                            <span class="text-muted" x-text="duracionTexto"></span>
+                            <span class="text-muted" aria-hidden="true"> · </span>
+                            <span class="font-semibold" :class="Number(precio) > 0 ? 'text-ink' : 'text-rose-700'" x-text="precioTexto"></span>
                         </span>
                     </span>
-                    <span class="shrink-0 text-callout font-semibold" :class="Number(precio) > 0 ? 'text-ink' : 'text-rose-700'" x-text="precioTexto"></span>
                 </div>
                 @if ($servicios->isNotEmpty())
                     <p class="mt-3 text-xs text-muted">

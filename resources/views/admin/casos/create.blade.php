@@ -20,7 +20,7 @@
                     Después de guardar podrás subir las fotos de antes/después desde la pantalla de edición.
                 </p>
 
-                <form method="POST" action="{{ route('admin.casos.store') }}" class="mt-6 space-y-6">
+                <form method="POST" action="{{ route('admin.casos.store') }}" data-confirmar="Se guardará y quedará disponible en el panel." data-confirmar-titulo="¿Crear el caso?" data-confirmar-boton="Sí, crear" data-confirmar-tono="normal" class="mt-6 space-y-6">
                     @csrf
 
                     <x-form-obligatorios />

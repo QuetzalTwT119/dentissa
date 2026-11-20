@@ -39,7 +39,7 @@
                     },
                  }"
             >
-                <form method="POST" action="{{ route('citas.store') }}" class="space-y-6">
+                <form method="POST" action="{{ route('citas.store') }}" data-confirmar="Se guardará y quedará disponible en el panel." data-confirmar-titulo="¿Crear la cita?" data-confirmar-boton="Sí, crear" data-confirmar-tono="normal" class="space-y-6">
                     @csrf
 
                     <x-form-obligatorios />

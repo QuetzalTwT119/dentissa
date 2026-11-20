@@ -5,7 +5,8 @@
 ])
 
 <tr>
-    <td colspan="{{ $colspan }}" class="px-6 py-14 text-center">
+    {{-- colspan="100" abarca todas las columnas sin importar cuántas tenga la tabla (antes las listas pasaban "cols" y se ignoraba: el mensaje quedaba descentrado). --}}
+    <td colspan="100" class="px-6 py-14 text-center">
         <div class="mx-auto max-w-sm">
             <div class="mx-auto flex h-12 w-12 items-center justify-center mb-4 rounded-2xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200">
                 @if (isset($icon))

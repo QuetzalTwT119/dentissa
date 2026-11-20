@@ -386,6 +386,15 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 - Si falta un dato obligatorio (marcado con \*) o tiene un formato incorrecto,
   el mensaje aparece en rojo **debajo del campo** y el cursor salta al primero.
 
+## 3.2 Promociones y testimonios en la portada
+
+- Las **ofertas activas** dentro de sus fechas aparecen en la portada en
+  **Promociones** (descuento, tratamiento, vigencia y lugares que quedan).
+- **Testimonios:** el paciente escribe el suyo en la portada (**Comparte tu
+  experiencia**) con el teléfono o correo con el que agendó. Llega como
+  **pendiente**, la campana avisa al personal y, al **aprobarlo** en Contenido →
+  Testimonios, se publica con su nombre y la inicial de su apellido.
+
 ## 4. Asistente de agenda
 
 En `/asistente-agenda`, el personal selecciona los datos de la cita. El

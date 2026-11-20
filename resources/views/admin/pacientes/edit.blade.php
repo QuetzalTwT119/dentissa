@@ -35,7 +35,7 @@
                     Actualiza los datos de contacto y, si hace falta, los identificadores oficiales o la relación familiar.
                 </p>
 
-                <form method="POST" action="{{ route('admin.pacientes.update', $paciente) }}" class="mt-6 space-y-6">
+                <form method="POST" action="{{ route('admin.pacientes.update', $paciente) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los datos del paciente?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="mt-6 space-y-6">
                     @csrf
                     @method('put')
 

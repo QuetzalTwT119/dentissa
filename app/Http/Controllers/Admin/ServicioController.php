@@ -56,7 +56,11 @@ class ServicioController extends Controller
             'servicio' => $servicio,
             // Solo lo que se puede agendar. Los inactivos se administran en
             // Catálogo → Tratamientos; su vínculo se conserva (ver sincronizarTratamientos).
-            'tratamientos' => Tratamiento::where('activo', true)->orderBy('nombre')->get(['id', 'nombre']),
+            'tratamientos' => Tratamiento::where('activo', true)
+                ->with(['servicios' => fn ($q) => $q->select('servicios.id', 'servicios.nombre')
+                    ->where('servicios.id', '!=', $servicio->id)->orderBy('servicios.orden')])
+                ->orderBy('nombre')
+                ->get(['id', 'nombre']),
             'tratamientosAsignados' => $servicio->tratamientos()->where('tratamientos.activo', true)->pluck('tratamientos.id'),
         ]);
     }
@@ -85,7 +89,7 @@ class ServicioController extends Controller
             $this->sincronizarTratamientos($request, $servicio, $auditoria);
         }
 
-        return Redirect::route('admin.servicios.edit', $servicio)->with('success', 'Servicio guardado.');
+        return Redirect::route('admin.servicios.index')->with('success', "Servicio «{$servicio->nombre}» guardado.");
     }
 
     public function syncTratamientos(Request $request, Servicio $servicio, AuditoriaService $auditoria): RedirectResponse

@@ -121,6 +121,34 @@ class ConsistenciaDisenoTest extends TestCase
             ->assertSee('data-confirmar-boton="Sí, eliminar"', false);
     }
 
+    public function test_crear_y_guardar_piden_confirmacion(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $servicio = \App\Models\Servicio::create(['nombre' => 'Odontología General', 'orden' => 1, 'activo' => true]);
+
+        foreach (['admin.servicios.create', 'admin.tratamientos.create', 'admin.ofertas.create', 'admin.usuarios.create', 'citas.create'] as $ruta) {
+            $this->actingAs($admin)->get(route($ruta))->assertOk()->assertSee('data-confirmar-boton="Sí, crear"', false);
+        }
+        $this->actingAs($admin)->get(route('admin.servicios.edit', $servicio))->assertOk()
+            ->assertSee('data-confirmar-titulo="¿Guardar los cambios del servicio?"', false);
+    }
+
+    public function test_galeria_y_casos_se_ocultan_del_menu_sin_borrarse_y_el_vacio_abarca_la_tabla(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        $html = $this->actingAs($admin)->get(route('admin.ofertas.index'))->assertOk()->getContent();
+        $this->assertStringNotContainsString('href="'.route('admin.galeria.index').'"', $html);
+        $this->assertStringNotContainsString('href="'.route('admin.casos.index').'"', $html);
+        // Lista vacía: el mensaje abarca todas las columnas (antes quedaba descentrado).
+        $this->assertStringContainsString('colspan="100"', $html);
+
+        // Las rutas siguen funcionando y se reactivan con la variable.
+        $this->actingAs($admin)->get(route('admin.galeria.index'))->assertOk();
+        config(['dentissa.modulos.galeria' => true]);
+        $this->actingAs($admin)->get(route('admin.ofertas.index'))->assertSee('href="'.route('admin.galeria.index').'"', false);
+    }
+
     public function test_cada_lista_tiene_un_solo_boton_para_crear(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
