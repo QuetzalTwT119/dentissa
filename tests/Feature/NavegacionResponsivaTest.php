@@ -38,15 +38,16 @@ class NavegacionResponsivaTest extends TestCase
             ->assertSee(route('admin.auditoria.index'));
     }
 
-    public function test_la_lista_de_pacientes_permite_recorrer_columnas_en_pantallas_angostas(): void
+    public function test_la_lista_de_pacientes_se_apila_en_pantallas_angostas_sin_desplazarse_de_lado(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
 
+        // Tabla corta del modo "Mixta" (ver TablasMixtasTest).
         $this->actingAs($admin)
             ->get(route('admin.pacientes.index'))
             ->assertOk()
-            ->assertSee('overflow-x-auto', false)
-            ->assertSee('min-w-[760px]', false)
+            ->assertSee('tabla-apilable', false)
+            ->assertDontSee('min-w-[760px]', false)
             ->assertSee('aria-label="Buscar pacientes por nombre, correo o teléfono"', false)
             ->assertSee('sm:w-72', false);
     }

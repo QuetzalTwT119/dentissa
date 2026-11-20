@@ -1559,6 +1559,24 @@ Los colores neutros viven en `resources/css/app.css` como canales RGB
 - **Al agregar un campo nuevo:** súmalo a `attributes` en ese archivo.
 - **Títulos del panel:** `<x-admin.header>` dibuja el título como `h1`, para que
   cada página tenga un solo título principal.
+- **Tablas del panel (`<x-admin.table>`, modo "Mixta"):** elegido en una ronda
+  de prototipos (Tarjetas, Prioridades, Lista y Mixta) con la regla "las
+  tablas cortas nunca se desplazan de lado; las largas, lo mínimo".
+  - **Corta (predeterminada):** clase `.tabla-apilable`. Por debajo de 1024 px
+    cada fila es una tarjeta; desde 1024 px, tabla normal sin ancho mínimo. El
+    componente Alpine `tablaApilable` (`app.js`) copia el título de cada `<th>`
+    a `data-label` de sus celdas, marca la columna "Acciones" y agrega roles
+    ARIA, porque `display: block` quita la semántica de tabla.
+  - **Larga (`:larga="true"`):** usa `$minWidth`, se desplaza de lado dentro
+    de su tarjeta, la primera columna es `position: sticky` y el componente
+    `tablaLarga` muestra "Desliza para ver más columnas" solo si hay desborde
+    (`ResizeObserver`); al desplazarse, la columna fija recibe sombra.
+  - **Cuándo marcar una tabla como larga:** si la suma de los anchos mínimos
+    de sus columnas pasa de unos 800 px. Hoy: Auditoría, Mensajes de contacto,
+    Ofertas y Tratamientos. Una tabla nueva es corta por defecto.
+  - **Requisito para tablas cortas:** la primera columna debe identificar el
+    registro (nombre, título) y la de botones debe titularse "Acciones".
+  - **Pruebas:** `TablasMixtasTest` revisa las 11 pantallas.
 
 ### Pruebas
 
