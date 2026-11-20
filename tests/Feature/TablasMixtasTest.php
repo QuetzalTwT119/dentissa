@@ -24,7 +24,7 @@ class TablasMixtasTest extends TestCase
         'admin.testimonios.index',
         'admin.preguntas-frecuentes.index',
         'admin.casos.index',
-        'admin.horarios.edit',
+        // admin.horarios.edit ya no es tabla: un renglón por día (HorariosAtencionTest).
     ];
 
     /** Columnas que no caben en un celular: se desplazan de lado. */

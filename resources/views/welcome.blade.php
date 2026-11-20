@@ -499,7 +499,11 @@
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Horarios</h3>
                     <ul class="mt-4 space-y-2 text-sm text-white/70">
-                        <li>Horarios por confirmar</li>
+                        @forelse ($horarioSemanal ?? [] as $linea)
+                            <li data-horario-publico>{{ $linea }}</li>
+                        @empty
+                            <li>Consulta disponibilidad al agendar</li>
+                        @endforelse
                         <li class="font-semibold text-peach-200">Atención con previa cita</li>
                     </ul>
                 </div>

@@ -132,6 +132,8 @@ Route::get('/', function () {
     return view('welcome', [
         'canLogin' => Route::has('login'),
         'estadoConsultorio' => HorarioAtencion::estadoActual(),
+        // El pie muestra el horario configurado en Panel › Horarios (antes decía "por confirmar").
+        'horarioSemanal' => HorarioAtencion::lineasSemanales(),
         // Con sus tratamientos activos: la portada dice cuáles se agendan en línea y cuáles por teléfono.
         'servicios' => Servicio::where('activo', true)
             ->with(['tratamientos' => fn ($q) => $q->where('activo', true)->orderBy('servicios_tratamientos.orden')])

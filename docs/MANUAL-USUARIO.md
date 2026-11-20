@@ -103,6 +103,10 @@ paso a paso" y dos formas de contacto:
   "Abierto hoy hasta las 18:00" o "Cerrado ahora · abre el lunes a las 8:00".
   Se calcula con la hora de la clínica a partir de **Horarios**: si el
   administrador cambia el horario, la portada lo refleja sin más pasos.
+  El **pie de página** muestra también el horario de la semana (por ejemplo
+  "Lunes a viernes de 8:00 a 18:00 hrs"); los días cerrados no aparecen.
+  En **Panel › Horarios**, "Citas a la vez" es cuántos pacientes se pueden
+  atender a la misma hora (1 si hay un solo sillón o dentista).
 
 Más abajo, **Tratamientos para tu salud y armonía** muestra las especialidades
 activas en una fila de tarjetas con foto:
