@@ -35,10 +35,11 @@
                     Actualiza los datos de contacto y, si hace falta, los identificadores oficiales o la relación familiar.
                 </p>
 
-                <form method="POST" action="{{ route('admin.pacientes.update', $paciente) }}" class="mt-6 space-y-6">
+                <form method="POST" action="{{ route('admin.pacientes.update', $paciente) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los datos del paciente?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="mt-6 space-y-6">
                     @csrf
                     @method('put')
 
+                    <x-form-obligatorios />
                     <!-- Sección: Datos Personales -->
                     <div class="rounded-xl bg-cream/60 p-4 sm:p-6 border border-line/70 space-y-4">
                         <h4 class="text-xs font-semibold uppercase tracking-label text-muted flex items-center gap-1.5">
@@ -48,14 +49,14 @@
 
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
-                                <x-input-label for="nombre" value="Nombre" />
+                                <x-input-label :required="true" for="nombre" value="Nombre" />
                                 <x-text-input id="nombre" name="nombre" class="mt-1.5 block w-full"
                                               value="{{ old('nombre', $paciente->nombre) }}" required maxlength="100" />
                                 <x-input-error :messages="$errors->get('nombre')" class="mt-2" />
                             </div>
 
                             <div>
-                                <x-input-label for="apellido" value="Apellido" />
+                                <x-input-label :required="true" for="apellido" value="Apellido" />
                                 <x-text-input id="apellido" name="apellido" class="mt-1.5 block w-full"
                                               value="{{ old('apellido', $paciente->apellido) }}" required maxlength="100" />
                                 <x-input-error :messages="$errors->get('apellido')" class="mt-2" />

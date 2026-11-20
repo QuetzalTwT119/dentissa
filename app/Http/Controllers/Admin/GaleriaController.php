@@ -48,11 +48,11 @@ class GaleriaController extends Controller
                 'url' => $request->file('imagen')->store('galeria', 'public'),
                 'tipo' => TipoImagen::Galeria,
                 'orden' => $validated['orden'] ?? 0,
-                'activa' => $validated['activa'] ?? true,
+                'activa' => $request->boolean('activa'),
             ]),
         );
 
-        return Redirect::route('admin.galeria.index');
+        return Redirect::route('admin.galeria.index')->with('success', 'Foto agregada a la galería.');
     }
 
     public function edit(Imagen $imagen): View
@@ -76,7 +76,7 @@ class GaleriaController extends Controller
             'titulo' => $validated['titulo'] ?? null,
             'descripcion' => $validated['descripcion'] ?? null,
             'orden' => $validated['orden'] ?? 0,
-            'activa' => $validated['activa'] ?? true,
+            'activa' => $request->boolean('activa'),
         ];
 
         if ($request->hasFile('imagen')) {
@@ -91,7 +91,7 @@ class GaleriaController extends Controller
             fn () => $imagen->update($data),
         );
 
-        return Redirect::route('admin.galeria.index');
+        return Redirect::route('admin.galeria.index')->with('success', 'Foto de la galería guardada.');
     }
 
     public function destroy(Request $request, Imagen $imagen, AuditoriaService $auditoria): RedirectResponse
@@ -105,6 +105,6 @@ class GaleriaController extends Controller
             eliminado: true,
         );
 
-        return Redirect::route('admin.galeria.index');
+        return Redirect::route('admin.galeria.index')->with('success', 'Foto eliminada de la galería.');
     }
 }

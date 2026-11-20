@@ -9,8 +9,9 @@ use Illuminate\Database\Seeder;
 /**
  * Catálogo real de la clínica, tomado de la libreta de la doctora.
  *
- * Los precios se dejan vacíos a propósito: la clínica no los ha confirmado y
- * mostrar cifras inventadas confundiría al paciente.
+ * Precios de DEMOSTRACIÓN (20/11/2026): sin precio un tratamiento no se publica
+ * y el paciente ve el precio al agendar. La clínica debe confirmarlos o
+ * corregirlos desde el panel antes de recibir pacientes reales.
  */
 class ServiciosTratamientosSeeder extends Seeder
 {
@@ -28,16 +29,16 @@ class ServiciosTratamientosSeeder extends Seeder
             'Odontología General' => [
                 'orden' => 1,
                 'tratamientos' => [
-                    ['nombre' => 'Valoración', 'categoria' => 'Diagnóstico', 'duracion_estimada' => 30],
-                    ['nombre' => 'Limpieza Dental', 'categoria' => 'Preventiva', 'duracion_estimada' => 60],
-                    ['nombre' => 'Retiro de Caries', 'categoria' => 'Restauradora', 'duracion_estimada' => 60],
-                    ['nombre' => 'Extracción Dental', 'categoria' => 'Quirúrgica', 'duracion_estimada' => 60],
+                    ['nombre' => 'Valoración', 'categoria' => 'Diagnóstico', 'duracion_estimada' => 30, 'precio_referencia' => 300],
+                    ['nombre' => 'Limpieza Dental', 'categoria' => 'Preventiva', 'duracion_estimada' => 60, 'precio_referencia' => 600],
+                    ['nombre' => 'Retiro de Caries', 'categoria' => 'Restauradora', 'duracion_estimada' => 60, 'precio_referencia' => 700],
+                    ['nombre' => 'Extracción Dental', 'categoria' => 'Quirúrgica', 'duracion_estimada' => 60, 'precio_referencia' => 900],
                 ],
             ],
             'Odontología Estética' => [
                 'orden' => 2,
                 'tratamientos' => [
-                    ['nombre' => 'Blanqueamiento Dental', 'categoria' => 'Estética', 'duracion_estimada' => 90],
+                    ['nombre' => 'Blanqueamiento Dental', 'categoria' => 'Estética', 'duracion_estimada' => 90, 'precio_referencia' => 3500],
                 ],
             ],
         ];
@@ -52,7 +53,7 @@ class ServiciosTratamientosSeeder extends Seeder
             foreach ($datos['tratamientos'] as $indice => $tratamiento) {
                 $modelo = Tratamiento::updateOrCreate(
                     ['nombre' => $tratamiento['nombre']],
-                    [...$tratamiento, 'precio_referencia' => null, 'activo' => true],
+                    [...$tratamiento, 'activo' => true],
                 );
                 $vinculos[$modelo->id] = ['orden' => $indice + 1];
             }

@@ -54,6 +54,35 @@ class ServiciosPortadaTest extends TestCase
             ->assertDontSee('Más solicitado');
     }
 
+    public function test_con_pocas_especialidades_no_muestra_controles_inutiles_ni_menciona_el_telefono(): void
+    {
+        // Catálogo real de la clínica (ServiciosTratamientosSeeder): 2 especialidades, ambas en línea.
+        $this->servicio('Odontología General', 1, [['Valoración', true]]);
+        $this->servicio('Odontología Estética', 2, [['Blanqueamiento Dental', true]]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('carrusel-pista--pocas', false)
+            ->assertSee('x-show="posiciones > 1"', false)
+            ->assertDontSee('Agenda por teléfono')
+            ->assertDontSee('las demás las agendamos contigo por teléfono');
+    }
+
+    public function test_la_etiqueta_por_telefono_se_lee_sobre_cualquier_foto(): void
+    {
+        $this->servicio('Odontología General', 1, [['Valoración', true]]);
+        $this->servicio('Periodoncia', 2);
+        $this->servicio('Ortodoncia', 3);
+
+        // Antes: texto blanco sobre blanco al 15 % (ilegible en fotos claras).
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('bg-ink/80 text-white', false)
+            ->assertDontSee('bg-white/15 text-white', false)
+            ->assertDontSee('carrusel-pista--pocas', false)
+            ->assertSee('las demás las agendamos contigo por teléfono');
+    }
+
     public function test_usa_la_foto_y_la_descripcion_de_la_clinica_o_las_aprobadas(): void
     {
         $this->servicio('Ortodoncia', 1);

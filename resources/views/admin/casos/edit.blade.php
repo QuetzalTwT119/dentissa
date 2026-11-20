@@ -16,12 +16,13 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-2xl space-y-6 px-4 sm:px-6 lg:px-8">
             <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <form method="POST" action="{{ route('admin.casos.update', $caso) }}" class="space-y-6">
+                <form method="POST" action="{{ route('admin.casos.update', $caso) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del caso?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="space-y-6">
                     @csrf
                     @method('put')
 
+                    <x-form-obligatorios />
                     <div>
-                        <x-input-label for="titulo" value="Título" />
+                        <x-input-label :required="true" for="titulo" value="Título" />
                         <x-text-input id="titulo" name="titulo" class="mt-1.5 block w-full" :value="old('titulo', $caso->titulo)" required />
                         <x-input-error :messages="$errors->get('titulo')" class="mt-2" />
                     </div>
@@ -69,7 +70,7 @@
                         <div class="relative overflow-hidden rounded-xl border border-line shadow-2xs group">
                             <img src="/storage/{{ $imagen->url }}" alt="{{ $imagen->titulo ?? '' }}" class="h-32 w-full object-cover">
                             <form method="POST" action="{{ route('admin.casos.imagenes.destroy', [$caso, $imagen]) }}"
-                                  onsubmit="return confirm('¿Eliminar esta foto?');" class="absolute right-2 top-2">
+                                  data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar esta foto?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro" class="absolute right-2 top-2">
                                 @csrf
                                 @method('delete')
                                 <button type="submit" title="Eliminar foto" aria-label="Eliminar foto"

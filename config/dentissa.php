@@ -8,6 +8,16 @@ $telefonoClinica = env('DENTISSA_TELEFONO') ?: '755 102 0089';
 $digitosTelefono = preg_replace('/\D/', '', (string) $telefonoClinica);
 
 return [
+    /*
+     * Módulos del panel que hoy no se muestran en ninguna página pública
+     * (revisión del 20/11/2026): se OCULTAN del menú, no se borran. Rutas,
+     * datos y pruebas siguen intactos; para reactivarlos basta con la variable.
+     */
+    'modulos' => [
+        'galeria' => (bool) env('DENTISSA_MODULO_GALERIA', false),
+        'casos' => (bool) env('DENTISSA_MODULO_CASOS', false),
+    ],
+
 
     /*
     |--------------------------------------------------------------------------

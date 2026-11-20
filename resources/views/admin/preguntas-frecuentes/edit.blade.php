@@ -16,10 +16,11 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
             <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <form method="POST" action="{{ route('admin.preguntas-frecuentes.update', $pregunta) }}" class="space-y-6">
+                <form method="POST" action="{{ route('admin.preguntas-frecuentes.update', $pregunta) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios de la pregunta?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="space-y-6">
                     @csrf
                     @method('put')
 
+                    <x-form-obligatorios />
                     @include('admin.preguntas-frecuentes._campos')
 
                     <div class="flex items-center gap-4 pt-4 border-t border-line">

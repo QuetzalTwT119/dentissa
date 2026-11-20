@@ -943,6 +943,11 @@ html::-webkit-scrollbar {
     .carrusel-pista {
         grid-auto-columns: calc((100% - 2rem) / 3);
     }
+
+    /* Con 1 o 2 especialidades no hay nada que desplazar: ocupan el ancho en mitades. */
+    .carrusel-pista--pocas {
+        grid-auto-columns: calc((100% - 1rem) / 2);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -998,5 +1003,32 @@ html::-webkit-scrollbar {
 @media (prefers-reduced-motion: reduce) {
     .carrusel-flecha:active {
         transform: translateY(-50%);
+    }
+}
+
+/*
+ * Diálogo de confirmación (components/dialogo-confirmar): fondo velado con la
+ * tinta de la marca y entrada breve. Sin animación si se pide reducir movimiento.
+ */
+.dialogo-confirmar::backdrop {
+    background: rgb(43 34 36 / 0.45);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+}
+
+.dialogo-confirmar[open] {
+    animation: dialogo-entra 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes dialogo-entra {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dialogo-confirmar[open] {
+        animation: none;
     }
 }

@@ -14,16 +14,6 @@ $rolClase = [
             title="Usuarios"
             subtitle="Cuentas de acceso, credenciales y roles para el equipo de Dentissa."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.usuarios.create') }}">
-                    <x-primary-button class="inline-flex items-center gap-2">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Nuevo usuario
-                    </x-primary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
@@ -54,12 +44,17 @@ $rolClase = [
                             </select>
                         </form>
 
-                        <a href="{{ route('admin.usuarios.create') }}" class="hidden sm:inline-block">
-                            <x-secondary-button>Nuevo usuario</x-secondary-button>
-                        </a>
                     </x-slot:actions>
                 </x-admin.card-header>
 
+                <x-pagination-summary :items="$usuarios" label="usuarios">
+                    <x-slot:acciones>
+                        <a href="{{ route('admin.usuarios.create') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-brand transition-[background-color,transform] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
+                            <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
+                            Nuevo usuario
+                        </a>
+                    </x-slot:acciones>
+                </x-pagination-summary>
                 <x-admin.table minWidth="min-w-[760px]">
                     <x-slot:head>
                         <tr>
@@ -97,7 +92,10 @@ $rolClase = [
                                         <x-icon name="edit" />
                                     </a>
                                     <form method="POST" action="{{ route('admin.usuarios.activo.toggle', $usuario) }}"
-                                          onsubmit="return confirm('¿Seguro que quieres {{ $usuario->activo ? 'desactivar' : 'activar' }} a {{ $usuario->nombre }} {{ $usuario->apellido }}?');">
+                                          data-confirmar="{{ $usuario->activo ? 'No podrá iniciar sesión hasta que lo vuelvas a activar.' : 'Podrá volver a iniciar sesión con su contraseña.' }}"
+                                          data-confirmar-titulo="{{ $usuario->activo ? '¿Desactivar' : '¿Activar' }} a {{ $usuario->nombre }} {{ $usuario->apellido }}?"
+                                          data-confirmar-boton="{{ $usuario->activo ? 'Sí, desactivar' : 'Sí, activar' }}"
+                                          data-confirmar-tono="{{ $usuario->activo ? 'peligro' : 'normal' }}">
                                         @csrf
                                         @method('patch')
                                         <button type="submit" title="{{ $usuario->activo ? 'Desactivar' : 'Activar' }}" aria-label="{{ $usuario->activo ? 'Desactivar usuario' : 'Activar usuario' }}"
@@ -117,7 +115,7 @@ $rolClase = [
                     @endforelse
                 </x-admin.table>
 
-                <x-pagination-summary :items="$usuarios" label="usuarios" />
+                <x-pagination-summary :items="$usuarios" label="usuarios" posicion="abajo" />
             </x-admin.card>
         </div>
     </div>

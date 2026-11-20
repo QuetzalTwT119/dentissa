@@ -24,6 +24,7 @@ use App\Http\Controllers\DosPasosController;
 use App\Http\Controllers\GaleriaController;
 use App\Http\Controllers\HistorialImagenController;
 use App\Http\Controllers\MensajeContactoController;
+use App\Http\Controllers\TestimonioPublicoController;
 use App\Http\Controllers\NotificacionSistemaController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\ProfileController;
@@ -41,6 +42,8 @@ use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 
 Route::post('/contacto', [MensajeContactoController::class, 'store'])->name('contacto.store');
+// Testimonio del paciente: entra pendiente; máximo 5 envíos por hora por visitante.
+Route::post('/testimonios', [TestimonioPublicoController::class, 'store'])->middleware('throttle:5,60')->name('testimonios.publico.store');
 
 Route::get('/version', function () {
     $railwayCommit = env('RAILWAY_GIT_COMMIT_SHA');
@@ -133,6 +136,7 @@ Route::get('/', function () {
         'servicios' => Servicio::where('activo', true)
             ->with(['tratamientos' => fn ($q) => $q->where('activo', true)->orderBy('servicios_tratamientos.orden')])
             ->orderBy('orden')
+            ->orderBy('id')
             ->get(),
         'ofertas' => Oferta::with('tratamiento:id,nombre')
             ->where('activa', true)
@@ -215,7 +219,10 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
     Route::patch('servicios/{servicio}/tratamientos', [ServicioController::class, 'syncTratamientos'])->name('servicios.tratamientos.sync');
+    Route::patch('servicios/{servicio}/mover/{direccion}', [ServicioController::class, 'mover'])
+        ->whereIn('direccion', ['arriba', 'abajo'])->name('servicios.mover');
     Route::resource('servicios', ServicioController::class)->except('show');
+    Route::patch('tratamientos/{tratamiento}/estado', [TratamientoController::class, 'alternarEstado'])->name('tratamientos.estado');
     Route::resource('tratamientos', TratamientoController::class)->except('show');
 
     Route::get('pacientes', [PacienteController::class, 'index'])->name('pacientes.index');

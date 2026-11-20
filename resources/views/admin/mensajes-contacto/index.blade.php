@@ -31,6 +31,7 @@
                     </x-slot:actions>
                 </x-admin.card-header>
 
+                <x-pagination-summary :items="$mensajes" label="mensajes" />
                 <x-admin.table minWidth="min-w-[760px]" :larga="true">
                     <x-slot:head>
                         <tr>
@@ -69,7 +70,7 @@
                                         </button>
                                     </form>
                                     <form method="POST" action="{{ route('admin.mensajes.destroy', $mensaje) }}"
-                                          onsubmit="return confirm('¿Eliminar este mensaje? Esta acción no se puede deshacer.');">
+                                          data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar este mensaje?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
                                         @csrf
                                         @method('delete')
                                         <button type="submit" title="Eliminar" aria-label="Eliminar mensaje"
@@ -89,7 +90,7 @@
                     @endforelse
                 </x-admin.table>
 
-                <x-pagination-summary :items="$mensajes" label="mensajes" />
+                <x-pagination-summary :items="$mensajes" label="mensajes" posicion="abajo" />
             </x-admin.card>
         </div>
     </div>

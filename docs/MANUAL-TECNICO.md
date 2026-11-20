@@ -1121,6 +1121,41 @@ Un barrido de 41 pantallas a 375 y 1280 px dejó cuatro reglas, protegidas por
   Pacientes) también miden 44 px y vuelven a su tamaño compacto desde `lg`.
 - **Solo colores de la paleta.** Ninguna vista usa `gray`, `blue`, `green`,
   etc. de Tailwind; se usan los tokens de marca.
+- **Campos obligatorios con asterisco, sin desactivar el botón.** El botón de
+  guardar nunca se desactiva (un botón gris no dice qué falta); la etiqueta de
+  cada campo con `required` lleva `<x-input-label :required="true">` (asterisco
+  rojo y "(obligatorio)" para lectores de pantalla) y el formulario abre con
+  `<x-form-obligatorios />`. Si falta algo, el error aparece junto al campo al
+  enviar. Excepción: formularios de un solo campo con etiqueta invisible.
+- **Confirmaciones con el diálogo propio, nunca `confirm()`/`prompt()`.** Un
+  formulario pide confirmación declarando `data-confirmar="Mensaje"` (y, si
+  hace falta, `data-confirmar-titulo`, `-boton`, `-tono="peligro|normal"` y
+  `-motivo="campo"` para pedir un texto). `components/dialogo-confirmar` vive
+  una sola vez en `layouts/app` y `app.js` intercepta el envío en fase de
+  captura. Cada botón actúa en su propio clic: no se usa el evento `close` del
+  `<dialog>`, que algunos navegadores no disparan.
+- **Toda acción avisa qué pasó.** `components/avisos-sesion` (en `layouts/app`)
+  pinta `session('success')` y `session('error')` en todo el panel, abajo a la
+  derecha (los avisos de notificaciones nuevas salen arriba). El de éxito se va
+  a los 6 s; el de error se queda hasta cerrarlo. Cada acción de crear, guardar,
+  eliminar, aprobar o activar envía un mensaje que dice qué y a cuál («Tratamiento
+  «Valoración» creado.»). Las pantallas no pintan copias propias.
+- **Validación del navegador con el diseño propio.** `app.js` escucha `invalid`
+  en captura, cancela la burbuja genérica y escribe el error en rojo debajo del
+  campo (o de su envoltorio `.relative`), con `aria-invalid` y foco en el primero.
+  Usa `validity.valid` para limpiar: `checkValidity()` volvería a disparar el evento.
+- **Sin precio se guarda, pero no se publica.** Un tratamiento activo siempre
+  tiene precio: se puede crear o guardar sin `precio_referencia` (queda inactivo,
+  y si le quitan el precio a uno activo se desactiva), el interruptor de la lista
+  (`tratamientos.estado`) no activa sin precio y la migración
+  `2026_11_20_000001` desactivó los activos sin precio. Por eso las pantallas
+  públicas solo filtran por `activo`. El precio se muestra en la agenda en línea
+  (`formatoPrecio`, MXN sin decimales si es entero) y en el resumen.
+  `ServiciosTratamientosSeeder` trae precios **de demostración**.
+- **Campos sin uso fuera de los formularios.** "Requiere autorización",
+  "Imagen", "Sesiones", "Descripción" y "Categoría" de tratamientos no los usaba
+  ninguna parte del sistema; se quitaron del panel y las columnas se conservan.
+  La relación servicio–tratamiento se edita solo en el servicio.
 - **Cuadrículas con columna explícita.** Una `grid` sin `grid-cols-1` crece al
   ancho mínimo de su contenido: en el perfil, la fila de pestañas desplazable
   ensanchaba la página 120 px en celular. `grid-cols-1` (`minmax(0, 1fr)`) y

@@ -529,6 +529,183 @@ Alpine.data('carruselServicios', () => ({
 
 Alpine.start();
 
+/*
+ * Diálogo de confirmación del panel (components/dialogo-confirmar.blade.php).
+ * Reemplaza confirm()/prompt() del navegador: cualquier <form data-confirmar="…">
+ * pide confirmación con el diseño de Dentissa antes de enviarse.
+ */
+const dialogoConfirmar = document.querySelector('[data-dialogo-confirmar]');
+
+if (dialogoConfirmar) {
+    const parte = (nombre) => dialogoConfirmar.querySelector(`[data-dialogo-${nombre}]`);
+    const motivo = dialogoConfirmar.querySelector('#dialogo-confirmar-motivo');
+    let formularioPendiente = null;
+
+    const pintar = (formulario) => {
+        const datos = formulario.dataset;
+        const peligro = (datos.confirmarTono || 'peligro') === 'peligro';
+        const aceptar = parte('aceptar');
+
+        parte('titulo').textContent = datos.confirmarTitulo || '¿Estás seguro?';
+        parte('mensaje').textContent = datos.confirmar || '';
+        aceptar.textContent = datos.confirmarBoton || 'Confirmar';
+
+        // Rojo para lo que borra o no se puede deshacer; color de marca para lo demás.
+        aceptar.classList.toggle('bg-rose-700', peligro);
+        aceptar.classList.toggle('hover:bg-rose-800', peligro);
+        aceptar.classList.toggle('bg-brand-600', !peligro);
+        aceptar.classList.toggle('hover:bg-brand-700', !peligro);
+        parte('icono').classList.toggle('bg-rose-50', peligro);
+        parte('icono').classList.toggle('text-rose-700', peligro);
+        parte('icono').classList.toggle('bg-brand-50', !peligro);
+        parte('icono').classList.toggle('text-brand-700', !peligro);
+        dialogoConfirmar.querySelector('[data-icono-peligro]').classList.toggle('hidden', !peligro);
+        dialogoConfirmar.querySelector('[data-icono-normal]').classList.toggle('hidden', peligro);
+
+        const pideMotivo = Boolean(datos.confirmarMotivo);
+        parte('motivo').classList.toggle('hidden', !pideMotivo);
+        if (pideMotivo) {
+            parte('motivo-etiqueta').textContent = datos.confirmarMotivoEtiqueta || 'Motivo (opcional)';
+            motivo.value = '';
+        }
+
+        return { peligro, pideMotivo };
+    };
+
+    // Fase de captura: se adelanta a cualquier otro manejador del formulario.
+    document.addEventListener('submit', (evento) => {
+        const formulario = evento.target;
+        if (!(formulario instanceof HTMLFormElement) || !formulario.dataset.confirmar || formulario.dataset.confirmado === '1') {
+            return;
+        }
+
+        evento.preventDefault();
+        evento.stopImmediatePropagation();
+        formularioPendiente = formulario;
+
+        const { peligro, pideMotivo } = pintar(formulario);
+        dialogoConfirmar.showModal();
+        // En acciones peligrosas el foco empieza en "Cancelar": un Enter por accidente no borra nada.
+        (pideMotivo ? motivo : peligro ? parte('cancelar') : parte('aceptar')).focus();
+    }, true);
+
+    // Cada botón actúa en su propio clic (no se depende del evento "close",
+    // que algunos navegadores disparan tarde o no disparan).
+    parte('aceptar').addEventListener('click', () => {
+        const formulario = formularioPendiente;
+        formularioPendiente = null;
+        dialogoConfirmar.close();
+
+        if (!formulario) {
+            return;
+        }
+
+        const campo = formulario.dataset.confirmarMotivo;
+        if (campo) {
+            const destino = formulario.querySelector(`[name="${campo}"]`);
+            if (destino) {
+                destino.value = motivo.value.trim();
+            }
+        }
+
+        formulario.dataset.confirmado = '1';
+        formulario.requestSubmit();
+    });
+
+    const cancelar = () => {
+        formularioPendiente = null;
+        dialogoConfirmar.close();
+    };
+
+    parte('cancelar').addEventListener('click', cancelar);
+    // Esc: el navegador cierra el diálogo; solo se olvida el formulario pendiente.
+    dialogoConfirmar.addEventListener('cancel', () => {
+        formularioPendiente = null;
+    });
+    // Clic en el fondo velado = cancelar.
+    dialogoConfirmar.addEventListener('click', (evento) => {
+        if (evento.target === dialogoConfirmar) {
+            cancelar();
+        }
+    });
+}
+
+/*
+ * Validación del navegador con el diseño de Dentissa. Los campos con
+ * `required`, `type="email"`, `min`… siguen validándose antes de enviar, pero
+ * en lugar de la burbuja genérica ("Completa este campo") el error aparece en
+ * rojo debajo del campo, igual que los errores que devuelve el servidor.
+ */
+const mensajeValidacion = (campo) => {
+    const v = campo.validity;
+    if (v.valueMissing) {
+        if (campo.type === 'file') return 'Elige un archivo.';
+        if (campo.tagName === 'SELECT' || campo.type === 'radio') return 'Elige una opción.';
+        if (campo.type === 'checkbox') return 'Marca esta casilla para continuar.';
+        return 'Este campo es obligatorio.';
+    }
+    if (v.typeMismatch) return campo.type === 'email' ? 'Escribe un correo válido, por ejemplo nombre@correo.com.' : 'El formato no es válido.';
+    if (v.badInput) return 'Escribe un número válido.';
+    if (v.rangeUnderflow) return `Debe ser al menos ${campo.min}.`;
+    if (v.rangeOverflow) return `No puede ser mayor que ${campo.max}.`;
+    if (v.stepMismatch) return 'Revisa el valor: no tiene el formato esperado.';
+    if (v.tooShort) return `Escribe al menos ${campo.minLength} caracteres.`;
+    if (v.tooLong) return `Escribe máximo ${campo.maxLength} caracteres.`;
+    if (v.patternMismatch) return campo.title || 'El formato no es válido.';
+    return campo.validationMessage;
+};
+
+const avisoDeCampo = (campo, crear) => {
+    // Si el campo va dentro de un envoltorio (por ejemplo "$" del precio), el aviso va después del envoltorio.
+    const ancla = campo.parentElement?.classList.contains('relative') ? campo.parentElement : campo;
+    let aviso = ancla.nextElementSibling?.matches?.('[data-error-cliente]') ? ancla.nextElementSibling : null;
+    if (!aviso && crear) {
+        aviso = document.createElement('p');
+        aviso.dataset.errorCliente = '';
+        aviso.className = 'mt-1.5 text-footnote font-medium text-rose-700';
+        aviso.id = `${campo.id || campo.name || 'campo'}-error-cliente`;
+        ancla.insertAdjacentElement('afterend', aviso);
+    }
+    return aviso;
+};
+
+let primerInvalido = null;
+
+// "invalid" no burbujea: se escucha en captura.
+document.addEventListener('invalid', (evento) => {
+    const campo = evento.target;
+    if (!(campo instanceof HTMLElement) || campo.type === 'hidden') {
+        return;
+    }
+
+    evento.preventDefault(); // sin la burbuja genérica del navegador
+
+    const aviso = avisoDeCampo(campo, true);
+    aviso.textContent = mensajeValidacion(campo);
+    campo.setAttribute('aria-invalid', 'true');
+    campo.setAttribute('aria-describedby', aviso.id);
+
+    // Lleva el foco al primer campo con error (los demás también quedan marcados).
+    if (!primerInvalido) {
+        primerInvalido = campo;
+        campo.focus({ preventScroll: true });
+        campo.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        setTimeout(() => { primerInvalido = null; }, 0);
+    }
+}, true);
+
+// Al corregirlo, el aviso desaparece.
+['input', 'change'].forEach((tipo) => document.addEventListener(tipo, (evento) => {
+    const campo = evento.target;
+    // validity.valid solo consulta; checkValidity() volvería a disparar "invalid" en cada tecla.
+    if (!(campo instanceof HTMLElement) || !campo.hasAttribute?.('aria-invalid') || !campo.validity?.valid) {
+        return;
+    }
+    avisoDeCampo(campo, false)?.remove();
+    campo.removeAttribute('aria-invalid');
+    campo.removeAttribute('aria-describedby');
+}));
+
 window.Pusher = Pusher;
 
 const notificationsBody = document.body;

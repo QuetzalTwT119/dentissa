@@ -81,6 +81,7 @@ class CitaPublicaController extends Controller
             ->with('success', 'Tu cita quedó confirmada. Te esperamos.')
             ->with('cita_resumen', [
                 'tratamiento' => $cita->tratamiento?->nombre,
+                'precio' => $cita->tratamiento?->precioFormateado(),
                 'fecha' => $fechaHora->translatedFormat('l j \d\e F \d\e Y'),
                 'hora' => $fechaHora->format('H:i'),
             ]);

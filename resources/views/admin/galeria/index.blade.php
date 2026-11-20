@@ -5,32 +5,21 @@
             title="Galería"
             subtitle="Fotografías de las instalaciones, equipo e infraestructura de la clínica."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.galeria.create') }}">
-                    <x-primary-button class="inline-flex items-center gap-2">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Nueva imagen
-                    </x-primary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             <x-admin.card>
-                <x-admin.card-header
-                    title="Fotografías de la clínica"
-                    description="Fotos del consultorio visibles para pacientes y personal."
-                >
-                    <x-slot:actions>
-                        <a href="{{ route('admin.galeria.create') }}" class="hidden sm:inline-block">
-                            <x-secondary-button>Nueva imagen</x-secondary-button>
+
+                <x-pagination-summary :items="$imagenes" label="imágenes">
+                    <x-slot:acciones>
+                        <a href="{{ route('admin.galeria.create') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-brand transition-[background-color,transform] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
+                            <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
+                            Nueva imagen
                         </a>
-                    </x-slot:actions>
-                </x-admin.card-header>
+                    </x-slot:acciones>
+                </x-pagination-summary>
 
                 <div class="p-6">
                     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-stretch">
@@ -52,7 +41,7 @@
                                     <div class="flex items-center justify-between border-t border-line/60 pt-3 text-xs font-semibold">
                                         <a href="{{ route('admin.galeria.edit', $imagen) }}" class="text-brand-600 hover:text-brand-800 transition">Editar</a>
                                         <form method="POST" action="{{ route('admin.galeria.destroy', $imagen) }}"
-                                              onsubmit="return confirm('¿Eliminar esta imagen de la galería? Esta acción no se puede deshacer.');">
+                                              data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar esta imagen de la galería?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
                                             @csrf
                                             @method('delete')
                                             <button type="submit" class="text-rose-600 hover:text-rose-800 transition">Eliminar</button>
@@ -74,7 +63,7 @@
                     </div>
                 </div>
 
-                <x-pagination-summary :items="$imagenes" label="imágenes" />
+                <x-pagination-summary :items="$imagenes" label="imágenes" posicion="abajo" />
             </x-admin.card>
         </div>
     </div>

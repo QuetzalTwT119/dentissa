@@ -80,7 +80,10 @@ el token del bot; es una credencial privada de configuración.
 Los nombres, teléfonos y correos del paciente demo son de prueba. El catálogo
 demo usa los tratamientos y duraciones reales de la clínica (Valoración 30 min,
 Limpieza Dental, Retiro de Caries y Extracción Dental 1 hora, y Blanqueamiento
-Dental 1 hora y media), pero sin precios, porque la clínica aún no los confirma. Al terminar la exposición, el equipo
+Dental 1 hora y media) con **precios de demostración** (Valoración $300,
+Limpieza $600, Retiro de Caries $700, Extracción $900 y Blanqueamiento $3,500):
+un tratamiento sin precio no se publica. La clínica debe confirmarlos o
+corregirlos en Catálogo → Tratamientos antes de recibir pacientes reales. Al terminar la exposición, el equipo
 debe apagar o eliminar el servicio de Railway desde el panel.
 
 
@@ -132,7 +135,10 @@ El proceso tiene 4 pasos. Arriba siempre se ve "Paso X de 4".
 
 1. Abre `/agendar-cita`.
 2. **Selección clínica:** elige la especialidad. La lista cambia por los
-   tratamientos de esa especialidad, cada uno con su duración aproximada. Si
+   tratamientos de esa especialidad, cada uno con su duración aproximada y su
+   precio (el precio también aparece en el resumen de la cita). **El pago se
+   realiza en el consultorio el día de la cita**; así lo dicen la agenda, la
+   confirmación y los correos. Si
    cambias de opinión, pulsa el recuadro de la especialidad para volver a la
    lista. Solo aparecen las especialidades que tienen tratamientos activos.
 3. **Fecha y hora:** se muestra el calendario del mes.
@@ -352,6 +358,42 @@ distribuir en columnas al tener más espacio.
 Al agendar o reagendar, el sistema vuelve a comprobar que el servicio y el
 tratamiento estén activos, que el tratamiento pertenezca al servicio y que la
 fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
+
+## 3.1 Catálogo: servicios y tratamientos
+
+- **Servicios** (especialidades del carrusel): en **Editar servicio** se cambia
+  el nombre, la descripción, la foto (con vista previa de la tarjeta) y **qué
+  tratamientos se pueden agendar**. El interruptor **Visible en la portada**
+  oculta o muestra la especialidad. El orden del carrusel se acomoda con las
+  flechas ↑ ↓ de la lista.
+- **Tratamientos**: el formulario pide **Nombre**, **Duración** (cuánto ocupa en
+  la agenda) y **Precio** (el paciente lo ve al agendar). Se puede guardar sin
+  precio mientras la clínica lo confirma, pero **no se publica** hasta tenerlo. A la
+  derecha, **Así lo verá el paciente** muestra la opción tal como aparece en la
+  agenda en línea y en qué especialidad está (eso se cambia en el servicio).
+- **Activar o desactivar un tratamiento**: con el interruptor de la columna
+  **Estado** en la lista. Activar es inmediato; desactivar pide confirmación y
+  avisa si una especialidad se quedaría sin tratamientos (pasaría a "Agenda por
+  teléfono"). **Sin precio no se puede activar**: la fila dice "Falta precio".
+- Las confirmaciones (eliminar, cancelar una cita, desactivar…) usan la ventana
+  de Dentissa; se cancelan con **Esc**, con **Cancelar** o tocando fuera.
+- En cada lista, arriba se ve cuántos registros hay y cuántos mostrar por página
+  (izquierda) y el botón **Nuevo …** (derecha). Las **páginas** están abajo, al
+  centro ("Página 1 de 1" si solo hay una).
+- Después de crear, guardar o eliminar aparece un **aviso abajo a la derecha**
+  que dice qué pasó (verde) o qué falta (rojo). El verde se va solo; el rojo se
+  cierra con la ×.
+- Si falta un dato obligatorio (marcado con \*) o tiene un formato incorrecto,
+  el mensaje aparece en rojo **debajo del campo** y el cursor salta al primero.
+
+## 3.2 Promociones y testimonios en la portada
+
+- Las **ofertas activas** dentro de sus fechas aparecen en la portada en
+  **Promociones** (descuento, tratamiento, vigencia y lugares que quedan).
+- **Testimonios:** el paciente escribe el suyo en la portada (**Comparte tu
+  experiencia**) con el teléfono o correo con el que agendó. Llega como
+  **pendiente**, la campana avisa al personal y, al **aprobarlo** en Contenido →
+  Testimonios, se publica con su nombre y la inicial de su apellido.
 
 ## 4. Asistente de agenda
 

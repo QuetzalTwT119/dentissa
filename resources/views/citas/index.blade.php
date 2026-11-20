@@ -26,13 +26,7 @@
 
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-            @if (session('success'))
-                <x-alert type="success" :message="session('success')" />
-            @endif
 
-            @if (session('error'))
-                <x-alert type="error" :message="session('error')" />
-            @endif
 
             @if ($errors->any())
                 <x-alert type="error" :message="$errors->first()" />
@@ -235,6 +229,7 @@
                     </div>
 
                     <div class="rounded-3xl border border-line bg-white shadow-soft">
+                        <x-pagination-summary :items="$citas" label="citas" class="rounded-t-3xl" />
                         @forelse ($grupos as $fecha => $citasDeFecha)
                             <section aria-label="{{ $tituloDia(\Illuminate\Support\Carbon::parse($fecha)) }}" @class(['border-t border-line' => ! $loop->first])>
                                 <h3 @class(['flex items-center justify-between gap-3 bg-shell/50 px-4 py-2.5 text-sm font-semibold text-ink lg:px-5', 'rounded-t-3xl' => $loop->first])>
@@ -257,7 +252,7 @@
                             </div>
                         @endforelse
 
-                        <x-pagination-summary :items="$citas" label="citas" class="rounded-b-3xl" />
+                        <x-pagination-summary :items="$citas" label="citas" class="rounded-b-3xl" posicion="abajo" />
                     </div>
                 @endif
             </div>

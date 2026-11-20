@@ -34,7 +34,7 @@ class PreguntaFrecuenteController extends Controller
             fn () => PreguntaFrecuente::create($this->validated($request)),
         );
 
-        return Redirect::route('admin.preguntas-frecuentes.index');
+        return Redirect::route('admin.preguntas-frecuentes.index')->with('success', 'Pregunta frecuente creada.');
     }
 
     // El parámetro de ruta se llama "preguntas_frecuente" (Route::resource
@@ -57,7 +57,7 @@ class PreguntaFrecuenteController extends Controller
             fn () => $preguntas_frecuente->update($this->validated($request)),
         );
 
-        return Redirect::route('admin.preguntas-frecuentes.index');
+        return Redirect::route('admin.preguntas-frecuentes.index')->with('success', 'Pregunta frecuente guardada.');
     }
 
     public function destroy(Request $request, PreguntaFrecuente $preguntas_frecuente, AuditoriaService $auditoria): RedirectResponse
@@ -71,7 +71,7 @@ class PreguntaFrecuenteController extends Controller
             eliminado: true,
         );
 
-        return Redirect::route('admin.preguntas-frecuentes.index');
+        return Redirect::route('admin.preguntas-frecuentes.index')->with('success', 'Pregunta frecuente eliminada.');
     }
 
     private function validated(Request $request): array

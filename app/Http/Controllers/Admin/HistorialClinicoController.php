@@ -52,7 +52,7 @@ class HistorialClinicoController extends Controller
             $auditoria->registrar('historial.creado', $historial, datosNuevos: $this->datosAuditoria($historial), request: $request);
         });
 
-        return Redirect::route('admin.pacientes.historial.index', $paciente);
+        return Redirect::route('admin.pacientes.historial.index', $paciente)->with('success', "Consulta agregada al historial de {$paciente->nombre_completo}.");
     }
 
     public function edit(Paciente $paciente, HistorialClinico $historial): View
@@ -79,7 +79,7 @@ class HistorialClinicoController extends Controller
             $auditoria->registrar('historial.actualizado', $historial, $datosAnteriores, $this->datosAuditoria($historial), $request);
         });
 
-        return Redirect::route('admin.pacientes.historial.index', $paciente);
+        return Redirect::route('admin.pacientes.historial.index', $paciente)->with('success', 'Consulta guardada.');
     }
 
     public function destroy(Request $request, Paciente $paciente, HistorialClinico $historial, AuditoriaService $auditoria): RedirectResponse
@@ -93,7 +93,7 @@ class HistorialClinicoController extends Controller
             $auditoria->registrar('historial.eliminado', $historial, $datosAnteriores, request: $request);
         });
 
-        return Redirect::route('admin.pacientes.historial.index', $paciente);
+        return Redirect::route('admin.pacientes.historial.index', $paciente)->with('success', 'Consulta eliminada del historial.');
     }
 
     public function storeImagen(Request $request, Paciente $paciente, HistorialClinico $historial, AuditoriaService $auditoria): RedirectResponse
@@ -126,7 +126,7 @@ class HistorialClinicoController extends Controller
             throw $exception;
         }
 
-        return Redirect::route('admin.pacientes.historial.edit', [$paciente, $historial]);
+        return Redirect::route('admin.pacientes.historial.edit', [$paciente, $historial])->with('success', 'Archivo adjuntado a la consulta.');
     }
 
     public function destroyImagen(Request $request, Paciente $paciente, HistorialClinico $historial, Imagen $imagen, AuditoriaService $auditoria): RedirectResponse
@@ -143,7 +143,7 @@ class HistorialClinicoController extends Controller
             $auditoria->registrar('historial.imagen_eliminada', $imagen, $datosAnteriores, request: $request);
         });
 
-        return Redirect::route('admin.pacientes.historial.edit', [$paciente, $historial]);
+        return Redirect::route('admin.pacientes.historial.edit', [$paciente, $historial])->with('success', 'Archivo eliminado de la consulta.');
     }
 
     public function pdf(Paciente $paciente): HttpResponse|RedirectResponse

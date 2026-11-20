@@ -55,7 +55,7 @@
                 {{-- Misma regla que CitaController@noShow: solo después de la hora de la cita. --}}
                 @if ($cita->estado->value === 'confirmada' && ! $cita->fecha_hora->isFuture())
                     <form method="POST" action="{{ route('citas.no-show', $cita) }}"
-                          onsubmit="return confirm('¿Marcar esta cita como no asistida? Esta acción no se puede deshacer.');">
+                          data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Marcar esta cita como no asistida?" data-confirmar-boton="Sí, marcar" data-confirmar-tono="peligro">
                         @csrf
                         @method('patch')
                         <button type="submit" class="flex w-full items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-left text-sm font-medium text-ink-soft transition hover:bg-amber-50 hover:text-amber-800 focus:bg-amber-50 focus:outline-none">
@@ -74,7 +74,9 @@
                 </a>
                 <div class="mx-2 my-1 border-t border-line"></div>
                 <form method="POST" action="{{ route('citas.cancel', $cita) }}"
-                      onsubmit="const motivo = prompt('Motivo de la cancelación (opcional):') ?? ''; if (!confirm('¿Cancelar esta cita?')) { return false; } this.querySelector('[name=motivo_cancelacion]').value = motivo; return true;">
+                      data-confirmar="El horario quedará libre y se avisará al paciente." data-confirmar-titulo="¿Cancelar esta cita?"
+                      data-confirmar-boton="Sí, cancelar cita" data-confirmar-tono="peligro"
+                      data-confirmar-motivo="motivo_cancelacion" data-confirmar-motivo-etiqueta="Motivo de la cancelación (opcional)">
                     @csrf
                     @method('patch')
                     <input type="hidden" name="motivo_cancelacion" value="">

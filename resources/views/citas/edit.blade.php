@@ -42,7 +42,7 @@
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('citas.update', $cita) }}" class="space-y-6"
+                <form method="POST" action="{{ route('citas.update', $cita) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios de la cita?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="space-y-6"
                       x-data="{
                         idTratamiento: {{ $cita->id_tratamiento }},
                         fecha: @js(old('fecha', \Illuminate\Support\Carbon::parse($cita->fecha_hora)->toDateString())),

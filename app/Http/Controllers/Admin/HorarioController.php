@@ -55,6 +55,6 @@ class HorarioController extends Controller
             }
         });
 
-        return Redirect::route('admin.horarios.edit');
+        return Redirect::route('admin.horarios.edit')->with('success', 'Horarios guardados. La agenda en línea ya usa los nuevos.');
     }
 }

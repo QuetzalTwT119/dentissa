@@ -20,6 +20,7 @@
                     @csrf
                     @method('put')
 
+                    <x-form-obligatorios />
                     @include('admin.historial._campos')
 
                     <div class="flex items-center gap-4 pt-4 border-t border-line">
@@ -43,7 +44,7 @@
                                 {{ $imagen->titulo ?? $imagen->url }}
                             </a>
                             <form method="POST" action="{{ route('admin.pacientes.historial.imagenes.destroy', [$paciente, $historial, $imagen]) }}"
-                                  onsubmit="return confirm('¿Eliminar este adjunto?');">
+                                  data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar este adjunto?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
                                 @csrf
                                 @method('delete')
                                 <button type="submit" class="shrink-0 text-xs font-semibold text-rose-600 transition hover:text-rose-800">Eliminar</button>

@@ -116,6 +116,6 @@ class PacienteController extends Controller
             ], request: $request);
         });
 
-        return Redirect::route('admin.pacientes.index');
+        return Redirect::route('admin.pacientes.index')->with('success', "Datos de {$paciente->nombre_completo} guardados.");
     }
 }

@@ -72,7 +72,7 @@ class UsuarioController extends Controller
             ]),
         );
 
-        return Redirect::route('admin.usuarios.index');
+        return Redirect::route('admin.usuarios.index')->with('success', "Usuario {$request->input('nombre')} {$request->input('apellido')} creado.");
     }
 
     public function edit(User $usuario): View
@@ -117,7 +117,7 @@ class UsuarioController extends Controller
             },
         );
 
-        return Redirect::route('admin.usuarios.index');
+        return Redirect::route('admin.usuarios.index')->with('success', "Datos de {$usuario->nombre} {$usuario->apellido} guardados.");
     }
 
     public function toggleActivo(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse
@@ -132,6 +132,6 @@ class UsuarioController extends Controller
             fn () => $usuario->update(['activo' => ! $usuario->activo]),
         );
 
-        return Redirect::route('admin.usuarios.index');
+        return Redirect::route('admin.usuarios.index')->with('success', $usuario->fresh()->activo ? "{$usuario->nombre} {$usuario->apellido} está activo." : "{$usuario->nombre} {$usuario->apellido} está desactivado: ya no puede iniciar sesión.");
     }
 }

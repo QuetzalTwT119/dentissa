@@ -10,7 +10,7 @@ $valor = function (string $campo, $default = '') use ($testimonio) {
 @endphp
 
 <div>
-    <x-input-label for="id_paciente" value="Paciente" />
+    <x-input-label :required="true" for="id_paciente" value="Paciente" />
     <select id="id_paciente" name="id_paciente" required
             class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
         <option value="">Selecciona un paciente</option>
@@ -34,7 +34,7 @@ $valor = function (string $campo, $default = '') use ($testimonio) {
 </div>
 
 <div>
-    <x-input-label for="comentario" value="Comentario" />
+    <x-input-label :required="true" for="comentario" value="Comentario" />
     <textarea id="comentario" name="comentario" rows="4" required
               class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('comentario') }}</textarea>
     <x-input-error :messages="$errors->get('comentario')" class="mt-2" />

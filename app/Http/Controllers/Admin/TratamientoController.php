@@ -17,7 +17,11 @@ class TratamientoController extends Controller
     public function index(Request $request): View
     {
         return view('admin.tratamientos.index', [
-            'tratamientos' => Tratamiento::withCount('servicios')->orderBy('nombre')->paginate($this->paginationPageSize($request)),
+            'tratamientos' => Tratamiento::query()
+                ->with(['servicios' => fn ($q) => $q->select('servicios.id', 'servicios.nombre', 'servicios.activo')
+                    ->withCount(['tratamientos as tratamientos_activos_count' => fn ($t) => $t->where('tratamientos.activo', true)])])
+                ->orderBy('nombre')
+                ->paginate($this->paginationPageSize($request)),
         ]);
     }
 
@@ -28,7 +32,9 @@ class TratamientoController extends Controller
 
     public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
+        // Con precio nace publicado; sin precio se guarda inactivo hasta que lo tenga.
         $data = $this->validated($request);
+        $data['activo'] = ($data['precio_referencia'] ?? 0) > 0;
 
         if ($request->hasFile('imagen')) {
             $data['imagen'] = $request->file('imagen')->store('tratamientos', 'public');
@@ -38,11 +44,13 @@ class TratamientoController extends Controller
             $request,
             'tratamiento.creado',
             new Tratamiento,
-            ['nombre', 'descripcion', 'categoria', 'duracion_estimada', 'precio_referencia', 'sesiones_requeridas', 'requiere_autorizacion', 'imagen', 'activo'],
+            ['nombre', 'duracion_estimada', 'precio_referencia', 'activo'],
             fn () => Tratamiento::create($data),
         );
 
-        return Redirect::route('admin.tratamientos.index');
+        return Redirect::route('admin.tratamientos.index')->with('success', $data['activo']
+            ? "Tratamiento «{$request->input('nombre')}» creado."
+            : "Tratamiento «{$request->input('nombre')}» creado sin precio: no se publicará hasta que le pongas precio.");
     }
 
     public function edit(Tratamiento $tratamiento): View
@@ -66,11 +74,40 @@ class TratamientoController extends Controller
             $request,
             'tratamiento.actualizado',
             $tratamiento,
-            ['nombre', 'descripcion', 'categoria', 'duracion_estimada', 'precio_referencia', 'sesiones_requeridas', 'requiere_autorizacion', 'imagen', 'activo'],
-            fn () => $tratamiento->update($data),
+            ['nombre', 'duracion_estimada', 'precio_referencia', 'activo'],
+            // Si a uno publicado le quitan el precio, deja de publicarse (activo ⇒ tiene precio).
+            fn () => $tratamiento->update($data + (($data['precio_referencia'] ?? 0) > 0 ? [] : ['activo' => false])),
         );
 
-        return Redirect::route('admin.tratamientos.index');
+        $sinPrecio = ! ($tratamiento->precio_referencia > 0);
+
+        return Redirect::route('admin.tratamientos.index')->with('success', $sinPrecio
+            ? "Tratamiento «{$tratamiento->nombre}» guardado sin precio: no se publica hasta que le pongas precio."
+            : "Tratamiento «{$tratamiento->nombre}» guardado.");
+    }
+
+    /**
+     * Activa o desactiva desde la lista, sin abrir el formulario. Un
+     * tratamiento inactivo deja de ofrecerse al agendar (en línea y en el panel).
+     */
+    public function alternarEstado(Request $request, Tratamiento $tratamiento, AuditoriaService $auditoria): RedirectResponse
+    {
+        // Sin precio no se publica: no se puede activar hasta capturarlo.
+        if (! $tratamiento->activo && ! ($tratamiento->precio_referencia > 0)) {
+            return Redirect::back()->with('error', "Agrega el precio de «{$tratamiento->nombre}» antes de activarlo.");
+        }
+
+        $auditoria->registrarCambio(
+            $request,
+            'tratamiento.estado_cambiado',
+            $tratamiento,
+            ['activo'],
+            fn () => $tratamiento->update(['activo' => ! $tratamiento->activo]),
+        );
+
+        return Redirect::back()->with('success', $tratamiento->activo
+            ? "«{$tratamiento->nombre}» está activo: ya se puede agendar."
+            : "«{$tratamiento->nombre}» está inactivo: ya no se ofrece al agendar.");
     }
 
     public function destroy(Request $request, Tratamiento $tratamiento, AuditoriaService $auditoria): RedirectResponse
@@ -93,7 +130,7 @@ class TratamientoController extends Controller
             eliminado: true,
         );
 
-        return Redirect::route('admin.tratamientos.index');
+        return Redirect::route('admin.tratamientos.index')->with('success', "Tratamiento «{$tratamiento->nombre}» eliminado.");
     }
 
     private function validated(Request $request, ?int $ignoreId = null): array
@@ -101,13 +138,11 @@ class TratamientoController extends Controller
         return $request->validate([
             'nombre' => ['required', 'string', 'max:150', Rule::unique('tratamientos', 'nombre')->ignore($ignoreId)],
             'descripcion' => ['nullable', 'string'],
-            'categoria' => ['nullable', 'string', 'max:50'],
             'duracion_estimada' => ['nullable', 'integer', 'min:0'],
-            'precio_referencia' => ['nullable', 'numeric', 'min:0'],
+            // Se muestra al paciente. Se puede guardar sin precio, pero no publicar.
+            'precio_referencia' => ['nullable', 'numeric', 'min:1', 'max:999999'],
             'sesiones_requeridas' => ['integer', 'min:1'],
-            'requiere_autorizacion' => ['boolean'],
-            'imagen' => ['nullable', 'image', 'max:2048'],
-            'activo' => ['boolean'],
+            'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
     }
 }

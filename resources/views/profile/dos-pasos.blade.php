@@ -81,7 +81,7 @@
                     </form>
 
                     @unless ($obligatoria)
-                        <form method="POST" action="{{ route('dos-pasos.desactivar') }}" class="mt-8 space-y-3 border-t border-line pt-6" onsubmit="return confirm('¿Desactivar la verificación en dos pasos? Tu cuenta quedará protegida solo con la contraseña.');">
+                        <form method="POST" action="{{ route('dos-pasos.desactivar') }}" class="mt-8 space-y-3 border-t border-line pt-6" data-confirmar="Tu cuenta quedará protegida solo con la contraseña." data-confirmar-titulo="¿Desactivar la verificación en dos pasos?" data-confirmar-boton="Sí, desactivar" data-confirmar-tono="peligro">
                             @csrf
                             @method('DELETE')
                             <p class="text-sm font-semibold text-ink">Desactivar</p>

@@ -19,6 +19,18 @@ class Tratamiento extends Model
     /** Categorías que ofrece el panel; el catálogo base usa estas mismas. */
     public const CATEGORIAS = ['Diagnóstico', 'Preventiva', 'Restauradora', 'Estética', 'Quirúrgica'];
 
+    /** "$3,500" o "$1,250.50"; null si no tiene precio. */
+    public function precioFormateado(): ?string
+    {
+        if (! ($this->precio_referencia > 0)) {
+            return null;
+        }
+
+        $precio = (float) $this->precio_referencia;
+
+        return '$'.number_format($precio, fmod($precio, 1.0) == 0.0 ? 0 : 2);
+    }
+
     protected function casts(): array
     {
         return [

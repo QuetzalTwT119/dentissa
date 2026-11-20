@@ -16,32 +16,33 @@
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
             <x-admin.card class="p-6 sm:p-8">
-                <form method="POST" action="{{ route('admin.usuarios.update', $usuario) }}" class="space-y-6">
+                <form method="POST" action="{{ route('admin.usuarios.update', $usuario) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del usuario?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="space-y-6">
                     @csrf
                     @method('put')
 
+                    <x-form-obligatorios />
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <x-input-label for="nombre" value="Nombre" />
+                            <x-input-label :required="true" for="nombre" value="Nombre" />
                             <x-text-input id="nombre" name="nombre" class="mt-1.5 block w-full" :value="old('nombre', $usuario->nombre)" required autofocus />
                             <x-input-error :messages="$errors->get('nombre')" class="mt-2" />
                         </div>
 
                         <div>
-                            <x-input-label for="apellido" value="Apellido" />
+                            <x-input-label :required="true" for="apellido" value="Apellido" />
                             <x-text-input id="apellido" name="apellido" class="mt-1.5 block w-full" :value="old('apellido', $usuario->apellido)" required />
                             <x-input-error :messages="$errors->get('apellido')" class="mt-2" />
                         </div>
                     </div>
 
                     <div>
-                        <x-input-label for="email" value="Correo electrónico" />
+                        <x-input-label :required="true" for="email" value="Correo electrónico" />
                         <x-text-input id="email" name="email" type="email" class="mt-1.5 block w-full" :value="old('email', $usuario->email)" required />
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 
                     <div>
-                        <x-input-label for="telefono" value="Teléfono" />
+                        <x-input-label :required="true" for="telefono" value="Teléfono" />
                         <x-text-input id="telefono" name="telefono" type="tel" class="mt-1.5 block w-full" :value="old('telefono', $usuario->telefono)" required />
                         <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                     </div>

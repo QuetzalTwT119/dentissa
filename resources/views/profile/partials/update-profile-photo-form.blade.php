@@ -14,7 +14,7 @@
         </form>
 
         @if ($user->foto_perfil)
-            <form method="post" action="{{ route('profile.photo.delete') }}" onsubmit="return confirm('¿Quieres quitar tu foto de perfil?')">
+            <form method="post" action="{{ route('profile.photo.delete') }}" data-confirmar="En su lugar se mostrarán tus iniciales." data-confirmar-titulo="¿Quitar tu foto de perfil?" data-confirmar-boton="Sí, quitarla" data-confirmar-tono="peligro">
                 @csrf
                 @method('delete')
                 <button type="submit" class="btn-secondary min-h-11">Quitar foto</button>

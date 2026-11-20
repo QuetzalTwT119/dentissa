@@ -89,11 +89,6 @@
             ['Puntualidad en tu agenda:', 'Bloqueo dinámico de horarios para evitar esperas innecesarias en sala de recepción.'],
         ];
 
-        $testimoniosPendientes = [
-            ['MC', 'Información por confirmar'],
-            ['RG', 'Blanqueamiento Dental'],
-            ['SV', 'Información por confirmar'],
-        ];
     @endphp
 
     <!-- ============ Navegación ============ -->
@@ -260,14 +255,16 @@
                     tienen tratamientos activos se agendan en línea (la agenda abre con esa
                     especialidad elegida); las demás llevan al teléfono del consultorio.
                 --}}
-                <p class="mt-3 max-w-2xl text-callout text-muted">Elige una especialidad para ver qué incluye y agendar en línea; las demás las agendamos contigo por teléfono.</p>
+                <p class="mt-3 max-w-2xl text-callout text-muted">
+                    Elige una especialidad para ver qué incluye y agendar en línea{{ $servicios->contains(fn ($servicio) => $servicio->tratamientos->isEmpty()) ? '; las demás las agendamos contigo por teléfono' : '' }}.
+                </p>
 
                 <div x-data="carruselServicios" class="relative mt-10" role="region" aria-roledescription="carrusel" aria-label="Especialidades">
-                    <button type="button" x-on:click="anterior()" class="carrusel-flecha carrusel-flecha-izq focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Especialidades anteriores">
+                    <button type="button" x-show="posiciones > 1" x-on:click="anterior()" class="carrusel-flecha carrusel-flecha-izq focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Especialidades anteriores">
                         <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                     </button>
 
-                    <div x-ref="pista" x-on:scroll.passive="alDesplazar()" tabindex="0" class="carrusel-pista focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Especialidades; desliza para ver más">
+                    <div x-ref="pista" x-on:scroll.passive="alDesplazar()" tabindex="0" @class(['carrusel-pista focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400', 'carrusel-pista--pocas' => $servicios->count() <= 2]) aria-label="Especialidades; desliza para ver más">
                         @foreach ($servicios as $servicio)
                             @php
                                 $enLinea = $servicio->tratamientos->isNotEmpty();
@@ -284,7 +281,7 @@
                                 <span @class([
                                     'mb-auto self-start rounded-full px-2.5 py-1 text-caption font-semibold uppercase tracking-label',
                                     'bg-sage-600 text-white' => $enLinea,
-                                    'bg-white/15 text-white ring-1 ring-inset ring-white/25' => ! $enLinea,
+                                    'bg-ink/80 text-white ring-1 ring-inset ring-white/20 backdrop-blur-sm' => ! $enLinea,
                                 ])>{{ $enLinea ? 'Agenda en línea' : 'Agenda por teléfono' }}</span>
 
                                 <h3 class="font-serif text-title-3 font-medium">{{ $servicio->nombre }}</h3>
@@ -299,12 +296,12 @@
                         @endforeach
                     </div>
 
-                    <button type="button" x-on:click="siguiente()" class="carrusel-flecha carrusel-flecha-der focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Más especialidades">
+                    <button type="button" x-show="posiciones > 1" x-on:click="siguiente()" class="carrusel-flecha carrusel-flecha-der focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Más especialidades">
                         <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </button>
 
                     {{-- Un punto por posición; separación pareja también junto al activo (alargado). --}}
-                    <div class="mt-5 flex items-center justify-center" aria-hidden="true">
+                    <div x-show="posiciones > 1" class="mt-5 flex items-center justify-center" aria-hidden="true">
                         <template x-for="i in posiciones" :key="i">
                             <button type="button" tabindex="-1" x-on:click="ir(i - 1)" class="flex h-6 items-center px-1">
                                 <span class="h-2 rounded-full transition-[width,background-color,opacity] duration-200 ease-out"
@@ -442,39 +439,11 @@
             </div>
         </section>
 
-        <!-- ============ Testimonios ============ -->
-        <section id="testimonios" class="border-y border-line/80 bg-peach-50/60">
-            <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-                <div class="mx-auto max-w-2xl text-center">
-                    <p class="eyebrow justify-center">Experiencias de pacientes</p>
-                    <h2 class="mt-4 text-title-1 text-ink">
-                        Sonrisas que hablan por nosotros
-                    </h2>
-                    <p class="mt-4 text-callout text-muted">
-                        Las opiniones se publican únicamente cuando cuentan con autorización de la clínica y de la persona titular.
-                    </p>
-                </div>
+        <!-- ============ Promociones (solo si hay vigentes) ============ -->
+        @include('partials.portada-promociones')
 
-                <div class="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
-                    @foreach ($testimoniosPendientes as [$iniciales, $detalle])
-                        <figure class="card-boutique flex h-full flex-col p-6 sm:p-7">
-                            <svg class="h-7 w-7 text-peach-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.6 6C6.5 7.3 4.5 10 4.5 13.4V18h6v-6H7.6c.2-1.9 1.4-3.4 3.2-4.2L9.6 6Zm9 0c-3.1 1.3-5.1 4-5.1 7.4V18h6v-6h-2.9c.2-1.9 1.4-3.4 3.2-4.2L18.6 6Z"/></svg>
-                            <div class="mt-3 flex text-sm tracking-label text-amber-400" aria-label="5 estrellas">★★★★★</div>
-                            <blockquote class="mt-3 flex-1 font-serif text-title-3 italic text-ink">
-                                “Testimonio pendiente de autorización para publicación.”
-                            </blockquote>
-                            <figcaption class="mt-6 flex items-center gap-3 border-t border-line/80 pt-5">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold text-brand-800" aria-hidden="true">{{ $iniciales }}</span>
-                                <span class="min-w-0">
-                                    <span class="block truncate text-sm font-semibold text-ink">Testimonio pendiente</span>
-                                    <span class="block truncate text-xs text-muted">{{ $detalle }}</span>
-                                </span>
-                            </figcaption>
-                        </figure>
-                    @endforeach
-                </div>
-            </div>
-        </section>
+        <!-- ============ Testimonios ============ -->
+        @include('partials.portada-testimonios')
 
         <!-- ============ Llamada a agendar ============ -->
         <section id="agendar" class="px-4 py-20 sm:px-6 lg:px-8 lg:py-24">

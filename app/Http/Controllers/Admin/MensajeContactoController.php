@@ -38,7 +38,7 @@ class MensajeContactoController extends Controller
             fn () => $mensaje->update(['leido' => ! $mensaje->leido]),
         );
 
-        return back();
+        return back()->with('success', $mensaje->fresh()->leido ? 'Mensaje marcado como leído.' : 'Mensaje marcado como no leído.');
     }
 
     public function destroy(Request $request, MensajeContacto $mensaje, AuditoriaService $auditoria): RedirectResponse
@@ -52,6 +52,6 @@ class MensajeContactoController extends Controller
             eliminado: true,
         );
 
-        return back();
+        return back()->with('success', 'Mensaje eliminado.');
     }
 }

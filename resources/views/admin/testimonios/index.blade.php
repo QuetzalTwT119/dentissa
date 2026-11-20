@@ -14,16 +14,6 @@ $estadoClase = [
             title="Testimonios"
             subtitle="Moderación de opiniones y reseñas de pacientes para el sitio público."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.testimonios.create') }}">
-                    <x-primary-button class="inline-flex items-center gap-2">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Nuevo testimonio
-                    </x-primary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
@@ -46,11 +36,16 @@ $estadoClase = [
                         </select>
                     </form>
 
-                    <a href="{{ route('admin.testimonios.create') }}" class="self-start sm:self-auto hidden sm:inline-block">
-                        <x-secondary-button>Nuevo testimonio</x-secondary-button>
-                    </a>
                 </div>
 
+                <x-pagination-summary :items="$testimonios" label="testimonios">
+                    <x-slot:acciones>
+                        <a href="{{ route('admin.testimonios.create') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-brand transition-[background-color,transform] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
+                            <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
+                            Nuevo testimonio
+                        </a>
+                    </x-slot:acciones>
+                </x-pagination-summary>
                 <x-admin.table minWidth="min-w-[760px]">
                     <x-slot:head>
                         <tr>
@@ -104,7 +99,7 @@ $estadoClase = [
                                         </form>
                                     @endif
                                     <form method="POST" action="{{ route('admin.testimonios.destroy', $testimonio) }}"
-                                          onsubmit="return confirm('¿Eliminar este testimonio? Esta acción no se puede deshacer.');">
+                                          data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar este testimonio?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
                                         @csrf
                                         @method('delete')
                                         <button type="submit" title="Eliminar" aria-label="Eliminar testimonio"
@@ -124,7 +119,7 @@ $estadoClase = [
                     @endforelse
                 </x-admin.table>
 
-                <x-pagination-summary :items="$testimonios" label="testimonios" />
+                <x-pagination-summary :items="$testimonios" label="testimonios" posicion="abajo" />
             </x-admin.card>
         </div>
     </div>

@@ -28,7 +28,9 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
             @unless ($esAdmin)
                 <span class="mx-2 h-6 w-px bg-line" aria-hidden="true"></span>
                 <a href="{{ route('ofertas.index') }}" @class([$clasesEnlaceActivo => request()->routeIs('ofertas.*'), $clasesEnlace => ! request()->routeIs('ofertas.*')]) @if(request()->routeIs('ofertas.*')) aria-current="page" @endif>Ofertas</a>
+                @if (config('dentissa.modulos.galeria'))
                 <a href="{{ route('galeria.index') }}" @class([$clasesEnlaceActivo => request()->routeIs('galeria.*'), $clasesEnlace => ! request()->routeIs('galeria.*')]) @if(request()->routeIs('galeria.*')) aria-current="page" @endif>Galería</a>
+                @endif
             @endunless
 
             @if ($esAdmin)
@@ -52,8 +54,12 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                     <x-slot name="label">Contenido</x-slot>
                     <x-dropdown-link :href="route('admin.ofertas.index')">Ofertas</x-dropdown-link>
                     <x-dropdown-link :href="route('admin.testimonios.index')">Testimonios</x-dropdown-link>
+                    @if (config('dentissa.modulos.galeria'))
                     <x-dropdown-link :href="route('admin.galeria.index')">Galería</x-dropdown-link>
+                    @endif
+                    @if (config('dentissa.modulos.casos'))
                     <x-dropdown-link :href="route('admin.casos.index')">Casos</x-dropdown-link>
+                    @endif
                     <x-dropdown-link :href="route('admin.preguntas-frecuentes.index')">Preguntas frecuentes</x-dropdown-link>
                 </x-nav-dropdown>
 
@@ -153,7 +159,9 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
             <x-responsive-nav-link :href="route('notificaciones.index')" :active="request()->routeIs('notificaciones.*')">Notificaciones <span data-notification-count-badge class="ms-2 rounded-full bg-brand-600 px-2 py-0.5 text-xs text-white {{ $notificacionesNuevas > 0 ? '' : 'hidden' }}" @if ($notificacionesNuevas === 0) hidden @endif>{{ $notificacionesNuevas > 99 ? '99+' : $notificacionesNuevas }}</span></x-responsive-nav-link>
             @unless ($esAdmin)
                 <x-responsive-nav-link :href="route('ofertas.index')" :active="request()->routeIs('ofertas.*')">Ofertas</x-responsive-nav-link>
+                @if (config('dentissa.modulos.galeria'))
                 <x-responsive-nav-link :href="route('galeria.index')" :active="request()->routeIs('galeria.*')">Galería</x-responsive-nav-link>
+                @endif
             @endunless
             @if ($esAdmin)
                 <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-label text-brand-700/80">Gestión</p>
@@ -167,8 +175,12 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 <x-responsive-nav-link :href="route('admin.tratamientos.index')" :active="request()->routeIs('admin.tratamientos.*')">Tratamientos</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.ofertas.index')" :active="request()->routeIs('admin.ofertas.*')">Ofertas</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.testimonios.index')" :active="request()->routeIs('admin.testimonios.*')">Testimonios</x-responsive-nav-link>
+                @if (config('dentissa.modulos.galeria'))
                 <x-responsive-nav-link :href="route('admin.galeria.index')" :active="request()->routeIs('admin.galeria.*')">Galería</x-responsive-nav-link>
+                @endif
+                @if (config('dentissa.modulos.casos'))
                 <x-responsive-nav-link :href="route('admin.casos.index')" :active="request()->routeIs('admin.casos.*')">Casos</x-responsive-nav-link>
+                @endif
                 <x-responsive-nav-link :href="route('admin.preguntas-frecuentes.index')" :active="request()->routeIs('admin.preguntas-frecuentes.*')">Preguntas frecuentes</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.horarios.edit')" :active="request()->routeIs('admin.horarios.*')">Horarios</x-responsive-nav-link>
             @endif

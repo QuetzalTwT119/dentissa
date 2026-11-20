@@ -5,33 +5,21 @@
             title="Casos"
             subtitle="Resultados clínicos reales (antes/después) mostrados en la galería de transformaciones."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.casos.create') }}">
-                    <x-primary-button class="inline-flex items-center gap-2">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Nuevo caso
-                    </x-primary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
     <div class="py-8 sm:py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             <x-admin.card>
-                <x-admin.card-header
-                    title="Casos de éxito y sonrisas"
-                    description="Casos reales (antes/después) que se muestran en la página principal como resultados del consultorio."
-                >
-                    <x-slot:actions>
-                        <a href="{{ route('admin.casos.create') }}" class="hidden sm:inline-block">
-                            <x-secondary-button>Nuevo caso</x-secondary-button>
-                        </a>
-                    </x-slot:actions>
-                </x-admin.card-header>
 
+                <x-pagination-summary :items="$casos" label="casos">
+                    <x-slot:acciones>
+                        <a href="{{ route('admin.casos.create') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-brand transition-[background-color,transform] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
+                            <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
+                            Nuevo caso
+                        </a>
+                    </x-slot:acciones>
+                </x-pagination-summary>
                 <x-admin.table minWidth="min-w-[700px]">
                     <x-slot:head>
                         <tr>
@@ -64,7 +52,7 @@
                                         <x-icon name="edit" />
                                     </a>
                                     <form method="POST" action="{{ route('admin.casos.destroy', $caso) }}"
-                                          onsubmit="return confirm('¿Eliminar el caso &quot;{{ $caso->titulo }}&quot;? Esta acción no se puede deshacer.');">
+                                          data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar el caso «{{ $caso->titulo }}»?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
                                         @csrf
                                         @method('delete')
                                         <button type="submit" title="Eliminar" aria-label="Eliminar caso"
@@ -84,7 +72,7 @@
                     @endforelse
                 </x-admin.table>
 
-                <x-pagination-summary :items="$casos" label="casos" />
+                <x-pagination-summary :items="$casos" label="casos" posicion="abajo" />
             </x-admin.card>
         </div>
     </div>
