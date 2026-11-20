@@ -254,10 +254,6 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::get('reportes/excel', [ReporteController::class, 'excel'])->name('reportes.excel');
 
     Route::get('testimonios', [AdminTestimonioController::class, 'index'])->name('testimonios.index');
-    Route::get('testimonios/crear', [AdminTestimonioController::class, 'create'])->name('testimonios.create');
-    Route::post('testimonios', [AdminTestimonioController::class, 'store'])->name('testimonios.store');
-    Route::get('testimonios/{testimonio}/editar', [AdminTestimonioController::class, 'edit'])->name('testimonios.edit');
-    Route::put('testimonios/{testimonio}', [AdminTestimonioController::class, 'update'])->name('testimonios.update');
     Route::patch('testimonios/{testimonio}/aprobar', [AdminTestimonioController::class, 'aprobar'])->name('testimonios.aprobar');
     Route::patch('testimonios/{testimonio}/rechazar', [AdminTestimonioController::class, 'rechazar'])->name('testimonios.rechazar');
     Route::delete('testimonios/{testimonio}', [AdminTestimonioController::class, 'destroy'])->name('testimonios.destroy');

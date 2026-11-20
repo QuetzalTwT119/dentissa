@@ -33,8 +33,8 @@ datos ni radiografías de pacientes reales.
 ## Parte 1 — Sitio público y cita en línea (sin iniciar sesión)
 
 - [x] **1.1** Abre la portada. *Debe pasar:* foto del consultorio, botón para agendar y aviso de si el consultorio está abierto o cerrado ahora.
-- [ ] **1.2** Desliza el carrusel de especialidades. *Debe pasar:* en celular se asoma la orilla de la siguiente tarjeta (invita a deslizar); en computadora y tableta se ven tarjetas completas, sin cortes. Un punto por posición. En computadora la flecha › en la última tarjeta regresa al inicio; en celular (sin flechas) el deslizamiento se detiene en la última, por decisión de diseño (H-3).
-- [ ] **1.3** Toca una especialidad con "Agenda en línea". *Debe pasar:* abre la agenda con esa especialidad ya elegida.
+- [x] **1.2** Desliza el carrusel de especialidades. *Debe pasar:* en celular se asoma la orilla de la siguiente tarjeta (invita a deslizar); en computadora y tableta se ven tarjetas completas, sin cortes. Un punto por posición. En computadora la flecha › en la última tarjeta regresa al inicio; en celular (sin flechas) el deslizamiento se detiene en la última, por decisión de diseño (H-3). — ✔ 20/11: probado en celular (H-3 decidido; H-4/H-5 corregidos).
+- [x] **1.3** Toca una especialidad con "Agenda en línea". *Debe pasar:* abre la agenda con esa especialidad ya elegida. — ✔ 20/11: la agenda abre con la especialidad elegida (verificado en navegador).
 - [ ] **1.4** Elige tratamiento, día en el calendario y hora. *Debe pasar:* el calendario solo deja elegir días con lugar y horas libres.
 - [ ] **1.5** En "Tus datos" escribe tu nombre, **tu celular** y **tu correo**. *Debe pasar:* el teléfono se acomoda como "55 1234 5678"; si falta algo, el error sale al momento.
 - [ ] **1.6** Acepta el aviso y confirma. *Debe pasar:* pantalla de confirmación con el resumen de la cita.
@@ -47,7 +47,7 @@ datos ni radiografías de pacientes reales.
 
 ## Parte 2 — Acceso y roles
 
-- [ ] **2.1** Inicia sesión como **administrador**. *Debe pasar:* entra al panel.
+- [x] **2.1** Inicia sesión como **administrador**. *Debe pasar:* entra al panel. — ✔ 20/11: sesión de administradora usada en toda la revisión.
 - [ ] **2.2** Escribe mal la contraseña a propósito. *Debe pasar:* mensaje de error claro, sin decir si el correo existe.
 - [ ] **2.3** "¿La olvidaste?" con el correo del administrador. *Debe pasar:* llega el correo para restablecer.
 - [ ] **2.4** Cierra sesión y entra como **asistente**. *Debe pasar:* entra al panel.
@@ -151,8 +151,19 @@ en la computadora y asistente en el celular.
 | H-21 (7.x) | (1) "Visible en la portada" no decía todo: apagar un servicio lo oculta en portada, agenda en línea, nueva cita del panel, asistente y bot → ahora dice **"Disponible para agendar"** (con explicación al pasar el mouse). (2) El mensaje de lista vacía quedaba **descentrado**: el componente esperaba `colspan` y las listas mandaban `cols` → ahora abarca siempre todas las columnas. (3) **Galería y Casos no se muestran en ninguna página pública** (la portada recibe los datos pero no los pinta) → se **ocultan del menú** con `DENTISSA_MODULO_GALERIA` / `DENTISSA_MODULO_CASOS` (no se borran). (4) **Ofertas** y **testimonios**: resuelto en H-22 | Computadora del usuario (local), 20/11 | — |
 | H-22 (1.x) | **Portada**: (a) nueva sección **Promociones** con las ofertas activas y vigentes (descuento, tratamiento, vigencia y lugares restantes; solo aparece si hay alguna). (b) La sección de testimonios mostraba **tarjetas fijas** y nunca los aprobados → ahora muestra los **aprobados** (nombre + inicial del apellido y estrellas). (c) Formulario **"Comparte tu experiencia"**: el paciente se identifica con el teléfono o correo con el que agendó; entra **pendiente**, avisa al personal en la campana y se publica al aprobarse en Contenido → Testimonios. Privacidad: misma respuesta exista o no el paciente; trampa para robots y límite de 5 envíos por hora. `TestimoniosYPromocionesPublicasTest` (5). Verificado en navegador | Computadora del usuario (local), 20/11 | Sí |
 | H-23 (7.x) | Íconos **Editar/Eliminar distintos en cada lista** (cada una los armaba a su manera; en Preguntas el ícono de basura se movía). **Corregido**: componente compartido `x-admin.acciones-fila` en 8 listas (mismo tamaño, 44 px en celular, confirmación al eliminar). El **filtro de Testimonios** estaba en una franja aparte con etiqueta larga → ahora va **dentro de la barra** de la lista ("Estado: Todos ▾") mediante el nuevo espacio `filtros` del componente de barra | Computadora del usuario (local), 20/11 | Sí |
+| H-24 (7.4) | Testimonios: Acciones mostraba **dos botes de basura**; además la clínica podía **crear y editar** testimonios a nombre de pacientes (serían reseñas falsas). **Corregido**: la clínica solo **modera** — ✓ Aprobar, ✕ Rechazar (mismo tamaño que los demás íconos) y 🗑 Eliminar; se quitaron "Nuevo testimonio", "Editar" y sus rutas. Rechazado = se queda en la lista con estado "Rechazado", no se publica y se puede aprobar después; Eliminar lo borra para siempre | Computadora del usuario (local), 20/11 | Sí |
+| H-25 (7.4) | (a) En el panel, la columna **Acciones de Testimonios se cortaba**: un nombre largo de paciente empujaba la tabla fuera de la tarjeta → el nombre se recorta (completo al pasar el mouse) y Acciones ya no se desborda. (b) En la portada, los testimonios ocupaban mucho → **tarjetas compactas** (texto normal, máximo 5 líneas) en el **mismo carrusel** de las especialidades (flechas y puntos solo si hay más de los que caben). Verificado: un testimonio rechazado no aparece en la portada | Computadora del usuario (local), 20/11 | Sí |
 | H-2 (4.4) | Subir radiografías está escondido: solo aparece en **Editar** de un registro ya guardado, y desde una cita no hay enlace al historial del paciente | Reporte del usuario, 20/11 | — |
 | | | | |
+
+## Para la siguiente versión (después de v1.0)
+
+- **Aviso de novedades en las listas** (Testimonios y Citas): cuando llega algo
+  nuevo, mostrar arriba de la tabla "Hay 1 testimonio nuevo · Ver ahora" en vez
+  de redibujar la lista sola. Hoy la campana sí avisa en tiempo real; las listas
+  se actualizan al recargar (decisión del 20/11/2026).
+- Página completa de notificaciones con avatares, fotos en WebP y unificar las
+  descripciones de servicios de la agenda con `config('dentissa.descripciones_servicios')`.
 
 ## Resultado
 

@@ -68,6 +68,7 @@ class TestimoniosYPromocionesPublicasTest extends TestCase
             ->assertSee('Excelente trato y muy puntuales.')
             ->assertSee('Ana M.')
             ->assertSee('4 de 5 estrellas')
+            ->assertSee('data-carrusel-testimonios', false)
             ->assertDontSee('Testimonio pendiente de autorización')
             ->assertDontSee('Martínez');
     }

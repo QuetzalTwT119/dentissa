@@ -394,6 +394,9 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
   experiencia**) con el teléfono o correo con el que agendó. Llega como
   **pendiente**, la campana avisa al personal y, al **aprobarlo** en Contenido →
   Testimonios, se publica con su nombre y la inicial de su apellido.
+- La clínica **no crea ni edita** testimonios: solo los **aprueba**, **rechaza**
+  (se quedan en la lista como "Rechazado", sin publicarse, y se pueden aprobar
+  después) o **elimina** (se borran para siempre, por ejemplo si el paciente lo pide).
 
 ## 4. Asistente de agenda
 

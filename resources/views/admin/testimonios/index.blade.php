@@ -38,12 +38,6 @@ $estadoClase = [
                             </select>
                         </form>
                     </x-slot:filtros>
-                    <x-slot:acciones>
-                        <a href="{{ route('admin.testimonios.create') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-brand transition-[background-color,transform] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
-                            <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
-                            Nuevo testimonio
-                        </a>
-                    </x-slot:acciones>
                 </x-pagination-summary>
                 <x-admin.table minWidth="min-w-[760px]">
                     <x-slot:head>
@@ -58,52 +52,45 @@ $estadoClase = [
 
                     @forelse ($testimonios as $testimonio)
                         <tr class="transition hover:bg-cream/60">
-                            <td class="px-6 py-4 font-semibold text-ink whitespace-nowrap">
-                                <div class="flex items-center gap-3">
+                            <td class="px-6 py-4 font-semibold text-ink">
+                                <div class="flex min-w-0 items-center gap-3">
                                     <x-admin.user-avatar :name="$testimonio->paciente->nombre . ' ' . $testimonio->paciente->apellido" />
-                                    <span>{{ $testimonio->paciente->nombre }} {{ $testimonio->paciente->apellido }}</span>
+                                    {{-- Nombre largo: se recorta (completo al pasar el mouse) para no sacar Acciones de la tarjeta. --}}
+                                    <span class="block max-w-[14rem] truncate" title="{{ $testimonio->paciente->nombre }} {{ $testimonio->paciente->apellido }}">{{ $testimonio->paciente->nombre }} {{ $testimonio->paciente->apellido }}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-amber-400 tracking-label font-semibold whitespace-nowrap">{{ str_repeat('★', $testimonio->calificacion) }}</td>
-                            <td class="max-w-sm truncate px-6 py-4 text-ink" title="{{ $testimonio->comentario }}">{{ $testimonio->comentario }}</td>
+                            <td class="max-w-[18rem] truncate px-6 py-4 text-ink" title="{{ $testimonio->comentario }}">{{ $testimonio->comentario }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $estadoClase[$testimonio->estado->value] ?? 'bg-shell text-ink' }}">
                                     {{ $estadoLabel[$testimonio->estado->value] ?? $testimonio->estado->value }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5">
-                                    <x-admin.acciones-fila :editar="route('admin.testimonios.edit', $testimonio)" :eliminar="route('admin.testimonios.destroy', $testimonio)" que="el testimonio" confirmar-titulo="¿Eliminar este testimonio?" />
+                            <td class="w-px whitespace-nowrap px-6 py-4 text-right">
+                                <x-admin.acciones-fila :eliminar="route('admin.testimonios.destroy', $testimonio)" que="el testimonio" confirmar-titulo="¿Eliminar este testimonio?">
+                                    {{-- Moderación: mismos botones redondos que Editar/Eliminar. --}}
                                     @if ($testimonio->estado->value !== 'aprobado')
-                                        <form method="POST" action="{{ route('admin.testimonios.aprobar', $testimonio) }}">
+                                        <form method="POST" action="{{ route('admin.testimonios.aprobar', $testimonio) }}" class="inline-flex">
                                             @csrf
                                             @method('patch')
-                                            <button type="submit" title="Aprobar" aria-label="Aprobar testimonio"
-                                                    class="rounded-xl p-2 text-sage-600 transition hover:bg-sage-50 hover:text-sage-700">
+                                            <button type="submit" title="Aprobar y publicar" aria-label="Aprobar testimonio de {{ $testimonio->paciente?->nombre }}"
+                                                    class="grid h-11 w-11 place-items-center rounded-full text-sage-700 transition-colors duration-150 hover:bg-sage-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sage-500/40 lg:h-9 lg:w-9">
                                                 <x-icon name="check" />
                                             </button>
                                         </form>
                                     @endif
                                     @if ($testimonio->estado->value !== 'rechazado')
-                                        <form method="POST" action="{{ route('admin.testimonios.rechazar', $testimonio) }}">
+                                        <form method="POST" action="{{ route('admin.testimonios.rechazar', $testimonio) }}" class="inline-flex">
                                             @csrf
                                             @method('patch')
-                                            <button type="submit" title="Rechazar" aria-label="Rechazar testimonio"
-                                                    class="rounded-xl p-2 text-amber-600 transition hover:bg-amber-50 hover:text-amber-800">
+                                            <button type="submit" title="Rechazar" aria-label="Rechazar testimonio de {{ $testimonio->paciente?->nombre }}"
+                                                    class="grid h-11 w-11 place-items-center rounded-full text-amber-700 transition-colors duration-150 hover:bg-amber-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 lg:h-9 lg:w-9">
                                                 <x-icon name="x" />
                                             </button>
                                         </form>
                                     @endif
-                                    <form method="POST" action="{{ route('admin.testimonios.destroy', $testimonio) }}"
-                                          data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar este testimonio?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" title="Eliminar" aria-label="Eliminar testimonio"
-                                                class="rounded-xl p-2 text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">
-                                            <x-icon name="trash" />
-                                        </button>
-                                    </form>
-                                </div>
+                                    <span class="mx-0.5 h-5 w-px bg-line" aria-hidden="true"></span>
+                                </x-admin.acciones-fila>
                             </td>
                         </tr>
                     @empty

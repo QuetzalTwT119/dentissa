@@ -22,7 +22,6 @@ class ConsistenciaDisenoTest extends TestCase
         'admin.servicios.create',
         'admin.tratamientos.create',
         'admin.ofertas.create',
-        'admin.testimonios.create',
         'admin.preguntas-frecuentes.create',
         'admin.galeria.create',
         'admin.casos.create',
@@ -160,10 +159,22 @@ class ConsistenciaDisenoTest extends TestCase
         foreach (['preguntas-frecuentes', 'testimonios'] as $modulo) {
             $html = $this->actingAs($admin)->get(route("admin.{$modulo}.index"))->assertOk()->getContent();
             // Mismo botón (componente compartido) para editar y eliminar.
-            $this->assertStringContainsString('lg:h-9 lg:w-9 text-brand-600', $html, "{$modulo}: editar");
+            if ($modulo !== 'testimonios') { // los testimonios no se editan
+                $this->assertStringContainsString('lg:h-9 lg:w-9 text-brand-600', $html, "{$modulo}: editar");
+            }
             $this->assertStringContainsString('lg:h-9 lg:w-9 text-rose-600', $html, "{$modulo}: eliminar");
             $this->assertStringContainsString('data-confirmar-boton="Sí, eliminar"', $html);
         }
+
+        // Un solo botón de eliminar por fila (antes Testimonios mostraba dos).
+        $html = $this->actingAs($admin)->get(route('admin.testimonios.index'))->getContent();
+        $this->assertSame(1, substr_count($html, 'aria-label="Eliminar el testimonio'));
+        $this->assertStringContainsString('Aprobar testimonio de Ana', $html);
+        // La clínica modera, no escribe ni cambia testimonios.
+        $this->assertStringNotContainsString('aria-label="Editar el testimonio', $html);
+        $this->assertStringNotContainsString('Nuevo testimonio', $html);
+        $this->assertFalse(\Illuminate\Support\Facades\Route::has('admin.testimonios.edit'));
+        $this->assertFalse(\Illuminate\Support\Facades\Route::has('admin.testimonios.create'));
 
         // El filtro de testimonios vive dentro de la barra (sin franja aparte).
         $html = $this->actingAs($admin)->get(route('admin.testimonios.index'))->getContent();
@@ -176,7 +187,7 @@ class ConsistenciaDisenoTest extends TestCase
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
 
-        foreach (['casos', 'galeria', 'ofertas', 'preguntas-frecuentes', 'servicios', 'testimonios', 'tratamientos', 'usuarios'] as $modulo) {
+        foreach (['casos', 'galeria', 'ofertas', 'preguntas-frecuentes', 'servicios', 'tratamientos', 'usuarios'] as $modulo) {
             $html = $this->actingAs($admin)->get(route("admin.{$modulo}.index"))->assertOk()->getContent();
             $crear = route("admin.{$modulo}.create");
 
