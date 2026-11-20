@@ -84,19 +84,7 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.tratamientos.edit', $tratamiento) }}" title="Editar" aria-label="Editar tratamiento"
-                                       class="rounded-xl p-2 text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
-                                        <x-icon name="edit" />
-                                    </a>
-                                    <form method="POST" action="{{ route('admin.tratamientos.destroy', $tratamiento) }}"
-                                          data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar el tratamiento «{{ $tratamiento->nombre }}»?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" title="Eliminar" aria-label="Eliminar tratamiento"
-                                                class="rounded-xl p-2 text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">
-                                            <x-icon name="trash" />
-                                        </button>
-                                    </form>
+                                    <x-admin.acciones-fila :editar="route('admin.tratamientos.edit', $tratamiento)" :eliminar="route('admin.tratamientos.destroy', $tratamiento)" que="el tratamiento" confirmar-titulo="¿Eliminar el tratamiento «{{ $tratamiento->nombre }}»?" />
                                 </div>
                             </td>
                         </tr>

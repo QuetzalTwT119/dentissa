@@ -13,8 +13,9 @@
 --}}
 @php
     $conAcciones = isset($acciones) && $acciones->isNotEmpty();
+    $conFiltros = isset($filtros) && $filtros->isNotEmpty();
 @endphp
-@if ($items && ($items->total() > 0 || ($conAcciones && ($posicion ?? 'arriba') === 'arriba')))
+@if ($items && ($items->total() > 0 || (($conAcciones || $conFiltros) && ($posicion ?? 'arriba') === 'arriba')))
     @php
         // "1 cita" / "1,284 citas": singular cuando hay exactamente uno y
         // separador de miles al estilo de México.
@@ -42,8 +43,12 @@
         <div {{ $attributes->merge(['class' => $integrated ? 'border-b border-line/80 bg-cream/50 px-4 py-3 sm:px-6' : 'mb-4 border-b border-line/80 pb-3 text-xs text-muted']) }} data-paginacion="arriba">
             {{-- En celular, la acción principal va primero; en pantallas anchas, a la derecha. --}}
             <div class="flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
-                @if ($items->total() > 0)
                 <div class="flex flex-wrap items-center justify-center gap-3 sm:justify-start sm:gap-4">
+                    {{-- Filtros de la lista (p. ej. Estado), a la izquierda, antes del conteo. --}}
+                    @if ($conFiltros)
+                        <div class="flex flex-wrap items-center gap-2">{{ $filtros }}</div>
+                    @endif
+                @if ($items->total() > 0)
                     <p class="inline-flex items-center gap-2 text-xs text-muted">
                         <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true"></span>
                         <span>
@@ -120,10 +125,8 @@
                             <span class="font-medium text-ink-soft">por página</span>
                         </form>
                     </div>
-                </div>
-                @else
-                    <span class="hidden sm:block" aria-hidden="true"></span>
                 @endif
+                </div>
 
                 {{-- Derecha: acciones de la lista. --}}
                 @if ($conAcciones)

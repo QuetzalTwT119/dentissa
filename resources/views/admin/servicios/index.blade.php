@@ -76,19 +76,7 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.servicios.edit', $servicio) }}" title="Editar" aria-label="Editar servicio"
-                                       class="rounded-xl p-2 text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
-                                        <x-icon name="edit" />
-                                    </a>
-                                    <form method="POST" action="{{ route('admin.servicios.destroy', $servicio) }}"
-                                          data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar el servicio «{{ $servicio->nombre }}»?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" title="Eliminar" aria-label="Eliminar servicio"
-                                                class="rounded-xl p-2 text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">
-                                            <x-icon name="trash" />
-                                        </button>
-                                    </form>
+                                    <x-admin.acciones-fila :editar="route('admin.servicios.edit', $servicio)" :eliminar="route('admin.servicios.destroy', $servicio)" que="el servicio" confirmar-titulo="¿Eliminar el servicio «{{ $servicio->nombre }}»?" />
                                 </div>
                             </td>
                         </tr>

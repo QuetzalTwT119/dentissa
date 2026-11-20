@@ -47,19 +47,7 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.casos.edit', $caso) }}" title="Editar" aria-label="Editar caso"
-                                       class="rounded-xl p-2 text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
-                                        <x-icon name="edit" />
-                                    </a>
-                                    <form method="POST" action="{{ route('admin.casos.destroy', $caso) }}"
-                                          data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar el caso «{{ $caso->titulo }}»?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" title="Eliminar" aria-label="Eliminar caso"
-                                                class="rounded-xl p-2 text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">
-                                            <x-icon name="trash" />
-                                        </button>
-                                    </form>
+                                    <x-admin.acciones-fila :editar="route('admin.casos.edit', $caso)" :eliminar="route('admin.casos.destroy', $caso)" que="el caso" confirmar-titulo="¿Eliminar el caso «{{ $caso->titulo }}»?" />
                                 </div>
                             </td>
                         </tr>

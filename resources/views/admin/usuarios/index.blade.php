@@ -87,10 +87,7 @@ $rolClase = [
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.usuarios.edit', $usuario) }}" title="Editar" aria-label="Editar usuario"
-                                       class="rounded-xl p-2 text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
-                                        <x-icon name="edit" />
-                                    </a>
+                                    <x-admin.acciones-fila :editar="route('admin.usuarios.edit', $usuario)" que="el usuario" />
                                     <form method="POST" action="{{ route('admin.usuarios.activo.toggle', $usuario) }}"
                                           data-confirmar="{{ $usuario->activo ? 'No podrá iniciar sesión hasta que lo vuelvas a activar.' : 'Podrá volver a iniciar sesión con su contraseña.' }}"
                                           data-confirmar-titulo="{{ $usuario->activo ? '¿Desactivar' : '¿Activar' }} a {{ $usuario->nombre }} {{ $usuario->apellido }}?"

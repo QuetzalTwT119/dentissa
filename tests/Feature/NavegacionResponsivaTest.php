@@ -69,8 +69,9 @@ class NavegacionResponsivaTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.testimonios.index'))
             ->assertOk()
-            ->assertSee('flex flex-col items-stretch gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6', false)
-            ->assertSee('class="flex flex-wrap items-center gap-3"', false);
+            // Desde el 20/11/2026 el filtro vive en la barra de la lista, que se apila en celular.
+            ->assertSee('flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between', false)
+            ->assertSee('id="filtro_estado"', false);
     }
 
     public function test_los_formularios_de_adjuntos_apilan_archivo_y_boton_en_pantallas_angostas(): void

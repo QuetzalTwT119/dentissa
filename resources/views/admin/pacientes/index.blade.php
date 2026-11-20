@@ -74,10 +74,7 @@
                                         <x-icon name="eye" class="h-3.5 w-3.5" />
                                         <span>Historial</span>
                                     </a>
-                                    <a href="{{ route('admin.pacientes.edit', $paciente) }}" title="Editar datos" aria-label="Editar datos del paciente"
-                                       class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line bg-white p-2 text-muted transition lg:min-h-0 lg:min-w-0 hover:bg-cream hover:text-ink hover:border-brand-200 shadow-xs">
-                                        <x-icon name="edit" class="h-4 w-4" />
-                                    </a>
+                                    <x-admin.acciones-fila :editar="route('admin.pacientes.edit', $paciente)" que="el paciente" />
                                 </div>
                             </td>
                         </tr>

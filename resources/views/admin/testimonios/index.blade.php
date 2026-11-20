@@ -24,21 +24,20 @@ $estadoClase = [
             @endif
 
             <x-admin.card>
-                <div class="flex flex-col items-stretch gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6 border-b border-line/80 bg-gradient-to-r from-white via-white to-cream/50">
-                    <form method="GET" action="{{ route('admin.testimonios.index') }}" class="flex flex-wrap items-center gap-3">
-                        <label for="filtro_estado" class="text-xs font-semibold uppercase tracking-label text-muted">Filtrar por estado:</label>
-                        <select id="filtro_estado" name="estado" onchange="this.form.submit()"
-                                class="min-h-11 rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
-                            <option value="">Todos</option>
-                            <option value="pendiente" @selected(($filtros['estado'] ?? '') === 'pendiente')>Pendiente</option>
-                            <option value="aprobado" @selected(($filtros['estado'] ?? '') === 'aprobado')>Aprobado</option>
-                            <option value="rechazado" @selected(($filtros['estado'] ?? '') === 'rechazado')>Rechazado</option>
-                        </select>
-                    </form>
-
-                </div>
 
                 <x-pagination-summary :items="$testimonios" label="testimonios">
+                    <x-slot:filtros>
+                        <form method="GET" action="{{ route('admin.testimonios.index') }}" class="flex items-center gap-2">
+                            <label for="filtro_estado" class="text-xs font-medium text-ink-soft">Estado</label>
+                            <select id="filtro_estado" name="estado" onchange="this.form.submit()"
+                                    class="min-h-11 rounded-xl border border-field bg-white py-1 pl-3 pr-8 text-xs font-semibold text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                <option value="">Todos</option>
+                                <option value="pendiente" @selected(($filtros['estado'] ?? '') === 'pendiente')>Pendientes</option>
+                                <option value="aprobado" @selected(($filtros['estado'] ?? '') === 'aprobado')>Aprobados</option>
+                                <option value="rechazado" @selected(($filtros['estado'] ?? '') === 'rechazado')>Rechazados</option>
+                            </select>
+                        </form>
+                    </x-slot:filtros>
                     <x-slot:acciones>
                         <a href="{{ route('admin.testimonios.create') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-brand transition-[background-color,transform] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
                             <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
@@ -74,10 +73,7 @@ $estadoClase = [
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.testimonios.edit', $testimonio) }}" title="Editar" aria-label="Editar testimonio"
-                                       class="rounded-xl p-2 text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
-                                        <x-icon name="edit" />
-                                    </a>
+                                    <x-admin.acciones-fila :editar="route('admin.testimonios.edit', $testimonio)" :eliminar="route('admin.testimonios.destroy', $testimonio)" que="el testimonio" confirmar-titulo="¿Eliminar este testimonio?" />
                                     @if ($testimonio->estado->value !== 'aprobado')
                                         <form method="POST" action="{{ route('admin.testimonios.aprobar', $testimonio) }}">
                                             @csrf

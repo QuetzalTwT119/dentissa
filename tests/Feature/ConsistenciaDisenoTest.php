@@ -95,7 +95,8 @@ class ConsistenciaDisenoTest extends TestCase
             ->get(route('admin.pacientes.index'))
             ->assertOk()
             ->assertSee('inline-flex min-h-11 items-center gap-1 rounded-xl bg-brand-50', false)
-            ->assertSee('inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line', false);
+            // Editar usa el componente compartido: 44 px en celular, compacto desde lg.
+            ->assertSee('grid h-11 w-11 place-items-center rounded-full', false);
     }
 
     public function test_las_confirmaciones_usan_el_dialogo_propio_y_no_el_del_navegador(): void
@@ -147,6 +148,28 @@ class ConsistenciaDisenoTest extends TestCase
         $this->actingAs($admin)->get(route('admin.galeria.index'))->assertOk();
         config(['dentissa.modulos.galeria' => true]);
         $this->actingAs($admin)->get(route('admin.ofertas.index'))->assertSee('href="'.route('admin.galeria.index').'"', false);
+    }
+
+    public function test_editar_y_eliminar_son_iguales_en_todas_las_listas_y_los_filtros_van_en_la_barra(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $paciente = \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'Prueba', 'telefono' => '5512345678', 'email' => 'ana@example.test']);
+        \App\Models\PreguntaFrecuente::create(['pregunta' => '¿Atienden niños?', 'respuesta' => 'Sí.', 'orden' => 1, 'activa' => true]);
+        \App\Models\Testimonio::create(['id_paciente' => $paciente->id, 'calificacion' => 5, 'comentario' => 'Muy bien atendida.', 'estado' => 'pendiente']);
+
+        foreach (['preguntas-frecuentes', 'testimonios'] as $modulo) {
+            $html = $this->actingAs($admin)->get(route("admin.{$modulo}.index"))->assertOk()->getContent();
+            // Mismo botón (componente compartido) para editar y eliminar.
+            $this->assertStringContainsString('lg:h-9 lg:w-9 text-brand-600', $html, "{$modulo}: editar");
+            $this->assertStringContainsString('lg:h-9 lg:w-9 text-rose-600', $html, "{$modulo}: eliminar");
+            $this->assertStringContainsString('data-confirmar-boton="Sí, eliminar"', $html);
+        }
+
+        // El filtro de testimonios vive dentro de la barra (sin franja aparte).
+        $html = $this->actingAs($admin)->get(route('admin.testimonios.index'))->getContent();
+        $barra = strpos($html, 'data-paginacion="arriba"');
+        $this->assertGreaterThan($barra, strpos($html, 'id="filtro_estado"'));
+        $this->assertStringNotContainsString('Filtrar por estado:', $html);
     }
 
     public function test_cada_lista_tiene_un_solo_boton_para_crear(): void
