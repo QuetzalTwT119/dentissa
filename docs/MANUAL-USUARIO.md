@@ -524,9 +524,24 @@ que se abrió la campana; no equivale a los avisos pendientes de atender. La ban
 resume el total, separa avisos en **Todas**, **Pendientes** y **Leídas**, y
 permite cambiar un aviso leído de vuelta a pendiente. También permite marcar
 todas las pendientes como leídas. Cada aviso muestra su fecha, estado y acceso
-a la cita relacionada. Al pulsar la campana se abre una vista rápida de hasta
-cinco avisos pendientes sin salir de la página actual; **Ver todas las
-notificaciones** abre la bandeja completa. La bandeja informa cuando se registra, reagenda,
+a la cita relacionada. Al pulsar la campana se abre una vista rápida sin salir
+de la página actual; **Ver todas las notificaciones** abre la bandeja completa.
+
+La vista rápida tiene dos partes:
+
+- **Por atender**: lo que necesita que alguien haga algo (un paciente canceló o
+  pidió reagendar, una inasistencia, un respaldo que falló). Cada aviso trae
+  **Ver en la agenda** (abre el día de esa cita), **Llamar** (marca al paciente
+  desde el celular) y **Ya lo atendí**, que lo pasa a informativas cuando ya lo
+  resolviste. Si no hay nada, verás "No hay nada pendiente".
+- **Informativas**: confirmaciones, citas nuevas y cambios. Están plegadas;
+  tócalas para abrirlas.
+
+Cada aviso muestra un círculo con las **iniciales del paciente** (el mismo
+paciente conserva siempre su color) y una insignia pequeña con lo que pasó:
+calendario (cita nueva o cambio), palomita (confirmó o se completó), tache
+(canceló o no asistió) o flechas (pidió reagendar). Los avisos del sistema,
+como un respaldo, usan un recuadro punteado porque no vienen de un paciente. La bandeja informa cuando se registra, reagenda,
 confirma, cancela, inicia o completa una cita, o cuando se registra una
 inasistencia. Las solicitudes hechas desde el
 portal o Telegram también avisan al personal; estos avisos no se agregan a la

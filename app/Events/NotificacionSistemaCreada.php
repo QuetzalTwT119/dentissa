@@ -29,13 +29,7 @@ class NotificacionSistemaCreada implements ShouldBroadcastNow
 
     public function broadcastWith(): array
     {
-        return [
-            'id' => $this->notificacion->id,
-            'titulo' => $this->notificacion->titulo,
-            'mensaje' => $this->notificacion->mensaje,
-            'url' => $this->notificacion->url ?: route('notificaciones.index', [], false),
-            'leida_url' => route('notificaciones.leida', $this->notificacion, false),
-            'creada' => $this->notificacion->created_at->toIso8601String(),
+        return $this->notificacion->datosEnVivo() + [
             'no_vistas' => NotificacionSistema::query()
                 ->where('user_id', $this->notificacion->user_id)
                 ->whereNull('vista_en')
