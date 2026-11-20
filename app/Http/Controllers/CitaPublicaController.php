@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Redirect;
 
 class CitaPublicaController extends Controller
 {
-    public function create(): View
+    public function create(Request $request): View
     {
         // Solo especialidades con al menos un tratamiento activo: no se ofrece
         // al paciente algo que no puede agendar (casos extremos, Fase 4).
@@ -23,8 +23,13 @@ class CitaPublicaController extends Controller
             ->orderBy('orden')
             ->get();
 
+        // ?servicio=ID llega desde la portada: la agenda abre con esa especialidad
+        // elegida, solo si es una de las que se pueden agendar en línea.
+        $servicioInicial = $servicios->firstWhere('id', (int) $request->query('servicio'))?->id;
+
         return view('citas-publicas.create', [
             'servicios' => $servicios,
+            'servicioInicial' => $servicioInicial,
             'horarioRegular' => HorarioAtencion::resumenSemanal(),
         ]);
     }

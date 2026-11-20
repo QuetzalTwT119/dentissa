@@ -49,6 +49,33 @@ el elemento más grande de la página (LCP). El teléfono sale de
 clínica (`EstadoConsultorioTest`). La imagen pesa unos 600 KB; convertirla a
 WebP reduciría la carga en celular.
 
+**Especialidades de la portada (carrusel "Fila").** Se eligió tras dos rondas
+de prototipos (Galería, Lista y Explorador; luego Galería en cuadrícula, fila
+deslizable o una a la vez). Reemplaza las tarjetas fijas de la vista por las
+especialidades activas de la base de datos (`servicios` en la ruta `/`, con sus
+tratamientos activos). Si aún no hay especialidades, se muestra el catálogo de
+ejemplo de antes.
+
+- **Datos de cada tarjeta:** `Servicio::fotoPublica()` (la imagen subida en el
+  panel, `/storage/…`, o la aprobada en `dentissa.imagenes.servicios`) y
+  `Servicio::descripcionPublica()` (la escrita por la clínica o
+  `dentissa.descripciones_servicios`). Con tratamientos activos dice "Agenda en
+  línea" y enlaza a `/agendar-cita?servicio=ID`; sin ellos, "Agenda por
+  teléfono" y enlaza a `contacto.telefono_enlace`.
+- **Agenda con especialidad elegida:** `CitaPublicaController::create()` acepta
+  `?servicio=ID` solo si es una especialidad agendable; cualquier otro valor se
+  ignora.
+- **Comportamiento (`carruselServicios` en `app.js`, estilos `.carrusel-*` en
+  `app.css`):** nunca avanza solo; cada flecha mueve una tarjeta (con 7 tarjetas
+  y 3 visibles, avanzar por páginas saltaba puntos) y da la vuelta al llegar al
+  final. Muestra 3 tarjetas completas en escritorio y 2 en tableta; en celular
+  se asoma la siguiente como pista para deslizar. Las flechas dependen del tipo
+  de puntero, no del ancho: con mouse se ven a cualquier ancho y en pantallas
+  táctiles se ocultan. Las fotos cargan con `loading="lazy"`; pesan unos 600 KB
+  cada una y convertirlas a WebP es una mejora pendiente.
+- **Pruebas:** `ServiciosPortadaTest`; `ImagenesPublicasTest` cubre el catálogo
+  de ejemplo sin especialidades.
+
 El ícono de la pestaña del navegador se define una sola vez en
 `resources/views/partials/favicon.blade.php` y usa el recurso de marca
 `public/images/brand/pwa-icon-192.png`. El layout autenticado ya lo hereda por
@@ -61,7 +88,7 @@ los comandos de `docker compose` son los mismos.
 
 
 
-La portada pública precarga su imagen principal y utiliza tipografías Figtree y Alex Brush servidas desde `public/fonts`, para no depender de un proveedor externo. Su composición editorial usa el nombre de la clínica como firma, describe el flujo real de agenda en línea y presenta un acceso directo a la agenda. Los servicios se renderizan como carrusel duplicado animado con CSS para permitir un bucle continuo; las tarjetas conservan altura e imagen uniformes, la animación se pausa al recibir foco y se desactiva con `prefers-reduced-motion`. Las imágenes del hero y servicios están configuradas en `config/dentissa.php`. El bloque de contacto se controla mediante `DENTISSA_MODO_DEMO`; debe permanecer activo mientras los valores sean ficticios y no debe abrirse el sitio a pacientes hasta configurar datos reales.
+La portada pública precarga su imagen principal y utiliza tipografías Figtree y Alex Brush servidas desde `public/fonts`, para no depender de un proveedor externo. Su composición editorial usa el nombre de la clínica como firma, describe el flujo real de agenda en línea y presenta un acceso directo a la agenda. Los servicios se muestran en un carrusel que mueve el paciente (ver "Especialidades de la portada"). Las imágenes del hero y servicios están configuradas en `config/dentissa.php`. El bloque de contacto se controla mediante `DENTISSA_MODO_DEMO`; debe permanecer activo mientras los valores sean ficticios y no debe abrirse el sitio a pacientes hasta configurar datos reales.
 
 ## 3. Arranque del proyecto
 
