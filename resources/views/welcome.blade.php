@@ -254,6 +254,66 @@
                 </p>
             </div>
 
+            @if ($servicios->isNotEmpty())
+                {{--
+                    Carrusel "Fila": una tarjeta con foto por especialidad activa. Las que
+                    tienen tratamientos activos se agendan en línea (la agenda abre con esa
+                    especialidad elegida); las demás llevan al teléfono del consultorio.
+                --}}
+                <p class="mt-3 max-w-2xl text-callout text-muted">Elige una especialidad para ver qué incluye y agendar en línea; las demás las agendamos contigo por teléfono.</p>
+
+                <div x-data="carruselServicios" class="relative mt-10" role="region" aria-roledescription="carrusel" aria-label="Especialidades">
+                    <button type="button" x-on:click="anterior()" class="carrusel-flecha carrusel-flecha-izq focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Especialidades anteriores">
+                        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+
+                    <div x-ref="pista" x-on:scroll.passive="alDesplazar()" tabindex="0" class="carrusel-pista focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Especialidades; desliza para ver más">
+                        @foreach ($servicios as $servicio)
+                            @php
+                                $enLinea = $servicio->tratamientos->isNotEmpty();
+                                $cuantos = $servicio->tratamientos->count();
+                            @endphp
+                            <a href="{{ $enLinea ? route('citas.publica.create', ['servicio' => $servicio->id]) : $contacto['telefono_enlace'] }}"
+                               data-servicio="{{ $servicio->id }}"
+                               aria-label="{{ $servicio->nombre }}: {{ $enLinea ? 'agendar en línea' : 'agendar por teléfono' }}"
+                               class="group relative isolate flex min-h-[23.75rem] flex-col justify-end overflow-hidden rounded-[1.75rem] p-6 text-white shadow-soft focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-300">
+                                <img src="{{ $servicio->fotoPublica() }}" alt="" loading="lazy" decoding="async"
+                                     class="absolute inset-0 -z-20 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100">
+                                <span aria-hidden="true" class="absolute inset-0 -z-10 bg-gradient-to-t from-[#2b1a20]/90 via-[#2b1a20]/35 to-[#2b1a20]/5"></span>
+
+                                <span @class([
+                                    'mb-auto self-start rounded-full px-2.5 py-1 text-caption font-semibold uppercase tracking-label',
+                                    'bg-sage-600 text-white' => $enLinea,
+                                    'bg-white/15 text-white ring-1 ring-inset ring-white/25' => ! $enLinea,
+                                ])>{{ $enLinea ? 'Agenda en línea' : 'Agenda por teléfono' }}</span>
+
+                                <h3 class="font-serif text-title-3 font-medium">{{ $servicio->nombre }}</h3>
+                                @if ($descripcion = $servicio->descripcionPublica())
+                                    <p class="mt-1.5 line-clamp-3 text-callout text-white/85">{{ $descripcion }}</p>
+                                @endif
+                                <span class="mt-3.5 inline-flex items-center gap-1.5 text-sm font-semibold text-peach-200">
+                                    {{ $enLinea ? ($cuantos === 1 ? 'Ver tratamiento y agendar' : "Ver {$cuantos} tratamientos y agendar") : 'Llamar · '.$contacto['telefono'] }}
+                                    <span class="transition-transform duration-200 ease-out group-hover:translate-x-0.5">{!! $iconoFlecha !!}</span>
+                                </span>
+                            </a>
+                        @endforeach
+                    </div>
+
+                    <button type="button" x-on:click="siguiente()" class="carrusel-flecha carrusel-flecha-der focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Más especialidades">
+                        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+
+                    {{-- Un punto por posición; separación pareja también junto al activo (alargado). --}}
+                    <div class="mt-5 flex items-center justify-center" aria-hidden="true">
+                        <template x-for="i in posiciones" :key="i">
+                            <button type="button" tabindex="-1" x-on:click="ir(i - 1)" class="flex h-6 items-center px-1">
+                                <span class="h-2 rounded-full transition-[width,background-color,opacity] duration-200 ease-out"
+                                      :class="actual === i - 1 ? 'w-[1.375rem] bg-brand-600' : 'w-2 bg-peach-300 opacity-70 hover:opacity-100'"></span>
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            @else
             <div class="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach ($tratamientos as [$numero, $titulo, $texto, $duracion, $etiqueta, $valor, $destacado])
                     <article @class([
@@ -308,6 +368,7 @@
                     </div>
                 </article>
             </div>
+            @endif
         </section>
 
         <!-- ============ La clínica ============ -->

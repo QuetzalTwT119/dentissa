@@ -191,4 +191,19 @@ return [
         ],
     ],
 
+    /*
+     * Descripción pública de cada especialidad cuando el administrador no ha
+     * escrito una propia (Servicio::descripcionPublica). La comparten la
+     * portada y la agenda en línea.
+     */
+    'descripciones_servicios' => [
+        'Odontología General' => 'Valoración, limpieza dental, retiro de caries y extracciones para toda la familia.',
+        'Odontología Estética' => 'Blanqueamiento dental para devolver la luminosidad natural a tu sonrisa.',
+        'Ortodoncia' => 'Alineación dental con brackets estéticos y alineadores invisibles de precisión.',
+        'Implantología' => 'Rehabilitación y reposición de piezas con implantes dentales de titanio.',
+        'Periodoncia' => 'Tratamiento especializado de encías, hueso de soporte y salud bucal.',
+        'Endodoncia' => 'Terapia de conductos radiculares para aliviar dolor y salvar tus piezas naturales.',
+        'Odontopediatría' => 'Cuidado dental preventivo y amable diseñado especialmente para niñas y niños.',
+    ],
+
 ];
