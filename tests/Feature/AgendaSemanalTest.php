@@ -123,7 +123,7 @@ class AgendaSemanalTest extends TestCase
         $this->cita('Ana', 'Torres', '2030-01-08 09:30');
 
         $this->actingAs($this->admin())
-            ->get(route('citas.index'))
+            ->get(route('citas.index', ['fecha' => '2030-01-08']))
             ->assertOk()
             ->assertSee('data-vista-actual="lista"', false)
             ->assertSee('Ana Torres')

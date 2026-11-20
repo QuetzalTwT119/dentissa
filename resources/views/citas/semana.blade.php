@@ -1,11 +1,19 @@
 @php
     $nombresDia = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    $abrevDia = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
     $nombresMes = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
-    $etiquetaDia = fn ($fecha) => ucfirst($nombresDia[$fecha->dayOfWeek]).' '.$fecha->day;
+    $mesesLargos = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     $sabado = $lunes->copy()->addDays(5);
     $rango = $lunes->day.' '.$nombresMes[$lunes->month - 1].' – '.$sabado->day.' '.$nombresMes[$sabado->month - 1].' '.$sabado->year;
-    // En celular se abre en "hoy" si cae en esta semana; si no, en el primer día.
-    $indiceInicial = max(0, $dias->search(fn ($dia) => $dia['esHoy']) ?: 0);
+    $fechaLarga = fn ($fecha) => ucfirst($nombresDia[$fecha->dayOfWeek]).' '.$fecha->day.' de '.$mesesLargos[$fecha->month - 1];
+    $hhmm = fn (int $minutos) => intdiv($minutos, 60).':'.str_pad((string) ($minutos % 60), 2, '0', STR_PAD_LEFT);
+    $columnas = 'grid-template-columns: 2.5rem repeat('.$dias->count().', minmax(0, 1fr))';
+    $estiloNivel = [
+        'libre' => 'border-line bg-white',
+        'con_citas' => 'border-brand-100 bg-brand-50',
+        'lleno' => 'border-brand-100 bg-brand-100',
+    ];
+    $textoNivel = ['libre' => 'libre', 'con_citas' => 'con citas, aún hay lugar', 'lleno' => 'lleno'];
 @endphp
 
 <x-app-layout>
@@ -13,7 +21,7 @@
         <x-admin.header
             badge="Control de Agenda"
             title="Citas"
-            subtitle="Agenda de la semana: quién viene, a qué hora y en qué estado está cada cita."
+            subtitle="Qué tan llena está cada parte de la semana y dónde cabe otra cita."
         />
     </x-slot>
 
@@ -22,7 +30,7 @@
             @include('citas.partials.selector-vista', ['vistaActual' => 'semana'])
 
             <section data-semana="{{ $lunes->toDateString() }}"
-                     x-data="{ dia: {{ $indiceInicial }}, total: {{ $dias->count() }} }"
+                     x-data="{ bloque: @js($ocupacion['seleccion']) }"
                      aria-labelledby="titulo-semana"
                      class="rounded-3xl border border-line bg-white p-4 shadow-soft sm:p-6">
 
@@ -48,46 +56,99 @@
                     </a>
                 </div>
 
-                {{-- Celular: flechas para cambiar de día (solo con JavaScript). --}}
-                <div x-cloak x-show="total > 1" class="mt-5 flex items-center justify-between gap-2 lg:hidden">
-                    <button type="button" x-on:click="dia = Math.max(0, dia - 1)" x-bind:disabled="dia === 0"
-                            aria-label="Día anterior"
-                            class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink disabled:opacity-40">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                    </button>
-                    <span class="text-sm text-muted" x-text="`Día ${dia + 1} de ${total}`"></span>
-                    <button type="button" x-on:click="dia = Math.min(total - 1, dia + 1)" x-bind:disabled="dia === total - 1"
-                            aria-label="Día siguiente"
-                            class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink disabled:opacity-40">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                </div>
-
-                <div class="mt-5" style="--dias: {{ $dias->count() }}">
-                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-[repeat(var(--dias),minmax(0,1fr))] lg:gap-3">
-                        @foreach ($dias as $indice => $dia)
-                            <div data-dia="{{ $dia['fecha']->toDateString() }}"@if ($dia['esHoy']) data-hoy @endif
-                                 x-bind:class="dia === {{ $indice }} ? '' : 'max-lg:hidden'"
-                                 @class([
-                                     'min-w-0 rounded-2xl border p-3',
-                                     'border-brand-300 bg-brand-50/40' => $dia['esHoy'],
-                                     'border-line bg-cream/50' => ! $dia['esHoy'] && $dia['abierto'],
-                                     'border-line/70 bg-shell/60' => ! $dia['abierto'],
-                                 ])>
-                                <div class="flex items-baseline justify-between gap-2 border-b border-line/70 pb-2">
-                                    <h3 @class(['text-sm font-semibold', 'text-brand-700' => $dia['esHoy'], 'text-ink' => ! $dia['esHoy']])>
-                                        {{ $etiquetaDia($dia['fecha']) }}
-                                        @if ($dia['esHoy']) <span class="font-normal">· hoy</span> @endif
-                                    </h3>
-                                    <span class="text-xs text-muted">{{ $dia['abierto'] ? $dia['horario'] : 'Cerrado' }}</span>
+                <div class="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] lg:gap-8">
+                    {{-- Mapa: un recuadro por bloque de 2 horas; más color, más ocupado. --}}
+                    <div>
+                        <div class="mb-2 grid gap-2.5 text-center" style="{{ $columnas }}">
+                            <span aria-hidden="true"></span>
+                            @foreach ($dias as $dia)
+                                <div data-dia="{{ $dia['fecha']->toDateString() }}"@if ($dia['esHoy']) data-hoy @endif>
+                                    <p @class(['text-sm font-semibold', 'text-brand-700' => $dia['esHoy'], 'text-ink' => ! $dia['esHoy']])>
+                                        {{ $dia['esHoy'] ? 'Hoy' : $abrevDia[$dia['fecha']->dayOfWeek] }} {{ $dia['fecha']->day }}
+                                    </p>
+                                    @php($activas = $dia['citas']->reject(fn ($cita) => $cita->estado->esInactiva())->count())
+                                    @if ($dia['abierto'])
+                                        <p class="text-xs text-muted">{{ $activas }} {{ $activas === 1 ? 'cita' : 'citas' }}</p>
+                                    @elseif (isset($ocupacion['cerrados'][$dia['fecha']->toDateString()]))
+                                        {{-- Día cerrado con citas: se pueden consultar desde aquí. --}}
+                                        <button type="button" x-on:click="bloque = @js($dia['fecha']->toDateString().'|cerrado')"
+                                                class="text-xs font-semibold text-brand-700 underline decoration-brand-300 underline-offset-2 hover:text-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">
+                                            Cerrado · {{ $dia['citas']->count() }} {{ $dia['citas']->count() === 1 ? 'cita' : 'citas' }}
+                                        </button>
+                                    @else
+                                        <p class="text-xs text-muted">Cerrado</p>
+                                    @endif
                                 </div>
+                            @endforeach
+                        </div>
 
+                        <div role="grid" aria-label="Ocupación de la semana por bloques de 2 horas" class="grid gap-2.5" style="{{ $columnas }}">
+                            @foreach ($ocupacion['horas'] as $hora)
+                                <div class="pt-1 pr-1.5 text-right text-xs tabular-nums text-muted">{{ $hora }}:00</div>
+                                @foreach ($dias as $dia)
+                                    @php($clave = $dia['fecha']->toDateString().'|'.$hora)
+                                    @php($bloque = $ocupacion['bloques'][$clave] ?? null)
+                                    @if ($bloque)
+                                        <button type="button"
+                                                x-on:click="bloque = @js($clave)"
+                                                :aria-pressed="(bloque === @js($clave)).toString()"
+                                                aria-pressed="{{ $clave === $ocupacion['seleccion'] ? 'true' : 'false' }}"
+                                                aria-label="{{ $fechaLarga($dia['fecha']) }}, {{ $hhmm($bloque['inicio']) }} a {{ $hhmm($bloque['fin']) }}: {{ $textoNivel[$bloque['nivel']] }}"
+                                                data-bloque="{{ $clave }}" data-nivel="{{ $bloque['nivel'] }}"
+                                                @class([
+                                                    'h-12 rounded-xl border transition-[box-shadow,transform] duration-150 ease-out active:scale-[0.96] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 [&[aria-pressed=true]]:ring-2 [&[aria-pressed=true]]:ring-brand-600',
+                                                    $estiloNivel[$bloque['nivel']],
+                                                    'opacity-40' => $bloque['pasado'],
+                                                ])></button>
+                                    @else
+                                        <div aria-hidden="true"></div>
+                                    @endif
+                                @endforeach
+                            @endforeach
+                        </div>
+
+                        <p class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+                            <span class="inline-flex items-center gap-1.5"><span class="h-3 w-4 rounded border border-line bg-white" aria-hidden="true"></span>Libre</span>
+                            <span class="inline-flex items-center gap-1.5"><span class="h-3 w-4 rounded border border-brand-100 bg-brand-50" aria-hidden="true"></span>Con citas, aún hay lugar</span>
+                            <span class="inline-flex items-center gap-1.5"><span class="h-3 w-4 rounded bg-brand-100" aria-hidden="true"></span>Lleno</span>
+                        </p>
+                    </div>
+
+                    {{-- Detalle del bloque elegido. Sin JavaScript se ve el bloque que el servidor eligió. --}}
+                    <div class="lg:sticky lg:top-24">
+                        @foreach ($ocupacion['bloques'] as $clave => $bloque)
+                            @continue(! $bloque)
+                            @php($activasBloque = $bloque['activas'])
+                            <div x-show="bloque === @js($clave)" @if ($clave !== $ocupacion['seleccion']) style="display: none" @endif
+                                 data-detalle="{{ $clave }}" aria-live="polite"
+                                 class="rounded-2xl border border-line bg-cream/70 p-4 sm:p-5">
+                                <h3 class="font-serif text-title-3 text-ink">{{ $fechaLarga($bloque['fecha']) }}</h3>
+                                <p class="mt-1 text-sm text-muted">
+                                    {{ $hhmm($bloque['inicio']) }} a {{ $hhmm($bloque['fin']) }} · {{ $activasBloque }} {{ $activasBloque === 1 ? 'cita' : 'citas' }}
+                                    · Horario {{ $bloque['horario'] }}
+                                </p>
+
+                                @unless ($bloque['pasado'])
+                                    <p class="mt-4 text-xs font-semibold uppercase tracking-label text-muted">Dónde cabe una cita</p>
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        @forelse ($bloque['huecos'] as $hueco)
+                                            <a href="{{ route('citas.create', ['fecha' => $bloque['fecha']->toDateString()]) }}"
+                                               class="inline-flex min-h-9 items-center rounded-full border border-dashed border-brand-300 bg-white px-3 text-sm font-semibold tabular-nums text-brand-700 transition-colors hover:bg-brand-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+                                               aria-label="Agendar el {{ $fechaLarga($bloque['fecha']) }} a las {{ $hueco }}">{{ $hueco }}</a>
+                                        @empty
+                                            <p class="text-sm text-muted">Ya no queda lugar en este bloque.</p>
+                                        @endforelse
+                                    </div>
+                                @endunless
+
+                                <p class="mt-4 text-xs font-semibold uppercase tracking-label text-muted">Citas</p>
                                 <ul class="mt-2 space-y-2" role="list">
-                                    @forelse ($dia['citas'] as $cita)
+                                    @forelse ($bloque['citas'] as $cita)
+                                        @php($empiezaAqui = $cita->fecha_hora->hour * 60 + $cita->fecha_hora->minute >= $bloque['inicio'])
                                         <li>
                                             <a href="{{ route('citas.edit', $cita) }}"
                                                @class([
-                                                   'block rounded-xl border bg-white p-2.5 text-sm transition hover:border-brand-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
+                                                   'block rounded-xl border bg-white px-3 py-2.5 text-sm transition hover:border-brand-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400',
                                                    'border-line/70 opacity-70' => $cita->estado->esInactiva(),
                                                    'border-line' => ! $cita->estado->esInactiva(),
                                                ])>
@@ -95,19 +156,50 @@
                                                     <span class="font-semibold tabular-nums text-ink">{{ $cita->fecha_hora->format('H:i') }}</span>
                                                     <span class="rounded-full px-2 py-0.5 text-caption font-semibold {{ $cita->estado->claseInsignia() }}">{{ $cita->estado->etiqueta() }}</span>
                                                 </span>
-                                                <span @class(['mt-1 block truncate font-medium text-ink', 'line-through' => $cita->estado->esInactiva()])>{{ $cita->paciente?->nombre_completo ?? 'Paciente' }}</span>
-                                                <span class="block truncate text-xs text-muted">{{ $cita->tratamiento?->nombre ?? 'Sin tratamiento' }}</span>
+                                                <span @class(['mt-1 block font-medium text-ink [overflow-wrap:anywhere]', 'line-through' => $cita->estado->esInactiva()])>{{ $cita->paciente?->nombre_completo ?? 'Paciente' }}</span>
+                                                <span class="block text-xs text-muted">{{ $cita->tratamiento?->nombre ?? 'Sin tratamiento' }}</span>
+                                                {{-- Una cita larga aparece en varios bloques; la marca va solo donde empieza. --}}
                                                 @if ($cita->asistencia_confirmada_en && ! $cita->estado->esInactiva())
-                                                    <span class="mt-1 block truncate text-xs font-medium text-sage-700" data-asistencia-confirmada>✓ Confirmó asistencia</span>
+                                                    <span class="mt-1 block text-xs font-medium text-sage-700" @if ($empiezaAqui) data-asistencia-confirmada @endif>✓ Confirmó asistencia</span>
                                                 @endif
                                             </a>
                                         </li>
                                     @empty
-                                        <li class="py-3 text-center text-xs text-muted">{{ $dia['abierto'] ? 'Sin citas' : '—' }}</li>
+                                        <li class="text-sm text-muted">Sin citas en este bloque.</li>
                                     @endforelse
                                 </ul>
                             </div>
                         @endforeach
+
+                        @foreach ($ocupacion['cerrados'] as $fecha => $citasCerrado)
+                            @php($clave = $fecha.'|cerrado')
+                            <div x-show="bloque === @js($clave)" style="display: none" data-detalle="{{ $clave }}" aria-live="polite"
+                                 class="rounded-2xl border border-line bg-cream/70 p-4 sm:p-5">
+                                <h3 class="font-serif text-title-3 text-ink">{{ $fechaLarga(\Illuminate\Support\Carbon::parse($fecha)) }}</h3>
+                                <p class="mt-1 text-sm text-muted">El consultorio no abre este día, pero tiene {{ $citasCerrado->count() }} {{ $citasCerrado->count() === 1 ? 'cita registrada' : 'citas registradas' }}.</p>
+                                <ul class="mt-4 space-y-2" role="list">
+                                    @foreach ($citasCerrado as $cita)
+                                        <li>
+                                            <a href="{{ route('citas.edit', $cita) }}" class="block rounded-xl border border-line bg-white px-3 py-2.5 text-sm transition hover:border-brand-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">
+                                                <span class="flex items-center justify-between gap-2">
+                                                    <span class="font-semibold tabular-nums text-ink">{{ $cita->fecha_hora->format('H:i') }}</span>
+                                                    <span class="rounded-full px-2 py-0.5 text-caption font-semibold {{ $cita->estado->claseInsignia() }}">{{ $cita->estado->etiqueta() }}</span>
+                                                </span>
+                                                <span class="mt-1 block font-medium text-ink [overflow-wrap:anywhere]">{{ $cita->paciente?->nombre_completo ?? 'Paciente' }}</span>
+                                                <span class="block text-xs text-muted">{{ $cita->tratamiento?->nombre ?? 'Sin tratamiento' }}</span>
+                                                @if ($cita->asistencia_confirmada_en && ! $cita->estado->esInactiva())
+                                                    <span class="mt-1 block text-xs font-medium text-sage-700" data-asistencia-confirmada>✓ Confirmó asistencia</span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endforeach
+
+                        @if (! $ocupacion['seleccion'])
+                            <p class="rounded-2xl border border-line bg-cream/70 p-5 text-sm text-muted">El consultorio no abre esta semana.</p>
+                        @endif
                     </div>
                 </div>
             </section>

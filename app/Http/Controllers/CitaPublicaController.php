@@ -31,6 +31,12 @@ class CitaPublicaController extends Controller
 
     public function store(Request $request, CrearCitaService $crearCita, NotificacionService $notificaciones): RedirectResponse
     {
+        // El formulario muestra el teléfono como "55 1234 5678" para leerlo mejor;
+        // solo se quitan los espacios: cualquier otro carácter sigue siendo inválido.
+        if ($request->has('telefono')) {
+            $request->merge(['telefono' => preg_replace('/\s+/', '', (string) $request->input('telefono'))]);
+        }
+
         $validated = $request->validate([
             'id_servicio' => ['required', 'exists:servicios,id'],
             'id_tratamiento' => ['required', 'exists:tratamientos,id'],

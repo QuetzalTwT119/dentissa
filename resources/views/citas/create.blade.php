@@ -21,7 +21,8 @@
                  x-data="{
                     idServicio: @js(old('id_servicio', '')),
                     idTratamiento: @js(old('id_tratamiento', '')),
-                    fecha: @js(old('fecha', '')),
+                    {{-- ?fecha=AAAA-MM-DD llega desde los horarios libres de la vista semanal. --}}
+                    fecha: @js(old('fecha', preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) request()->query('fecha')) ? request()->query('fecha') : '')),
                     hora: @js(old('hora', null)),
                     horarios: [],
                     loadingHorarios: false,
@@ -111,16 +112,10 @@
                         </span>
 
                         <div>
-                            <x-input-label for="fecha" value="Fecha" />
-                            <x-text-input id="fecha" name="fecha" type="date" class="mt-1.5 block w-full" required
-                                          x-model="fecha" @change="cargarHorarios()" />
-                            <x-input-error :messages="$errors->get('fecha')" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <x-input-label value="Horario disponible" class="mb-2" />
+                            <input type="hidden" name="fecha" x-model="fecha">
                             <input type="hidden" name="hora" x-model="hora">
                             @include('partials.disponibilidad-picker')
+                            <x-input-error :messages="$errors->get('fecha')" class="mt-2" />
                             <x-input-error :messages="$errors->get('hora')" class="mt-2" />
                         </div>
                     </div>

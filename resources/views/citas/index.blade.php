@@ -1,31 +1,31 @@
 @php
-$estadoLabel = collect(\App\Enums\EstadoCita::cases())->mapWithKeys(fn ($estado) => [$estado->value => $estado->etiqueta()])->all();
-$estadoClase = collect(\App\Enums\EstadoCita::cases())->mapWithKeys(fn ($estado) => [$estado->value => $estado->claseInsignia()])->all();
-$estadoDot = [
-    'agendada' => 'bg-amber-500',
-    'confirmada' => 'bg-sky-500',
-    'en_curso' => 'bg-brand-500',
-    'completada' => 'bg-sage-500',
-    'cancelada' => 'bg-muted',
-    'no_asistio' => 'bg-rose-500',
-];
-$esPersonal = true;
-$esAdmin = auth()->user()->rol === \App\Enums\RolUsuario::Admin;
-$estadosConAccionesSecundarias = ['agendada', 'confirmada'];
-$estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
+    $estadoLabel = collect(\App\Enums\EstadoCita::cases())->mapWithKeys(fn ($estado) => [$estado->value => $estado->etiqueta()])->all();
+    $esPersonal = true;
+    $porDia = isset($dia);
+    $terminales = ['completada', 'cancelada', 'no_asistio'];
+
+    // "Hoy · jueves 19 de noviembre", "Mañana · viernes 20 de noviembre" o "Sábado 21 de noviembre".
+    $tituloDia = function (\Illuminate\Support\Carbon $fecha) {
+        $larga = $fecha->locale('es')->translatedFormat('l j \d\e F');
+        if ($fecha->isToday()) return 'Hoy · '.$larga;
+        if ($fecha->isTomorrow()) return 'Mañana · '.$larga;
+        if ($fecha->isYesterday()) return 'Ayer · '.$larga;
+        return ucfirst($larga).($fecha->year !== now()->year ? ' de '.$fecha->year : '');
+    };
+    $conEstado = fn (array $parametros) => array_filter($parametros + ['estado' => $filtros['estado'] ?? null]);
 @endphp
 
 <x-app-layout>
     <x-slot name="header">
         <x-admin.header
             badge="Control de Agenda"
-            :title="$esPersonal ? 'Citas' : 'Mis citas'"
-            subtitle="Monitoreo de citas médicas, estados de atención y tiempos clínicos."
+            title="Citas"
+            subtitle="Las citas de cada día, en orden de hora, con su siguiente paso a un clic."
         />
     </x-slot>
 
     <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+        <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             @if (session('success'))
                 <x-alert type="success" :message="session('success')" />
             @endif
@@ -40,233 +40,226 @@ $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
 
             @include('citas.partials.selector-vista', ['vistaActual' => 'lista'])
 
-            <!-- Filtros y Barra de Acciones Superior -->
+            <!-- Búsqueda (en todas las fechas) y filtro de estado -->
             <div class="rounded-3xl border border-line bg-white p-4 shadow-soft sm:p-6">
-                @if ($esPersonal)
-                    <form method="GET" action="{{ route('citas.index') }}" role="search" data-citas-live-search class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-12 xl:items-end">
-                        @if (request()->has('per_page'))
-                            <input type="hidden" name="per_page" value="{{ request('per_page') }}">
-                        @endif
+                <form method="GET" action="{{ route('citas.index') }}" role="search" data-citas-live-search class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-12 xl:items-end">
+                    @if (request()->has('per_page'))
+                        <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+                    @endif
+                    {{-- El día elegido en las pestañas se conserva al filtrar por estado. --}}
+                    @if (filled($filtros['fecha'] ?? null))
+                        <input type="hidden" name="fecha" value="{{ $filtros['fecha'] }}">
+                    @endif
 
-                        <div class="min-w-0 xl:col-span-4">
-                            <label for="buscar_citas" class="mb-1.5 block text-sm font-semibold text-ink">Buscar</label>
-                            <div class="relative">
-                                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-brand-500" aria-hidden="true">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4" stroke-linecap="round"/></svg>
-                                </span>
-                                <input enterkeyhint="search" id="buscar_citas" type="search" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" maxlength="100"
-                                       placeholder="Paciente, teléfono, servicio o tratamiento"
-                                       aria-label="Buscar citas por paciente, teléfono, servicio o tratamiento"
-                                       x-on:input.debounce.600ms="$el.form.requestSubmit()"
-                                       class="block h-12 w-full rounded-xl border border-field bg-cream/60 pl-11 pr-4 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] placeholder:text-muted hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
-                            </div>
+                    <div class="min-w-0 xl:col-span-6">
+                        <label for="buscar_citas" class="mb-1.5 block text-sm font-semibold text-ink">Buscar en todas las fechas</label>
+                        <div class="relative">
+                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-brand-500" aria-hidden="true">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4" stroke-linecap="round"/></svg>
+                            </span>
+                            <input enterkeyhint="search" id="buscar_citas" type="search" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" maxlength="100"
+                                   placeholder="Paciente, teléfono, servicio o tratamiento"
+                                   aria-label="Buscar citas por paciente, teléfono, servicio o tratamiento"
+                                   x-on:input.debounce.600ms="$el.form.requestSubmit()"
+                                   class="block h-12 w-full rounded-xl border border-field bg-cream/60 pl-11 pr-4 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] placeholder:text-muted hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
                         </div>
+                    </div>
 
-                        <div class="min-w-0 xl:col-span-2">
-                            <label for="filtro_fecha" class="mb-1.5 block text-sm font-semibold text-ink">Fecha</label>
-                            <input id="filtro_fecha" type="date" name="fecha" value="{{ $filtros['fecha'] ?? '' }}" onchange="this.form.submit()"
-                                   class="h-12 w-full rounded-xl border border-field bg-cream/60 px-3 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
-                        </div>
+                    <div class="min-w-0 xl:col-span-2">
+                        <label for="filtro_estado" class="mb-1.5 block text-sm font-semibold text-ink">Estado</label>
+                        <select id="filtro_estado" name="estado" onchange="this.form.submit()"
+                                class="h-12 w-full rounded-xl border border-field bg-cream/60 px-3 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
+                            <option value="">Todos los estados</option>
+                            @foreach ($estadoLabel as $valor => $etiqueta)
+                                <option value="{{ $valor }}" @selected(($filtros['estado'] ?? '') === $valor)>{{ $etiqueta }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                        <div class="min-w-0 xl:col-span-2">
-                            <label for="filtro_estado" class="mb-1.5 block text-sm font-semibold text-ink">Estado</label>
-                            <select id="filtro_estado" name="estado" onchange="this.form.submit()"
-                                    class="h-12 w-full rounded-xl border border-field bg-cream/60 px-3 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
-                                <option value="">Todos los estados</option>
-                                @foreach ($estadoLabel as $valor => $etiqueta)
-                                    <option value="{{ $valor }}" @selected(($filtros['estado'] ?? '') === $valor)>{{ $etiqueta }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <button type="submit" class="sr-only">Buscar citas</button>
 
-                        <button type="submit" class="sr-only">Buscar citas</button>
-
-                        <div class="flex items-center gap-2 sm:col-span-2 xl:col-span-4 xl:justify-end">
-                            <a data-citas-clear
-                               href="{{ route('citas.index', request()->only('per_page')) }}"
-                               @class([
-                                   'inline-flex h-12 items-center justify-center rounded-full px-4 text-sm font-semibold text-muted transition hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-400',
-                                   'hidden' => empty($filtros['buscar']) && empty($filtros['fecha']) && empty($filtros['estado']),
-                               ])>
-                                Limpiar
-                            </a>
-                            <a href="{{ route('citas.create') }}" class="btn-brand h-12 shrink-0 px-5">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                <span>Agendar cita</span>
-                            </a>
-                        </div>
-                    </form>
-                @else
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <p class="text-sm text-ink-soft">Aquí puedes consultar el estado y horario de tus citas programadas.</p>
-                        <a href="{{ route('citas.create') }}" class="btn-brand shrink-0">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <div class="flex items-center gap-2 sm:col-span-2 xl:col-span-4 xl:justify-end">
+                        <a data-citas-clear
+                           href="{{ route('citas.index', request()->only('per_page')) }}"
+                           @class([
+                               'inline-flex h-12 items-center justify-center rounded-full px-4 text-sm font-semibold text-muted transition hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-400',
+                               'hidden' => empty($filtros['buscar']) && empty($filtros['fecha']) && empty($filtros['estado']),
+                           ])>
+                            Limpiar
+                        </a>
+                        <a href="{{ route('citas.create') }}" class="btn-brand h-12 shrink-0 px-5">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                             <span>Agendar cita</span>
                         </a>
                     </div>
-                @endif
+                </form>
             </div>
 
-            <!-- Tabla de Citas -->
-            <div data-citas-results aria-live="polite" aria-busy="false" class="overflow-hidden rounded-3xl border border-line bg-white shadow-soft">
-                <div class="overflow-x-auto">
-                <table class="w-full min-w-[1100px] text-left text-sm">
-                    <thead class="border-b border-line bg-shell/50 text-caption font-semibold uppercase tracking-label text-ink-soft">
-                        <tr>
-                            <th class="px-6 py-3.5">Fecha y hora</th>
-                            @if ($esPersonal)
-                                <th class="px-6 py-3.5">Paciente</th>
-                            @endif
-                            <th class="px-6 py-3.5">Servicio</th>
-                            <th class="px-6 py-3.5">Tratamiento</th>
-                            <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-line/70">
-                        @forelse ($citas as $cita)
-                            <tr class="transition-colors hover:bg-cream/70">
-                                <td class="whitespace-nowrap px-6 py-4 font-semibold text-ink">
-                                    <div class="flex items-center gap-2">
-                                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200">
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-ink">{{ \Illuminate\Support\Carbon::parse($cita->fecha_hora)->translatedFormat('d M Y') }}</p>
-                                            <p class="text-xs font-medium text-muted">{{ \Illuminate\Support\Carbon::parse($cita->fecha_hora)->format('H:i') }} hrs</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                @if ($esPersonal)
-                                    <td class="min-w-[15rem] px-6 py-4 font-medium text-ink">
-                                        <div class="flex items-center gap-2.5">
-                                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold uppercase text-brand-800">
-                                                {{ \App\Support\Iniciales::de($cita->paciente->nombre, $cita->paciente->apellido) }}
-                                            </span>
-                                            <div class="min-w-0">
-                                                <p class="text-sm font-semibold text-ink">{{ $cita->paciente->nombre }} {{ $cita->paciente->apellido }}</p>
-                                                <p class="text-xs text-muted [overflow-wrap:anywhere]">{{ $cita->paciente->telefono ?: ($cita->paciente->email ?: '—') }}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                @endif
-                                <td class="px-6 py-4">
-                                    {{-- Nombres largos: máximo 2 renglones; el texto completo queda en title. --}}
-                                    <span class="line-clamp-2 max-w-[13rem] rounded-lg bg-cream px-2.5 py-1 text-xs font-medium text-ink ring-1 ring-inset ring-line" title="{{ $cita->servicio->nombre ?? '' }}">{{ $cita->servicio->nombre ?? '—' }}</span>
-                                </td>
-                                <td class="min-w-[11rem] px-6 py-4 font-medium text-ink-soft">
-                                    <span class="line-clamp-2 max-w-[16rem]" title="{{ $cita->tratamiento->nombre ?? '' }}">{{ $cita->tratamiento->nombre ?? '—' }}</span>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold {{ $estadoClase[$cita->estado->value] }}">
-                                        <span class="h-1.5 w-1.5 rounded-full {{ $estadoDot[$cita->estado->value] ?? 'bg-muted' }}"></span>
-                                        {{ $estadoLabel[$cita->estado->value] }}
-                                    </span>
-                                    @if ($cita->asistencia_confirmada_en && ! $cita->estado->esInactiva())
-                                        <span class="mt-1 block text-xs font-medium text-sage-700" data-asistencia-confirmada>✓ Paciente confirmó asistencia</span>
-                                    @endif
-                                </td>
-                                <td class="whitespace-nowrap px-6 py-4">
-                                    <div class="flex w-max max-w-full items-center justify-center gap-2">
-                                        @if ($esPersonal && $cita->estado->value === 'agendada')
-                                            <form method="POST" action="{{ route('citas.confirm', $cita) }}">
-                                                @csrf
-                                                @method('patch')
-                                                <button type="submit"
-                                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
-                                                    Confirmar
-                                                </button>
-                                            </form>
-                                        @elseif ($esPersonal && $cita->estado->value === 'confirmada')
-                                            <form method="POST" action="{{ route('citas.start', $cita) }}">
-                                                @csrf
-                                                @method('patch')
-                                                <button type="submit"
-                                                        class="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-brand-600 px-3.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
-                                                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6.5 4.75a.75.75 0 011.143-.64l8 5a.75.75 0 010 1.28l-8 5A.75.75 0 016.5 14.75v-10z" /></svg>
-                                                    Iniciar
-                                                </button>
-                                            </form>
-                                        @elseif ($esPersonal && $cita->estado->value === 'en_curso')
-                                            <form method="POST" action="{{ route('citas.complete', $cita) }}">
-                                                @csrf
-                                                @method('patch')
-                                                <button type="submit"
-                                                        class="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-sage-600 px-4 py-2.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-sage-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2">
-                                                    Completar
-                                                </button>
-                                            </form>
-                                        @endif
+            <div data-citas-results aria-live="polite" aria-busy="false" class="space-y-4">
+                @if ($porDia)
+                    @php
+                        $pendientes = $citasDelDia->reject(fn ($cita) => in_array($cita->estado->value, $terminales, true));
+                        $hechas = $citasDelDia->filter(fn ($cita) => in_array($cita->estado->value, $terminales, true));
+                        $enCurso = $citasDelDia->first(fn ($cita) => $cita->estado->value === 'en_curso');
+                        $activas = $citasDelDia->reject(fn ($cita) => $cita->estado->esInactiva())->count();
+                        $porConfirmar = $citasDelDia->where('estado', \App\Enums\EstadoCita::Agendada)->count();
+                        $diaSeleccionado = $pestanas->firstWhere('seleccionada', true);
+                        $partesHechas = collect(['completada', 'no_asistio', 'cancelada'])
+                            ->map(fn ($estado) => [$estado, $hechas->filter(fn ($cita) => $cita->estado->value === $estado)->count()])
+                            ->filter(fn ($par) => $par[1] > 0)
+                            ->map(fn ($par) => $par[1].' '.mb_strtolower($estadoLabel[$par[0]]).($par[1] > 1 && $par[0] !== 'no_asistio' ? 's' : ''))
+                            ->join(', ');
+                    @endphp
 
-                                        @if ($esPersonal && in_array($cita->estado->value, $estadosConAccionesSecundarias, true))
-                                            <details class="group relative">
-                                                <summary aria-label="Abrir más acciones de la cita" title="Más acciones" class="inline-flex h-[42px] cursor-pointer list-none items-center justify-center gap-2 rounded-full border border-line bg-white px-3 text-xs font-semibold text-ink-soft shadow-2xs transition-colors duration-150 hover:border-peach-300 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
-                                                    <span class="flex h-6 w-6 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-                                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                            <path d="M10 4.25a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zm0 4.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zm0 4.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5z" />
-                                                        </svg>
-                                                    </span>
-                                                    Más acciones
-                                                    <svg class="h-3.5 w-3.5 text-muted transition group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 011.06 0L10 10.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 8.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
-                                                </summary>
-                                                <div x-data="{}" x-init="$nextTick(() => { const detail = $el.closest('details'); detail?.addEventListener('toggle', () => { if (!detail.open) return; const trigger = detail.querySelector('summary').getBoundingClientRect(); const scrollArea = detail.closest('.overflow-x-auto')?.getBoundingClientRect(); const top = scrollArea?.top ?? 0; const bottom = scrollArea?.bottom ?? window.innerHeight; const roomBelow = bottom - trigger.bottom; const roomAbove = trigger.top - top; $el.classList.toggle('bottom-full', roomBelow < 220 && roomAbove > roomBelow); $el.classList.toggle('top-full', !(roomBelow < 220 && roomAbove > roomBelow)); $el.classList.toggle('mb-2', roomBelow < 220 && roomAbove > roomBelow); $el.classList.toggle('mt-2', !(roomBelow < 220 && roomAbove > roomBelow)); }); })" class="menu-acciones absolute right-0 top-full z-30 mt-2 flex min-w-48 flex-col rounded-2xl border border-line bg-white p-1.5 shadow-lift">
-                                                    <p class="px-3 pb-2 pt-1 text-caption font-semibold uppercase tracking-label text-muted">Gestionar cita</p>
-                                                    {{-- Misma regla que CitaController@noShow: solo después de la hora de la cita. --}}
-                                                    @if ($cita->estado->value === 'confirmada' && ! $cita->fecha_hora->isFuture())
-                                                        <form method="POST" action="{{ route('citas.no-show', $cita) }}"
-                                                              onsubmit="return confirm('¿Marcar esta cita como no asistida? Esta acción no se puede deshacer.');">
-                                                            @csrf
-                                                            @method('patch')
-                                                            <button type="submit" class="flex w-full items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-left text-sm font-medium text-ink-soft transition hover:bg-amber-50 hover:text-amber-800 focus:bg-amber-50 focus:outline-none">
-                                                                <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
-                                                                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v3.5c0 .414.336.75.75.75h2a.75.75 0 000-1.5h-1.25v-2.75z" clip-rule="evenodd" /></svg>
-                                                                </span>
-                                                                Marcar inasistencia
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                    <a href="{{ route('citas.edit', $cita) }}" class="flex items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-brand-50 hover:text-brand-800 focus:bg-brand-50 focus:text-brand-800 focus:outline-none">
-                                                        <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M10 4v2m0 8v2m6-6h-2M6 10H4m10.243-4.243-1.414 1.414M7.172 12.828l-1.414 1.414m8.485 0-1.414-1.414M7.172 7.172 5.758 5.758" /><circle cx="10" cy="10" r="3" stroke-width="1.6" /></svg>
-                                                        </span>
-                                                        Reagendar
-                                                    </a>
-                                                    <div class="mx-2 my-1 border-t border-line"></div>
-                                                    <form method="POST" action="{{ route('citas.cancel', $cita) }}"
-                                                          onsubmit="const motivo = prompt('Motivo de la cancelación (opcional):') ?? ''; if (!confirm('¿Cancelar esta cita?')) { return false; } this.querySelector('[name=motivo_cancelacion]').value = motivo; return true;">
-                                                        @csrf
-                                                        @method('patch')
-                                                        <input type="hidden" name="motivo_cancelacion" value="">
-                                                        <button type="submit" class="flex w-full items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2.5 text-left text-sm font-medium text-rose-700 transition hover:bg-rose-50 focus:bg-rose-50 focus:outline-none">
-                                                            <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
-                                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="m6 6 8 8M14 6l-8 8" /></svg>
-                                                            </span>
-                                                            Cancelar cita
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </details>
-                                        @elseif ($esPersonal && in_array($cita->estado->value, $estadosTerminales, true))
-                                            <span class="text-xs text-muted">Sin acciones</span>
+                    <!-- Pestañas: un día a la vez -->
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('citas.index', $conEstado(['fecha' => $semanaAnterior])) }}" aria-label="Semana anterior"
+                           class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-ink transition-[border-color,transform] duration-150 ease-out hover:border-peach-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 sm:inline-flex">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        </a>
+
+                        <nav aria-label="Días de la semana" data-pestanas-dias
+                             x-data x-init="$el.querySelector('[aria-current=date]')?.scrollIntoView({ inline: 'center', block: 'nearest' })"
+                             class="-mx-4 flex min-w-0 flex-1 snap-x gap-2 overflow-x-auto overscroll-x-contain px-4 py-0.5 [scrollbar-width:none] sm:mx-0 sm:px-0.5 [&::-webkit-scrollbar]:hidden">
+                            @foreach ($pestanas as $pestana)
+                                <a href="{{ route('citas.index', $conEstado(['fecha' => $pestana['fecha']->toDateString()])) }}"
+                                   @if ($pestana['seleccionada']) aria-current="date" @endif
+                                   @class([
+                                       'flex min-w-[7.5rem] shrink-0 snap-start flex-col gap-0.5 rounded-2xl border px-3.5 py-2.5 transition-[border-color,background-color,transform] duration-150 ease-out active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 sm:min-w-0 sm:flex-1',
+                                       'border-brand-600 bg-brand-50 ring-1 ring-inset ring-brand-600' => $pestana['seleccionada'],
+                                       'border-line bg-white hover:border-peach-300' => ! $pestana['seleccionada'],
+                                   ])>
+                                    <span @class(['whitespace-nowrap text-sm font-semibold', 'text-brand-700' => $pestana['seleccionada'], 'text-ink' => ! $pestana['seleccionada']])>
+                                        {{ $pestana['esHoy'] ? 'Hoy' : ucfirst(rtrim($pestana['fecha']->locale('es')->isoFormat('ddd'), '.')) }} {{ $pestana['fecha']->day }}
+                                    </span>
+                                    <span class="whitespace-nowrap text-xs text-muted">
+                                        @if (! $pestana['abierto'] && $pestana['total'] === 0)
+                                            Cerrado
+                                        @else
+                                            {{ $pestana['total'] }} {{ $pestana['total'] === 1 ? 'cita' : 'citas' }}
                                         @endif
-                                    </div>
-                                </td>
-                            </tr>
+                                        @if ($pestana['porConfirmar'] > 0)
+                                            · <span class="font-semibold text-amber-800">{{ $pestana['porConfirmar'] }} por confirmar</span>
+                                        @endif
+                                    </span>
+                                </a>
+                            @endforeach
+                        </nav>
+
+                        <a href="{{ route('citas.index', $conEstado(['fecha' => $semanaSiguiente])) }}" aria-label="Semana siguiente"
+                           class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-ink transition-[border-color,transform] duration-150 ease-out hover:border-peach-300 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 sm:inline-flex">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+
+                    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 px-1">
+                        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                            <h2 class="font-serif text-title-3 text-ink">{{ $tituloDia($dia) }}</h2>
+                            <p class="text-footnote text-muted">
+                                {{ $activas }} {{ $activas === 1 ? 'cita' : 'citas' }}
+                                @if ($porConfirmar > 0)
+                                    · <span class="font-semibold text-amber-800">{{ $porConfirmar }} por confirmar</span>
+                                @endif
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-semibold">
+                            {{-- En celular las flechas de semana se esconden; estos enlaces cubren lo mismo. --}}
+                            <a href="{{ route('citas.index', $conEstado(['fecha' => $semanaAnterior])) }}" class="inline-flex min-h-11 items-center text-brand-700 sm:hidden">‹ Semana anterior</a>
+                            <a href="{{ route('citas.index', $conEstado(['fecha' => $semanaSiguiente])) }}" class="inline-flex min-h-11 items-center text-brand-700 sm:hidden">Semana siguiente ›</a>
+                            @unless ($dia->isToday())
+                                <a href="{{ route('citas.index', $conEstado([])) }}" class="inline-flex min-h-11 items-center text-brand-700 hover:text-brand-800">Ir a hoy</a>
+                            @endunless
+                            <a href="{{ route('citas.index', $conEstado(['todas' => 1])) }}" class="inline-flex min-h-11 items-center text-muted hover:text-brand-700">Todas las fechas</a>
+                        </div>
+                    </div>
+
+                    <div role="table" aria-label="Citas de {{ $tituloDia($dia) }}" class="rounded-3xl border border-line bg-white shadow-soft">
+                        @if ($citasDelDia->isNotEmpty())
+                            <div role="row" class="fila-cita-cabecera rounded-t-3xl border-b border-line bg-shell/50 text-caption font-semibold uppercase tracking-label text-ink-soft">
+                                <span role="columnheader">Hora</span>
+                                <span role="columnheader">Paciente</span>
+                                <span role="columnheader">Tratamiento</span>
+                                <span role="columnheader">Estado</span>
+                                <span role="columnheader" class="text-right">Acciones</span>
+                            </div>
+                        @endif
+
+                        {{-- Lo ya atendido o cancelado se pliega en un renglón mientras queden citas por atender. --}}
+                        @if ($hechas->isNotEmpty() && $pendientes->isNotEmpty())
+                            <details class="group border-b border-line/70" data-citas-plegadas>
+                                <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 bg-shell/30 px-4 text-sm text-ink-soft transition-colors hover:bg-shell/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-400 lg:px-5 [&::-webkit-details-marker]:hidden">
+                                    <span>
+                                        {{ $hechas->count() }} ya {{ $hechas->count() === 1 ? 'atendida o cancelada' : 'atendidas o canceladas' }}
+                                        <span class="text-muted">({{ $partesHechas }})</span>
+                                    </span>
+                                    <span class="shrink-0 font-semibold text-brand-700"><span class="group-open:hidden">Mostrar</span><span class="hidden group-open:inline">Ocultar</span></span>
+                                </summary>
+                                @foreach ($hechas as $cita)
+                                    @include('citas.partials.fila', ['cita' => $cita])
+                                @endforeach
+                            </details>
+                            @foreach ($pendientes as $cita)
+                                @include('citas.partials.fila', ['cita' => $cita, 'resaltada' => $enCurso?->is($cita) && $dia->isToday()])
+                            @endforeach
+                        @else
+                            @foreach ($citasDelDia as $cita)
+                                @include('citas.partials.fila', ['cita' => $cita, 'resaltada' => $enCurso?->is($cita) && $dia->isToday()])
+                            @endforeach
+                        @endif
+
+                        @if ($citasDelDia->isEmpty())
+                            <div class="px-6 py-12 text-center text-sm text-muted">
+                                <p class="font-serif text-title-3 text-ink">
+                                    @if (filled($filtros['estado'] ?? null))
+                                        No hay citas «{{ mb_strtolower($estadoLabel[$filtros['estado']]) }}» este día.
+                                    @elseif ($diaSeleccionado && ! $diaSeleccionado['abierto'])
+                                        El consultorio no abre este día.
+                                    @else
+                                        Sin citas este día.
+                                    @endif
+                                </p>
+                                <p class="mt-1">Elige otro día en las pestañas o agenda una nueva cita.</p>
+                            </div>
+                        @endif
+                    </div>
+                @else
+                    @php
+                        $grupos = $citas->getCollection()->groupBy(fn ($cita) => $cita->fecha_hora->toDateString());
+                    @endphp
+
+                    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 px-1">
+                        <h2 class="font-serif text-title-3 text-ink">
+                            {{ filled($filtros['buscar'] ?? null) ? 'Resultados en todas las fechas' : 'Todas las fechas' }}
+                        </h2>
+                        <a href="{{ route('citas.index', $conEstado([])) }}" class="inline-flex min-h-11 items-center text-sm font-semibold text-brand-700 hover:text-brand-800">‹ Volver a la agenda por día</a>
+                    </div>
+
+                    <div class="rounded-3xl border border-line bg-white shadow-soft">
+                        @forelse ($grupos as $fecha => $citasDeFecha)
+                            <section aria-label="{{ $tituloDia(\Illuminate\Support\Carbon::parse($fecha)) }}" @class(['border-t border-line' => ! $loop->first])>
+                                <h3 @class(['flex items-center justify-between gap-3 bg-shell/50 px-4 py-2.5 text-sm font-semibold text-ink lg:px-5', 'rounded-t-3xl' => $loop->first])>
+                                    <span>{{ $tituloDia(\Illuminate\Support\Carbon::parse($fecha)) }}</span>
+                                    <a href="{{ route('citas.index', $conEstado(['fecha' => $fecha])) }}" class="text-xs font-semibold text-brand-700 hover:text-brand-800">Ver el día</a>
+                                </h3>
+                                <div role="table" aria-label="Citas del {{ $fecha }}">
+                                    @foreach ($citasDeFecha as $cita)
+                                        @include('citas.partials.fila', ['cita' => $cita])
+                                    @endforeach
+                                </div>
+                            </section>
                         @empty
-                            <tr>
-                                <td colspan="{{ $esPersonal ? 6 : 5 }}" class="px-6 py-12 text-center text-sm text-muted">
-                                    <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200">
-                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                    </div>
-                                    <p class="font-serif text-title-3 text-ink">No hay citas registradas para este criterio.</p>
-                                    <p class="mt-1 text-sm">Puedes utilizar los filtros superiores o agendar una nueva cita.</p>
-                                </td>
-                            </tr>
+                            <div class="px-6 py-12 text-center text-sm text-muted">
+                                <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-peach-50 text-brand-600 ring-1 ring-inset ring-peach-200">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                                <p class="font-serif text-title-3 text-ink">No hay citas registradas para este criterio.</p>
+                                <p class="mt-1 text-sm">Prueba con otro nombre o teléfono, o agenda una nueva cita.</p>
+                            </div>
                         @endforelse
-                    </tbody>
-                </table>
-                </div>
-                <x-pagination-summary :items="$citas" label="citas" />
+
+                        <x-pagination-summary :items="$citas" label="citas" class="rounded-b-3xl" />
+                    </div>
+                @endif
             </div>
         </div>
     </div>

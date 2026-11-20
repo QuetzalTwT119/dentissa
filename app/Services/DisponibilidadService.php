@@ -46,6 +46,40 @@ class DisponibilidadService
     }
 
     /**
+     * Resume un mes completo para el calendario de la agenda: por cada día,
+     * cuántos horarios libres hay y, si no hay ninguno, por qué.
+     *
+     * Estados: "pasado" (antes de hoy), "cerrado" (el consultorio no abre ese
+     * día de la semana), "sin_horarios" (abre, pero ya no queda cupo) y
+     * "disponible". Reutiliza horariosDisponibles(), así el número que ve el
+     * paciente en el calendario es exactamente la lista que verá al elegir el día.
+     *
+     * @return array<string, array{horarios: int, estado: string}>
+     */
+    public function resumenMensual(CarbonImmutable $mes, Tratamiento $tratamiento, ?int $excludeCitaId = null): array
+    {
+        $hoy = CarbonImmutable::today();
+        $horariosSemana = HorarioAtencion::all()->keyBy('dia_semana');
+        $dias = [];
+
+        for ($dia = $mes->startOfMonth(); $dia->isSameMonth($mes); $dia = $dia->addDay()) {
+            $fecha = $dia->toDateString();
+            $horario = $horariosSemana->get($dia->dayOfWeek);
+
+            if ($dia->lt($hoy)) {
+                $dias[$fecha] = ['horarios' => 0, 'estado' => 'pasado'];
+            } elseif (! $horario || ! $horario->abierto) {
+                $dias[$fecha] = ['horarios' => 0, 'estado' => 'cerrado'];
+            } else {
+                $libres = count($this->horariosDisponibles($fecha, $tratamiento, $excludeCitaId));
+                $dias[$fecha] = ['horarios' => $libres, 'estado' => $libres > 0 ? 'disponible' : 'sin_horarios'];
+            }
+        }
+
+        return $dias;
+    }
+
+    /**
      * Revalida en el servidor que un horario puntual siga disponible antes de guardar.
      *
      * Debe llamarse dentro de un DB::transaction() junto con el create()/update() de la
