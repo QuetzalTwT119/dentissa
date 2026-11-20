@@ -12,7 +12,7 @@ $valor = function (string $campo, $default = '') use ($testimonio) {
 <div>
     <x-input-label for="id_paciente" value="Paciente" />
     <select id="id_paciente" name="id_paciente" required
-            class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+            class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
         <option value="">Selecciona un paciente</option>
         @foreach ($pacientes as $paciente)
             <option value="{{ $paciente['id'] }}" @selected($valor('id_paciente') == $paciente['id'])>{{ $paciente['nombre'] }}</option>
@@ -24,7 +24,7 @@ $valor = function (string $campo, $default = '') use ($testimonio) {
 <div>
     <x-input-label for="calificacion" value="Calificación (1 a 5, opcional)" />
     <select id="calificacion" name="calificacion"
-            class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+            class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
         <option value="">Sin calificación</option>
         @foreach ([1, 2, 3, 4, 5] as $n)
             <option value="{{ $n }}" @selected((string) $valor('calificacion') === (string) $n)>{{ str_repeat('★', $n) }}</option>
@@ -43,7 +43,7 @@ $valor = function (string $campo, $default = '') use ($testimonio) {
 <div>
     <x-input-label for="estado" value="Estado" />
     <select id="estado" name="estado"
-            class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+            class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
         <option value="pendiente" @selected($valor('estado', 'pendiente') === 'pendiente')>Pendiente</option>
         <option value="aprobado" @selected($valor('estado', 'pendiente') === 'aprobado')>Aprobado (visible en el sitio público)</option>
         <option value="rechazado" @selected($valor('estado', 'pendiente') === 'rechazado')>Rechazado</option>

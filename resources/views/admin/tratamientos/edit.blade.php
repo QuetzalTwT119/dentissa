@@ -2,9 +2,9 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-title-2 text-ink">
+                <h1 class="mt-1.5 text-title-2 text-ink">
                     Editar tratamiento
-                </h2>
+                </h1>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Ajuste de tiempos clínicos, precios y requisitos.</p>
             </div>
             <a href="{{ route('admin.tratamientos.index') }}" class="hidden sm:inline-block">
@@ -36,7 +36,7 @@
                     <div>
                         <x-input-label for="categoria" value="Categoría" />
                         <select id="categoria" name="categoria"
-                                class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                             <option value="">Sin categoría</option>
                             @foreach (\App\Models\Tratamiento::CATEGORIAS as $categoria)
                                 <option value="{{ $categoria }}" @selected(old('categoria', $tratamiento->categoria) === $categoria)>{{ $categoria }}</option>

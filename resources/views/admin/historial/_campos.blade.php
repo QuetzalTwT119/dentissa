@@ -26,7 +26,7 @@ $valor = function (string $campo, $default = '') use ($historial) {
     <div>
         <x-input-label for="tipo_consulta" value="Tipo de consulta (obligatorio)" />
         <select id="tipo_consulta" name="tipo_consulta" required
-                class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
             @foreach ($tiposConsulta as $valorTipo => $etiqueta)
                 <option value="{{ $valorTipo }}" @selected($valor('tipo_consulta', 'primera_vez') === $valorTipo)>{{ $etiqueta }}</option>
             @endforeach
@@ -39,7 +39,7 @@ $valor = function (string $campo, $default = '') use ($historial) {
     <div>
         <x-input-label for="id_cita" value="Cita relacionada (opcional)" />
         <select id="id_cita" name="id_cita"
-                class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
             <option value="">Ninguna</option>
             @foreach ($citas as $cita)
                 <option value="{{ $cita->id }}" @selected(old('id_cita', $historial?->id_cita) == $cita->id)>

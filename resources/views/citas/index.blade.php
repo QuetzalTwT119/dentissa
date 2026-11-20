@@ -61,14 +61,14 @@
                                    placeholder="Paciente, teléfono, servicio o tratamiento"
                                    aria-label="Buscar citas por paciente, teléfono, servicio o tratamiento"
                                    x-on:input.debounce.600ms="$el.form.requestSubmit()"
-                                   class="block h-12 w-full rounded-xl border border-field bg-cream/60 pl-11 pr-4 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] placeholder:text-muted hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
+                                   class="min-h-11 block h-12 w-full rounded-xl border border-field bg-cream/60 pl-11 pr-4 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] placeholder:text-muted hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
                         </div>
                     </div>
 
                     <div class="min-w-0 xl:col-span-2">
                         <label for="filtro_estado" class="mb-1.5 block text-sm font-semibold text-ink">Estado</label>
                         <select id="filtro_estado" name="estado" onchange="this.form.submit()"
-                                class="h-12 w-full rounded-xl border border-field bg-cream/60 px-3 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
+                                class="min-h-11 h-12 w-full rounded-xl border border-field bg-cream/60 px-3 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
                             <option value="">Todos los estados</option>
                             @foreach ($estadoLabel as $valor => $etiqueta)
                                 <option value="{{ $valor }}" @selected(($filtros['estado'] ?? '') === $valor)>{{ $etiqueta }}</option>

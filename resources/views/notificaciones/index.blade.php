@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <p class="eyebrow">Centro de actividad</p>
-                <h2 class="mt-1.5 text-title-2 text-ink">Notificaciones</h2>
+                <h1 class="mt-1.5 text-title-2 text-ink">Notificaciones</h1>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Avisos internos de citas para el equipo de la clínica.</p>
             </div>
 

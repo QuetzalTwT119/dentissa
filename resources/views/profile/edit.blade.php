@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <p class="eyebrow">Ajustes de cuenta</p>
-            <h2 class="mt-1.5 text-title-2 text-ink">Perfil de usuario</h2>
+            <h1 class="mt-1.5 text-title-2 text-ink">Perfil de usuario</h1>
             <p class="mt-1 text-sm text-muted">Administra tu información de contacto, credenciales y seguridad.</p>
         </div>
     </x-slot>
@@ -38,8 +38,8 @@
                 </div>
             </section>
 
-            <div class="grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
-                <nav aria-label="Secciones del perfil" class="card-boutique p-4 lg:sticky lg:top-28">
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
+                <nav aria-label="Secciones del perfil" class="card-boutique min-w-0 p-4 lg:sticky lg:top-28">
                     <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-label text-muted">Tu cuenta</p>
                     <div class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
                         <a href="#profile-information" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:w-full">

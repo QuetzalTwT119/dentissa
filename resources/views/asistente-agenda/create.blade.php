@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="mt-1.5 text-title-2 text-ink">
+        <h1 class="mt-1.5 text-title-2 text-ink">
             Asistente de agenda
-        </h2>
+        </h1>
     </x-slot>
 
     <div class="py-10">
@@ -31,7 +31,7 @@
                     <div>
                         <x-input-label for="id_paciente" value="Paciente" />
                         <select id="id_paciente" name="id_paciente" required
-                                class="mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
+                                class="min-h-11 mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
                             <option value="">Selecciona un paciente</option>
                             @foreach ($pacientes as $paciente)
                                 <option value="{{ $paciente->id }}" @selected(old('id_paciente', $propuesta['paciente']->id ?? null) == $paciente->id)>
@@ -44,7 +44,7 @@
                     <div>
                         <x-input-label for="id_servicio" value="Servicio" />
                         <select id="id_servicio" name="id_servicio" required x-model="idServicio" @change="idTratamiento = ''"
-                                class="mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
+                                class="min-h-11 mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
                             <option value="">Selecciona un servicio</option>
                             @foreach ($servicios as $servicio)
                                 <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
@@ -56,7 +56,7 @@
                         <div>
                             <x-input-label for="id_tratamiento" value="Tratamiento" />
                             <select id="id_tratamiento" name="id_tratamiento" required x-model="idTratamiento"
-                                    class="mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
+                                    class="min-h-11 mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
                                 <option value="">Selecciona un tratamiento</option>
                                 <template x-for="tratamiento in servicioSeleccionado.tratamientos" :key="tratamiento.id">
                                     <option :value="tratamiento.id" x-text="tratamiento.nombre + ' (' + tratamiento.duracion_estimada + ' min)'"></option>
@@ -98,7 +98,7 @@
 
                             <div>
                                 <x-input-label for="hora" value="Elige el horario que deseas confirmar" />
-                                <select id="hora" name="hora" required class="mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
+                                <select id="hora" name="hora" required class="min-h-11 mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
                                     @foreach ($propuesta['horarios'] as $horario)
                                         <option value="{{ $horario }}">{{ $horario }}</option>
                                     @endforeach

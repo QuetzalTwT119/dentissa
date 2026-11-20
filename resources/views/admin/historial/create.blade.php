@@ -2,9 +2,9 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h2 class="mt-1.5 text-title-2 text-ink">
+                <h1 class="mt-1.5 text-title-2 text-ink">
                     Nueva consulta — {{ $paciente->nombre }} {{ $paciente->apellido }}
-                </h2>
+                </h1>
                 <p class="mt-1 max-w-2xl text-sm text-muted">Registro de atención médica, diagnóstico y prescripción.</p>
             </div>
             <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="hidden sm:inline-block">

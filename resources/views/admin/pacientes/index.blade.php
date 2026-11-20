@@ -18,7 +18,7 @@
                                 </svg>
                             </span>
                             <input enterkeyhint="search" type="text" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" placeholder="Nombre, correo o teléfono…" aria-label="Buscar pacientes por nombre, correo o teléfono"
-                                   class="w-full rounded-xl border border-field bg-white min-h-11 sm:min-h-0 pl-9 pr-3.5 py-2 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 sm:w-72">
+                                   class="w-full rounded-xl border border-field bg-white min-h-11 pl-9 pr-3.5 py-2 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 sm:w-72">
                         </div>
                         <x-secondary-button type="submit" class="shrink-0">Buscar</x-secondary-button>
                         @if (!empty($filtros['buscar']))
@@ -69,12 +69,12 @@
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-1.5">
                                     <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" title="Ver historial clínico" aria-label="Ver historial clínico"
-                                       class="inline-flex items-center gap-1 rounded-xl bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 border border-brand-200/60 transition hover:bg-brand-600 hover:text-white hover:border-brand-600 shadow-xs">
+                                       class="inline-flex min-h-11 items-center gap-1 rounded-xl bg-brand-50 px-3 py-1.5 text-xs font-semibold lg:min-h-0 text-brand-700 border border-brand-200/60 transition hover:bg-brand-600 hover:text-white hover:border-brand-600 shadow-xs">
                                         <x-icon name="eye" class="h-3.5 w-3.5" />
                                         <span>Historial</span>
                                     </a>
                                     <a href="{{ route('admin.pacientes.edit', $paciente) }}" title="Editar datos" aria-label="Editar datos del paciente"
-                                       class="rounded-xl border border-line bg-white p-2 text-muted transition hover:bg-cream hover:text-ink hover:border-brand-200 shadow-xs">
+                                       class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line bg-white p-2 text-muted transition lg:min-h-0 lg:min-w-0 hover:bg-cream hover:text-ink hover:border-brand-200 shadow-xs">
                                         <x-icon name="edit" class="h-4 w-4" />
                                     </a>
                                 </div>

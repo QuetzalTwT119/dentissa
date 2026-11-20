@@ -1080,6 +1080,25 @@ Se completó el rediseño visual de todo el ecosistema de Dentissa (sitio públi
   - Total preservación de lógica de negocio, nombres de campos, CSRF, validaciones y roles. La suite de pruebas completa pasó con 158 pruebas aprobadas y 0 fallos.
 
 
+### 19.1 Reglas de consistencia (barrido del 19/11/2026)
+
+Un barrido de 41 pantallas a 375 y 1280 px dejó cuatro reglas, protegidas por
+`ConsistenciaDisenoTest` para que no vuelvan a romperse:
+
+- **Un solo `<h1>` por pantalla.** Los formularios del panel usaban `<h2>` con
+  el mismo estilo de `x-admin.header`; ahora son `<h1>` (mismo aspecto, pero los
+  lectores de pantalla encuentran el título).
+- **Campos de 44 px (`min-h-11`).** Todo `input` o `select` con borde de campo
+  mide lo mismo en filtros y formularios; antes había cinco alturas (34–48 px).
+  Las acciones de fila que se apilan en celular (Historial, Editar en
+  Pacientes) también miden 44 px y vuelven a su tamaño compacto desde `lg`.
+- **Solo colores de la paleta.** Ninguna vista usa `gray`, `blue`, `green`,
+  etc. de Tailwind; se usan los tokens de marca.
+- **Cuadrículas con columna explícita.** Una `grid` sin `grid-cols-1` crece al
+  ancho mínimo de su contenido: en el perfil, la fila de pestañas desplazable
+  ensanchaba la página 120 px en celular. `grid-cols-1` (`minmax(0, 1fr)`) y
+  `min-w-0` en el hijo lo evitan.
+
 ## 20. Decisión de diseño: el paciente agenda sin cuenta
 
 **Estado:** aceptada.

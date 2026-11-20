@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <p class="eyebrow">Seguridad de la cuenta</p>
-            <h2 class="mt-1.5 text-title-2 text-ink">Verificación en dos pasos</h2>
+            <h1 class="mt-1.5 text-title-2 text-ink">Verificación en dos pasos</h1>
             <p class="mt-1 text-sm text-muted">Además de tu contraseña, al entrar se pedirá un código de tu celular.</p>
         </div>
     </x-slot>
