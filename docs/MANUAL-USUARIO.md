@@ -99,24 +99,30 @@ tanto en escritorio como en el menú móvil.
 
 ## 2. Agendamiento público
 
-El proceso tiene 5 pasos. Arriba siempre se ve "Paso X de 5".
+El proceso tiene 4 pasos. Arriba siempre se ve "Paso X de 4".
 
 1. Abre `/agendar-cita`.
 2. **Selección clínica:** elige la especialidad. La lista cambia por los
    tratamientos de esa especialidad, cada uno con su duración aproximada. Si
    cambias de opinión, pulsa el recuadro de la especialidad para volver a la
    lista. Solo aparecen las especialidades que tienen tratamientos activos.
-3. **Calendario:** elige una fecha. Debajo aparece el horario regular, tomado de
-   la configuración de **Horarios** del consultorio. Pulsa **Continuar a
-   horario**.
-4. **Horario:** elige una hora disponible y pulsa **Revisar resumen**.
-5. **Confirmación:** revisa el tratamiento, la fecha y la hora. Pulsa
+3. **Fecha y hora:** se muestra el calendario del mes.
+   - Los días con lugar tienen un **punto verde**; con **punto durazno**
+     quedan pocos lugares (3 o menos). Los días tachados ya no tienen
+     horarios; los días grises son pasados o el consultorio no abre.
+   - Cambia de mes con las flechas **‹ ›** (hasta 12 meses adelante).
+   - Al pulsar un día aparecen sus horarios, cada uno con su hora de término
+     (por ejemplo, "09:30 a 10:15"). En el celular aparecen debajo del
+     calendario.
+   - Elige un horario y pulsa **Revisar resumen**. Debajo aparece el horario
+     regular, tomado de la configuración de **Horarios** del consultorio.
+4. **Confirmación:** revisa el tratamiento, la fecha y la hora. Pulsa
    **Continuar a mis datos**.
-6. **Datos de contacto:** escribe nombre, apellido, teléfono y correo. Acepta
+5. **Datos de contacto:** escribe nombre, apellido, teléfono y correo. Acepta
    el aviso de privacidad. El motivo es opcional, de hasta 1000 caracteres.
-7. Pulsa **Agendar cita**. El botón cambia a "Agendando…" y se desactiva
+6. Pulsa **Agendar cita**. El botón cambia a "Agendando…" y se desactiva
    mientras se guarda, para no crear la cita dos veces.
-8. Aparece la pantalla **"¡Listo! Tu cita quedó confirmada"** con el resumen.
+7. Aparece la pantalla **"¡Listo! Tu cita quedó confirmada"** con el resumen.
 
 En cualquier paso, **Atrás** regresa al anterior sin perder lo elegido. Los
 botones para avanzar se activan cuando el paso está completo. En el celular,
@@ -217,11 +223,13 @@ Arriba de `/citas` hay un selector **Lista | Semana**:
 
 Desde `/citas`, el personal puede:
 
-- crear una cita seleccionando paciente, servicio, tratamiento, fecha y hora;
+- crear una cita seleccionando paciente, servicio y tratamiento, y después el
+  día y la hora en el mismo calendario de la agenda pública;
 - las citas nuevas creadas aquí quedan confirmadas en cuanto el horario se
   reserva; las citas históricas que sigan agendadas conservan la opción de
   confirmación manual;
-- reagendar una cita a otro horario disponible;
+- reagendar una cita a otro horario disponible con ese calendario (el horario
+  actual de la cita cuenta como libre mientras se reagenda);
 - iniciar la atención de una cita confirmada;
 - marcar una cita confirmada como **No asistió**, solo desde la hora programada;
 - completar una cita;

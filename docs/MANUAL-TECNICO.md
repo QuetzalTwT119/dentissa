@@ -327,6 +327,52 @@ tratamiento, el margen entre citas, la capacidad simultánea y las citas ya
 registradas. Antes de guardar una cita vuelve a validar el horario dentro de
 una transacción para evitar reservas duplicadas.
 
+### Calendario de disponibilidad (`partials/disponibilidad-picker`)
+
+La agenda pública, **Nueva cita** y **Reagendar** comparten un mismo selector:
+el mes a la izquierda y los horarios del día elegido a la derecha (en celular,
+uno debajo del otro). Se eligió en una ronda de prototipos frente a una tira
+semanal y una lista de "lo más pronto", porque deja ver de un vistazo qué días
+tienen lugar y sirve igual para quien agenda para mañana que para quien planea
+con semanas de anticipación.
+
+Usa dos consultas:
+
+| Ruta | Para qué | Respuesta |
+| --- | --- | --- |
+| `GET /disponibilidad?tratamiento_id&fecha` | Horarios del día elegido | `{"horarios": ["09:00", ...]}` |
+| `GET /disponibilidad/mes?tratamiento_id&mes=YYYY-MM` | Puntos del calendario | `{"mes", "duracion_minutos", "dias": {"2026-11-19": {"horarios": 8, "estado": "disponible"}}}` |
+
+- `DisponibilidadService::resumenMensual()` recorre el mes y llama a
+  `horariosDisponibles()` por cada día abierto: el número del calendario es
+  exactamente la lista que verá el paciente al elegir ese día.
+- Estados por día: `pasado`, `cerrado` (el consultorio no abre ese día de la
+  semana), `sin_horarios` (abre, pero no queda cupo) y `disponible`. La
+  interfaz marca con punto verde los días con lugar, con punto durazno los de
+  3 horarios o menos y tacha los días sin horarios.
+- Solo acepta del mes actual a 12 meses adelante
+  (`DisponibilidadController::MESES_ADELANTE`) y tiene límite propio de 60
+  consultas por minuto, porque cada consulta calcula hasta 31 días.
+- Igual que la consulta por día, `exclude_cita_id` solo lo acepta el personal
+  autorizado a editar esa cita (reagendar); la agenda pública recibe 403.
+- Las rutas `/disponibilidad*` responden los errores de validación como JSON
+  422 (`bootstrap/app.php`), porque solo las consulta JavaScript.
+- En el navegador, el componente Alpine `calendarioDisponibilidad`
+  (`resources/js/app.js`) vive dentro del `x-data` del formulario y comparte
+  sus datos (`idTratamiento`, `fecha`, `hora`, `horarios`, `cargarHorarios()`).
+  Cada formulario envía `fecha` y `hora` con `<input type="hidden">`. Si el
+  paciente cambia de mes rápido, solo se aplica la última respuesta.
+- Accesibilidad: cada día es un botón con etiqueta completa ("Jueves, 19 de
+  noviembre, 8 horarios disponibles"); las flechas del teclado mueven el foco
+  entre días con lugar y los horarios son un grupo de opciones (`radiogroup`).
+
+Pruebas: `tests/Feature/DisponibilidadMesTest.php`.
+
+```powershell
+docker compose --profile qa build qa
+docker compose --profile qa run --rm --no-deps --entrypoint php qa artisan test --filter=DisponibilidadMesTest
+```
+
 La zona horaria de la aplicación se configura con `APP_TIMEZONE` y por defecto
 es `America/Mexico_City`. Debe corresponder a la ubicación de la clínica:
 horarios configurados como 9:00–14:00 se interpretan como hora local, no UTC.
