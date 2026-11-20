@@ -17,26 +17,27 @@
         @csrf
         @method('patch')
 
+        <x-form-obligatorios />
         <div>
-            <x-input-label for="nombre" value="Nombre" />
+            <x-input-label :required="true" for="nombre" value="Nombre" />
             <x-text-input id="nombre" name="nombre" type="text" class="mt-1 block w-full" :value="old('nombre', $user->nombre)" required autofocus autocomplete="given-name" />
             <x-input-error class="mt-2" :messages="$errors->get('nombre')" />
         </div>
 
         <div>
-            <x-input-label for="apellido" value="Apellido" />
+            <x-input-label :required="true" for="apellido" value="Apellido" />
             <x-text-input id="apellido" name="apellido" type="text" class="mt-1 block w-full" :value="old('apellido', $user->apellido)" required autocomplete="family-name" />
             <x-input-error class="mt-2" :messages="$errors->get('apellido')" />
         </div>
 
         <div>
-            <x-input-label for="telefono" value="Teléfono" />
+            <x-input-label :required="true" for="telefono" value="Teléfono" />
             <x-text-input id="telefono" name="telefono" type="tel" class="mt-1 block w-full" :value="old('telefono', $user->telefono)" required autocomplete="tel" />
             <x-input-error class="mt-2" :messages="$errors->get('telefono')" />
         </div>
 
         <div>
-            <x-input-label for="email" value="Correo electrónico" />
+            <x-input-label :required="true" for="email" value="Correo electrónico" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 

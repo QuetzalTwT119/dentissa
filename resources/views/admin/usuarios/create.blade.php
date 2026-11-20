@@ -19,28 +19,29 @@
                 <form method="POST" action="{{ route('admin.usuarios.store') }}" class="space-y-6">
                     @csrf
 
+                    <x-form-obligatorios />
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <x-input-label for="nombre" value="Nombre" />
+                            <x-input-label :required="true" for="nombre" value="Nombre" />
                             <x-text-input id="nombre" name="nombre" class="mt-1.5 block w-full" :value="old('nombre')" required autofocus />
                             <x-input-error :messages="$errors->get('nombre')" class="mt-2" />
                         </div>
 
                         <div>
-                            <x-input-label for="apellido" value="Apellido" />
+                            <x-input-label :required="true" for="apellido" value="Apellido" />
                             <x-text-input id="apellido" name="apellido" class="mt-1.5 block w-full" :value="old('apellido')" required />
                             <x-input-error :messages="$errors->get('apellido')" class="mt-2" />
                         </div>
                     </div>
 
                     <div>
-                        <x-input-label for="email" value="Correo electrónico" />
+                        <x-input-label :required="true" for="email" value="Correo electrónico" />
                         <x-text-input id="email" name="email" type="email" class="mt-1.5 block w-full" :value="old('email')" required />
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 
                     <div>
-                        <x-input-label for="telefono" value="Teléfono" />
+                        <x-input-label :required="true" for="telefono" value="Teléfono" />
                         <x-text-input id="telefono" name="telefono" type="tel" class="mt-1.5 block w-full" :value="old('telefono')" required />
                         <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                     </div>
@@ -56,13 +57,13 @@
                     </div>
 
                     <div>
-                        <x-input-label for="password" value="Contraseña" />
+                        <x-input-label :required="true" for="password" value="Contraseña" />
                         <x-text-input id="password" name="password" type="password" class="mt-1.5 block w-full" required />
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
                     </div>
 
                     <div>
-                        <x-input-label for="password_confirmation" value="Confirmar contraseña" />
+                        <x-input-label :required="true" for="password_confirmation" value="Confirmar contraseña" />
                         <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="mt-1.5 block w-full" required />
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                     </div>

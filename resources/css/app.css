@@ -943,6 +943,11 @@ html::-webkit-scrollbar {
     .carrusel-pista {
         grid-auto-columns: calc((100% - 2rem) / 3);
     }
+
+    /* Con 1 o 2 especialidades no hay nada que desplazar: ocupan el ancho en mitades. */
+    .carrusel-pista--pocas {
+        grid-auto-columns: calc((100% - 1rem) / 2);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

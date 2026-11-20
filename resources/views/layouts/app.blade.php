@@ -35,6 +35,7 @@
             </main>
 
         </div>
-        <x-asistente-chat />
+        {{-- El asistente de chat es para pacientes: solo vive en las páginas públicas
+             (portada y agenda en línea), no en el panel del personal. --}}
     </body>
 </html>

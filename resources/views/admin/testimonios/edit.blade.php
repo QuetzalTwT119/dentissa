@@ -20,6 +20,7 @@
                     @csrf
                     @method('put')
 
+                    <x-form-obligatorios />
                     @include('admin.testimonios._campos')
 
                     <div class="flex items-center gap-4 pt-4 border-t border-line">

@@ -133,6 +133,7 @@ Route::get('/', function () {
         'servicios' => Servicio::where('activo', true)
             ->with(['tratamientos' => fn ($q) => $q->where('activo', true)->orderBy('servicios_tratamientos.orden')])
             ->orderBy('orden')
+            ->orderBy('id')
             ->get(),
         'ofertas' => Oferta::with('tratamiento:id,nombre')
             ->where('activa', true)
@@ -215,6 +216,8 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
     Route::patch('servicios/{servicio}/tratamientos', [ServicioController::class, 'syncTratamientos'])->name('servicios.tratamientos.sync');
+    Route::patch('servicios/{servicio}/mover/{direccion}', [ServicioController::class, 'mover'])
+        ->whereIn('direccion', ['arriba', 'abajo'])->name('servicios.mover');
     Route::resource('servicios', ServicioController::class)->except('show');
     Route::resource('tratamientos', TratamientoController::class)->except('show');
 

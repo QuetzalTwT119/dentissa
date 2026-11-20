@@ -20,8 +20,9 @@
                     @csrf
                     @method('put')
 
+                    <x-form-obligatorios />
                     <div>
-                        <x-input-label for="nombre" value="Nombre" />
+                        <x-input-label :required="true" for="nombre" value="Nombre" />
                         <x-text-input id="nombre" name="nombre" class="mt-1.5 block w-full" :value="old('nombre', $tratamiento->nombre)" required autofocus />
                         <x-input-error :messages="$errors->get('nombre')" class="mt-2" />
                     </div>

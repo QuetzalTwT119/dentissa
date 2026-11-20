@@ -28,8 +28,9 @@
                 <form method="POST" action="{{ route('asistente-agenda.proponer') }}" class="space-y-6">
                     @csrf
 
+                    <x-form-obligatorios />
                     <div>
-                        <x-input-label for="id_paciente" value="Paciente" />
+                        <x-input-label :required="true" for="id_paciente" value="Paciente" />
                         <select id="id_paciente" name="id_paciente" required
                                 class="min-h-11 mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
                             <option value="">Selecciona un paciente</option>
@@ -42,7 +43,7 @@
                     </div>
 
                     <div>
-                        <x-input-label for="id_servicio" value="Servicio" />
+                        <x-input-label :required="true" for="id_servicio" value="Servicio" />
                         <select id="id_servicio" name="id_servicio" required x-model="idServicio" @change="idTratamiento = ''"
                                 class="min-h-11 mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
                             <option value="">Selecciona un servicio</option>
@@ -54,7 +55,7 @@
 
                     <template x-if="servicioSeleccionado">
                         <div>
-                            <x-input-label for="id_tratamiento" value="Tratamiento" />
+                            <x-input-label :required="true" for="id_tratamiento" value="Tratamiento" />
                             <select id="id_tratamiento" name="id_tratamiento" required x-model="idTratamiento"
                                     class="min-h-11 mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
                                 <option value="">Selecciona un tratamiento</option>
@@ -66,7 +67,7 @@
                     </template>
 
                     <div>
-                        <x-input-label for="fecha" value="Fecha deseada" />
+                        <x-input-label :required="true" for="fecha" value="Fecha deseada" />
                         <x-text-input id="fecha" name="fecha" type="date" class="mt-1.5 block w-full" required
                                       min="{{ now()->toDateString() }}" value="{{ old('fecha', $propuesta['fecha'] ?? '') }}" />
                     </div>
@@ -90,6 +91,7 @@
                     @if (count($propuesta['horarios']))
                         <form method="POST" action="{{ route('citas.store') }}" class="mt-6 space-y-5">
                             @csrf
+                            <x-form-obligatorios />
                             <input type="hidden" name="id_paciente" value="{{ $propuesta['paciente']->id }}">
                             <input type="hidden" name="id_servicio" value="{{ $propuesta['id_servicio'] }}">
                             <input type="hidden" name="id_tratamiento" value="{{ $propuesta['tratamiento']->id }}">
@@ -97,7 +99,7 @@
                             <input type="hidden" name="motivo" value="{{ $propuesta['motivo'] }}">
 
                             <div>
-                                <x-input-label for="hora" value="Elige el horario que deseas confirmar" />
+                                <x-input-label :required="true" for="hora" value="Elige el horario que deseas confirmar" />
                                 <select id="hora" name="hora" required class="min-h-11 mt-1.5 block w-full rounded-xl border-field text-sm shadow-2xs focus:border-brand-500 focus:ring-brand-400">
                                     @foreach ($propuesta['horarios'] as $horario)
                                         <option value="{{ $horario }}">{{ $horario }}</option>

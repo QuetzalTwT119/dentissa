@@ -40,7 +40,7 @@
                     <x-slot:head>
                         <tr>
                             <th class="px-6 py-3.5">Nombre</th>
-                            <th class="px-6 py-3.5">Orden</th>
+                            <th class="px-6 py-3.5">Posición en el carrusel</th>
                             <th class="px-6 py-3.5 text-center">Tratamientos</th>
                             <th class="px-6 py-3.5">Estado</th>
                             <th class="px-6 py-3.5 text-right">Acciones</th>
@@ -50,7 +50,34 @@
                     @forelse ($servicios as $servicio)
                         <tr class="transition hover:bg-cream/60">
                             <td class="px-6 py-4 font-semibold text-ink whitespace-nowrap">{{ $servicio->nombre }}</td>
-                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $servicio->orden }}</td>
+                            @php
+                                $posicion = $servicios->firstItem() + $loop->index;
+                                $esPrimero = $posicion === 1;
+                                $esUltimo = $posicion === $servicios->total();
+                                $claseFlecha = 'inline-flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-white text-ink-soft transition hover:border-peach-300 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-line disabled:hover:text-ink-soft lg:h-9 lg:w-9';
+                            @endphp
+                            {{-- Las flechas intercambian el servicio con su vecino (ServicioController@mover). --}}
+                            <td class="px-6 py-4 whitespace-nowrap" data-posicion-servicio="{{ $posicion }}">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-6 text-sm font-semibold text-ink-soft tabular-nums">{{ $posicion }}</span>
+                                    <form method="POST" action="{{ route('admin.servicios.mover', [$servicio, 'arriba']) }}">
+                                        @csrf
+                                        @method('patch')
+                                        <button type="submit" class="{{ $claseFlecha }}" @disabled($esPrimero)
+                                                title="Subir" aria-label="Subir «{{ $servicio->nombre }}» un lugar">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('admin.servicios.mover', [$servicio, 'abajo']) }}">
+                                        @csrf
+                                        @method('patch')
+                                        <button type="submit" class="{{ $claseFlecha }}" @disabled($esUltimo)
+                                                title="Bajar" aria-label="Bajar «{{ $servicio->nombre }}» un lugar">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">
                                 <span class="inline-flex items-center rounded-full bg-cream px-2.5 py-0.5 text-xs font-semibold text-ink border border-line">
                                     {{ $servicio->tratamientos_count }}

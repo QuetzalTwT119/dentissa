@@ -1121,6 +1121,12 @@ Un barrido de 41 pantallas a 375 y 1280 px dejó cuatro reglas, protegidas por
   Pacientes) también miden 44 px y vuelven a su tamaño compacto desde `lg`.
 - **Solo colores de la paleta.** Ninguna vista usa `gray`, `blue`, `green`,
   etc. de Tailwind; se usan los tokens de marca.
+- **Campos obligatorios con asterisco, sin desactivar el botón.** El botón de
+  guardar nunca se desactiva (un botón gris no dice qué falta); la etiqueta de
+  cada campo con `required` lleva `<x-input-label :required="true">` (asterisco
+  rojo y "(obligatorio)" para lectores de pantalla) y el formulario abre con
+  `<x-form-obligatorios />`. Si falta algo, el error aparece junto al campo al
+  enviar. Excepción: formularios de un solo campo con etiqueta invisible.
 - **Cuadrículas con columna explícita.** Una `grid` sin `grid-cols-1` crece al
   ancho mínimo de su contenido: en el perfil, la fila de pestañas desplazable
   ensanchaba la página 120 px en celular. `grid-cols-1` (`minmax(0, 1fr)`) y

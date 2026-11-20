@@ -17,14 +17,14 @@ $valor = function (string $campo, $default = '') use ($historial) {
 
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
     <div>
-        <x-input-label for="fecha_consulta" value="Fecha de consulta (obligatoria)" />
+        <x-input-label :required="true" for="fecha_consulta" value="Fecha de consulta (obligatoria)" />
         <x-text-input id="fecha_consulta" name="fecha_consulta" type="date" class="mt-1.5 block w-full" required
                       :value="$valor('fecha_consulta', $historial ? \Illuminate\Support\Carbon::parse($historial->fecha_consulta)->toDateString() : now()->toDateString())" />
         <x-input-error :messages="$errors->get('fecha_consulta')" class="mt-2" />
     </div>
 
     <div>
-        <x-input-label for="tipo_consulta" value="Tipo de consulta (obligatorio)" />
+        <x-input-label :required="true" for="tipo_consulta" value="Tipo de consulta (obligatorio)" />
         <select id="tipo_consulta" name="tipo_consulta" required
                 class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
             @foreach ($tiposConsulta as $valorTipo => $etiqueta)
@@ -52,7 +52,7 @@ $valor = function (string $campo, $default = '') use ($historial) {
 @endif
 
 <div>
-    <x-input-label for="motivo_consulta" value="Motivo de la consulta (obligatorio)" />
+    <x-input-label :required="true" for="motivo_consulta" value="Motivo de la consulta (obligatorio)" />
     <textarea id="motivo_consulta" name="motivo_consulta" rows="2" required
               class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('motivo_consulta') }}</textarea>
     <x-input-error :messages="$errors->get('motivo_consulta')" class="mt-2" />

@@ -19,7 +19,7 @@ class ServicioController extends Controller
     public function index(Request $request): View
     {
         return view('admin.servicios.index', [
-            'servicios' => Servicio::withCount('tratamientos')->orderBy('orden')->paginate($this->paginationPageSize($request)),
+            'servicios' => Servicio::withCount('tratamientos')->orderBy('orden')->orderBy('id')->paginate($this->paginationPageSize($request)),
         ]);
     }
 
@@ -31,6 +31,9 @@ class ServicioController extends Controller
     public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
         $data = $this->validated($request);
+        // El orden ya no se escribe a mano: el servicio nuevo va al final del
+        // carrusel y se acomoda con las flechas ↑ ↓ de la lista.
+        $data['orden'] = (int) Servicio::max('orden') + 1;
 
         if ($request->hasFile('imagen')) {
             $data['imagen'] = $request->file('imagen')->store('servicios', 'public');
@@ -51,8 +54,10 @@ class ServicioController extends Controller
     {
         return view('admin.servicios.edit', [
             'servicio' => $servicio,
-            'tratamientos' => Tratamiento::orderBy('nombre')->get(['id', 'nombre']),
-            'tratamientosAsignados' => $servicio->tratamientos()->pluck('tratamientos.id'),
+            // Solo lo que se puede agendar. Los inactivos se administran en
+            // Catálogo → Tratamientos; su vínculo se conserva (ver sincronizarTratamientos).
+            'tratamientos' => Tratamiento::where('activo', true)->orderBy('nombre')->get(['id', 'nombre']),
+            'tratamientosAsignados' => $servicio->tratamientos()->where('tratamientos.activo', true)->pluck('tratamientos.id'),
         ]);
     }
 
@@ -74,19 +79,38 @@ class ServicioController extends Controller
             fn () => $servicio->update($data),
         );
 
-        return Redirect::route('admin.servicios.index');
+        // La pantalla de edición manda datos, foto y tratamientos en un solo
+        // formulario: así elegir una foto y guardar nunca pierde nada.
+        if ($request->boolean('tratamientos_enviados')) {
+            $this->sincronizarTratamientos($request, $servicio, $auditoria);
+        }
+
+        return Redirect::route('admin.servicios.edit', $servicio)->with('success', 'Servicio guardado.');
     }
 
     public function syncTratamientos(Request $request, Servicio $servicio, AuditoriaService $auditoria): RedirectResponse
     {
+        $this->sincronizarTratamientos($request, $servicio, $auditoria);
+
+        return Redirect::route('admin.servicios.edit', $servicio);
+    }
+
+    private function sincronizarTratamientos(Request $request, Servicio $servicio, AuditoriaService $auditoria): void
+    {
         $validated = $request->validate([
             'tratamiento_ids' => ['array'],
-            'tratamiento_ids.*' => ['integer', 'exists:tratamientos,id'],
+            // Solo tratamientos activos: uno inactivo no se puede agendar.
+            'tratamiento_ids.*' => ['integer', Rule::exists('tratamientos', 'id')->where('activo', true)],
+        ], [
+            'tratamiento_ids.*.exists' => 'Ese tratamiento está inactivo; actívalo primero en Catálogo → Tratamientos.',
         ]);
 
         DB::transaction(function () use ($request, $servicio, $auditoria, $validated) {
             $anteriores = $servicio->tratamientos()->pluck('tratamientos.id')->all();
-            $nuevos = $validated['tratamiento_ids'] ?? [];
+            // Los inactivos no se muestran en la pantalla, así que no llegan en la
+            // petición: se conservan para que reactivarlos los devuelva a este servicio.
+            $inactivos = $servicio->tratamientos()->where('tratamientos.activo', false)->pluck('tratamientos.id')->all();
+            $nuevos = array_values(array_unique([...array_map('intval', $validated['tratamiento_ids'] ?? []), ...$inactivos]));
             $servicio->tratamientos()->sync($nuevos);
             $auditoria->registrar('servicio.tratamientos_actualizados', $servicio, [
                 'tratamiento_ids' => $anteriores,
@@ -94,8 +118,37 @@ class ServicioController extends Controller
                 'tratamiento_ids' => $nuevos,
             ], $request);
         });
+    }
 
-        return Redirect::route('admin.servicios.edit', $servicio);
+    /**
+     * Sube o baja un servicio un lugar en el carrusel intercambiándolo con su
+     * vecino. Antes renumera 1..n para que órdenes repetidos (0, 0, 1…) no
+     * dejen el movimiento sin efecto.
+     */
+    public function mover(Request $request, Servicio $servicio, string $direccion, AuditoriaService $auditoria): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $servicio, $direccion, $auditoria) {
+            $lista = Servicio::orderBy('orden')->orderBy('id')->lockForUpdate()->get(['id', 'orden']);
+            $ids = $lista->pluck('id')->values();
+            $posicion = $ids->search($servicio->id);
+            $vecina = $direccion === 'arriba' ? $posicion - 1 : $posicion + 1;
+
+            if ($posicion === false || $vecina < 0 || $vecina >= $ids->count()) {
+                return;
+            }
+
+            $ids = $ids->all();
+            [$ids[$posicion], $ids[$vecina]] = [$ids[$vecina], $ids[$posicion]];
+            $anterior = $servicio->orden;
+
+            foreach ($ids as $indice => $id) {
+                Servicio::whereKey($id)->update(['orden' => $indice + 1]);
+            }
+
+            $auditoria->registrar('servicio.reordenado', $servicio, ['orden' => $anterior], ['orden' => $vecina + 1], $request);
+        });
+
+        return Redirect::back()->with('success', "«{$servicio->nombre}» se movió ".($direccion === 'arriba' ? 'hacia arriba.' : 'hacia abajo.'));
     }
 
     public function destroy(Request $request, Servicio $servicio, AuditoriaService $auditoria): RedirectResponse
@@ -127,7 +180,7 @@ class ServicioController extends Controller
             'nombre' => ['required', 'string', 'max:100', Rule::unique('servicios', 'nombre')->ignore($ignoreId)],
             'descripcion' => ['nullable', 'string'],
             'icono' => ['nullable', 'string', 'max:50'],
-            'imagen' => ['nullable', 'image', 'max:2048'],
+            'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'activo' => ['boolean'],
             'orden' => ['integer', 'min:0'],
         ]);

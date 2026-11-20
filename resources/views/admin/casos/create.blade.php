@@ -23,8 +23,9 @@
                 <form method="POST" action="{{ route('admin.casos.store') }}" class="mt-6 space-y-6">
                     @csrf
 
+                    <x-form-obligatorios />
                     <div>
-                        <x-input-label for="titulo" value="Título" />
+                        <x-input-label :required="true" for="titulo" value="Título" />
                         <x-text-input id="titulo" name="titulo" class="mt-1.5 block w-full" :value="old('titulo')" placeholder="Ej. Ortodoncia estética" required />
                         <x-input-error :messages="$errors->get('titulo')" class="mt-2" />
                     </div>

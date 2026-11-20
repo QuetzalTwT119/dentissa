@@ -42,6 +42,7 @@
                 <form method="POST" action="{{ route('citas.store') }}" class="space-y-6">
                     @csrf
 
+                    <x-form-obligatorios />
                     <!-- Paso 1: Paciente -->
                     <div class="rounded-xl bg-cream/60 p-4 sm:p-5 border border-line/70 space-y-4">
                         <div class="flex items-center justify-between">
@@ -53,7 +54,7 @@
 
                         @if ($pacientes)
                             <div>
-                                <x-input-label for="id_paciente" value="Paciente" />
+                                <x-input-label :required="true" for="id_paciente" value="Paciente" />
                                 <select id="id_paciente" name="id_paciente" required
                                         class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
                                     <option value="">Selecciona un paciente</option>
@@ -75,7 +76,7 @@
 
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
-                                <x-input-label for="id_servicio" value="Servicio" />
+                                <x-input-label :required="true" for="id_servicio" value="Servicio" />
                                 <select id="id_servicio" name="id_servicio" required
                                         x-model="idServicio" @change="idTratamiento = ''"
                                         class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
@@ -89,7 +90,7 @@
 
                             <template x-if="servicioSeleccionado">
                                 <div>
-                                    <x-input-label for="id_tratamiento" value="Tratamiento" />
+                                    <x-input-label :required="true" for="id_tratamiento" value="Tratamiento" />
                                     <select id="id_tratamiento" name="id_tratamiento" required
                                             x-model="idTratamiento" @change="cargarHorarios()"
                                             class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">

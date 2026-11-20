@@ -19,8 +19,9 @@
                 <form method="POST" action="{{ route('admin.tratamientos.store') }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
+                    <x-form-obligatorios />
                     <div>
-                        <x-input-label for="nombre" value="Nombre" />
+                        <x-input-label :required="true" for="nombre" value="Nombre" />
                         <x-text-input id="nombre" name="nombre" class="mt-1.5 block w-full" :value="old('nombre')" required autofocus />
                         <x-input-error :messages="$errors->get('nombre')" class="mt-2" />
                     </div>

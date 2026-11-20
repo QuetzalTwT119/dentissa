@@ -260,14 +260,16 @@
                     tienen tratamientos activos se agendan en línea (la agenda abre con esa
                     especialidad elegida); las demás llevan al teléfono del consultorio.
                 --}}
-                <p class="mt-3 max-w-2xl text-callout text-muted">Elige una especialidad para ver qué incluye y agendar en línea; las demás las agendamos contigo por teléfono.</p>
+                <p class="mt-3 max-w-2xl text-callout text-muted">
+                    Elige una especialidad para ver qué incluye y agendar en línea{{ $servicios->contains(fn ($servicio) => $servicio->tratamientos->isEmpty()) ? '; las demás las agendamos contigo por teléfono' : '' }}.
+                </p>
 
                 <div x-data="carruselServicios" class="relative mt-10" role="region" aria-roledescription="carrusel" aria-label="Especialidades">
-                    <button type="button" x-on:click="anterior()" class="carrusel-flecha carrusel-flecha-izq focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Especialidades anteriores">
+                    <button type="button" x-show="posiciones > 1" x-on:click="anterior()" class="carrusel-flecha carrusel-flecha-izq focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Especialidades anteriores">
                         <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                     </button>
 
-                    <div x-ref="pista" x-on:scroll.passive="alDesplazar()" tabindex="0" class="carrusel-pista focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Especialidades; desliza para ver más">
+                    <div x-ref="pista" x-on:scroll.passive="alDesplazar()" tabindex="0" @class(['carrusel-pista focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400', 'carrusel-pista--pocas' => $servicios->count() <= 2]) aria-label="Especialidades; desliza para ver más">
                         @foreach ($servicios as $servicio)
                             @php
                                 $enLinea = $servicio->tratamientos->isNotEmpty();
@@ -284,7 +286,7 @@
                                 <span @class([
                                     'mb-auto self-start rounded-full px-2.5 py-1 text-caption font-semibold uppercase tracking-label',
                                     'bg-sage-600 text-white' => $enLinea,
-                                    'bg-white/15 text-white ring-1 ring-inset ring-white/25' => ! $enLinea,
+                                    'bg-ink/80 text-white ring-1 ring-inset ring-white/20 backdrop-blur-sm' => ! $enLinea,
                                 ])>{{ $enLinea ? 'Agenda en línea' : 'Agenda por teléfono' }}</span>
 
                                 <h3 class="font-serif text-title-3 font-medium">{{ $servicio->nombre }}</h3>
@@ -299,12 +301,12 @@
                         @endforeach
                     </div>
 
-                    <button type="button" x-on:click="siguiente()" class="carrusel-flecha carrusel-flecha-der focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Más especialidades">
+                    <button type="button" x-show="posiciones > 1" x-on:click="siguiente()" class="carrusel-flecha carrusel-flecha-der focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Más especialidades">
                         <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </button>
 
                     {{-- Un punto por posición; separación pareja también junto al activo (alargado). --}}
-                    <div class="mt-5 flex items-center justify-center" aria-hidden="true">
+                    <div x-show="posiciones > 1" class="mt-5 flex items-center justify-center" aria-hidden="true">
                         <template x-for="i in posiciones" :key="i">
                             <button type="button" tabindex="-1" x-on:click="ir(i - 1)" class="flex h-6 items-center px-1">
                                 <span class="h-2 rounded-full transition-[width,background-color,opacity] duration-200 ease-out"

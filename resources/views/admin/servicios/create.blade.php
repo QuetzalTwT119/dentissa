@@ -19,8 +19,9 @@
                 <form method="POST" action="{{ route('admin.servicios.store') }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
+                    <x-form-obligatorios />
                     <div>
-                        <x-input-label for="nombre" value="Nombre" />
+                        <x-input-label :required="true" for="nombre" value="Nombre" />
                         <x-text-input id="nombre" name="nombre" class="mt-1.5 block w-full" :value="old('nombre')" required autofocus />
                         <x-input-error :messages="$errors->get('nombre')" class="mt-2" />
                     </div>
@@ -44,11 +45,6 @@
                         <x-input-error :messages="$errors->get('imagen')" class="mt-2" />
                     </div>
 
-                    <div>
-                        <x-input-label for="orden" value="Orden de visualización" />
-                        <x-text-input id="orden" name="orden" type="number" class="mt-1.5 block w-full" :value="old('orden', 0)" />
-                        <x-input-error :messages="$errors->get('orden')" class="mt-2" />
-                    </div>
 
                     <div class="flex items-center">
                         <x-checkbox id="activo" name="activo" value="1" :checked="old('activo', true)" />

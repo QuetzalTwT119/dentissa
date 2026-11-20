@@ -19,6 +19,7 @@
                 <form method="POST" action="{{ route('admin.preguntas-frecuentes.store') }}" class="space-y-6">
                     @csrf
 
+                    <x-form-obligatorios />
                     @include('admin.preguntas-frecuentes._campos', ['pregunta' => null])
 
                     <div class="flex items-center gap-4 pt-4 border-t border-line">

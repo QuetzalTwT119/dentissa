@@ -97,4 +97,61 @@ class ConsistenciaDisenoTest extends TestCase
             ->assertSee('inline-flex min-h-11 items-center gap-1 rounded-xl bg-brand-50', false)
             ->assertSee('inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line', false);
     }
+
+    public function test_el_asistente_de_chat_solo_esta_en_las_paginas_publicas(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        // Es para pacientes: portada y agenda en línea.
+        $this->get('/')->assertOk()->assertSee('asistente-flotante', false);
+        $this->get(route('citas.publica.create'))->assertOk()->assertSee('asistente-flotante', false);
+
+        // No en el panel del personal.
+        foreach (['dashboard', 'citas.index', 'admin.servicios.index', 'admin.pacientes.index', 'notificaciones.index', 'profile.edit'] as $ruta) {
+            $this->actingAs($admin)->get(route($ruta))->assertOk()->assertDontSee('asistente-flotante', false);
+        }
+    }
+
+    /**
+     * Regla del 20/11/2026: el botón de guardar nunca se desactiva; en su lugar,
+     * cada campo obligatorio lleva asterisco en su etiqueta y el formulario
+     * explica qué significa.
+     */
+    public function test_los_campos_obligatorios_llevan_asterisco_y_el_formulario_lo_explica(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $servicio = \App\Models\Servicio::create(['nombre' => 'Odontología General', 'orden' => 1, 'activo' => true]);
+
+        $paginas = [
+            ...array_map(fn ($ruta) => route($ruta), array_diff(self::FORMULARIOS, ['notificaciones.index'])),
+            route('admin.servicios.edit', $servicio),
+            route('admin.usuarios.edit', $admin),
+        ];
+
+        foreach ($paginas as $url) {
+            $html = $this->actingAs($admin)->get($url)->assertOk()->getContent();
+            preg_match_all('/<(?:input|select|textarea)\b(?:->|=>|[^>])*>/s', $html, $campos);
+
+            $obligatorios = 0;
+            foreach ($campos[0] as $campo) {
+                if (! preg_match('/\srequired(?:\s|>|=|\/)/', $campo) || ! preg_match('/\sid="([^"]+)"/', $campo, $id)) {
+                    continue;
+                }
+                // Etiqueta invisible (formulario de un solo campo, como "subir foto de perfil"): sin asterisco.
+                if (preg_match('/<label[^>]*for="'.preg_quote($id[1], '/').'"[^>]*class="[^"]*\bsr-only\b/', $html)) {
+                    continue;
+                }
+                $obligatorios++;
+                $this->assertMatchesRegularExpression(
+                    '/<label[^>]*for="'.preg_quote($id[1], '/').'"[^>]*>(?:(?!<\/label>).)*\(obligatorio\)/s',
+                    $html,
+                    "{$url}: la etiqueta de \"{$id[1]}\" debe llevar el asterisco de obligatorio."
+                );
+            }
+
+            if ($obligatorios > 0) {
+                $this->assertStringContainsString('data-nota-obligatorios', $html, "{$url}: falta la nota \"Los campos con * son obligatorios\".");
+            }
+        }
+    }
 }

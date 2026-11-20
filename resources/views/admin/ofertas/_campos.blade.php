@@ -10,7 +10,7 @@ $valor = function (string $campo, $default = '') use ($oferta) {
 @endphp
 
 <div>
-    <x-input-label for="titulo" value="Título" />
+    <x-input-label :required="true" for="titulo" value="Título" />
     <x-text-input id="titulo" name="titulo" class="mt-1.5 block w-full" :value="$valor('titulo')" required autofocus />
     <x-input-error :messages="$errors->get('titulo')" class="mt-2" />
 </div>
@@ -73,13 +73,13 @@ $valor = function (string $campo, $default = '') use ($oferta) {
 
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
     <div>
-        <x-input-label for="fecha_inicio" value="Fecha de inicio" />
+        <x-input-label :required="true" for="fecha_inicio" value="Fecha de inicio" />
         <x-text-input id="fecha_inicio" name="fecha_inicio" type="date" class="mt-1.5 block w-full" :value="$valor('fecha_inicio')" required />
         <x-input-error :messages="$errors->get('fecha_inicio')" class="mt-2" />
     </div>
 
     <div>
-        <x-input-label for="fecha_fin" value="Fecha de fin" />
+        <x-input-label :required="true" for="fecha_fin" value="Fecha de fin" />
         <x-text-input id="fecha_fin" name="fecha_fin" type="date" class="mt-1.5 block w-full" :value="$valor('fecha_fin')" required />
         <x-input-error :messages="$errors->get('fecha_fin')" class="mt-2" />
     </div>
