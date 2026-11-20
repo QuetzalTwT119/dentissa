@@ -471,6 +471,62 @@ Alpine.data('tablaLarga', () => ({
     },
 }));
 
+/*
+ * Carrusel de especialidades de la portada ("Fila"). Lo mueve el paciente:
+ * nunca avanza solo.
+ * - Cada flecha avanza UNA tarjeta, así cada clic mueve exactamente un punto
+ *   (con 7 tarjetas y 3 visibles, avanzar por páginas saltaba puntos).
+ * - Da la vuelta: al final, › regresa a la primera; al inicio, ‹ va al final.
+ * - Los puntos son una posición por tarjeta que puede quedar a la izquierda.
+ */
+Alpine.data('carruselServicios', () => ({
+    total: 0,
+    porVista: 1,
+    actual: 0,
+    temporizador: null,
+
+    init() {
+        this.total = this.$refs.pista.children.length;
+        this.medir();
+        new ResizeObserver(() => this.medir()).observe(this.$refs.pista);
+    },
+
+    get posiciones() {
+        return Math.max(1, this.total - this.porVista + 1);
+    },
+
+    ancho() {
+        const [a, b] = this.$refs.pista.children;
+        return b ? b.offsetLeft - a.offsetLeft : this.$refs.pista.clientWidth;
+    },
+
+    medir() {
+        const pista = this.$refs.pista;
+        this.porVista = Math.max(1, Math.round(pista.clientWidth / this.ancho()));
+        this.actual = Math.min(Math.round(pista.scrollLeft / this.ancho()), this.posiciones - 1);
+    },
+
+    // El desplazamiento suave dispara muchos eventos; se mide al terminar.
+    alDesplazar() {
+        clearTimeout(this.temporizador);
+        this.temporizador = setTimeout(() => this.medir(), 80);
+    },
+
+    ir(indice) {
+        const destino = (indice + this.posiciones) % this.posiciones;
+        this.$refs.pista.scrollTo({ left: destino * this.ancho() });
+        this.actual = destino;
+    },
+
+    siguiente() {
+        this.ir(this.actual + 1);
+    },
+
+    anterior() {
+        this.ir(this.actual - 1);
+    },
+}));
+
 Alpine.start();
 
 window.Pusher = Pusher;

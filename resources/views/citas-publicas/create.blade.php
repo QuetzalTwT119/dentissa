@@ -90,7 +90,7 @@
                         { etiqueta: 'Datos de contacto', titulo: 'Datos para agendar', texto: 'Los usamos para confirmar tu cita médica y enviarte recordatorios.' },
                     ],
                     servicios: @js($servicios),
-                    idServicio: @js(old('id_servicio', '')),
+                    idServicio: @js(old('id_servicio', $servicioInicial ?? '')),
                     idTratamiento: @js(old('id_tratamiento', '')),
                     fecha: @js(old('fecha', '')),
                     hora: @js(old('hora', null)),

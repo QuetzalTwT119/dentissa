@@ -101,6 +101,20 @@ paso a paso" y dos formas de contacto:
   Se calcula con la hora de la clínica a partir de **Horarios**: si el
   administrador cambia el horario, la portada lo refleja sin más pasos.
 
+Más abajo, **Tratamientos para tu salud y armonía** muestra las especialidades
+activas en una fila de tarjetas con foto:
+
+- Cada tarjeta dice **Agenda en línea** (tiene tratamientos activos; al tocarla
+  se abre la agenda con esa especialidad ya elegida) o **Agenda por teléfono**
+  (al tocarla se marca el número del consultorio).
+- En computadora se ven 3 tarjetas y se avanza con las flechas **‹ ›** a los
+  lados, una tarjeta por clic; al llegar al final regresa a la primera. En el
+  celular se desliza con el dedo. Los puntos de abajo indican en qué parte vas.
+- La foto y la descripción salen de **Catálogo › Servicios**: si se sube una
+  imagen o se escribe una descripción ahí, la portada las usa; si no, usa las
+  aprobadas por defecto. Para que una especialidad se agende en línea basta con
+  darle al menos un tratamiento activo.
+
 Los botones **Agendar mi valoración** y **Elegir fecha y horario** (al final
 de la portada) abren el flujo público validado; ahí se seleccionan tratamiento,
 fecha y hora antes de solicitar la cita. La portada no crea citas por sí misma ni usa

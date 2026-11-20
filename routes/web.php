@@ -129,7 +129,11 @@ Route::get('/', function () {
     return view('welcome', [
         'canLogin' => Route::has('login'),
         'estadoConsultorio' => HorarioAtencion::estadoActual(),
-        'servicios' => Servicio::where('activo', true)->orderBy('orden')->get(),
+        // Con sus tratamientos activos: la portada dice cuáles se agendan en línea y cuáles por teléfono.
+        'servicios' => Servicio::where('activo', true)
+            ->with(['tratamientos' => fn ($q) => $q->where('activo', true)->orderBy('servicios_tratamientos.orden')])
+            ->orderBy('orden')
+            ->get(),
         'ofertas' => Oferta::with('tratamiento:id,nombre')
             ->where('activa', true)
             ->whereDate('fecha_inicio', '<=', $hoy)
