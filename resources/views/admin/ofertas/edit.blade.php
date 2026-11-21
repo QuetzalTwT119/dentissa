@@ -1,22 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h1 class="mt-1.5 text-title-2 text-ink">
-                    Editar oferta
-                </h1>
-                <p class="mt-1 max-w-2xl text-sm text-muted">Ajuste de cupos, vigencia y precios de promoción.</p>
-            </div>
-            <a href="{{ route('admin.ofertas.index') }}" class="hidden sm:inline-block">
+        <x-admin.header
+            title="Editar oferta"
+            subtitle="Ajuste de cupos, vigencia y precios de promoción."
+        >
+            <x-slot:actions>
+                <a href="{{ route('admin.ofertas.index') }}" class="hidden sm:inline-block">
                 <x-secondary-button type="button">Volver al listado</x-secondary-button>
-            </a>
-        </div>
+                </a>
+            </x-slot:actions>
+        </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <form method="POST" action="{{ route('admin.ofertas.update', $oferta) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios de la oferta?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" enctype="multipart/form-data" class="space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <x-admin.card class="p-5 sm:p-8">
+                <form method="POST" action="{{ route('admin.ofertas.update', $oferta) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios de la oferta?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" enctype="multipart/form-data" class="formulario-panel formulario-3 space-y-6">
                     @csrf
                     @method('put')
 
@@ -31,7 +30,7 @@
                         </a>
                     </div>
                 </form>
-            </div>
+            </x-admin.card>
         </div>
     </div>
 </x-app-layout>

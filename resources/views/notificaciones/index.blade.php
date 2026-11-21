@@ -1,35 +1,33 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <p class="eyebrow">Centro de actividad</p>
-                <h1 class="mt-1.5 text-title-2 text-ink">Notificaciones</h1>
-                <p class="mt-1 max-w-2xl text-sm text-muted">Avisos internos de citas para el equipo de la clínica.</p>
-            </div>
+        <x-admin.header
+            badge="Centro de actividad"
+            title="Notificaciones"
+            subtitle="Avisos internos de citas para el equipo de la clínica."
+        >
+            <x-slot:actions>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button type="button" data-notification-sound-toggle data-label-on="Silenciar sonido" data-label-off="Activar sonido" aria-pressed="false" class="inline-flex items-center gap-2 min-h-11 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-2xs transition hover:border-peach-300 hover:bg-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Activar sonido de notificaciones" title="Activar sonido de notificaciones">
+                        <svg class="h-4 w-4 text-muted" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H3v6h3l5 4V5Zm4.5 3.5a5 5 0 0 1 0 7m3-10a9 9 0 0 1 0 13" />
+                        </svg>
+                        <span data-notification-sound-label>Activar sonido</span>
+                    </button>
 
-            <div class="flex flex-wrap items-center gap-2.5">
-                <button type="button" data-notification-sound-toggle data-label-on="Silenciar sonido" data-label-off="Activar sonido" aria-pressed="false" class="inline-flex items-center gap-2 min-h-11 rounded-full border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-2xs transition hover:border-peach-300 hover:bg-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Activar sonido de notificaciones" title="Activar sonido de notificaciones">
-                    <svg class="h-4 w-4 text-muted" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H3v6h3l5 4V5Zm4.5 3.5a5 5 0 0 1 0 7m3-10a9 9 0 0 1 0 13" />
-                    </svg>
-                    <span data-notification-sound-label>Activar sonido</span>
-                </button>
-
-                @if ($noLeidas > 0)
-                    <form method="POST" action="{{ route('notificaciones.leidas') }}">
-                        @csrf
-                        @method('PATCH')
-                        <button class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold uppercase tracking-label text-white shadow-soft transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
-                            Marcar todas como leídas
-                        </button>
-                    </form>
-                @endif
-            </div>
-        </div>
+                    @if ($noLeidas > 0)
+                        <form method="POST" action="{{ route('notificaciones.leidas') }}" data-confirmar="Todas las notificaciones pendientes pasarán a leídas." data-confirmar-titulo="¿Marcar todas como leídas?" data-confirmar-boton="Sí, marcar todas" data-confirmar-tono="normal">
+                            @csrf
+                            @method('PATCH')
+                            <x-primary-button>Marcar todas como leídas</x-primary-button>
+                        </form>
+                    @endif
+                </div>
+            </x-slot:actions>
+        </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8">
 
             <section class="grid gap-4 sm:grid-cols-3" aria-label="Resumen de notificaciones">
                 <article class="rounded-3xl border border-line bg-white p-5 shadow-soft">
@@ -71,7 +69,7 @@
 
             <x-pagination-summary :items="$notificaciones" label="notificaciones" :integrated="false" />
 
-            <section class="space-y-6" aria-label="Lista de notificaciones" aria-live="polite">
+            <section class="lista-panel space-y-6" aria-label="Lista de notificaciones" aria-live="polite">
                 @if ($notificaciones->isNotEmpty())
                     @foreach ($gruposNotificaciones as $fecha => $grupo)
                         <div class="space-y-3">
@@ -131,13 +129,13 @@
                                 </a>
 
                                 @if ($pendiente)
-                                    <form method="POST" action="{{ route('notificaciones.leida', $notificacion) }}">
+                                    <form method="POST" action="{{ route('notificaciones.leida', $notificacion) }}" data-confirmar="Puedes regresarla a pendiente cuando quieras." data-confirmar-titulo="¿Marcar como leída?" data-confirmar-boton="Sí, leída" data-confirmar-tono="normal">
                                         @csrf
                                         @method('PATCH')
                                         <button class="rounded-xl border border-line bg-white px-3.5 py-2 text-xs font-medium text-ink transition hover:bg-cream hover:border-peach-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">Marcar leída</button>
                                     </form>
                                 @else
-                                    <form method="POST" action="{{ route('notificaciones.pendiente', $notificacion) }}">
+                                    <form method="POST" action="{{ route('notificaciones.pendiente', $notificacion) }}" data-confirmar="Volverá a aparecer como pendiente." data-confirmar-titulo="¿Marcar como pendiente?" data-confirmar-boton="Sí, pendiente" data-confirmar-tono="normal">
                                         @csrf
                                         @method('PATCH')
                                         <button class="rounded-xl border border-line bg-white px-3.5 py-2 text-xs font-medium text-ink-soft transition hover:bg-cream hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">Marcar pendiente</button>

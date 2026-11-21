@@ -48,14 +48,17 @@
                     @if ($conFiltros)
                         <div class="flex flex-wrap items-center gap-2">{{ $filtros }}</div>
                     @endif
-                @if ($items->total() > 0)
-                    <p class="inline-flex items-center gap-2 text-xs text-muted">
+                {{-- Siempre presente (vacío sin resultados) para que el buscador global lo actualice sin recargar. --}}
+                <p @class(['inline-flex items-center gap-2 text-xs text-muted', 'hidden' => $items->total() === 0]) data-filtro-conteo>
+                    @if ($items->total() > 0)
                         <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true"></span>
                         <span>
                             Mostrando <strong class="font-semibold text-ink">{{ $paginator->firstItem() }}–{{ $paginator->lastItem() }}</strong>
                             de <strong class="font-semibold tabular-nums text-ink">{{ $totalFormateado }}</strong> {{ $etiquetaTotal }}
                         </span>
-                    </p>
+                    @endif
+                </p>
+                @if ($items->total() > 0)
 
                     {{-- Selector de registros por página con diseño Dentissa. --}}
                     <div x-data="{ open: false, perPage: {{ $perPageActual }} }"
@@ -135,4 +138,7 @@
             </div>
         </div>
     @endif
+@elseif ($items && ($posicion ?? 'arriba') === 'abajo')
+    {{-- Sin resultados: marcador vacío para que el buscador global pueda volver a llenarlo. --}}
+    <div data-paginacion="abajo" hidden></div>
 @endif

@@ -1032,3 +1032,195 @@ html::-webkit-scrollbar {
         animation: none;
     }
 }
+
+/*
+ * Panel ajustado a la ventana (revisión del 20/11/2026).
+ *
+ * Regla: en PC (>= 1024 px) ninguna pantalla del panel desplaza la página
+ * completa. layouts/app mide el alto de la ventana (.panel-marco); el
+ * contenido de cada pantalla (.panel-pagina > .panel-contenido) ocupa el
+ * espacio que queda bajo el menú y el título.
+ *   - Listas: la tarjeta que contiene una tabla (.tabla-panel) o una lista
+ *     larga (.lista-panel) se encoge hasta caber; solo su tabla se desplaza
+ *     por dentro, con los encabezados fijos, y la barra de filtros y la
+ *     paginación quedan a la vista.
+ *   - Formularios: se acomodan a lo ancho para caber; si aun así no caben
+ *     (pantallas bajas), se desplaza .panel-contenido y el menú sigue fijo.
+ * En celular y tableta el flujo es normal (estas reglas no aplican).
+ */
+@media (min-width: 1024px) {
+    .panel-marco {
+        height: 100dvh;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .panel-marco > main {
+        display: flex;
+        flex: 1 1 0%;
+        flex-direction: column;
+        min-height: 0;
+        padding-bottom: 0;
+    }
+
+    /* .panel-marco delante: gana a las clases py-8/sm:py-10 de cada pantalla. */
+    .panel-marco .panel-pagina {
+        display: flex;
+        flex: 1 1 0%;
+        flex-direction: column;
+        min-height: 0;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .panel-contenido {
+        display: flex;
+        flex: 1 1 0%;
+        flex-direction: column;
+        min-height: 0;
+        width: 100%;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        /* Lo posicionado (p. ej. textos .sr-only) se mide aquí y no estira la página. */
+        position: relative;
+    }
+
+    .panel-contenido > * {
+        flex-shrink: 0;
+    }
+
+    /* La tarjeta con la tabla (y lo que la envuelve) se encoge; lo demás no. */
+    .panel-contenido > :has(.tabla-panel, .lista-panel),
+    .panel-contenido > :has(.tabla-panel, .lista-panel) :has(.tabla-panel, .lista-panel) {
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 1;
+        min-height: 0;
+    }
+
+    .panel-contenido > :has(.tabla-panel, .lista-panel) {
+        min-height: 14rem;
+    }
+
+    .panel-contenido .tabla-panel,
+    .panel-contenido .lista-panel {
+        flex: 1 1 auto;
+        /* Nunca menos de ~3 filas: si no caben, se desplaza .panel-contenido. */
+        min-height: 9rem;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .panel-contenido .tabla-larga.tabla-panel {
+        display: flex;
+        flex-direction: column;
+        overflow-y: hidden;
+    }
+
+    .panel-contenido .tabla-larga.tabla-panel > [x-ref="desplazable"] {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    /* Encabezados de columna fijos mientras la tabla se desplaza. */
+    .panel-contenido .lista-panel .fila-cita-cabecera {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: rgb(var(--c-shell));
+    }
+
+    .panel-contenido .tabla-panel thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: rgb(var(--c-shell));
+    }
+}
+
+/*
+ * Formularios del panel en 2 columnas en PC (.formulario-panel, 20/11/2026).
+ * Cada hijo directo del <form> es un campo o una sección y se acomoda en la
+ * siguiente celda libre (también los campos de texto largo). Ocupan todo el
+ * ancho: avisos (<p>), .col-completa, el calendario de disponibilidad y la
+ * barra de botones (último hijo). En celular sigue siendo una columna.
+ */
+@media (min-width: 1024px) {
+    .formulario-panel {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.875rem 1.5rem;
+        align-items: start;
+    }
+
+    .formulario-panel > * {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Filas que ya tenían 2 campos: sus campos entran a la cuadrícula del formulario. */
+    .formulario-panel > [class*="sm:grid-cols-2"] {
+        display: contents;
+    }
+
+    .formulario-panel > p,
+    .formulario-panel > .col-completa,
+    .formulario-panel > [class*="grid-cols"]:not([class*="sm:grid-cols-2"]),
+    .formulario-panel > :has([x-data^="calendarioDisponibilidad"]),
+    .formulario-panel > :last-child {
+        grid-column: 1 / -1;
+    }
+
+    /* La tarjeta que envuelve al formulario: menos relleno en PC. */
+    .panel-contenido :has(> form.formulario-panel) {
+        padding: 1rem 1.5rem !important;
+    }
+
+    /* Formularios con muchos campos cortos (p. ej. Ofertas): 3 columnas. */
+    .formulario-panel.formulario-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    /* Nueva cita: paciente, servicio y motivo a la izquierda; calendario a la derecha. */
+    .formulario-cita {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+    }
+
+    .formulario-cita > * {
+        grid-column: 1;
+    }
+
+    .formulario-cita > .col-fecha {
+        grid-column: 2;
+        grid-row: 2 / span 3;
+    }
+
+    /* Botones siempre a la vista: si el formulario no cabe, la barra queda abajo. */
+    .panel-contenido .formulario-panel > :last-child {
+        position: sticky;
+        bottom: -1px;
+        z-index: 3;
+        margin-left: -0.5rem !important;
+        margin-right: -0.5rem !important;
+        padding: 0.75rem 0.5rem 0.25rem;
+        background-color: rgb(255 255 255 / 0.96);
+    }
+}
+
+/* Pantallas bajas en PC: la descripción bajo el título de la página es ayuda
+   secundaria; se oculta para dejarle el alto al contenido. */
+@media (min-width: 1024px) and (max-height: 820px) {
+    .panel-encabezado p.text-muted {
+        display: none;
+    }
+}
+
+/*
+ * Listas desplegables (20/11/2026): las clases px-3/px-3.5 de cada <select>
+ * quitaban el espacio de la flecha y el texto ("Todos los roles") quedaba
+ * debajo de ella. Esta regla es más específica que px-* y aplica a todo el sistema.
+ */
+select:not([multiple]):not([size]) {
+    padding-right: 2.5rem;
+}

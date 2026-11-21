@@ -1,26 +1,25 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h1 class="mt-1.5 text-title-2 text-ink">
-                    Nuevo caso
-                </h1>
-                <p class="mt-1 max-w-2xl text-sm text-muted">Creación de caso clínico demostrativo de antes y después.</p>
-            </div>
-            <a href="{{ route('admin.casos.index') }}" class="hidden sm:inline-block">
+        <x-admin.header
+            title="Nuevo caso"
+            subtitle="Creación de caso clínico demostrativo de antes y después."
+        >
+            <x-slot:actions>
+                <a href="{{ route('admin.casos.index') }}" class="hidden sm:inline-block">
                 <x-secondary-button type="button">Volver al listado</x-secondary-button>
-            </a>
-        </div>
+                </a>
+            </x-slot:actions>
+        </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <x-admin.card class="p-5 sm:p-8">
                 <p class="text-sm text-ink-soft">
                     Después de guardar podrás subir las fotos de antes/después desde la pantalla de edición.
                 </p>
 
-                <form method="POST" action="{{ route('admin.casos.store') }}" data-confirmar="Se guardará y quedará disponible en el panel." data-confirmar-titulo="¿Crear el caso?" data-confirmar-boton="Sí, crear" data-confirmar-tono="normal" class="mt-6 space-y-6">
+                <form method="POST" action="{{ route('admin.casos.store') }}" data-confirmar="Se guardará y quedará disponible en el panel." data-confirmar-titulo="¿Crear el caso?" data-confirmar-boton="Sí, crear" data-confirmar-tono="normal" class="formulario-panel mt-6 space-y-6">
                     @csrf
 
                     <x-form-obligatorios />
@@ -32,8 +31,7 @@
 
                     <div>
                         <x-input-label for="descripcion" value="Descripción breve" />
-                        <textarea id="descripcion" name="descripcion" rows="3" placeholder="Ej. Tras el tratamiento de alineación, se logró una sonrisa simétrica y funcional."
-                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion') }}</textarea>
+                        <x-textarea id="descripcion" name="descripcion" rows="3" placeholder="Ej. Tras el tratamiento de alineación, se logró una sonrisa simétrica y funcional." class="mt-1.5">{{ old('descripcion') }}</x-textarea>
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 
@@ -51,7 +49,7 @@
                         </a>
                     </div>
                 </form>
-            </div>
+            </x-admin.card>
         </div>
     </div>
 </x-app-layout>

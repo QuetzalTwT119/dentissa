@@ -20,12 +20,12 @@
         {{-- Mes --}}
         @if ($vista !== 'horas')
         <div @class(['mx-auto max-w-md' => $vista === 'dia'])>
-            <div class="mb-3 flex items-center justify-between gap-3">
+            <div class="mb-3 flex items-center justify-between gap-3 lg:mb-1.5">
                 <p class="whitespace-nowrap font-serif text-title-3 text-ink md:text-headline md:font-semibold" x-text="etiquetaMes" aria-live="polite"></p>
                 <div class="flex gap-2">
                     @foreach ([-1 => ['Mes anterior', 'M15 19l-7-7 7-7'], 1 => ['Mes siguiente', 'M9 5l7 7-7 7']] as $paso => [$etiqueta, $trazo])
                         <button type="button" @click="cambiarMes({{ $paso }})" :disabled="{{ $paso < 0 ? '!puedeRetroceder' : '!puedeAvanzar' }}" aria-label="{{ $etiqueta }}"
-                                class="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-white text-ink-soft transition-[border-color,color,transform] duration-150 ease-out hover:border-peach-300 hover:text-brand-700 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 disabled:opacity-40 disabled:active:scale-100">
+                                class="flex h-11 w-11 items-center justify-center rounded-full border border-line bg-white text-ink-soft lg:h-9 lg:w-9 transition-[border-color,color,transform] duration-150 ease-out hover:border-peach-300 hover:text-brand-700 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 disabled:opacity-40 disabled:active:scale-100">
                             <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $trazo }}" /></svg>
                         </button>
                     @endforeach
@@ -34,7 +34,7 @@
 
             <div class="grid grid-cols-7 gap-1 text-center" aria-hidden="true">
                 <template x-for="(nombre, i) in nombresDias" :key="i">
-                    <span class="py-1.5 text-xs font-semibold text-muted" x-text="nombre"></span>
+                    <span class="py-1.5 text-xs font-semibold text-muted lg:py-1" x-text="nombre"></span>
                 </template>
             </div>
 
@@ -71,7 +71,7 @@
                 <button type="button" @click="cargarMes()" class="link">Reintentar</button>
             </p>
 
-            <div class="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-footnote text-muted">
+            <div class="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-footnote text-muted lg:mt-2">
                 <span class="inline-flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-sage-500" aria-hidden="true"></span>Disponible</span>
                 <span class="inline-flex items-center gap-1.5"><span class="h-[7px] w-[7px] rounded-full bg-peach-400" aria-hidden="true"></span>Pocos lugares</span>
                 <span class="inline-flex items-center gap-1.5"><span class="line-through decoration-muted/50" aria-hidden="true">12</span>Sin horarios</span>

@@ -13,10 +13,10 @@
         </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <x-admin.card class="p-6 sm:p-8">
-                <form method="POST" action="{{ route('admin.usuarios.store') }}" data-confirmar="Se guardará y quedará disponible en el panel." data-confirmar-titulo="¿Crear el usuario?" data-confirmar-boton="Sí, crear" data-confirmar-tono="normal" class="space-y-6">
+                <form method="POST" action="{{ route('admin.usuarios.store') }}" data-confirmar="Se guardará y quedará disponible en el panel." data-confirmar-titulo="¿Crear el usuario?" data-confirmar-boton="Sí, crear" data-confirmar-tono="normal" class="formulario-panel space-y-6">
                     @csrf
 
                     <x-form-obligatorios />
@@ -48,11 +48,10 @@
 
                     <div>
                         <x-input-label for="rol" value="Rol" />
-                        <select id="rol" name="rol"
-                                class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                        <x-select id="rol" name="rol" class="mt-1.5">
                             <option value="asistente" @selected(old('rol', 'asistente') === 'asistente')>Asistente</option>
                             <option value="admin" @selected(old('rol') === 'admin')>Admin</option>
-                        </select>
+                        </x-select>
                         <x-input-error :messages="$errors->get('rol')" class="mt-2" />
                     </div>
 

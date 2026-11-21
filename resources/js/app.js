@@ -1095,3 +1095,69 @@ if (updatesUrl) {
     window.setInterval(refreshNotifications, 3000);
     document.addEventListener('visibilitychange', refreshNotifications);
 }
+
+/*
+ * Buscador global de las listas (components/filtro/buscar, 20/11/2026).
+ * Al escribir, actualiza la lista sin recargar la página (no se pierde el
+ * foco ni lo escrito). Reemplaza la zona de resultados de la respuesta:
+ * por defecto la tabla (.tabla-panel), el conteo y la paginación de abajo;
+ * una pantalla puede indicar otra zona con data-filtro-resultados="selector"
+ * en <x-filtro.barra> (p. ej. Citas). Si algo no coincide, recarga normal.
+ */
+(() => {
+    const zonasPorDefecto = ['.tabla-panel', '[data-filtro-conteo]', '[data-paginacion="abajo"]'];
+    const pendientes = new WeakMap();
+
+    document.addEventListener('input', (evento) => {
+        const entrada = evento.target;
+        if (!(entrada instanceof HTMLInputElement) || !entrada.matches('[data-filtro-buscar]')) return;
+        const form = entrada.form;
+        if (!form) return;
+
+        clearTimeout(pendientes.get(form)?.temporizador);
+        pendientes.get(form)?.solicitud?.abort();
+
+        const temporizador = setTimeout(async () => {
+            const datos = [...new FormData(form)].filter(([, valor]) => String(valor).trim() !== '');
+            const url = datos.length ? `${form.action}?${new URLSearchParams(datos).toString()}` : form.action;
+            const solicitud = new AbortController();
+            pendientes.set(form, { solicitud });
+            const zonas = form.dataset.filtroResultados ? [form.dataset.filtroResultados] : zonasPorDefecto;
+
+            try {
+                const respuesta = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' }, signal: solicitud.signal });
+                if (!respuesta.ok) throw new Error('respuesta');
+                const nuevo = new DOMParser().parseFromString(await respuesta.text(), 'text/html');
+
+                const pares = zonas.map((selector) => [document.querySelector(selector), nuevo.querySelector(selector)]);
+                if (pares.some(([actual, siguiente]) => !actual !== !siguiente)) {
+                    window.location.assign(url);
+                    return;
+                }
+                pares.forEach(([actual, siguiente]) => {
+                    if (!actual) return;
+                    // La propia zona puede cambiar (p. ej. mostrarse u ocultarse sin resultados).
+                    const nueva = document.importNode(siguiente, true);
+                    actual.replaceWith(nueva);
+                    window.Alpine?.initTree(nueva);
+                });
+                window.history.replaceState({}, '', url);
+
+                // "Limpiar filtros" visible solo si hay algo filtrado.
+                const hayFiltros = JSON.parse(form.dataset.filtroCampos || '[]')
+                    .some((nombre) => String(form.elements.namedItem(nombre)?.value ?? '').trim() !== '');
+                form.querySelector('[data-filtro-limpiar]')?.classList.toggle('hidden', !hayFiltros);
+            } catch (error) {
+                if (error.name !== 'AbortError') window.location.assign(url);
+            }
+        }, 350);
+
+        pendientes.set(form, { temporizador });
+    });
+})();
+
+// Al volver con "Atrás", el navegador puede restaurar la página con los
+// campos vacíos aún deshabilitados por el envío de x-filtro.barra.
+window.addEventListener('pageshow', () => {
+    document.querySelectorAll('[data-filtro-barra] [disabled]').forEach((campo) => { campo.disabled = false; });
+});

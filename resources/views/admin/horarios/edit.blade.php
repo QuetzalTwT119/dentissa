@@ -14,17 +14,18 @@ $diaLabel = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 =
 --}}
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="min-w-0">
-                <h1 class="font-serif text-title-2 text-ink">Horarios de atención</h1>
-                <p class="mt-1 text-sm text-muted">Días y horas en que se pueden agendar citas. Se muestran a los pacientes en la portada.</p>
-            </div>
-            <x-primary-button form="form-horarios" class="hidden lg:inline-flex">Guardar horarios</x-primary-button>
-        </div>
+        <x-admin.header
+            title="Horarios de atención"
+            subtitle="Días y horas en que se pueden agendar citas. Se muestran a los pacientes en la portada."
+        >
+            <x-slot:actions>
+                <x-primary-button form="form-horarios" class="hidden lg:inline-flex">Guardar horarios</x-primary-button>
+            </x-slot:actions>
+        </x-admin.header>
     </x-slot>
 
-    <div class="py-4 sm:py-6 lg:py-4">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="panel-pagina py-4 sm:py-6 lg:py-4">
+        <div class="panel-contenido mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <x-admin.card>
                 <form id="form-horarios" method="POST" action="{{ route('admin.horarios.update') }}" data-confirmar="Los cambios se aplicarán de inmediato en la agenda y en la portada." data-confirmar-titulo="¿Guardar los horarios?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal">
                     @csrf

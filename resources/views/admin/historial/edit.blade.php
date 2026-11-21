@@ -1,22 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h1 class="mt-1.5 text-title-2 text-ink">
-                    Editar consulta — {{ $paciente->nombre }} {{ $paciente->apellido }}
-                </h1>
-                <p class="mt-1 max-w-2xl text-sm text-muted">Modificación de notas clínicas y gestión de adjuntos.</p>
-            </div>
-            <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="hidden sm:inline-block">
+        <x-admin.header
+            title="Editar consulta — {{ $paciente->nombre }} {{ $paciente->apellido }}"
+            subtitle="Modificación de notas clínicas y gestión de adjuntos."
+        >
+            <x-slot:actions>
+                <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="hidden sm:inline-block">
                 <x-secondary-button type="button">Volver al historial</x-secondary-button>
-            </a>
-        </div>
+                </a>
+            </x-slot:actions>
+        </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-2xl space-y-6 px-4 sm:px-6 lg:px-8">
-            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <form method="POST" action="{{ route('admin.pacientes.historial.update', [$paciente, $historial]) }}" class="space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <x-admin.card class="p-5 sm:p-8">
+                <form method="POST" action="{{ route('admin.pacientes.historial.update', [$paciente, $historial]) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del registro?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="formulario-panel space-y-6">
                     @csrf
                     @method('put')
 
@@ -31,9 +30,9 @@
                         </a>
                     </div>
                 </form>
-            </div>
+            </x-admin.card>
 
-            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
+            <x-admin.card class="p-5 sm:p-8">
                 <h3 class="text-headline font-semibold text-ink">Documentos y radiografías</h3>
                 <p class="mt-1 text-xs text-muted">Archivos clínicos complementarios vinculados a esta sesión.</p>
 
@@ -55,7 +54,7 @@
                     @endforelse
                 </ul>
 
-                <form method="POST" action="{{ route('admin.pacientes.historial.imagenes.store', [$paciente, $historial]) }}" enctype="multipart/form-data" class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4 border-t border-line pt-5">
+                <form method="POST" action="{{ route('admin.pacientes.historial.imagenes.store', [$paciente, $historial]) }}" data-confirmar="El archivo se agregará al registro del historial." data-confirmar-titulo="¿Subir el adjunto?" data-confirmar-boton="Sí, subir" data-confirmar-tono="normal" enctype="multipart/form-data" class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4 border-t border-line pt-5">
                     @csrf
                     <div class="min-w-0 flex-1">
                         <x-input-label for="archivo" value="Nuevo adjunto (imagen o PDF, máx. 5MB)" />
@@ -64,7 +63,7 @@
                     </div>
                     <x-primary-button>Subir</x-primary-button>
                 </form>
-            </div>
+            </x-admin.card>
         </div>
     </div>
 </x-app-layout>

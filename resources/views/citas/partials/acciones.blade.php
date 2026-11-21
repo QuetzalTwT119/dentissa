@@ -10,7 +10,7 @@
 @endphp
 <div class="flex w-max max-w-full items-center justify-end gap-2">
     @if ($esPersonal && $cita->estado->value === 'agendada')
-        <form method="POST" action="{{ route('citas.confirm', $cita) }}">
+        <form method="POST" action="{{ route('citas.confirm', $cita) }}" data-confirmar="Se avisará al paciente que su cita quedó confirmada." data-confirmar-titulo="¿Confirmar la cita?" data-confirmar-boton="Sí, confirmar" data-confirmar-tono="normal">
             @csrf
             @method('patch')
             <button type="submit"
@@ -19,7 +19,7 @@
             </button>
         </form>
     @elseif ($esPersonal && $cita->estado->value === 'confirmada')
-        <form method="POST" action="{{ route('citas.start', $cita) }}">
+        <form method="POST" action="{{ route('citas.start', $cita) }}" data-confirmar="La cita pasará a «En curso»." data-confirmar-titulo="¿Iniciar la cita?" data-confirmar-boton="Sí, iniciar" data-confirmar-tono="normal">
             @csrf
             @method('patch')
             <button type="submit"
@@ -29,7 +29,7 @@
             </button>
         </form>
     @elseif ($esPersonal && $cita->estado->value === 'en_curso')
-        <form method="POST" action="{{ route('citas.complete', $cita) }}">
+        <form method="POST" action="{{ route('citas.complete', $cita) }}" data-confirmar="La cita quedará como completada." data-confirmar-titulo="¿Completar la cita?" data-confirmar-boton="Sí, completar" data-confirmar-tono="normal">
             @csrf
             @method('patch')
             <button type="submit"

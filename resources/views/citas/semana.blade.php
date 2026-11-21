@@ -25,8 +25,8 @@
         />
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
             @include('citas.partials.selector-vista', ['vistaActual' => 'semana'])
 
             <section data-semana="{{ $lunes->toDateString() }}"

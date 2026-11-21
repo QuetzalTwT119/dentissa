@@ -24,8 +24,8 @@
         />
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
 
 
             @if ($errors->any())
@@ -34,60 +34,18 @@
 
             @include('citas.partials.selector-vista', ['vistaActual' => 'lista'])
 
-            <!-- Búsqueda (en todas las fechas) y filtro de estado -->
-            <div class="rounded-3xl border border-line bg-white p-4 shadow-soft sm:p-6">
-                <form method="GET" action="{{ route('citas.index') }}" role="search" data-citas-live-search class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-12 xl:items-end">
-                    @if (request()->has('per_page'))
-                        <input type="hidden" name="per_page" value="{{ request('per_page') }}">
-                    @endif
-                    {{-- El día elegido en las pestañas se conserva al filtrar por estado. --}}
-                    @if (filled($filtros['fecha'] ?? null))
-                        <input type="hidden" name="fecha" value="{{ $filtros['fecha'] }}">
-                    @endif
-
-                    <div class="min-w-0 xl:col-span-6">
-                        <label for="buscar_citas" class="mb-1.5 block text-sm font-semibold text-ink">Buscar en todas las fechas</label>
-                        <div class="relative">
-                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-brand-500" aria-hidden="true">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4" stroke-linecap="round"/></svg>
-                            </span>
-                            <input enterkeyhint="search" id="buscar_citas" type="search" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" maxlength="100"
-                                   placeholder="Paciente, teléfono, servicio o tratamiento"
-                                   aria-label="Buscar citas por paciente, teléfono, servicio o tratamiento"
-                                   x-on:input.debounce.600ms="$el.form.requestSubmit()"
-                                   class="min-h-11 block h-12 w-full rounded-xl border border-field bg-cream/60 pl-11 pr-4 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] placeholder:text-muted hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
-                        </div>
-                    </div>
-
-                    <div class="min-w-0 xl:col-span-2">
-                        <label for="filtro_estado" class="mb-1.5 block text-sm font-semibold text-ink">Estado</label>
-                        <select id="filtro_estado" name="estado" onchange="this.form.submit()"
-                                class="min-h-11 h-12 w-full rounded-xl border border-field bg-cream/60 px-3 text-sm text-ink shadow-2xs transition-[border-color,box-shadow,background-color] hover:border-peach-300 hover:bg-white focus:border-brand-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15">
-                            <option value="">Todos los estados</option>
-                            @foreach ($estadoLabel as $valor => $etiqueta)
-                                <option value="{{ $valor }}" @selected(($filtros['estado'] ?? '') === $valor)>{{ $etiqueta }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <button type="submit" class="sr-only">Buscar citas</button>
-
-                    <div class="flex items-center gap-2 sm:col-span-2 xl:col-span-4 xl:justify-end">
-                        <a data-citas-clear
-                           href="{{ route('citas.index', request()->only('per_page')) }}"
-                           @class([
-                               'inline-flex h-12 items-center justify-center rounded-full px-4 text-sm font-semibold text-muted transition hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-400',
-                               'hidden' => empty($filtros['buscar']) && empty($filtros['fecha']) && empty($filtros['estado']),
-                           ])>
-                            Limpiar
-                        </a>
-                        <a href="{{ route('citas.create') }}" class="btn-brand h-12 shrink-0 px-5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                            <span>Agendar cita</span>
-                        </a>
-                    </div>
-                </form>
-            </div>
+            {{-- Búsqueda (en todas las fechas) y estado: filtro global (components/filtro). El buscador
+                 actualiza solo la zona de resultados de citas, sin recargar. --}}
+            <x-admin.card class="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-3">
+                <x-filtro.barra :action="route('citas.index')" :campos="['buscar', 'estado', 'fecha']" :conservar="['fecha']" resultados="[data-citas-results]">
+                    <x-filtro.buscar id="buscar_citas" etiqueta="Buscar citas por paciente, teléfono, servicio o tratamiento" placeholder="Paciente, teléfono, servicio o tratamiento" />
+                    <x-filtro.select name="estado" etiqueta="Filtrar por estado" todos="Todos los estados" :opciones="$estadoLabel" />
+                </x-filtro.barra>
+                <a href="{{ route('citas.create') }}" class="btn-brand min-h-11 shrink-0 px-5">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7H5"/></svg>
+                    <span>Agendar cita</span>
+                </a>
+            </x-admin.card>
 
             <div data-citas-results aria-live="polite" aria-busy="false" class="space-y-4">
                 @if ($porDia)
@@ -167,7 +125,7 @@
                         </div>
                     </div>
 
-                    <div role="table" aria-label="Citas de {{ $tituloDia($dia) }}" class="rounded-3xl border border-line bg-white shadow-soft">
+                    <div role="table" aria-label="Citas de {{ $tituloDia($dia) }}" class="lista-panel rounded-3xl border border-line bg-white shadow-soft">
                         @if ($citasDelDia->isNotEmpty())
                             <div role="row" class="fila-cita-cabecera rounded-t-3xl border-b border-line bg-shell/50 text-caption font-semibold uppercase tracking-label text-ink-soft">
                                 <span role="columnheader">Hora</span>
@@ -228,7 +186,7 @@
                         <a href="{{ route('citas.index', $conEstado([])) }}" class="inline-flex min-h-11 items-center text-sm font-semibold text-brand-700 hover:text-brand-800">‹ Volver a la agenda por día</a>
                     </div>
 
-                    <div class="rounded-3xl border border-line bg-white shadow-soft">
+                    <x-admin.card>
                         <x-pagination-summary :items="$citas" label="citas" class="rounded-t-3xl" />
                         @forelse ($grupos as $fecha => $citasDeFecha)
                             <section aria-label="{{ $tituloDia(\Illuminate\Support\Carbon::parse($fecha)) }}" @class(['border-t border-line' => ! $loop->first])>
@@ -253,76 +211,10 @@
                         @endforelse
 
                         <x-pagination-summary :items="$citas" label="citas" class="rounded-b-3xl" posicion="abajo" />
-                    </div>
+                    </x-admin.card>
                 @endif
             </div>
         </div>
     </div>
 
-    @if ($esPersonal)
-        <script>
-            (() => {
-                const inicializarBusquedaEnVivo = () => {
-                    const form = document.querySelector('[data-citas-live-search]');
-                    const resultados = document.querySelector('[data-citas-results]');
-                    const entrada = form?.querySelector('[name="buscar"]');
-                    const limpiar = form?.querySelector('[data-citas-clear]');
-
-                    if (!form || !resultados || !entrada || form.dataset.liveSearchReady) return;
-
-                    form.dataset.liveSearchReady = 'true';
-                    let temporizador = null;
-                    let solicitud = null;
-
-                    entrada.addEventListener('input', () => {
-                        clearTimeout(temporizador);
-                        solicitud?.abort();
-
-                        temporizador = setTimeout(async () => {
-                            const parametros = new URLSearchParams(new FormData(form));
-                            const url = `${form.action}?${parametros.toString()}`;
-                            solicitud = new AbortController();
-                            resultados.setAttribute('aria-busy', 'true');
-
-                            try {
-                                const respuesta = await fetch(url, {
-                                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                                    signal: solicitud.signal,
-                                });
-
-                                if (!respuesta.ok) throw new Error('No se pudieron actualizar las citas.');
-
-                                const html = await respuesta.text();
-                                const documento = new DOMParser().parseFromString(html, 'text/html');
-                                const resultadosNuevos = documento.querySelector('[data-citas-results]');
-
-                                if (!resultadosNuevos) throw new Error('No se encontró la lista actualizada de citas.');
-
-                                resultados.innerHTML = resultadosNuevos.innerHTML;
-                                resultados.setAttribute('aria-busy', 'false');
-                                window.history.replaceState({}, '', url);
-
-                                const hayFiltros = ['buscar', 'fecha', 'estado'].some((nombre) =>
-                                    String(form.elements.namedItem(nombre)?.value ?? '').trim() !== ''
-                                );
-                                limpiar?.classList.toggle('hidden', !hayFiltros);
-                                window.Alpine?.initTree(resultados);
-                            } catch (error) {
-                                if (error.name !== 'AbortError') {
-                                    resultados.setAttribute('aria-busy', 'false');
-                                    console.error(error);
-                                }
-                            }
-                        }, 180);
-                    });
-                };
-
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', inicializarBusquedaEnVivo, { once: true });
-                } else {
-                    inicializarBusquedaEnVivo();
-                }
-            })();
-        </script>
-    @endif
 </x-app-layout>

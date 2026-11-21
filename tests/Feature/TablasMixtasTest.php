@@ -62,7 +62,7 @@ class TablasMixtasTest extends TestCase
             $this->actingAs($admin)->get(route($ruta))
                 ->assertOk()
                 ->assertSee('x-data="tablaLarga"', false)
-                ->assertSee('class="tabla-larga"', false)
+                ->assertSee('class="tabla-larga tabla-panel"', false)
                 ->assertSee('overflow-x-auto', false)
                 ->assertSee($anchoMinimo, false)
                 ->assertSee('Desliza para ver más columnas');

@@ -134,7 +134,9 @@ class AuditoriaAdminTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.auditoria.index'))
             ->assertOk()
-            ->assertSee('0 eventos encontrados')
+            // El conteo siempre existe (el buscador sin recarga lo muestra u oculta),
+            // pero sin eventos visibles va oculto y se muestra el vacío.
+            ->assertSee('text-muted hidden" data-filtro-conteo', false)
             ->assertDontSee('Solicitud desde portal público')
             ->assertDontSee('Solicitud por Telegram')
             ->assertDontSee('Cita #31')

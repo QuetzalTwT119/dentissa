@@ -1134,6 +1134,13 @@ Un barrido de 41 pantallas a 375 y 1280 px dejó cuatro reglas, protegidas por
   una sola vez en `layouts/app` y `app.js` intercepta el envío en fase de
   captura. Cada botón actúa en su propio clic: no se usa el evento `close` del
   `<dialog>`, que algunos navegadores no disparan.
+- **Todo cambio pide confirmación (21/11/2026).** Cualquier `<form method="POST">`
+  del panel lleva `data-confirmar` (tono `normal` si se puede deshacer,
+  `peligro` si no). Los botones de fila que cambian algo usan
+  `x-admin.boton-fila`, que siempre confirma. `ConsistenciaDisenoTest`
+  falla si aparece uno sin confirmación; excepciones: `asistente-agenda.proponer`
+  (no guarda), `dos-pasos.confirmar` (el código es la confirmación) y
+  `verification.send`.
 - **Toda acción avisa qué pasó.** `components/avisos-sesion` (en `layouts/app`)
   pinta `session('success')` y `session('error')` en todo el panel, abajo a la
   derecha (los avisos de notificaciones nuevas salen arriba). El de éxito se va
@@ -1150,6 +1157,45 @@ Un barrido de 41 pantallas a 375 y 1280 px dejó cuatro reglas, protegidas por
   listas largas), se desplaza solo el interior y los botones siguen a la vista.
   Textos de ayuda secundarios se ocultan con `lg:[@media(max-height:820px)]:hidden`.
   En celular el flujo es normal con la barra fija abajo.
+- **Todo el panel se ajusta a la ventana en PC (20/11/2026).** Mismo patrón
+  aplicado a las 41 pantallas con clases compartidas (reglas en `app.css`,
+  bloques "Panel ajustado" y "Formularios del panel"):
+  - `layouts/app` → `.panel-marco` (alto de la ventana) y `.panel-encabezado`.
+  - Cada pantalla → `.panel-pagina > .panel-contenido`. Si algo no cabe, se
+    desplaza solo `.panel-contenido`; el menú y el título quedan fijos.
+  - Listas: `x-admin.table` lleva `.tabla-panel` (la lista de citas y la de
+    notificaciones, `.lista-panel`). La tarjeta se encoge, la tabla se desplaza
+    por dentro con encabezados fijos; filtros y paginación siempre a la vista.
+  - Formularios: `.formulario-panel` en el `<form>` = 2 columnas (las filas
+    de 2 campos se integran a la cuadrícula; `.formulario-3` = 3 columnas;
+    `.col-completa` ocupa el ancho). La barra de botones (último hijo) queda
+    pegada abajo. Nueva cita (`.formulario-cita`): datos a la izquierda y el
+    calendario (`.col-fecha`) a la derecha.
+  - Perfil: pestañas (una sección a la vez) en lugar de secciones apiladas.
+  - Pantallas bajas (`max-height: 820px`): se ocultan descripciones
+    secundarias (subtítulo de la página y de las tarjetas).
+  - Verificación: se midió cada pantalla en 1536×748 (ventana real del
+    usuario), 1024×700 y 375×812 con un recorrido automático en el navegador;
+    `ConsistenciaDisenoTest` exige `.panel-contenido` en toda pantalla nueva.
+  - Local: `PHP_CLI_SERVER_WORKERS=4` en `compose.yaml` (antes `php artisan
+    serve` atendía una petición a la vez y cada página tardaba ~2 s).
+- **Catálogo de componentes globales del panel (21/11/2026).** Lo que se
+  repite usa un componente; `ConsistenciaDisenoTest` falla si se vuelve a
+  hacer a mano:
+
+  | Pieza | Componente | Notas |
+  |---|---|---|
+  | Encabezado de página | `x-admin.header` (badge, title, subtitle, slot actions) | Excepción: Editar servicio/tratamiento (ruta + Guardar arriba) |
+  | Tarjeta | `x-admin.card` | `overflow-clip` (no rompe la barra de botones fija) |
+  | Filtros de lista | `x-filtro.barra` + `.select` / `.buscar` / `.fecha` | Se aplican solos; activo resaltado; "Limpiar filtros" solo si hay filtro; el buscador actualiza sin recargar |
+  | Campo de texto / largo / lista | `x-text-input` / `x-textarea` / `x-select` | Mismo borde, foco y alto mínimo de 44 px |
+  | Botón principal / secundario | `x-primary-button` (o `.btn-brand` en enlaces) / `x-secondary-button` | Las acciones de fila de Citas son más chicas a propósito |
+  | Etiqueta redonda | `x-chip` (forma) + color con significado | `x-admin.status-badge` para Activo/Inactivo |
+  | Acciones de fila, vacío, paginación, avisos, confirmar | `x-admin.acciones-fila`, `x-admin.boton-fila` (nuevo), `x-admin.empty-state`, `x-pagination-summary`, `x-avisos-sesion`, `x-dialogo-confirmar` | Ya eran globales |
+
+  Se quedan únicos (un solo uso): portada y agenda pública (estilo para
+  pacientes), bienvenida de Inicio, pestañas de días de Citas; las tarjetas
+  `<section>`/`<article>` conservan las mismas clases que `x-admin.card`.
 - **Validación del navegador con el diseño propio.** `app.js` escucha `invalid`
   en captura, cancela la burbuja genérica y escribe el error en rojo debajo del
   campo (o de su envoltorio `.relative`), con `aria-invalid` y foco en el primero.

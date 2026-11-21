@@ -1,14 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
-        <div>
-            <p class="eyebrow">Seguridad de la cuenta</p>
-            <h1 class="mt-1.5 text-title-2 text-ink">Verificación en dos pasos</h1>
-            <p class="mt-1 text-sm text-muted">Además de tu contraseña, al entrar se pedirá un código de tu celular.</p>
-        </div>
+        <x-admin.header
+            badge="Seguridad de la cuenta"
+            title="Verificación en dos pasos"
+            subtitle="Además de tu contraseña, al entrar se pedirá un código de tu celular."
+        />
     </x-slot>
 
-    <div class="py-7 sm:py-10">
-        <div class="mx-auto max-w-3xl space-y-6 px-4 sm:px-6 lg:px-8">
+    <div class="panel-pagina py-7 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-3xl space-y-6 px-4 sm:px-6 lg:px-8">
             @if (session('status'))
                 <x-alert type="success" :message="session('status')" />
             @endif
@@ -67,7 +67,7 @@
                     <p class="text-sm text-ink-soft"><span class="rounded-full bg-sage-50 px-2.5 py-1 text-xs font-semibold text-sage-700">Activa</span>
                         desde el {{ $usuario->dos_pasos_confirmado_en->locale('es')->translatedFormat('j \d\e F \d\e Y') }}. Te quedan <strong>{{ $restantes }}</strong> códigos de recuperación.</p>
 
-                    <form method="POST" action="{{ route('dos-pasos.regenerar') }}" class="mt-6 space-y-3">
+                    <form method="POST" action="{{ route('dos-pasos.regenerar') }}" data-confirmar="Los códigos anteriores dejarán de servir." data-confirmar-titulo="¿Generar códigos nuevos?" data-confirmar-boton="Sí, generar" data-confirmar-tono="normal" class="mt-6 space-y-3">
                         @csrf
                         <p class="text-sm font-semibold text-ink">Generar códigos de recuperación nuevos</p>
                         <p class="text-sm text-muted">Los anteriores dejarán de servir.</p>

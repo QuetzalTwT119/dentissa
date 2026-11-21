@@ -17,42 +17,38 @@ $valor = function (string $campo, $default = '') use ($oferta) {
 
 <div>
     <x-input-label for="descripcion" value="Descripción" />
-    <textarea id="descripcion" name="descripcion" rows="3"
-              class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ $valor('descripcion') }}</textarea>
+    <x-textarea id="descripcion" name="descripcion" rows="3" class="mt-1.5">{{ $valor('descripcion') }}</x-textarea>
     <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
 </div>
 
 <div>
     <x-input-label for="id_tratamiento" value="Tratamiento relacionado (opcional)" />
-    <select id="id_tratamiento" name="id_tratamiento"
-            class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+    <x-select id="id_tratamiento" name="id_tratamiento" class="mt-1.5">
         <option value="">Ninguno</option>
         @foreach ($tratamientos as $tratamiento)
             <option value="{{ $tratamiento->id }}" @selected($valor('id_tratamiento') == $tratamiento->id)>{{ $tratamiento->nombre }}</option>
         @endforeach
-    </select>
+    </x-select>
     <x-input-error :messages="$errors->get('id_tratamiento')" class="mt-2" />
 </div>
 
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
     <div>
         <x-input-label for="tipo" value="Tipo de oferta" />
-        <select id="tipo" name="tipo"
-                class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+        <x-select id="tipo" name="tipo" class="mt-1.5">
             @foreach (['descuento' => 'Descuento', 'paquete' => 'Paquete', 'bonificacion' => 'Bonificación'] as $valorTipo => $etiqueta)
                 <option value="{{ $valorTipo }}" @selected($valor('tipo', 'descuento') === $valorTipo)>{{ $etiqueta }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
     </div>
 
     <div>
         <x-input-label for="tipo_valor" value="Tipo de valor" />
-        <select id="tipo_valor" name="tipo_valor"
-                class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+        <x-select id="tipo_valor" name="tipo_valor" class="mt-1.5">
             <option value="porcentaje" @selected($valor('tipo_valor', 'porcentaje') === 'porcentaje')>Porcentaje</option>
             <option value="monto_fijo" @selected($valor('tipo_valor', 'porcentaje') === 'monto_fijo')>Monto fijo</option>
-        </select>
+        </x-select>
         <x-input-error :messages="$errors->get('tipo_valor')" class="mt-2" />
     </div>
 </div>
