@@ -544,6 +544,16 @@ consultas. En la Agenda, una cita **completada** sin consulta muestra "Registrar
 (abre `historial.create?id_cita=` con la cita y su fecha elegidas). La columna de Pacientes
 se llama "Consultas en expediente". El odontograma queda para una etapa posterior.
 
+**Acceso de la asistente (H-64, 22/11/2026).** Módulo propio `historia_clinica`
+(`admin.historias.*`, `admin.pacientes.historia.*`), declarado **antes** de `pacientes` en
+config/permisos.php porque `Permisos::moduloDeRuta()` devuelve el primero que coincide.
+Lo tienen las tres cuentas; la asistente queda con `['inicio', 'historia_clinica']`.
+Para ella hay una lista propia, `/admin/historias-clinicas` (`HistoriaClinicaController@index`,
+buscar por nombre o teléfono, estado Llena/Pendiente) y un enlace "Historias clínicas" en el
+menú solo si no tiene `pacientes`. `HistoriaClinicaController::urlRegreso()` decide el regreso
+(expediente o lista). Consultas, notas privadas, adjuntos y PDF siguen en `pacientes`.
+Nueva/Editar consulta usan `.formulario-panel.formulario-una-columna` (una pregunta por renglón).
+
 Las notificaciones de cita guardan también `id_cita`, lo que permite enlazar
 un aviso con la cita que lo originó sin depender únicamente del texto del
 mensaje.

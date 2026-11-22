@@ -139,11 +139,13 @@ Panel                                         Módulo               T   D   A
 │   └── Confirmar · Iniciar · Completar · No asistió · Cancelar
 ├── Asistente  /asistente-agenda               agenda               ✓   ✓   ✗
 ├── 🔔 Notificaciones  /notificaciones         notificaciones       ✓   ✓   ✗
+├── Historias clínicas  /admin/historias-      historia_clinica     ✓   ✓   ✓
+│   clinicas (lista + cuestionario; en el menú solo para quien no tiene Pacientes)
 ├── Gestión ▾
 │   ├── Pacientes  /admin/pacientes            pacientes            ✓   ✓   ✗
 │   │   ├── ✎ Editar paciente
-│   │   └── 📋 Historial clínico: historia clínica (cuestionario), consultas,
-│   │       adjuntos, PDF
+│   │   └── 📋 Historial clínico: historia clínica (cuestionario, módulo
+│   │       historia_clinica), consultas, adjuntos, PDF
 │   ├── Usuarios  /admin/usuarios              usuarios             ✓   ✓*  ✗
 │   │   └── Nuevo usuario · Desactivar · Eliminar
 │   ├── Reportes  /admin/reportes (PDF/Excel)  reportes             ✓   ✓   ✗

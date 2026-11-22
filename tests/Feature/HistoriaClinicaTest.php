@@ -145,15 +145,53 @@ class HistoriaClinicaTest extends TestCase
         $this->assertStringContainsString('application/pdf', (string) $respuesta->headers->get('content-type'));
     }
 
-    public function test_solo_quien_tiene_el_modulo_pacientes_la_ve(): void
+    public function test_el_doctor_la_llena_desde_el_expediente(): void
     {
         $doctor = User::factory()->create(['rol' => RolUsuario::Doctor]);
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
 
-        $this->actingAs($doctor)->get(route('admin.pacientes.historia.edit', $this->paciente))->assertOk();
-        $this->actingAs($asistente)->get(route('admin.pacientes.historia.edit', $this->paciente))->assertForbidden();
-        $this->actingAs($asistente)->put(route('admin.pacientes.historia.update', $this->paciente), $this->datos())->assertForbidden();
-        $this->assertNull($this->paciente->fresh()->historiaClinica);
+        $this->actingAs($doctor)->get(route('admin.pacientes.historia.edit', $this->paciente))->assertOk()
+            ->assertSee(route('admin.pacientes.historial.index', $this->paciente), false);
+        $this->actingAs($doctor)->put(route('admin.pacientes.historia.update', $this->paciente), $this->datos())
+            ->assertRedirect(route('admin.pacientes.historial.index', $this->paciente));
+        // El menú no le duplica el enlace: ella entra por Pacientes.
+        $this->actingAs($doctor)->get(route('dashboard'))->assertDontSee(route('admin.historias.index'), false);
+    }
+
+    /** 22/11/2026: la asistente llena el cuestionario, pero no ve el expediente. */
+    public function test_la_asistente_llena_la_historia_sin_ver_el_expediente(): void
+    {
+        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        Paciente::create(['nombre' => 'Beto', 'apellido' => 'Ruiz', 'telefono' => '5598765432']);
+
+        // Menú y lista con el estado de cada paciente.
+        $this->actingAs($asistente)->get(route('dashboard'))->assertOk()
+            ->assertSee(route('admin.historias.index'), false)
+            ->assertDontSee(route('admin.pacientes.index'), false);
+        $this->actingAs($asistente)->get(route('admin.historias.index'))->assertOk()
+            ->assertSee('Ana Martínez')->assertSee('Beto Ruiz')
+            ->assertSee('Pendiente')->assertSee('Llenar cuestionario');
+        $this->actingAs($asistente)->get(route('admin.historias.index', ['buscar' => 'Beto']))->assertOk()
+            ->assertSee('Beto Ruiz')->assertDontSee('Ana Martínez');
+
+        // Cuestionario: regresa a la lista, no al expediente.
+        $this->actingAs($asistente)->get(route('admin.pacientes.historia.edit', $this->paciente))->assertOk()
+            ->assertSee('Historias clínicas')
+            ->assertDontSee(route('admin.pacientes.historial.index', $this->paciente), false);
+        $this->actingAs($asistente)->put(route('admin.pacientes.historia.update', $this->paciente), $this->datos())
+            ->assertRedirect(route('admin.historias.index'));
+        $this->assertSame($asistente->id, $this->paciente->fresh()->historiaClinica->actualizado_por);
+        $this->actingAs($asistente)->get(route('admin.historias.index'))->assertSee('Llena')->assertSee('Ver o editar');
+
+        // Lo demás del expediente sigue cerrado.
+        foreach ([
+            route('admin.pacientes.index'),
+            route('admin.pacientes.historial.index', $this->paciente),
+            route('admin.pacientes.historial.create', $this->paciente),
+            route('admin.pacientes.historial.pdf', $this->paciente),
+            route('admin.pacientes.edit', $this->paciente),
+        ] as $url) {
+            $this->actingAs($asistente)->get($url)->assertForbidden();
+        }
     }
 
     public function test_cita_completada_ofrece_registrar_su_consulta(): void

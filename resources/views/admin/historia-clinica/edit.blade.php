@@ -6,6 +6,9 @@
 @use('App\Models\HistoriaClinica')
 @php
     $esNueva = ! $historia->exists;
+    // La asistente no ve el expediente: regresa a la lista de historias (22/11/2026).
+    $puedeExpediente = auth()->user()->puede('pacientes');
+    $regreso = \App\Http\Controllers\Admin\HistoriaClinicaController::urlRegreso($paciente);
     $marcadas = fn (string $campo) => collect(old($campo, $historia->{$campo} ?? []))->all();
     $secciones = [
         ['antecedentes_familiares', 'Antecedentes familiares', 'Padres, hermanos o abuelos con…', HistoriaClinica::ANTECEDENTES_FAMILIARES, 'antecedentes_familiares_notas', 'Quién y detalles (opcional)'],
@@ -21,16 +24,20 @@
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div class="min-w-0">
                 <nav aria-label="Ruta" class="text-sm text-muted">
-                    <a href="{{ route('admin.pacientes.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Pacientes</a>
-                    <span aria-hidden="true" class="mx-1.5">›</span>
-                    <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="font-semibold text-brand-700 hover:text-brand-800">Historial</a>
+                    @if ($puedeExpediente)
+                        <a href="{{ route('admin.pacientes.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Pacientes</a>
+                        <span aria-hidden="true" class="mx-1.5">›</span>
+                        <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="font-semibold text-brand-700 hover:text-brand-800">Historial</a>
+                    @else
+                        <a href="{{ route('admin.historias.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Historias clínicas</a>
+                    @endif
                     <span aria-hidden="true" class="mx-1.5">›</span>
                     <span>Historia clínica</span>
                 </nav>
                 <h1 class="mt-1 truncate text-title-2 text-ink">Historia clínica — {{ $paciente->nombre_completo }}</h1>
             </div>
             <div class="flex items-center gap-2.5">
-                <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="hidden sm:inline-block">
+                <a href="{{ $regreso }}" class="hidden sm:inline-block">
                     <x-secondary-button type="button">Cancelar</x-secondary-button>
                 </a>
                 <x-primary-button form="form-historia" class="hidden lg:inline-flex">{{ $esNueva ? 'Guardar historia clínica' : 'Guardar cambios' }}</x-primary-button>
@@ -154,7 +161,7 @@
             {{-- Celular y tableta: guardar abajo. --}}
             <div class="flex flex-col gap-2.5 sm:flex-row sm:items-center lg:hidden">
                 <x-primary-button class="w-full justify-center sm:w-auto">{{ $esNueva ? 'Guardar historia clínica' : 'Guardar cambios' }}</x-primary-button>
-                <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="inline-flex min-h-11 items-center justify-center rounded-full text-sm font-semibold text-ink-soft hover:text-ink">Cancelar</a>
+                <a href="{{ $regreso }}" class="inline-flex min-h-11 items-center justify-center rounded-full text-sm font-semibold text-ink-soft hover:text-ink">Cancelar</a>
             </div>
         </form>
     </div>

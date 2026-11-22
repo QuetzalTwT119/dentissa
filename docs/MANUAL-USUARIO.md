@@ -602,6 +602,14 @@ registrar cada consulta, para verlas antes de atender. La historia también sale
 la consulta nueva con esa cita y su fecha ya elegidas. La columna de Pacientes se llama
 "Consultas en expediente" (las notas médicas registradas, no las citas).
 
+**La asistente** también llena la historia clínica: en su menú aparece **Historias
+clínicas**, una lista de pacientes con buscador que dice si cada uno la tiene **Llena** o
+**Pendiente**, con el botón **Llenar cuestionario** o **Ver o editar**. Ella no ve las
+consultas, las notas privadas, los adjuntos ni el PDF.
+
+**Nueva consulta** va en una sola columna: fecha, tipo y cita arriba, y cada pregunta en su
+propio renglón con espacio para escribir.
+
 Desde `/admin/pacientes`:
 
 1. Buscar por una parte del nombre, correo o teléfono, o seleccionar un paciente de la lista.

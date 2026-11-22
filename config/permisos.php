@@ -18,8 +18,9 @@
 |   - super_admin: la doctora dueña; todo.
 |   - doctor: por ahora exactamente lo que tenía el antiguo "admin".
 |     Para restringirlo más adelante, quita módulos de su lista.
-|   - asistente: por ahora SOLO el panel de inicio.
-|     Para habilitarle algo, agrega el módulo a su lista.
+|   - asistente: el panel de inicio y la historia clínica (cuestionario de
+|     salud, 22/11/2026). No ve consultas, notas privadas ni el expediente.
+|     Para habilitarle algo más, agrega el módulo a su lista.
 |
 | Cerrar sesión no es un módulo: siempre está disponible.
 */
@@ -31,6 +32,9 @@ return [
         'cuenta' => ['profile.*', 'dos-pasos.*'],
         'notificaciones' => ['notificaciones.*'],
         'agenda' => ['citas.*', 'asistente-agenda.*'],
+        // Cuestionario de historia clínica; va antes de "pacientes" porque sus rutas
+        // también empiezan con admin.pacientes.* (22/11/2026).
+        'historia_clinica' => ['admin.historias.*', 'admin.pacientes.historia.*'],
         'pacientes' => ['admin.pacientes.*', 'historial.imagenes.show'],
         'usuarios' => ['admin.usuarios.*'],
         'reportes' => ['admin.reportes.*'],
@@ -49,12 +53,12 @@ return [
 
         // Igual que el antiguo "admin" (todas las rutas del panel). Temporal.
         'doctor' => [
-            'inicio', 'cuenta', 'notificaciones', 'agenda', 'pacientes', 'usuarios', 'reportes',
+            'inicio', 'cuenta', 'notificaciones', 'agenda', 'historia_clinica', 'pacientes', 'usuarios', 'reportes',
             'mensajes', 'control_actividades', 'catalogo', 'contenido', 'configuracion',
         ],
 
-        // Solo el panel de inicio, por ahora.
-        'asistente' => ['inicio'],
+        // Panel de inicio y cuestionario de historia clínica (22/11/2026).
+        'asistente' => ['inicio', 'historia_clinica'],
     ],
 
 ];

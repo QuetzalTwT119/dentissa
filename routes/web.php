@@ -237,6 +237,7 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::delete('mensajes/{mensaje}', [AdminMensajeContactoController::class, 'destroy'])->name('mensajes.destroy');
 
     // Cuestionario de historia clínica (22/11/2026): módulo "pacientes" de config/permisos.php.
+    Route::get('historias-clinicas', [HistoriaClinicaController::class, 'index'])->name('historias.index');
     Route::get('pacientes/{paciente}/historia-clinica', [HistoriaClinicaController::class, 'edit'])->name('pacientes.historia.edit');
     Route::put('pacientes/{paciente}/historia-clinica', [HistoriaClinicaController::class, 'update'])->name('pacientes.historia.update');
     Route::get('pacientes/{paciente}/historial', [HistorialClinicoController::class, 'index'])->name('pacientes.historial.index');

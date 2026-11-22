@@ -23,6 +23,7 @@ class PermisosPorModuloTest extends TestCase
         'cuenta' => 'profile.edit',
         'notificaciones' => 'notificaciones.index',
         'agenda' => 'citas.index',
+        'historia_clinica' => 'admin.historias.index',
         'pacientes' => 'admin.pacientes.index',
         'usuarios' => 'admin.usuarios.index',
         'reportes' => 'admin.reportes.index',
@@ -51,12 +52,12 @@ class PermisosPorModuloTest extends TestCase
         $this->assertEqualsCanonicalizing(array_keys(self::PAGINAS), array_keys(config('permisos.modulos')));
     }
 
-    public function test_super_admin_y_doctor_entran_a_todo_y_la_asistente_solo_al_inicio(): void
+    public function test_super_admin_y_doctor_entran_a_todo_y_la_asistente_al_inicio_y_la_historia_clinica(): void
     {
         $roles = [
             RolUsuario::SuperAdmin->value => array_keys(self::PAGINAS),
             RolUsuario::Doctor->value => array_keys(self::PAGINAS),   // igual que el antiguo admin
-            RolUsuario::Asistente->value => ['inicio'],
+            RolUsuario::Asistente->value => ['inicio', 'historia_clinica'],
         ];
 
         foreach ($roles as $rol => $permitidos) {

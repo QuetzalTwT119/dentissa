@@ -15,8 +15,8 @@ use Illuminate\Validation\Rule;
 
 /**
  * Cuestionario de historia clínica (anamnesis), uno por paciente (22/11/2026).
- * Vive en el expediente (📋 Historial) y lo llenan la doctora y el personal con
- * el módulo "pacientes" (config/permisos.php). Control de actividades guarda
+ * Vive en el expediente (📋 Historial) y en la lista "Historias clínicas"; lo llena
+ * quien tenga el módulo "historia_clinica" (doctoras y asistente, config/permisos.php). Control de actividades guarda
  * solo QUÉ campos cambiaron, nunca su contenido (datos de salud).
  */
 class HistoriaClinicaController extends Controller
@@ -28,6 +28,40 @@ class HistoriaClinicaController extends Controller
         'antecedentes_dentales' => HistoriaClinica::ANTECEDENTES_DENTALES,
         'habitos' => HistoriaClinica::HABITOS,
     ];
+
+    /** Lista de pacientes con el estado de su historia (entrada de la asistente). */
+    public function index(Request $request): View
+    {
+        $validated = $this->filtros($request, [
+            'buscar' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $pacientes = Paciente::with('historiaClinica:id,id_paciente,updated_at')
+            ->when(filled($validated['buscar'] ?? null), function ($query) use ($validated) {
+                $termino = $validated['buscar'];
+                $query->where(function ($q) use ($termino) {
+                    $q->whereContiene('nombre', $termino)
+                        ->orWhereContiene('apellido', $termino)
+                        ->orWhereContiene('telefono', $termino);
+                });
+            })
+            ->orderBy('nombre')
+            ->paginate($this->paginationPageSize($request))
+            ->withQueryString();
+
+        return view('admin.historia-clinica.index', [
+            'pacientes' => $pacientes,
+            'filtros' => $validated,
+        ]);
+    }
+
+    /** A dónde regresar: el expediente si lo puede ver; si no, la lista de historias. */
+    public static function urlRegreso(Paciente $paciente): string
+    {
+        return auth()->user()?->puede('pacientes')
+            ? route('admin.pacientes.historial.index', $paciente)
+            : route('admin.historias.index');
+    }
 
     public function edit(Paciente $paciente): View
     {
@@ -98,7 +132,7 @@ class HistoriaClinicaController extends Controller
             ], request: $request);
         });
 
-        return Redirect::route('admin.pacientes.historial.index', $paciente)
+        return Redirect::to(self::urlRegreso($paciente))
             ->with('success', "Historia clínica de {$paciente->nombre_completo} guardada.");
     }
 }

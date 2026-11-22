@@ -2,6 +2,8 @@
 $usuario = auth()->user();
 // Qué ve cada rol: config/permisos.php (22/11/2026; antes $esAdmin).
 $puede = fn (string $modulo) => $usuario->puede($modulo);
+// Sin expediente pero con cuestionario (la asistente): enlace directo (22/11/2026).
+$soloHistorias = $puede('historia_clinica') && ! $puede('pacientes');
 $gestion = $puede('pacientes') || $puede('usuarios') || $puede('reportes') || $puede('mensajes') || $puede('control_actividades');
 $notificacionesNuevas = $usuario->notificacionesSistema()->whereNull('vista_en')->count();
 // Panel de la campana: primero lo que pide una acción, luego lo informativo.
@@ -26,6 +28,10 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
             @endif
             @if ($puede('agenda'))
             <a href="{{ route('asistente-agenda.create') }}" @class([$clasesEnlaceActivo => request()->routeIs('asistente-agenda.*'), $clasesEnlace => ! request()->routeIs('asistente-agenda.*')]) @if(request()->routeIs('asistente-agenda.*')) aria-current="page" @endif>Asistente</a>
+            @endif
+            @if ($soloHistorias)
+            @php $enHistorias = request()->routeIs('admin.historias.*') || request()->routeIs('admin.pacientes.historia.*'); @endphp
+            <a href="{{ route('admin.historias.index') }}" @class([$clasesEnlaceActivo => $enHistorias, $clasesEnlace => ! $enHistorias]) @if($enHistorias) aria-current="page" @endif>Historias clínicas</a>
             @endif
 
 
@@ -195,6 +201,9 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
             @endif
             @if ($puede('agenda'))
             <x-responsive-nav-link :href="route('asistente-agenda.create')" :active="request()->routeIs('asistente-agenda.*')">Asistente</x-responsive-nav-link>
+            @endif
+            @if ($soloHistorias)
+            <x-responsive-nav-link :href="route('admin.historias.index')" :active="request()->routeIs('admin.historias.*') || request()->routeIs('admin.pacientes.historia.*')">Historias clínicas</x-responsive-nav-link>
             @endif
             @if ($puede('notificaciones'))
             <x-responsive-nav-link :href="route('notificaciones.index')" :active="request()->routeIs('notificaciones.*')">Notificaciones <span data-notification-count-badge class="ms-2 rounded-full bg-brand-600 px-2 py-0.5 text-xs text-white {{ $notificacionesNuevas > 0 ? '' : 'hidden' }}" @if ($notificacionesNuevas === 0) hidden @endif>{{ $notificacionesNuevas > 99 ? '99+' : $notificacionesNuevas }}</span></x-responsive-nav-link>
