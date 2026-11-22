@@ -1381,6 +1381,9 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **"Disponible" solo en la lista (H-50, 22/11/2026).** `ServicioController::validated()` ya no
+  acepta `activo` ni `icono`: `store()` crea con `activo = true` y `update()` no lo toca; solo
+  `estado()` (interruptor de la lista) lo cambia. `_formulario` avisa si el servicio está oculto.
 - **"Ver cambios" legible (H-49, 22/11/2026).** `App\Support\DetalleBitacora::filas($registro)`
   devuelve `[campo, antes, despues]` en palabras: con antes y después solo lo que cambió;
   oculta campos internos (`icono`, `id`, marcas de tiempo); nombres por tabla

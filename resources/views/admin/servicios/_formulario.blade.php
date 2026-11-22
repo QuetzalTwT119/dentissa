@@ -47,7 +47,7 @@
     <div class="panel-contenido pb-8 pt-4 lg:pb-3 lg:pt-3">
         <form id="form-servicio" method="POST" action="{{ $esNuevo ? route('admin.servicios.store') : route('admin.servicios.update', $servicio) }}"
               @if ($esNuevo)
-                  data-confirmar="Se agregará al final del carrusel. Si está disponible, se mostrará en la portada y se podrá agendar."
+                  data-confirmar="Se agregará al final del carrusel, se mostrará en la portada y se podrá agendar. Para ocultarlo, usa el interruptor de la lista."
                   data-confirmar-titulo="¿Crear el servicio?" data-confirmar-boton="Sí, crear"
               @else
                   data-confirmar="Los cambios se aplicarán de inmediato."
@@ -65,28 +65,19 @@
             <div class="min-w-0 space-y-6">
                 {{-- Datos --}}
                 <section class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="titulo-datos">
-                    <div class="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                            <h2 id="titulo-datos" class="text-headline font-semibold text-ink">Datos del servicio</h2>
-                            <x-form-obligatorios class="mt-0.5" />
-                        </div>
-
-                        {{--
-                            Mismo nombre que la lista ("Disponible / No disponible", 22/11/2026).
-                            Antes aquí decía "Disponible para agendar" y en la lista "Activo":
-                            parecían dos cosas distintas y es el mismo dato.
-                        --}}
-                        <label for="activo" class="inline-flex min-h-11 cursor-pointer items-center gap-3 rounded-full border border-line bg-cream/40 py-1.5 pl-4 pr-2">
-                            <span class="text-sm font-medium text-ink">Disponible</span>
-                            <input type="hidden" name="activo" value="0">
-                            <input id="activo" name="activo" type="checkbox" value="1" role="switch" aria-describedby="ayuda-disponible" class="peer sr-only" @checked(old('activo', $esNuevo ? true : $servicio->activo))>
-                            <span aria-hidden="true" class="relative h-6 w-11 rounded-full bg-line transition-colors duration-200 after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow-sm after:transition-transform after:duration-200 after:ease-out peer-checked:bg-sage-600 peer-checked:after:translate-x-5 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-300 motion-reduce:after:transition-none"></span>
-                        </label>
-                    </div>
-                    {{-- A la vista (antes en un globo que en celular no se veía). --}}
-                    <p id="ayuda-disponible" class="mt-2 text-sm text-muted" data-ayuda-disponible>
-                        Disponible: se muestra en la portada y se puede agendar (en línea, en el panel, en el asistente y por Telegram). Apagado: se oculta en todos esos lugares.
-                    </p>
+                    <h2 id="titulo-datos" class="text-headline font-semibold text-ink">Datos del servicio</h2>
+                    <x-form-obligatorios class="mt-0.5" />
+                    {{--
+                        Sin interruptor "Disponible" (22/11/2026, decisión del usuario): se cambia
+                        SOLO desde la lista de Servicios, con confirmación. Tenerlo también aquí eran
+                        dos lugares para lo mismo. Un servicio nuevo nace disponible. Si se edita uno
+                        oculto, se avisa (sin control) para que no sorprenda que no salga en la portada.
+                    --}}
+                    @if (! $esNuevo && ! $servicio->activo)
+                        <p class="mt-3 rounded-xl border border-amber-200/70 bg-amber-50/60 px-3.5 py-2.5 text-sm text-amber-900" data-aviso-no-disponible>
+                            Este servicio <strong>no está disponible</strong>: no se muestra en la portada ni se puede agendar. Actívalo en la lista de <a href="{{ route('admin.servicios.index') }}" class="font-semibold underline underline-offset-2">Servicios</a>.
+                        </p>
+                    @endif
 
                     <div class="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
                         <div>

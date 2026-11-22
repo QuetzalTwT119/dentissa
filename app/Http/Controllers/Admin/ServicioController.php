@@ -61,6 +61,8 @@ class ServicioController extends Controller
         // El orden ya no se escribe a mano: el servicio nuevo va al final del
         // carrusel y se acomoda con las flechas ↑ ↓ de la lista.
         $data['orden'] = (int) Servicio::max('orden') + 1;
+        // Nace disponible; se oculta con el interruptor de la lista.
+        $data['activo'] = true;
 
         if ($request->hasFile('imagen')) {
             $data['imagen'] = $request->file('imagen')->store('servicios', 'public');
@@ -227,18 +229,17 @@ class ServicioController extends Controller
         return Redirect::route('admin.servicios.index')->with('success', "Servicio «{$servicio->nombre}» eliminado.");
     }
 
+    /**
+     * Nombre, descripción y foto. "Disponible" (activo) NO se cambia desde el
+     * formulario (22/11/2026): solo con el interruptor de la lista (estado()).
+     * Así guardar en Editar nunca oculta ni publica un servicio sin querer.
+     */
     private function validated(Request $request, ?int $ignoreId = null): array
     {
         return $request->validate([
             'nombre' => ['required', 'string', 'max:100', Rule::unique('servicios', 'nombre')->ignore($ignoreId)],
             'descripcion' => ['nullable', 'string'],
-            'icono' => ['nullable', 'string', 'max:50'],
             'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'activo' => ['boolean'],
-            'orden' => ['integer', 'min:0'],
-        ]) + [
-            // Casilla desmarcada = no se envía: se lee explícitamente como false.
-            'activo' => $request->boolean('activo'),
-        ];
+        ]);
     }
 }

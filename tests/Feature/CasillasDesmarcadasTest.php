@@ -216,12 +216,17 @@ class CasillasDesmarcadasTest extends TestCase
         $this->assertFalse((bool) $imagen->fresh()->activa);
     }
 
-    public function test_crear_un_servicio_oculto(): void
+    /**
+     * 22/11/2026: el formulario ya no tiene "Disponible". Un servicio nuevo nace
+     * disponible y se oculta con el interruptor de la lista (antes una casilla
+     * desmarcada lo creaba oculto).
+     */
+    public function test_un_servicio_nuevo_nace_disponible(): void
     {
         $this->actingAs($this->admin)
-            ->post(route('admin.servicios.store'), ['nombre' => 'Ortodoncia'])
+            ->post(route('admin.servicios.store'), ['nombre' => 'Ortodoncia', 'activo' => '0'])
             ->assertSessionHasNoErrors();
 
-        $this->assertFalse(Servicio::where('nombre', 'Ortodoncia')->value('activo'));
+        $this->assertTrue((bool) Servicio::where('nombre', 'Ortodoncia')->value('activo'));
     }
 }

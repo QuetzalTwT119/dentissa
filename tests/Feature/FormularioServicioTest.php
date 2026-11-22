@@ -39,18 +39,25 @@ class FormularioServicioTest extends TestCase
                 ->assertSee('Tratamientos que se pueden agendar')
                 ->assertSee('Limpieza Dental')
                 ->assertSee('data-vista-previa-servicio', false)
-                ->assertSee('data-ayuda-disponible', false)
-                ->assertSee('se muestra en la portada y se puede agendar')
+                // "Disponible" solo vive en la lista (22/11/2026): aquí no hay interruptor.
+                ->assertDontSee('name="activo"', false)
                 ->assertDontSee('name="icono"', false)
                 ->assertDontSee('Disponible para agendar')
                 ->assertDontSee('Servicio activo');
         }
 
-        // Nuevo: disponible por omisión y con su propio botón.
+        // Nuevo: con su propio botón; avisa que nace disponible y dónde se oculta.
         $this->actingAs($this->admin)->get(route('admin.servicios.create'))
             ->assertSee('Nuevo servicio')
             ->assertSee('Crear servicio')
-            ->assertSee('role="switch" aria-describedby="ayuda-disponible" class="peer sr-only" checked', false);
+            ->assertSee('Para ocultarlo, usa el interruptor de la lista.');
+
+        // Editar uno oculto: aviso sin control, para que no sorprenda que no salga.
+        $oculto = Servicio::create(['nombre' => 'Ortodoncia', 'orden' => 2, 'activo' => false]);
+        $this->actingAs($this->admin)->get(route('admin.servicios.edit', $oculto))
+            ->assertSee('data-aviso-no-disponible', false);
+        $this->actingAs($this->admin)->get(route('admin.servicios.edit', $servicio))
+            ->assertDontSee('data-aviso-no-disponible', false);
     }
 
     public function test_al_crear_ya_se_guardan_los_tratamientos(): void

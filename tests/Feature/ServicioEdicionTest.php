@@ -80,12 +80,13 @@ class ServicioEdicionTest extends TestCase
             ->assertSee('/storage/'.$servicio->imagen, false);
     }
 
-    public function test_desmarcar_visible_oculta_el_servicio_y_quitar_todos_los_tratamientos_funciona(): void
+    public function test_editar_no_cambia_disponible_y_quitar_todos_los_tratamientos_funciona(): void
     {
         $servicio = Servicio::create(['nombre' => 'Periodoncia', 'orden' => 3, 'activo' => true]);
         $servicio->tratamientos()->attach(Tratamiento::create(['nombre' => 'Raspado', 'duracion_estimada' => 60, 'activo' => true])->id, ['orden' => 1]);
 
-        // Casilla desmarcada: el navegador solo manda el campo oculto "0".
+        // 22/11/2026: "Disponible" solo se cambia con el interruptor de la lista.
+        // Aunque llegue "activo=0" desde fuera del formulario, guardar no lo oculta.
         $this->actingAs($this->admin)
             ->put(route('admin.servicios.update', $servicio), [
                 'nombre' => 'Periodoncia',
@@ -95,7 +96,7 @@ class ServicioEdicionTest extends TestCase
             ])
             ->assertRedirect(route('admin.servicios.index'));
 
-        $this->assertFalse($servicio->fresh()->activo);
+        $this->assertTrue($servicio->fresh()->activo);
         $this->assertSame(0, $servicio->tratamientos()->count());
     }
 
