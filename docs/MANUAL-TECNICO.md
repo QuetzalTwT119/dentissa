@@ -1332,6 +1332,9 @@ administrador y el asistente gestionan los demás cambios desde el panel
   valor por defecto es el número que publica la portada, para que ninguna página
   muestre un número de ejemplo. `telefono_enlace` arma el `tel:` con +52, y una
   variable vacía también usa el valor por defecto (`ContactoClinicaTest`).
+  Desde el 22/11/2026 el valor por defecto es el celular del consultorio,
+  **755 113 1833** (antes 755 102 0089); es distinto del número del bot de
+  WhatsApp, como pide el diagnóstico remoto.
 - Los datos del paciente se vinculan por teléfono y correo, y el formulario
   público valida los campos.
 - Como el formulario es público, `POST /agendar-cita` usa el limitador

@@ -28,9 +28,9 @@ class ContactoClinicaTest extends TestCase
         foreach ([null, ''] as $valor) {
             $contacto = $this->configuracionCon($valor)['contacto'];
 
-            $this->assertSame('755 102 0089', $contacto['telefono']);
-            $this->assertSame('tel:+527551020089', $contacto['telefono_enlace']);
-            $this->assertSame('527551020089', $contacto['whatsapp']);
+            $this->assertSame('755 113 1833', $contacto['telefono']);
+            $this->assertSame('tel:+527551131833', $contacto['telefono_enlace']);
+            $this->assertSame('527551131833', $contacto['whatsapp']);
         }
     }
 
