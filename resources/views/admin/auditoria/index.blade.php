@@ -79,9 +79,9 @@ $etiquetasTabla = [
 <x-app-layout>
     <x-slot name="header">
         <x-admin.header
-            badge="Seguridad y Control"
-            title="Auditoría"
-            subtitle="Trazabilidad de seguridad, cambios en datos clínicos y actividad del personal."
+            badge="Seguridad y control"
+            title="Control de actividades"
+            subtitle="Quién hizo cada cambio en el sistema y cuándo: citas, pacientes, ofertas, usuarios y configuración."
         />
     </x-slot>
 
@@ -208,7 +208,7 @@ $etiquetasTabla = [
                                     </div>
                                     <p class="font-semibold text-ink">No se encontraron eventos</p>
                                     <p class="mt-1 text-xs text-muted">
-                                        No hay eventos de auditoría para los filtros seleccionados.
+                                        No hay actividades para los filtros seleccionados.
                                     </p>
                                 </div>
                             </td>

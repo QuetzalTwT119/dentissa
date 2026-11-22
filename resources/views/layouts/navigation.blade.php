@@ -41,7 +41,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                     <x-dropdown-link :href="route('admin.usuarios.index')">Usuarios</x-dropdown-link>
                     <x-dropdown-link :href="route('admin.reportes.index')">Reportes</x-dropdown-link>
                     <x-dropdown-link :href="route('admin.mensajes.index')">Mensajes</x-dropdown-link>
-                    <x-dropdown-link :href="route('admin.auditoria.index')">Auditoría</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.auditoria.index')">Control de actividades</x-dropdown-link>
                 </x-nav-dropdown>
 
                 <x-nav-dropdown :active="request()->routeIs('admin.servicios.*') || request()->routeIs('admin.tratamientos.*')">
@@ -167,7 +167,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 <x-responsive-nav-link :href="route('admin.usuarios.index')" :active="request()->routeIs('admin.usuarios.*')">Usuarios</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reportes.index')" :active="request()->routeIs('admin.reportes.*')">Reportes</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.mensajes.index')" :active="request()->routeIs('admin.mensajes.*')">Mensajes</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.auditoria.index')" :active="request()->routeIs('admin.auditoria.*')">Auditoría</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.auditoria.index')" :active="request()->routeIs('admin.auditoria.*')">Control de actividades</x-responsive-nav-link>
                 <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-label text-brand-700/80">Catálogo y contenido</p>
                 <x-responsive-nav-link :href="route('admin.servicios.index')" :active="request()->routeIs('admin.servicios.*')">Servicios</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.tratamientos.index')" :active="request()->routeIs('admin.tratamientos.*')">Tratamientos</x-responsive-nav-link>

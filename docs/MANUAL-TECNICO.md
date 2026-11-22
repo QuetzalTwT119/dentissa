@@ -1354,11 +1354,14 @@ administrador y el asistente gestionan los demás cambios desde el panel
   con `max-w-*` ocupa todo el ancho y centra su contenido con relleno lateral
   (`--ancho-contenido`): la barra queda en la orilla de la ventana y no en
   medio, junto a las tarjetas. En las listas tampoco se desplaza la tabla por
-  dentro: se desplaza toda la página, con los encabezados de columna fijos.
-  En una tabla larga que cabe a lo ancho se quita la capa de desplazamiento
-  lateral (sin `data-desborda`) para que su encabezado también quede fijo.
+  dentro: se desplaza toda la página y la tarjeta completa sube con ella, sin
+  encabezados de columna fijos (con el encabezado pegado arriba parecía que la
+  tabla se desplazaba por dentro).
   En los botones redondos de solo ícono, mientras se envía, `.btn-spinner`
   ocupa el lugar del ícono (antes quedaba apilado encima).
+- **"Auditoría" se llama "Control de actividades" (22/11/2026).** Solo cambia lo
+  que ve el usuario (menú, título, mensajes y manual de usuario); la ruta
+  `admin.auditoria.index`, la tabla `logs_auditoria` y `AuditoriaService` siguen igual.
 - **Configuración en una sola página (22/11/2026).** `GET admin.configuracion`
   (`ConfiguracionController`) muestra `admin/configuracion/_consultorio` y
   `_horarios`, cada uno con su `<form>`; las rutas `admin.horarios.edit` y

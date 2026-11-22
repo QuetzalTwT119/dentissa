@@ -29,14 +29,14 @@ destinatario ni requiere que cada usuario conecte su propio Google.
 
 La navegación interna muestra la marca Dentissa, un acceso a **Inicio**, otro a
 la **Agenda** y otro al **Asistente**. En administración, **Gestión** agrupa
-Pacientes, Usuarios, Reportes, Mensajes y Auditoría; los
+Pacientes, Usuarios, Reportes, Mensajes y Control de actividades; los
 menús **Catálogo**, **Contenido** y **Configuración** reúnen el resto de las
 secciones. En pantallas angostas, usa el botón de menú para encontrar las
 mismas opciones y la campana para abrir una vista rápida de notificaciones.
 En el teléfono, los listados anchos conservan sus
 columnas dentro de un área que puedes desplazar lateralmente; los filtros y
 controles de carga se acomodan en varias filas para facilitar el toque.
-**Auditoría** solo está disponible para administración; las cuentas de
+**Control de actividades** solo está disponible para administración; las cuentas de
 asistente no ven esa opción.
 
 Los listados de registros muestran **20 elementos por página de forma predeterminada**. En el pie del listado puedes elegir **20** o **50** registros por página. Cuando
@@ -354,7 +354,7 @@ Las listas administrativas siguen una regla según su tamaño:
   frecuentes, Casos y Horarios): nunca se desplazan de lado. En celular y
   tableta cada registro es una tarjeta: el nombre arriba, cada dato con el
   título de su columna y los botones abajo. En computadora son tablas normales.
-- **Tablas largas** (Auditoría, Mensajes de contacto, Ofertas y Tratamientos):
+- **Tablas largas** (Control de actividades, Mensajes de contacto, Ofertas y Tratamientos):
   conservan sus columnas y se desplazan de lado solo cuando no caben. La
   primera columna se queda fija y arriba aparece "Desliza para ver más
   columnas".
@@ -433,7 +433,7 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
     número que el teléfono" o uno distinto), correo y dirección. Lo que se
     guarde se ve de inmediato en la portada, el pie, "¿Prefieres llamar?", la
     página del recordatorio y la respuesta automática del bot. Úsalo si se
-    pierde o cambia el celular. Pide confirmación y queda en Auditoría. El
+    pierde o cambia el celular. Pide confirmación y queda en Control de actividades. El
     número del bot de WhatsApp no se cambia aquí (se configura en Meta).
   - **Horarios de atención:** los días, las horas y las citas a la vez.
 - **Guardar cambios** (en cualquier pantalla de editar) aparece apagado hasta
@@ -625,9 +625,9 @@ Los botones permiten descargar un PDF o un libro de **Excel** (`.xlsx`). El
 libro incluye los indicadores y resúmenes en una hoja con etiquetas en español;
 se puede abrir y editar en Excel o LibreOffice Calc.
 
-## 8. Auditoría administrativa
+## 8. Control de actividades
 
-El administrador puede abrir **Configuración → Auditoría** para consultar los
+El administrador puede abrir **Configuración → Control de actividades** para consultar los
 cambios realizados por cuentas del administrador o de las asistentes. La vista
 permite filtrar por fechas, usuario y acción, y mostrar los metadatos anteriores
 y posteriores. Es de solo lectura; las asistentes no tienen acceso. Las
@@ -708,7 +708,7 @@ Dentissa cuenta con una interfaz visual unificada con paleta cálida (rosa `#d75
    - En computadoras de escritorio, la barra superior permanece accesible con accesos directos claros a Inicio, Agenda, Asistente y a los menús agrupados de Gestión, Catálogo, Contenido y Configuración.
    - En celulares y tablets, el botón de menú con ícono de tres líneas permite desplegar todas las secciones en un panel vertical accesible sin saturar la pantalla.
 2. **Tablas que se adaptan a su tamaño:**
-   - Las tablas cortas se convierten en tarjetas en celular y tableta, sin desplazamiento lateral; las largas (por ejemplo Auditoría) se desplazan de lado lo mínimo, con la primera columna fija para no perder de qué registro se trata.
+   - Las tablas cortas se convierten en tarjetas en celular y tableta, sin desplazamiento lateral; las largas (por ejemplo Control de actividades) se desplazan de lado lo mínimo, con la primera columna fija para no perder de qué registro se trata.
 3. **Formularios confortables y claros:**
    - Los campos de captura cuentan con bordes suaves, enfoque en color rosa de marca y mensajes de ayuda legibles para evitar errores durante el registro de datos clínicos o citas.
 4. **Asistente flotante no invasivo:**
