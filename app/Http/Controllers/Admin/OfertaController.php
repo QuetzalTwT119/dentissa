@@ -28,13 +28,27 @@ class OfertaController extends Controller
 
     public function index(Request $request): View
     {
+        // Filtros globales (x-filtro.barra, 22/11/2026). Buscar = texto libre.
+        $filtros = $request->validate([
+            'buscar' => ['nullable', 'string', 'max:100'],
+            'estado' => ['nullable', Rule::enum(EstadoOferta::class)],
+            'tratamiento' => ['nullable', 'integer'],
+        ]);
+
         return view('admin.ofertas.index', [
             // Primero las que esperan revisión.
             'ofertas' => Oferta::with(['tratamiento' => fn ($q) => $q->select('id', 'nombre', 'activo')->withCount(['servicios as servicios_activos' => fn ($s) => $s->where('activo', true)])])
+                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->where('titulo', 'like', '%'.$texto.'%'))
+                ->when($filtros['estado'] ?? null, fn ($q, $estado) => $q->where('estado', $estado))
+                ->when($filtros['tratamiento'] ?? null, fn ($q, $id) => $q->where('id_tratamiento', $id))
                 ->conLugaresUsados()
                 ->orderByRaw("CASE estado WHEN 'pendiente' THEN 0 WHEN 'activa' THEN 1 ELSE 2 END")
                 ->orderByDesc('fecha_inicio')
-                ->paginate($this->paginationPageSize($request)),
+                ->paginate($this->paginationPageSize($request))
+                ->withQueryString(),
+            'tratamientosFiltro' => Tratamiento::whereIn('id', Oferta::whereNotNull('id_tratamiento')->select('id_tratamiento'))->orderBy('nombre')->pluck('nombre', 'id')->all(),
+            // Para decir si una "Publicada" de verdad se ve (Oferta::motivoNoVisible()).
+            'enPortada' => Oferta::paraPortada()->pluck('id')->all(),
         ]);
     }
 

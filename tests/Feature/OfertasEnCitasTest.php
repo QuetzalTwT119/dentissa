@@ -247,4 +247,37 @@ class OfertasEnCitasTest extends TestCase
             ->assertSessionHasErrors(['id_tratamiento' => 'Ese tratamiento ya no se agenda en línea (está inactivo). Elige otro o actívalo en Catálogo.']);
         $this->assertSame(0, Oferta::count());
     }
+
+    /**
+     * QA (22/11/2026, encontrado por el usuario): la lista decía "Publicada" de
+     * una oferta cuyo tratamiento estaba inactivo y que no se veía en ningún lado.
+     */
+    public function test_la_lista_dice_cuando_una_publicada_no_se_ve_y_por_que(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $inactivo = Tratamiento::create(['nombre' => 'Ortodoncia', 'duracion_estimada' => 60, 'categoria' => 'Ortodoncia', 'activo' => false]);
+        $this->servicio->tratamientos()->attach($inactivo);
+
+        $visible = $this->oferta(['titulo' => 'Se ve bien', 'cupo_total' => 0]);
+        $this->oferta(['titulo' => 'De tratamiento inactivo', 'id_tratamiento' => $inactivo->id, 'cupo_total' => 0]);
+        $vencida = $this->oferta(['titulo' => 'Ya vencida', 'cupo_total' => 0]);
+        $vencida->forceFill(['fecha_fin' => now()->subDay()->toDateString()])->save();
+
+        $html = $this->actingAs($admin)->get(route('admin.ofertas.index'))->assertOk()->getContent();
+
+        $this->assertSame(2, substr_count($html, 'data-no-visible'));
+        $this->assertStringContainsString('Publicada, no se ve', $html);
+        $this->assertStringContainsString('Su tratamiento está inactivo.', $html);
+        $this->assertStringContainsString('Venció el', $html);
+        // La que sí se ve sigue diciendo "Publicada".
+        $this->assertNull($visible->fresh()->motivoNoVisible([$visible->id]));
+
+        // Sin lugares, o fuera de las que caben en la portada, también se explica.
+        $sinLugar = $this->oferta(['titulo' => 'Sin lugar', 'cupo_total' => 1]);
+        Cita::create(['id_paciente' => \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'López', 'telefono' => '5550002222'])->id,
+            'id_servicio' => $this->servicio->id, 'id_tratamiento' => $this->tratamiento->id, 'id_oferta' => $sinLugar->id,
+            'fecha_hora' => $this->fecha->copy()->setTime(9, 0), 'duracion_estimada' => 30, 'estado' => EstadoCita::Confirmada]);
+        $this->assertStringStartsWith('Ya no le quedan lugares.', $sinLugar->fresh()->motivoNoVisible(Oferta::paraPortada()->pluck('id')->all()));
+        $this->assertStringStartsWith('La portada muestra las', $visible->fresh()->motivoNoVisible([]));
+    }
 }

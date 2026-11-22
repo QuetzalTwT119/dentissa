@@ -13,6 +13,13 @@
             <x-admin.card>
 
                 <x-pagination-summary :items="$ofertas" label="ofertas">
+                    <x-slot:filtros>
+                        <x-filtro.barra :action="route('admin.ofertas.index')" :campos="['buscar', 'estado', 'tratamiento']">
+                            <x-filtro.buscar name="buscar" etiqueta="Buscar ofertas" placeholder="Título de la oferta…" />
+                            <x-filtro.select name="estado" etiqueta="Filtrar por estado" todos="Todos los estados" :opciones="['pendiente' => 'En revisión', 'activa' => 'Publicadas', 'inactiva' => 'Ocultas']" />
+                            <x-filtro.select name="tratamiento" etiqueta="Filtrar por tratamiento" todos="Todos los tratamientos" :opciones="$tratamientosFiltro" />
+                        </x-filtro.barra>
+                    </x-slot:filtros>
                     <x-slot:acciones>
                         <a href="{{ route('admin.ofertas.create') }}" class="btn-brand min-h-11 px-5">
                             <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
@@ -61,8 +68,20 @@
                                 </x-chip>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @php $colorEstado = ['pendiente' => 'bg-amber-50 text-amber-800 ring-amber-500/25', 'activa' => 'bg-sage-50 text-sage-700 ring-sage-500/20', 'inactiva' => 'bg-shell text-ink-soft ring-line'][$oferta->estado->value]; @endphp
-                                <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $colorEstado }}" data-estado-oferta="{{ $oferta->estado->value }}">{{ $oferta->estado->etiqueta() }}</span>
+                                @php
+                                    // Una "Publicada" que no se ve (vencida, tratamiento inactivo, sin lugares
+                                    // o fuera del carrusel) lo dice con su motivo (22/11/2026).
+                                    $noVisible = $oferta->motivoNoVisible($enPortada);
+                                    $colorEstado = $noVisible
+                                        ? 'bg-rose-50 text-rose-800 ring-rose-300/60'
+                                        : ['pendiente' => 'bg-amber-50 text-amber-800 ring-amber-500/25', 'activa' => 'bg-sage-50 text-sage-700 ring-sage-500/20', 'inactiva' => 'bg-shell text-ink-soft ring-line'][$oferta->estado->value];
+                                @endphp
+                                <span class="inline-flex items-center gap-0.5">
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $colorEstado }}" data-estado-oferta="{{ $oferta->estado->value }}" @if ($noVisible) data-no-visible @endif>{{ $noVisible ? 'Publicada, no se ve' : $oferta->estado->etiqueta() }}</span>
+                                    @if ($noVisible)
+                                        <x-ayuda tono="aviso" etiqueta="Por qué no se ve">{{ $noVisible }}</x-ayuda>
+                                    @endif
+                                </span>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 {{-- Mismo grupo que Editar/Eliminar, sin separador (21/11/2026). --}}

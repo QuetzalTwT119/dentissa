@@ -13,6 +13,12 @@
             <x-admin.card>
 
                 <x-pagination-summary :items="$casos" label="casos">
+                    <x-slot:filtros>
+                        <x-filtro.barra :action="route('admin.casos.index')" :campos="['buscar', 'activo']">
+                            <x-filtro.buscar name="buscar" etiqueta="Buscar casos" placeholder="Título del caso…" />
+                            <x-filtro.select name="activo" etiqueta="Filtrar por estado" todos="Todos los estados" :opciones="['1' => 'Activos', '0' => 'Inactivos']" />
+                        </x-filtro.barra>
+                    </x-slot:filtros>
                     <x-slot:acciones>
                         <a href="{{ route('admin.casos.create') }}" class="btn-brand min-h-11 px-5">
                             <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>

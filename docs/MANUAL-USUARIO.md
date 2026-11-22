@@ -452,6 +452,12 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 - **Lugares:** cada cita agendada con la oferta ocupa un lugar; cancelar o
   marcar "No asistió" lo libera. Sin lugares, la oferta deja de anunciarse en
   la portada y las citas nuevas ya no la llevan.
+- **Publicada, no se ve** (rosa, con ⚠): está publicada pero no aparece en la
+  portada ni al agendar. El ⚠ dice por qué: venció, su tratamiento está
+  inactivo, ya no tiene lugares o no cabe entre las 24 del carrusel.
+- **Buscar y filtrar:** Ofertas, Tratamientos, Preguntas frecuentes, Casos y
+  Galería tienen arriba el buscador y los filtros de estado (los mismos que
+  Pacientes o Usuarios); se aplican solos y "Limpiar filtros" los quita.
 - **Ocultar:** en una oferta **Publicada**, el botón de encendido la oculta de
   la portada; sigue en la lista como **Oculta** para editarla o publicarla otra
   vez con ✓.

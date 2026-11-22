@@ -14,6 +14,13 @@
             <x-admin.card>
 
                 <x-pagination-summary :items="$tratamientos" label="tratamientos">
+                    <x-slot:filtros>
+                        <x-filtro.barra :action="route('admin.tratamientos.index')" :campos="['buscar', 'activo', 'servicio']">
+                            <x-filtro.buscar name="buscar" etiqueta="Buscar tratamientos" placeholder="Nombre del tratamiento…" />
+                            <x-filtro.select name="activo" etiqueta="Filtrar por estado" todos="Todos los estados" :opciones="['1' => 'Activos', '0' => 'Inactivos']" />
+                            <x-filtro.select name="servicio" etiqueta="Filtrar por especialidad" todos="Todas las especialidades" :opciones="$serviciosFiltro" />
+                        </x-filtro.barra>
+                    </x-slot:filtros>
                     <x-slot:acciones>
                         <a href="{{ route('admin.tratamientos.create') }}" class="btn-brand min-h-11 px-5">
                             <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>

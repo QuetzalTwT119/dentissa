@@ -14,8 +14,19 @@ class PreguntaFrecuenteController extends Controller
 {
     public function index(Request $request): View
     {
+        // Filtros globales (x-filtro.barra, 22/11/2026). Buscar = texto libre.
+        $filtros = $request->validate([
+            'buscar' => ['nullable', 'string', 'max:100'],
+            'activa' => ['nullable', 'in:1,0'],
+        ]);
+
         return view('admin.preguntas-frecuentes.index', [
-            'preguntas' => PreguntaFrecuente::orderBy('orden')->orderBy('id')->paginate($this->paginationPageSize($request)),
+            'preguntas' => PreguntaFrecuente::query()
+                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->where(fn ($w) => $w->where('pregunta', 'like', '%'.$texto.'%')->orWhere('respuesta', 'like', '%'.$texto.'%')))
+                ->when(isset($filtros['activa']), fn ($q) => $q->where('activa', $filtros['activa'] === '1'))
+                ->orderBy('orden')->orderBy('id')
+                ->paginate($this->paginationPageSize($request))
+                ->withQueryString(),
         ]);
     }
 
