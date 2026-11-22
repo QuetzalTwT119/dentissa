@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\DatosConsultorio;
+use App\Services\AuditoriaService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+
+/**
+ * Configuración → Datos del consultorio (22/11/2026). La doctora cambia el
+ * teléfono, el WhatsApp de contacto, el correo y la dirección sin depender de
+ * las variables de Railway (por ejemplo si pierde o le roban el celular).
+ * Solo administradores; cada cambio pide confirmación y queda en Auditoría
+ * con el valor anterior y el nuevo.
+ */
+class DatosConsultorioController extends Controller
+{
+    private const CAMPOS = ['telefono', 'whatsapp', 'correo', 'direccion'];
+
+    // La pantalla vive en Configuración (ConfiguracionController); aquí solo se guarda.
+
+    public function update(Request $request, AuditoriaService $auditoria): RedirectResponse
+    {
+        // Se aceptan espacios y guiones ("755 113 1833"); se guardan solo los dígitos.
+        $request->merge([
+            'telefono' => preg_replace('/\D/', '', (string) $request->input('telefono')),
+            'whatsapp' => preg_replace('/\D/', '', (string) $request->input('whatsapp')),
+        ]);
+
+        $datos = $request->validate([
+            'telefono' => ['required', 'digits:10'],
+            'mismo_whatsapp' => ['boolean'],
+            'whatsapp' => ['exclude_if:mismo_whatsapp,1', 'required', 'digits:10'],
+            'correo' => ['nullable', 'email', 'max:100'],
+            'direccion' => ['nullable', 'string', 'max:200'],
+        ], [
+            'telefono.digits' => 'Escribe los 10 dígitos del celular, por ejemplo 755 113 1833.',
+            'whatsapp.digits' => 'Escribe los 10 dígitos del WhatsApp, por ejemplo 755 113 1833.',
+        ], [
+            'telefono' => 'teléfono',
+            'whatsapp' => 'WhatsApp',
+            'correo' => 'correo',
+            'direccion' => 'dirección',
+        ]);
+
+        $nuevos = [
+            'telefono' => DatosConsultorio::formatear($datos['telefono']),
+            // "El mismo que el teléfono": vacío, y se toma del teléfono.
+            'whatsapp' => $request->boolean('mismo_whatsapp') ? null : '52'.$datos['whatsapp'],
+            'correo' => $datos['correo'] ?? null,
+            'direccion' => $datos['direccion'] ?? null,
+        ];
+
+        $fila = DatosConsultorio::fila();
+        $auditoria->registrarCambio($request, 'consultorio.actualizado', $fila, self::CAMPOS, function () use ($fila, $nuevos) {
+            $fila->fill($nuevos)->save();
+
+            return $fila;
+        });
+
+        return Redirect::to(route('admin.configuracion').'#consultorio')
+            ->with('success', 'Datos del consultorio guardados. La portada y los mensajes a pacientes ya usan el número '.$nuevos['telefono'].'.');
+    }
+}

@@ -44,7 +44,7 @@
             'icono' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
         ],
         [
-            'url' => route('admin.horarios.edit'),
+            'url' => route('admin.configuracion').'#horarios',
             'titulo' => 'Horarios',
             'texto' => 'Define los turnos y días de atención.',
             'accion' => 'Configurar horarios',
@@ -116,7 +116,7 @@
                     @foreach ([
                         [route('citas.index'), 'Agenda activa', 'Consultas de hoy'],
                         [route('admin.pacientes.index'), 'Expedientes', 'Directorio oficial'],
-                        [route('admin.horarios.edit'), 'Horarios', 'Turnos configurados'],
+                        [route('admin.configuracion').'#horarios', 'Horarios', 'Turnos configurados'],
                     ] as [$url, $etiqueta, $texto])
                         <a href="{{ $url }}" class="group flex min-h-16 items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-inset ring-white transition-colors duration-150 hover:bg-white">
                             <span>
@@ -177,7 +177,7 @@
                         <p class="mt-0.5 text-callout text-ink-soft">Revisa la agenda y los horarios configurados antes de iniciar la jornada para optimizar los tiempos de esterilización y sillón.</p>
                     </div>
                 </div>
-                <a href="{{ route('admin.horarios.edit') }}" class="btn-secondary shrink-0">Configurar horarios</a>
+                <a href="{{ route('admin.configuracion').'#horarios' }}" class="btn-secondary shrink-0">Configurar horarios</a>
             </section>
         </div>
     @endif

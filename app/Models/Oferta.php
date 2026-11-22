@@ -120,6 +120,27 @@ class Oferta extends Model
                 ->orWhereHas('tratamiento', fn ($t) => $t->agendables()));
     }
 
+    /** Cuántas ofertas muestra el carrusel de la portada (8 vistas de 3 en PC). */
+    public const MAXIMO_PORTADA = 24;
+
+    /**
+     * Las que muestra la portada: publicadas, con lugar y las que vencen
+     * primero (22/11/2026: antes se tomaban 12 y DESPUÉS se quitaban las
+     * agotadas, así que podían salir menos de 12 aunque hubiera más).
+     */
+    public static function paraPortada()
+    {
+        return self::with('tratamiento:id,nombre')
+            ->publicadas()
+            ->conLugaresUsados()
+            ->orderBy('fecha_fin')
+            ->orderBy('id')
+            ->get()
+            ->reject(fn (self $oferta) => $oferta->lugaresQuedan() === 0)
+            ->take(self::MAXIMO_PORTADA)
+            ->values();
+    }
+
     /** Citas que ocupan un lugar: todas menos canceladas e inasistencias (esas lo liberan). */
     public const ESTADOS_QUE_LIBERAN = [EstadoCita::Cancelada, EstadoCita::NoAsistio];
 

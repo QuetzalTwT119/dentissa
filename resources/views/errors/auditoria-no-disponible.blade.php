@@ -81,7 +81,7 @@
             </svg>
         </div>
         <h1>No se guardaron los cambios</h1>
-        <p>El sistema no pudo registrar la auditoría, así que revirtió la operación para conservar el historial completo.</p>
+        <p>El sistema no pudo guardar el registro de esta actividad, así que revirtió la operación para conservar el historial completo.</p>
         <p>Inténtalo de nuevo más tarde. Si el problema continúa, avisa al administrador del sistema.</p>
         <button type="button" onclick="history.back()">Volver</button>
     </main>

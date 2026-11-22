@@ -31,7 +31,7 @@ class NavegacionResponsivaTest extends TestCase
             ->assertSee('Pacientes')
             ->assertSee('Usuarios')
             ->assertSee('Reportes')
-            ->assertSee('Auditoría')
+            ->assertSee('Control de actividades')
             ->assertSee('Catálogo')
             ->assertSee('Contenido')
             ->assertSee('Configuración')

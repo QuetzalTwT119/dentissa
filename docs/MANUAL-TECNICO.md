@@ -1335,6 +1335,45 @@ administrador y el asistente gestionan los demás cambios desde el panel
   Desde el 22/11/2026 el valor por defecto es el celular del consultorio,
   **755 113 1833** (antes 755 102 0089); es distinto del número del bot de
   WhatsApp, como pide el diagnóstico remoto.
+- **Datos del consultorio editables (22/11/2026).** Tabla `datos_consultorio`
+  (una fila: `telefono`, `whatsapp`, `correo`, `direccion`), modelo
+  `DatosConsultorio` con caché (`datos_consultorio`, se borra al guardar).
+  `AppServiceProvider::boot()` llama a `DatosConsultorio::aplicarAConfiguracion()`,
+  que pone lo guardado encima de `config('dentissa.contacto')` (incluido
+  `telefono_enlace`; sin WhatsApp propio usa el teléfono con +52). Un campo
+  vacío o la tabla sin migrar dejan los valores de `.env`. Guardar:
+  `PUT admin.consultorio.update` (solo admin, `registrarCambio`
+  `consultorio.actualizado` con valores antes/después).
+- **Las pruebas nunca usan credenciales reales (22/11/2026).** `tests/TestCase.php`
+  pone en `null` el token y el número de WhatsApp, el token de Telegram y las
+  credenciales de Gmail, y llama a `Http::preventStrayRequests()`: una llamada
+  HTTP sin `Http::fake()` hace fallar la prueba. Antes, con las credenciales
+  reales en `.env`, 10 pruebas (7 archivos) mandaron WhatsApp de verdad a
+  teléfonos de prueba; 3 de recordatorios usaban números al azar.
+- **Barra de desplazamiento del panel (22/11/2026).** En PC `.panel-contenido`
+  con `max-w-*` ocupa todo el ancho y centra su contenido con relleno lateral
+  (`--ancho-contenido`): la barra queda en la orilla de la ventana y no en
+  medio, junto a las tarjetas. En las listas tampoco se desplaza la tabla por
+  dentro: se desplaza toda la página y la tarjeta completa sube con ella, sin
+  encabezados de columna fijos (con el encabezado pegado arriba parecía que la
+  tabla se desplazaba por dentro).
+  En los botones redondos de solo ícono, mientras se envía, `.btn-spinner`
+  ocupa el lugar del ícono (antes quedaba apilado encima).
+- **Ofertas en la portada y la agenda (22/11/2026, QA con 21 ofertas).**
+  `Oferta::paraPortada()` es la única regla de la portada (publicadas, con
+  lugar, las que vencen primero, hasta `MAXIMO_PORTADA` = 24) y se muestra
+  en el carrusel global `carruselServicios` con la descripción completa.
+  `CitaPublicaController::ofertasPorTratamiento()` manda TODAS las ofertas de
+  cada tratamiento y la agenda toma la primera vigente en la fecha elegida,
+  igual que `Oferta::aplicableA()`. Descuento máximo 99 % (100 % = Gratis).
+- **"Auditoría" se llama "Control de actividades" (22/11/2026).** Solo cambia lo
+  que ve el usuario (menú, título, mensajes y manual de usuario); la ruta
+  `admin.auditoria.index`, la tabla `logs_auditoria` y `AuditoriaService` siguen igual.
+- **Configuración en una sola página (22/11/2026).** `GET admin.configuracion`
+  (`ConfiguracionController`) muestra `admin/configuracion/_consultorio` y
+  `_horarios`, cada uno con su `<form>`; las rutas `admin.horarios.edit` y
+  `admin.consultorio.edit` redirigen a `/admin/configuracion#horarios` y
+  `#consultorio`. En el menú, "Configuración" es un enlace directo.
 - Los datos del paciente se vinculan por teléfono y correo, y el formulario
   público valida los campos.
 - Como el formulario es público, `POST /agendar-cita` usa el limitador

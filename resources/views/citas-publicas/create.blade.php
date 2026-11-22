@@ -108,8 +108,11 @@
                     idTratamiento: @js(old('id_tratamiento', $tratamientoInicial ?? '')),
                     // Oferta vigente de cada tratamiento (21/11/2026): se avisa al elegirlo.
                     ofertas: @js((object) ($ofertasPorTratamiento ?? [])),
+                    // Varias por tratamiento, de la que vence primero a la última: la primera
+                    // vigente en la fecha elegida (misma regla que el servidor al guardar).
                     get ofertaTratamiento() {
-                        return this.ofertas[Number(this.idTratamiento)] ?? null;
+                        const lista = this.ofertas[Number(this.idTratamiento)] ?? [];
+                        return (this.fecha ? lista.find(o => this.fecha <= o.hasta) : null) ?? lista[0] ?? null;
                     },
                     // Aplica si la cita es dentro de la vigencia (sin fecha elegida todavía, se muestra).
                     get ofertaAplica() {
@@ -262,7 +265,7 @@
                                                         <span class="min-w-0">
                                                             <span class="block text-callout font-semibold text-ink" x-text="tratamiento.nombre"></span>
                                                             <span x-show="ofertas[tratamiento.id]" class="mt-1 inline-flex rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-800 ring-1 ring-inset ring-brand-200" data-etiqueta-oferta
-                                                                  x-text="ofertas[tratamiento.id] ? `Oferta ${ofertas[tratamiento.id].etiqueta}` : ''"></span>
+                                                                  x-text="ofertas[tratamiento.id] ? `Oferta ${ofertas[tratamiento.id][0].etiqueta}` : ''"></span>
                                                             <span class="mt-0.5 block text-footnote text-muted sm:hidden" x-text="[formatoDuracion(tratamiento.duracion_estimada), formatoPrecio(tratamiento.precio_referencia)].filter(Boolean).join(' · ')"></span>
                                                         </span>
                                                     </span>

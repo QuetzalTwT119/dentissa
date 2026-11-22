@@ -53,6 +53,7 @@ $etiquetasAccion = [
     'faq.actualizada' => 'Pregunta frecuente actualizada',
     'faq.eliminada' => 'Pregunta frecuente eliminada',
     'horario.actualizado' => 'Horario de atención actualizado',
+    'consultorio.actualizado' => 'Datos del consultorio actualizados',
     'mensaje.marco_leido' => 'Mensaje marcado como leído',
     'mensaje.marco_no_leido' => 'Mensaje marcado como no leído',
     'mensaje.eliminado' => 'Mensaje de contacto eliminado',
@@ -70,6 +71,7 @@ $etiquetasTabla = [
     'testimonios' => 'Testimonio',
     'preguntas_frecuentes' => 'Pregunta frecuente',
     'horarios_atencion' => 'Horario',
+    'datos_consultorio' => 'Consultorio',
     'mensajes_contacto' => 'Mensaje de contacto',
 ];
 @endphp
@@ -77,9 +79,9 @@ $etiquetasTabla = [
 <x-app-layout>
     <x-slot name="header">
         <x-admin.header
-            badge="Seguridad y Control"
-            title="Auditoría"
-            subtitle="Trazabilidad de seguridad, cambios en datos clínicos y actividad del personal."
+            badge="Seguridad y control"
+            title="Control de actividades"
+            subtitle="Quién hizo cada cambio en el sistema y cuándo: citas, pacientes, ofertas, usuarios y configuración."
         />
     </x-slot>
 
@@ -206,7 +208,7 @@ $etiquetasTabla = [
                                     </div>
                                     <p class="font-semibold text-ink">No se encontraron eventos</p>
                                     <p class="mt-1 text-xs text-muted">
-                                        No hay eventos de auditoría para los filtros seleccionados.
+                                        No hay actividades para los filtros seleccionados.
                                     </p>
                                 </div>
                             </td>

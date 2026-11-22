@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
 use App\Http\Controllers\Admin\HistorialClinicoController;
 use App\Http\Controllers\Admin\HorarioController;
 use App\Http\Controllers\Admin\MensajeContactoController as AdminMensajeContactoController;
+use App\Http\Controllers\Admin\ConfiguracionController;
+use App\Http\Controllers\Admin\DatosConsultorioController;
 use App\Http\Controllers\Admin\OfertaController as AdminOfertaController;
 use App\Http\Controllers\Admin\PacienteController;
 use App\Http\Controllers\Admin\PreguntaFrecuenteController;
@@ -139,14 +141,7 @@ Route::get('/', function () {
             ->orderBy('id')
             ->get(),
         // Publicadas, con tratamiento agendable y con lugar (las agotadas ya no se anuncian).
-        'ofertas' => Oferta::with('tratamiento:id,nombre')
-            ->publicadas()
-            ->conLugaresUsados()
-            ->orderBy('fecha_fin')
-            ->take(12)
-            ->get()
-            ->reject(fn (Oferta $oferta) => $oferta->lugaresQuedan() === 0)
-            ->values(),
+        'ofertas' => Oferta::paraPortada(),
         'testimonios' => Testimonio::with('paciente:id,nombre,apellido')
             ->where('estado', 'aprobado')
             ->orderByDesc('fecha_publicacion')
@@ -271,8 +266,12 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::put('galeria/{imagen}', [AdminGaleriaController::class, 'update'])->name('galeria.update');
     Route::delete('galeria/{imagen}', [AdminGaleriaController::class, 'destroy'])->name('galeria.destroy');
 
-    Route::get('horarios', [HorarioController::class, 'edit'])->name('horarios.edit');
+    // Configuración: una sola página (22/11/2026). Las direcciones de antes llevan a su bloque.
+    Route::get('configuracion', [ConfiguracionController::class, 'index'])->name('configuracion');
+    Route::redirect('horarios', '/admin/configuracion#horarios')->name('horarios.edit');
     Route::put('horarios', [HorarioController::class, 'update'])->name('horarios.update');
+    Route::redirect('consultorio', '/admin/configuracion#consultorio')->name('consultorio.edit');
+    Route::put('consultorio', [DatosConsultorioController::class, 'update'])->name('consultorio.update');
 
     Route::resource('casos', CasoController::class)->except('show');
     Route::post('casos/{caso}/imagenes', [CasoController::class, 'storeImagen'])->name('casos.imagenes.store');

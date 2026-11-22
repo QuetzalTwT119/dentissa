@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Mail\Transport\GmailApiTransport;
 use App\Models\Caso;
 use App\Models\Cita;
+use App\Models\DatosConsultorio;
 use App\Models\HistorialClinico;
 use App\Models\HorarioAtencion;
 use App\Models\Imagen;
@@ -52,10 +53,14 @@ class AppServiceProvider extends ServiceProvider
         foreach ([
             Cita::class, Paciente::class, HistorialClinico::class, HorarioAtencion::class,
             Servicio::class, Tratamiento::class, User::class, Oferta::class, Testimonio::class,
-            Imagen::class, Caso::class, PreguntaFrecuente::class, MensajeContacto::class,
+            Imagen::class, Caso::class, PreguntaFrecuente::class, MensajeContacto::class, DatosConsultorio::class,
         ] as $modelo) {
             $modelo::observe(AuditoriaObserver::class);
         }
+
+        // Teléfono, WhatsApp, correo y dirección que la doctora cambia en el panel
+        // (22/11/2026) se ponen encima de los de .env.
+        DatosConsultorio::aplicarAConfiguracion();
 
         $this->configurarLimiteAgendaPublica();
     }

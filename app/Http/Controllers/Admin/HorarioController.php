@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\HorarioAtencion;
 use App\Services\AuditoriaService;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,18 +13,7 @@ use Illuminate\Support\Facades\Redirect;
 
 class HorarioController extends Controller
 {
-    private const ORDEN_SEMANA = [1, 2, 3, 4, 5, 6, 0];
-
-    public function edit(): View
-    {
-        $horarios = HorarioAtencion::all()->keyBy('dia_semana');
-
-        return view('admin.horarios.edit', [
-            'horarios' => collect(self::ORDEN_SEMANA)
-                ->map(fn (int $dia) => $horarios->get($dia))
-                ->values(),
-        ]);
-    }
+    // La pantalla vive en Configuración (ConfiguracionController); aquí solo se guarda.
 
     public function update(Request $request, AuditoriaService $auditoria): RedirectResponse
     {
@@ -64,6 +52,6 @@ class HorarioController extends Controller
             }
         });
 
-        return Redirect::route('admin.horarios.edit')->with('success', 'Horarios guardados. La agenda en línea ya usa los nuevos.');
+        return Redirect::to(route('admin.configuracion').'#horarios')->with('success', 'Horarios guardados. La agenda en línea ya usa los nuevos.');
     }
 }

@@ -19,7 +19,7 @@ class AuditoriaTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.auditoria.index'))
             ->assertOk()
-            ->assertSee('Auditoría')
+            ->assertSee('Control de actividades')
             ->assertSee('Solo lectura. Se registran acciones de cuentas del personal');
     }
 

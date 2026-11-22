@@ -328,6 +328,15 @@
         animation: btn-spin 600ms linear infinite;
     }
 
+    /*
+     * 22/11/2026: en los botones redondos de solo ícono (Editar, Eliminar,
+     * Publicar… centrados con grid) el indicador quedaba apilado encima del
+     * ícono. Mientras se envía, el indicador ocupa el lugar del ícono.
+     */
+    button.place-items-center[aria-busy="true"] > :not(.btn-spinner) {
+        display: none;
+    }
+
     /* ---------- Tarjetas ---------- */
     .card-boutique {
         background-color: #fff;
@@ -463,14 +472,7 @@
     display: none !important;
 }
 
-html {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-html::-webkit-scrollbar {
-    display: none;
-}
+/* Scrollbar: se usa la predeterminada del navegador en todas las vistas */
 
 .notification-preview-title {
     display: block;
@@ -821,15 +823,17 @@ html::-webkit-scrollbar {
 }
 
 /*
- * 21/11/2026: la esquina (encabezado de la primera columna) queda fija arriba y a
- * la izquierda, por ENCIMA de las celdas fijas de las filas y con el mismo color
- * que el resto del encabezado. Antes tenía z-index 1 y otro tono: al bajar, el
- * título de la primera fila se montaba sobre "TÍTULO".
+ * La esquina (encabezado de la primera columna) queda por ENCIMA de las celdas
+ * fijas de las filas y con el mismo color que el resto del encabezado. Solo es
+ * fija a la izquierda (al deslizar de lado); desde el 22/11/2026 el encabezado
+ * sube con la página al bajar.
  */
 .tabla-larga table > thead > tr > :first-child {
-    top: 0;
     z-index: 3;
-    background-color: rgb(var(--c-shell));
+    /* El mismo tono que el resto del encabezado (bg-shell/50 sobre blanco), pero
+       opaco para tapar lo que pasa por debajo al deslizar de lado (22/11/2026:
+       antes era shell sólido y la primera celda se veía de otro color). */
+    background-color: color-mix(in srgb, rgb(var(--c-shell)) 50%, #fff);
 }
 
 /* La celda fija toma el mismo tono que la fila al pasar el mouse (antes se quedaba blanca). */
@@ -1053,10 +1057,9 @@ html::-webkit-scrollbar {
  * completa. layouts/app mide el alto de la ventana (.panel-marco); el
  * contenido de cada pantalla (.panel-pagina > .panel-contenido) ocupa el
  * espacio que queda bajo el menú y el título.
- *   - Listas: la tarjeta que contiene una tabla (.tabla-panel) o una lista
- *     larga (.lista-panel) se encoge hasta caber; solo su tabla se desplaza
- *     por dentro, con los encabezados fijos, y la barra de filtros y la
- *     paginación quedan a la vista.
+ *   - Listas (22/11/2026): se desplaza .panel-contenido completo, con los
+ *     encabezados de columna fijos; antes solo se desplazaba la tabla y su
+ *     barra quedaba dentro de la tarjeta.
  *   - Formularios: se acomodan a lo ancho para caber; si aun así no caben
  *     (pantallas bajas), se desplaza .panel-contenido y el menú sigue fijo.
  * En celular y tableta el flujo es normal (estas reglas no aplican).
@@ -1098,58 +1101,42 @@ html::-webkit-scrollbar {
         position: relative;
     }
 
+    /*
+     * 22/11/2026: la barra de desplazamiento va en la orilla derecha de la
+     * ventana, como en cualquier página. Antes .panel-contenido medía lo mismo
+     * que su contenido centrado (max-w-*) y la barra quedaba en medio, pegada
+     * a las tarjetas. Ahora ocupa todo el ancho y el relleno lateral centra el
+     * contenido con el mismo ancho de siempre (W − 2 × 2 rem de lg:px-8).
+     */
+    .panel-contenido[class*="max-w-"] {
+        --ancho-contenido: 80rem; /* max-w-7xl */
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: max(2rem, calc((100% - var(--ancho-contenido)) / 2 + 2rem));
+        padding-right: max(2rem, calc((100% - var(--ancho-contenido)) / 2 + 2rem));
+    }
+
+    .panel-contenido.max-w-6xl { --ancho-contenido: 72rem; }
+    .panel-contenido.max-w-5xl { --ancho-contenido: 64rem; }
+    .panel-contenido.max-w-3xl { --ancho-contenido: 48rem; }
+
     .panel-contenido > * {
         flex-shrink: 0;
     }
 
-    /* La tarjeta con la tabla (y lo que la envuelve) se encoge; lo demás no. */
-    .panel-contenido > :has(.tabla-panel, .lista-panel),
-    .panel-contenido > :has(.tabla-panel, .lista-panel) :has(.tabla-panel, .lista-panel) {
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 1;
-        min-height: 0;
-    }
+    /*
+     * 22/11/2026: las listas ya no se desplazan por dentro de su tarjeta (la
+     * barra quedaba dentro de la tabla). Se desplaza toda la página
+     * (.panel-contenido), con la barra en la orilla de la ventana, igual que
+     * en Configuración y los formularios. El menú sigue fijo arriba.
+     */
 
-    .panel-contenido > :has(.tabla-panel, .lista-panel) {
-        min-height: 14rem;
-    }
-
-    .panel-contenido .tabla-panel,
-    .panel-contenido .lista-panel {
-        flex: 1 1 auto;
-        /* Nunca menos de ~3 filas: si no caben, se desplaza .panel-contenido. */
-        min-height: 9rem;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-    }
-
-    .panel-contenido .tabla-larga.tabla-panel {
-        display: flex;
-        flex-direction: column;
-        overflow-y: hidden;
-    }
-
-    .panel-contenido .tabla-larga.tabla-panel > [x-ref="desplazable"] {
-        flex: 1 1 auto;
-        min-height: 0;
-        overflow-y: auto;
-    }
-
-    /* Encabezados de columna fijos mientras la tabla se desplaza. */
-    .panel-contenido .lista-panel .fila-cita-cabecera {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background-color: rgb(var(--c-shell));
-    }
-
-    .panel-contenido .tabla-panel thead th {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background-color: rgb(var(--c-shell));
-    }
+    /*
+     * Sin encabezados de columna fijos (22/11/2026): con el encabezado pegado
+     * arriba, las filas pasaban por debajo y parecía que la tabla se
+     * desplazaba por dentro. Ahora la tarjeta completa sube con la página.
+     */
 }
 
 /*

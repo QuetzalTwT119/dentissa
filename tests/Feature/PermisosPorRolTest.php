@@ -52,7 +52,7 @@ class PermisosPorRolTest extends TestCase
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
 
         $this->actingAs($admin)
-            ->get(route('admin.horarios.edit'))
+            ->get(route('admin.configuracion'))
             ->assertOk()
             ->assertDontSee('<x-text-input', false)
             ->assertSee('name="dias[0][hora_apertura]"', false)
