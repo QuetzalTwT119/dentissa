@@ -47,7 +47,12 @@ class ServicioController extends Controller
 
     public function create(): View
     {
-        return view('admin.servicios.create');
+        // Mismo formulario que Editar (22/11/2026): ya se eligen foto y tratamientos al crear.
+        return view('admin.servicios.create', [
+            'servicio' => new Servicio(['activo' => true]),
+            'tratamientos' => $this->tratamientosAgendables(),
+            'tratamientosAsignados' => collect(),
+        ]);
     }
 
     public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
@@ -61,30 +66,46 @@ class ServicioController extends Controller
             $data['imagen'] = $request->file('imagen')->store('servicios', 'public');
         }
 
-        $auditoria->registrarCambio(
+        $servicio = $auditoria->registrarCambio(
             $request,
             'servicio.creado',
             new Servicio,
-            ['nombre', 'descripcion', 'icono', 'imagen', 'activo', 'orden'],
+            ['nombre', 'descripcion', 'imagen', 'activo', 'orden'],
             fn () => Servicio::create($data),
         );
 
-        return Redirect::route('admin.servicios.index')->with('success', "Servicio «{$request->input('nombre')}» creado. Ábrelo para asignarle tratamientos.");
+        if ($request->boolean('tratamientos_enviados')) {
+            $this->sincronizarTratamientos($request, $servicio, $auditoria);
+        }
+
+        $sinTratamientos = $servicio->tratamientos()->doesntExist();
+
+        return Redirect::route('admin.servicios.index')->with('success', "Servicio «{$servicio->nombre}» creado."
+            .($sinTratamientos ? ' Sin tratamientos, la portada lo muestra como "Agenda por teléfono".' : ''));
     }
 
     public function edit(Servicio $servicio): View
     {
         return view('admin.servicios.edit', [
             'servicio' => $servicio,
-            // Solo lo que se puede agendar. Los inactivos se administran en
-            // Catálogo → Tratamientos; su vínculo se conserva (ver sincronizarTratamientos).
-            'tratamientos' => Tratamiento::where('activo', true)
-                ->with(['servicios' => fn ($q) => $q->select('servicios.id', 'servicios.nombre')
-                    ->where('servicios.id', '!=', $servicio->id)->orderBy('servicios.orden')])
-                ->orderBy('nombre')
-                ->get(['id', 'nombre']),
+            'tratamientos' => $this->tratamientosAgendables($servicio),
             'tratamientosAsignados' => $servicio->tratamientos()->where('tratamientos.activo', true)->pluck('tratamientos.id'),
         ]);
+    }
+
+    /**
+     * Solo lo que se puede agendar. Los inactivos se administran en
+     * Catálogo → Tratamientos; su vínculo se conserva (ver sincronizarTratamientos).
+     * Con cada uno, en qué OTROS servicios está ("También en …").
+     */
+    private function tratamientosAgendables(?Servicio $servicio = null)
+    {
+        return Tratamiento::where('activo', true)
+            ->with(['servicios' => fn ($q) => $q->select('servicios.id', 'servicios.nombre')
+                ->when($servicio?->exists, fn ($q) => $q->where('servicios.id', '!=', $servicio->id))
+                ->orderBy('servicios.orden')])
+            ->orderBy('nombre')
+            ->get(['id', 'nombre']);
     }
 
     public function update(Request $request, Servicio $servicio, AuditoriaService $auditoria): RedirectResponse
@@ -180,7 +201,7 @@ class ServicioController extends Controller
     /** Interruptor de la lista (x-admin.interruptor-estado). */
     public function estado(Request $request, Servicio $servicio): RedirectResponse
     {
-        return $this->alternarCampo($request, $servicio, 'activo', 'servicio.estado_cambiado', "«{$servicio->nombre}» está activo: se muestra en la portada.", "«{$servicio->nombre}» está inactivo: ya no se muestra en la portada.");
+        return $this->alternarCampo($request, $servicio, 'activo', 'servicio.estado_cambiado', "«{$servicio->nombre}» está disponible: se muestra en la portada y se puede agendar.", "«{$servicio->nombre}» ya no está disponible: no se muestra en la portada ni se puede agendar.");
     }
 
     public function destroy(Request $request, Servicio $servicio, AuditoriaService $auditoria): RedirectResponse

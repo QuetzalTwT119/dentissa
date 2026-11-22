@@ -372,8 +372,10 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 
 - **Servicios** (especialidades del carrusel): en **Editar servicio** se cambia
   el nombre, la descripción, la foto (con vista previa de la tarjeta) y **qué
-  tratamientos se pueden agendar**. El interruptor **Visible en la portada**
-  oculta o muestra la especialidad. El orden del carrusel se acomoda con las
+  tratamientos se pueden agendar**. **Nuevo servicio** es la misma pantalla, así que al
+  crearlo ya se eligen su foto y sus tratamientos. El interruptor **Disponible** (igual en la
+  lista) lo muestra en la portada y permite agendarlo en línea, en el panel, en el asistente y
+  por Telegram; apagado, se oculta en todos esos lugares (las citas ya agendadas no cambian). El orden del carrusel se acomoda con las
   flechas ↑ ↓ de la lista. La lista se puede buscar por nombre y filtrar por
   activos o inactivos; mientras haya un filtro, el número sigue siendo su lugar
   real en el carrusel y, para cambiar el orden, hay que quitar el filtro.

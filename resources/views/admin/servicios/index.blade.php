@@ -17,7 +17,7 @@
                     <x-slot:filtros>
                         <x-filtro.barra :action="route('admin.servicios.index')" :campos="['buscar', 'activo']">
                             <x-filtro.buscar name="buscar" etiqueta="Buscar servicios" placeholder="Nombre del servicio…" />
-                            <x-filtro.select name="activo" etiqueta="Filtrar por estado" todos="Todos los estados" :opciones="['1' => 'Activos', '0' => 'Inactivos']" />
+                            <x-filtro.select name="activo" etiqueta="Filtrar por estado" todos="Todos los estados" :opciones="['1' => 'Disponibles', '0' => 'No disponibles']" />
                         </x-filtro.barra>
                     </x-slot:filtros>
                     <x-slot:acciones>
@@ -83,8 +83,9 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <x-admin.interruptor-estado :action="route('admin.servicios.estado', $servicio)" :activo="$servicio->activo" :nombre="$servicio->nombre"
-                                                            desactivar="Dejará de mostrarse en el carrusel de la portada."
-                                                            activar="Se mostrará en el carrusel de la portada." />
+                                                            textoActivo="Disponible" textoInactivo="No disponible"
+                                                            desactivar="Se ocultará de la portada y ya no se podrá agendar (en línea, en el panel, en el asistente ni por Telegram). Las citas ya agendadas no cambian."
+                                                            activar="Se mostrará en la portada y se podrá agendar de nuevo." />
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5 lg:justify-center">

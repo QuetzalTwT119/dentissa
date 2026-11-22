@@ -1381,6 +1381,12 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Servicio: un formulario y un nombre (H-48, 22/11/2026).** `create` y `edit` incluyen
+  `admin/servicios/_formulario` (`$esNuevo = ! $servicio->exists`); `create()` manda
+  `new Servicio(['activo' => true])` y los tratamientos agendables (`tratamientosAgendables()`),
+  y `store()` también sincroniza `tratamiento_ids`. El campo `icono` ya no se pide (la portada
+  usa la foto). `servicios.activo` se muestra como "Disponible / No disponible": oculta el
+  servicio en portada, agenda pública, Nueva cita del panel, asistente y Telegram.
 - **Menú del panel desde 1024 px y marca única (H-47, 22/11/2026).** `layouts/navigation`
   muestra el menú completo con `lg:` (antes `2xl:`, 1536 px); entre `lg` y `xl` reduce
   el relleno de los enlaces (`px-3 xl:px-4`, también en `x-nav-link` y `x-nav-dropdown`) y
