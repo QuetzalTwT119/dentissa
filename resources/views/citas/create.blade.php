@@ -5,12 +5,6 @@
             title="Agendar cita en consultorio"
             subtitle="Registro directo de consulta médica para pacientes registrados."
         >
-            <x-slot:actions>
-                <a href="{{ route('citas.index') }}" class="btn-secondary hidden sm:inline-flex">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Volver a la agenda
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 

@@ -4,11 +4,6 @@
             title="Editar caso — {{ $caso->titulo }}"
             subtitle="Gestión de información y fotografías del caso clínico."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.casos.index') }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al listado</x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
@@ -52,7 +47,7 @@
                         <x-primary-button>Guardar cambios</x-primary-button>
 
                         <a href="{{ route('admin.casos.index') }}">
-                            <x-secondary-button type="button">Volver</x-secondary-button>
+                            <x-secondary-button type="button">Cancelar</x-secondary-button>
                         </a>
                     </div>
                 </form>

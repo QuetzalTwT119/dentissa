@@ -13,7 +13,7 @@
     </div>
     <div class="flex items-center gap-2.5">
         <a href="{{ route('admin.tratamientos.index') }}" class="hidden sm:inline-block">
-            <x-secondary-button type="button">Volver al listado</x-secondary-button>
+            <x-secondary-button type="button">Cancelar</x-secondary-button>
         </a>
         <x-primary-button form="form-tratamiento" class="hidden lg:inline-flex" data-guardar-arriba>{{ $editando ? 'Guardar cambios' : 'Crear tratamiento' }}</x-primary-button>
     </div>

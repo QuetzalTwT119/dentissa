@@ -48,7 +48,7 @@ $rolClase = [
                             <th class="px-6 py-3.5">Teléfono</th>
                             <th class="px-6 py-3.5">Rol</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right">Acciones</th>
+                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -71,7 +71,7 @@ $rolClase = [
                                 <x-admin.status-badge :active="$usuario->activo" />
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5">
+                                <div class="flex items-center justify-end gap-1.5 lg:justify-center">
                                     <x-admin.acciones-fila :editar="route('admin.usuarios.edit', $usuario)" que="el usuario" />
                                     <form method="POST" action="{{ route('admin.usuarios.activo.toggle', $usuario) }}"
                                           data-confirmar="{{ $usuario->activo ? 'No podrá iniciar sesión hasta que lo vuelvas a activar.' : 'Podrá volver a iniciar sesión con su contraseña.' }}"

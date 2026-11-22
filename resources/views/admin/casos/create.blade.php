@@ -4,11 +4,6 @@
             title="Nuevo caso"
             subtitle="Creación de caso clínico demostrativo de antes y después."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.casos.index') }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al listado</x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 

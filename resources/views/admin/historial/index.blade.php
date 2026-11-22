@@ -30,10 +30,6 @@ $tipoConsultaLabel = [
     <div class="panel-pagina py-8 sm:py-10">
         <div class="panel-contenido mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-6">
             <div class="flex flex-wrap items-center justify-between gap-4">
-                <a href="{{ route('admin.pacientes.index') }}" class="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:text-brand-800 transition">
-                    ← Volver a Pacientes
-                </a>
-
                 <div class="flex flex-wrap items-center gap-3 ml-auto">
                     @if ($consultas->isNotEmpty())
                         <a href="{{ route('admin.pacientes.historial.pdf', $paciente) }}">

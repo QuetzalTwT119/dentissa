@@ -5,11 +5,6 @@
             title="Nuevo usuario"
             subtitle="Creación de usuario del personal con privilegios de sistema."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.usuarios.index') }}" class="hidden sm:inline-block">
-                    <x-secondary-button type="button">Volver al listado</x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 

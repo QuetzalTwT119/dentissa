@@ -39,7 +39,7 @@ $estadoClase = [
                             <th class="px-6 py-3.5">Calificación</th>
                             <th class="px-6 py-3.5">Comentario</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right">Acciones</th>
+                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -76,7 +76,6 @@ $estadoClase = [
                                                             :mensaje="$testimonio->estado->value === 'aprobado' ? 'Dejará de mostrarse en la portada. Podrás aprobarlo después.' : 'No se mostrará en la portada. Podrás aprobarlo después.'"
                                                             boton="Sí, rechazar" />
                                     @endif
-                                    <span class="mx-0.5 h-5 w-px bg-line" aria-hidden="true"></span>
                                 </x-admin.acciones-fila>
                             </td>
                         </tr>

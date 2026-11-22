@@ -14,7 +14,9 @@
     $boton = 'grid h-11 w-11 place-items-center rounded-full transition-colors duration-150 focus:outline-none focus-visible:ring-2 lg:h-9 lg:w-9';
 @endphp
 
-<div {{ $attributes->merge(['class' => 'flex items-center justify-end gap-1']) }}>
+{{-- En PC el grupo va centrado bajo "Acciones" (21/11/2026): alineado a la derecha, el
+     encabezado y los botones redondos no coincidían a la vista. --}}
+<div {{ $attributes->merge(['class' => 'flex items-center justify-end gap-1 lg:justify-center']) }}>
     {{ $slot }}
 
     @if ($editar)

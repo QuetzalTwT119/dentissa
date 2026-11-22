@@ -5,14 +5,6 @@
             title="Editar paciente — {{ $paciente->nombre }} {{ $paciente->apellido }}"
             subtitle="Actualización de contacto y datos oficiales del expediente."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.pacientes.index') }}" class="hidden sm:inline-block">
-                    <x-secondary-button type="button" class="inline-flex items-center gap-1.5">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                        Volver al listado
-                    </x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
@@ -128,7 +120,7 @@
                         <x-primary-button>Guardar cambios</x-primary-button>
 
                         <a href="{{ route('admin.pacientes.index') }}">
-                            <x-secondary-button type="button">Volver</x-secondary-button>
+                            <x-secondary-button type="button">Cancelar</x-secondary-button>
                         </a>
                     </div>
                 </form>

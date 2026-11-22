@@ -4,11 +4,6 @@
             title="Editar consulta — {{ $paciente->nombre }} {{ $paciente->apellido }}"
             subtitle="Modificación de notas clínicas y gestión de adjuntos."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al historial</x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
@@ -26,7 +21,7 @@
                         <x-primary-button>Guardar cambios</x-primary-button>
 
                         <a href="{{ route('admin.pacientes.historial.index', $paciente) }}">
-                            <x-secondary-button type="button">Volver</x-secondary-button>
+                            <x-secondary-button type="button">Cancelar</x-secondary-button>
                         </a>
                     </div>
                 </form>

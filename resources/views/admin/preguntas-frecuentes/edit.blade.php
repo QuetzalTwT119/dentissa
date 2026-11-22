@@ -4,11 +4,6 @@
             title="Editar pregunta frecuente"
             subtitle="Modificación de respuesta y variantes de lenguaje natural."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.preguntas-frecuentes.index') }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al listado</x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
@@ -26,7 +21,7 @@
                         <x-primary-button>Guardar cambios</x-primary-button>
 
                         <a href="{{ route('admin.preguntas-frecuentes.index') }}">
-                            <x-secondary-button type="button">Volver</x-secondary-button>
+                            <x-secondary-button type="button">Cancelar</x-secondary-button>
                         </a>
                     </div>
                 </form>

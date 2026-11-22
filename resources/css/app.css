@@ -820,8 +820,21 @@ html::-webkit-scrollbar {
     background-color: #fff;
 }
 
+/*
+ * 21/11/2026: la esquina (encabezado de la primera columna) queda fija arriba y a
+ * la izquierda, por ENCIMA de las celdas fijas de las filas y con el mismo color
+ * que el resto del encabezado. Antes tenía z-index 1 y otro tono: al bajar, el
+ * título de la primera fila se montaba sobre "TÍTULO".
+ */
 .tabla-larga table > thead > tr > :first-child {
-    background-color: #f9f3ef;
+    top: 0;
+    z-index: 3;
+    background-color: rgb(var(--c-shell));
+}
+
+/* La celda fija toma el mismo tono que la fila al pasar el mouse (antes se quedaba blanca). */
+.tabla-larga table > tbody > tr:hover > :first-child {
+    background-color: color-mix(in srgb, rgb(var(--c-cream)) 60%, #fff);
 }
 
 .tabla-larga[data-desplazada] table > thead > tr > :first-child,
@@ -1223,4 +1236,38 @@ html::-webkit-scrollbar {
  */
 select:not([multiple]):not([size]) {
     padding-right: 2.5rem;
+}
+
+/*
+ * Opción elegible (21/11/2026): UN solo diseño para los botones donde se elige
+ * una opción (componente x-opcion). Sin elegir: blanco con borde gris. Elegida:
+ * rosa claro de la marca con borde rosa, sin relleno saturado ni palomita.
+ * Sirve con <input type="radio"> oculto dentro (has-checked) o con
+ * aria-checked/aria-pressed (o data-elegida, siempre elegida) en un <button>.
+ */
+@layer components {
+    .opcion {
+        @apply flex min-h-11 cursor-pointer select-none items-center justify-center rounded-xl border border-field bg-white px-3 text-center text-sm font-medium text-ink-soft shadow-2xs transition-colors duration-150;
+    }
+
+    .opcion:hover {
+        @apply border-brand-300;
+    }
+
+    .opcion:has(:checked),
+    .opcion[aria-checked="true"],
+    .opcion[aria-pressed="true"],
+    .opcion[data-elegida] {
+        @apply border-brand-400 bg-brand-50 font-semibold text-brand-800;
+    }
+
+    /* Grupo obligatorio sin elegir al intentar guardar (22/11/2026). */
+    .opcion:has([aria-invalid="true"]) {
+        @apply border-rose-300 bg-rose-50/40;
+    }
+
+    .opcion:has(:focus-visible),
+    .opcion:focus-visible {
+        @apply outline-none ring-2 ring-brand-300 ring-offset-2;
+    }
 }

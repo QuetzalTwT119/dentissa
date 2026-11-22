@@ -31,7 +31,7 @@
                             <th class="px-6 py-3.5">Teléfono</th>
                             <th class="px-6 py-3.5">Mensaje</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right">Acciones</th>
+                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -57,7 +57,6 @@
                                                         :titulo="$mensaje->leido ? '¿Marcar el mensaje como sin leer?' : '¿Marcar el mensaje como leído?'"
                                                         :mensaje="'Mensaje de '.$mensaje->nombre.'. Puedes cambiarlo de nuevo cuando quieras.'"
                                                         :boton="$mensaje->leido ? 'Sí, sin leer' : 'Sí, leído'" />
-                                    <span class="mx-0.5 h-5 w-px bg-line" aria-hidden="true"></span>
                                 </x-admin.acciones-fila>
                             </td>
                         </tr>

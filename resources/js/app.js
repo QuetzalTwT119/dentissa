@@ -657,6 +657,21 @@ const mensajeValidacion = (campo) => {
 };
 
 const avisoDeCampo = (campo, crear) => {
+    // Grupo de opciones (radio, por ejemplo x-opcion): un solo aviso al final del
+    // <fieldset>, no uno dentro de cada botón (22/11/2026).
+    if (campo.type === 'radio') {
+        const grupo = campo.closest('fieldset') ?? campo.parentElement;
+        let aviso = grupo.querySelector(':scope > [data-error-cliente]');
+        if (!aviso && crear) {
+            aviso = document.createElement('p');
+            aviso.dataset.errorCliente = '';
+            aviso.className = 'mt-1.5 text-footnote font-medium text-rose-700';
+            aviso.id = `${campo.name || 'opcion'}-error-cliente`;
+            grupo.appendChild(aviso);
+        }
+        return aviso;
+    }
+
     // Si el campo va dentro de un envoltorio (por ejemplo "$" del precio), el aviso va después del envoltorio.
     const ancla = campo.parentElement?.classList.contains('relative') ? campo.parentElement : campo;
     let aviso = ancla.nextElementSibling?.matches?.('[data-error-cliente]') ? ancla.nextElementSibling : null;
@@ -703,8 +718,14 @@ document.addEventListener('invalid', (evento) => {
         return;
     }
     avisoDeCampo(campo, false)?.remove();
-    campo.removeAttribute('aria-invalid');
-    campo.removeAttribute('aria-describedby');
+    // En un grupo de opciones, elegir una corrige a todas.
+    const corregidos = campo.type === 'radio' && campo.form && campo.name
+        ? [...campo.form.querySelectorAll('input[type=radio]')].filter((r) => r.name === campo.name)
+        : [campo];
+    corregidos.forEach((c) => {
+        c.removeAttribute('aria-invalid');
+        c.removeAttribute('aria-describedby');
+    });
 }));
 
 window.Pusher = Pusher;
@@ -1161,3 +1182,65 @@ if (updatesUrl) {
 window.addEventListener('pageshow', () => {
     document.querySelectorAll('[data-filtro-barra] [disabled]').forEach((campo) => { campo.disabled = false; });
 });
+
+/*
+ * "Guardar cambios" solo cuando hay cambios (21/11/2026, global).
+ * Todo formulario de EDICIÓN (método PUT o PATCH con al menos un campo
+ * editable) empieza con su botón de enviar desactivado y se activa en cuanto
+ * algo cambia; si se regresa al valor original, se vuelve a desactivar.
+ * Excepciones:
+ *  - Formularios de un solo botón (activar, confirmar, marcar leído…): no tienen
+ *    campos editables y no se tocan.
+ *  - Si la página volvió con errores de validación, el botón queda activo (lo
+ *    escrito ya difiere de lo guardado).
+ *  - data-sin-esperar-cambios en el <form> lo excluye a mano.
+ */
+(() => {
+    const EDITABLES = 'input:not([type=hidden]):not([type=submit]):not([type=button]):not([type=reset]), select, textarea';
+
+    const huella = (form) => {
+        const partes = [];
+        for (const [nombre, valor] of new FormData(form)) {
+            if (nombre === '_token' || nombre === '_method') continue;
+            partes.push(`${nombre}=${valor instanceof File ? `${valor.name}:${valor.size}` : valor}`);
+        }
+        return partes.join('&');
+    };
+
+    const preparar = (form) => {
+        if (form.dataset.esperaCambios === 'listo' || 'sinEsperarCambios' in form.dataset) return;
+        const metodo = String(form.elements.namedItem('_method')?.value ?? '').toUpperCase();
+        if (!['PUT', 'PATCH'].includes(metodo) || !form.querySelector(EDITABLES)) return;
+
+        // También los botones de fuera que apuntan al formulario (form="…"), como
+        // "Guardar cambios" arriba en Servicios y Tratamientos.
+        const botones = [
+            ...form.querySelectorAll('button[type=submit], button:not([type])'),
+            ...(form.id ? document.querySelectorAll(`button[form="${CSS.escape(form.id)}"]`) : []),
+        ];
+        if (!botones.length) return;
+        form.dataset.esperaCambios = 'listo';
+
+        // Volvió con errores (x-input-error pinta .text-rose-700): se puede reenviar de inmediato.
+        if (form.querySelector('ul.text-rose-700')) return;
+
+        const original = huella(form);
+        const revisar = () => {
+            const sinCambios = huella(form) === original;
+            botones.forEach((boton) => {
+                boton.disabled = sinCambios;
+                boton.title = sinCambios ? 'No hay cambios por guardar' : '';
+            });
+        };
+
+        revisar();
+        form.addEventListener('input', revisar);
+        form.addEventListener('change', revisar);
+        // Campos que Alpine agrega o quita (por ejemplo la cantidad de una oferta).
+        new MutationObserver(revisar).observe(form, { childList: true, subtree: true });
+    };
+
+    // Después de que Alpine pinte sus plantillas (x-if), para tomar el estado real.
+    // setTimeout y no requestAnimationFrame: este último no corre en pestañas en segundo plano.
+    setTimeout(() => document.querySelectorAll('form').forEach(preparar), 0);
+})();

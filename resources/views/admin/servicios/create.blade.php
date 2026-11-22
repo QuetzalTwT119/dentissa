@@ -4,11 +4,6 @@
             title="Nuevo servicio"
             subtitle="Creación de categoría o especialidad de atención."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.servicios.index') }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al listado</x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 

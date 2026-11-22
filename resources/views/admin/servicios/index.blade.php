@@ -28,7 +28,7 @@
                             <th class="px-6 py-3.5">Posición en el carrusel</th>
                             <th class="px-6 py-3.5 text-center">Tratamientos</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right">Acciones</th>
+                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -72,7 +72,7 @@
                                 <x-admin.status-badge :active="$servicio->activo" />
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5">
+                                <div class="flex items-center justify-end gap-1.5 lg:justify-center">
                                     <x-admin.acciones-fila :editar="route('admin.servicios.edit', $servicio)" :eliminar="route('admin.servicios.destroy', $servicio)" que="el servicio" confirmar-titulo="¿Eliminar el servicio «{{ $servicio->nombre }}»?" />
                                 </div>
                             </td>

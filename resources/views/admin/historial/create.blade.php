@@ -4,11 +4,6 @@
             title="Nueva consulta — {{ $paciente->nombre }} {{ $paciente->apellido }}"
             subtitle="Registro de atención médica, diagnóstico y prescripción."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al historial</x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 

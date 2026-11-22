@@ -4,11 +4,6 @@
             title="Nueva imagen"
             subtitle="Carga de fotografía de instalaciones o consultorio."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.galeria.index') }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al listado</x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 

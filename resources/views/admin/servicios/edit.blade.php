@@ -27,7 +27,7 @@
             </div>
             <div class="flex items-center gap-2.5">
                 <a href="{{ route('admin.servicios.index') }}" class="hidden sm:inline-block">
-                    <x-secondary-button type="button">Volver al listado</x-secondary-button>
+                    <x-secondary-button type="button">Cancelar</x-secondary-button>
                 </a>
                 {{-- En escritorio el botón vive arriba: siempre a la vista y sin desplazarse. --}}
                 <x-primary-button form="form-servicio" class="hidden lg:inline-flex" data-guardar-arriba>Guardar cambios</x-primary-button>
