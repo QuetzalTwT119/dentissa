@@ -24,20 +24,20 @@ class UsuarioController extends Controller
 {
     public function index(Request $request): View
     {
-        $validated = $request->validate([
+        $validated = $this->filtros($request, [
             'rol' => ['nullable', Rule::enum(RolUsuario::class)],
             'activo' => ['nullable', 'in:0,1'],
         ]);
 
-        $usuarios = User::when($request->filled('rol'), fn ($q) => $q->where('rol', $validated['rol']))
-            ->when($request->filled('activo'), fn ($q) => $q->where('activo', $validated['activo']))
+        $usuarios = User::when(filled($validated['rol'] ?? null), fn ($q) => $q->where('rol', $validated['rol']))
+            ->when(filled($validated['activo'] ?? null), fn ($q) => $q->where('activo', $validated['activo']))
             ->orderBy('nombre')
             ->paginate($this->paginationPageSize($request))
             ->withQueryString();
 
         return view('admin.usuarios.index', [
             'usuarios' => $usuarios,
-            'filtros' => $request->only(['rol', 'activo']),
+            'filtros' => $validated,
         ]);
     }
 

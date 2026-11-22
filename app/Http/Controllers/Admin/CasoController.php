@@ -17,14 +17,14 @@ class CasoController extends Controller
     public function index(Request $request): View
     {
         // Filtros globales (x-filtro.barra, 22/11/2026). Buscar = texto libre.
-        $filtros = $request->validate([
+        $filtros = $this->filtros($request, [
             'buscar' => ['nullable', 'string', 'max:100'],
             'activo' => ['nullable', 'in:1,0'],
         ]);
 
         return view('admin.casos.index', [
             'casos' => Caso::withCount('imagenes')
-                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->where('titulo', 'like', '%'.$texto.'%'))
+                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->whereContiene('titulo', $texto))
                 ->when(isset($filtros['activo']), fn ($q) => $q->where('activo', $filtros['activo'] === '1'))
                 ->orderBy('orden')
                 ->paginate($this->paginationPageSize($request))

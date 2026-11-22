@@ -16,18 +16,18 @@ class PacienteController extends Controller
 {
     public function index(Request $request): View
     {
-        $validated = $request->validate([
+        $validated = $this->filtros($request, [
             'buscar' => ['nullable', 'string', 'max:100'],
         ]);
 
         $pacientes = Paciente::withCount('historialClinico')
-            ->when($request->filled('buscar'), function ($query) use ($validated) {
+            ->when(filled($validated['buscar'] ?? null), function ($query) use ($validated) {
                 $termino = $validated['buscar'];
                 $query->where(function ($q) use ($termino) {
-                    $q->where('nombre', 'like', "%{$termino}%")
-                        ->orWhere('apellido', 'like', "%{$termino}%")
-                        ->orWhere('email', 'like', "%{$termino}%")
-                        ->orWhere('telefono', 'like', "%{$termino}%");
+                    $q->whereContiene('nombre', $termino)
+                        ->orWhereContiene('apellido', $termino)
+                        ->orWhereContiene('email', $termino)
+                        ->orWhereContiene('telefono', $termino);
                 });
             })
             ->orderBy('nombre')
@@ -36,7 +36,7 @@ class PacienteController extends Controller
 
         return view('admin.pacientes.index', [
             'pacientes' => $pacientes,
-            'filtros' => $request->only('buscar'),
+            'filtros' => $validated,
         ]);
     }
 

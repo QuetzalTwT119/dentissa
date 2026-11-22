@@ -1367,6 +1367,11 @@ administrador y el asistente gestionan los demás cambios desde el panel
   cada tratamiento y la agenda toma la primera vigente en la fecha elegida,
   igual que `Oferta::aplicableA()`. Descuento máximo 99 % (100 % = Gratis).
   `Oferta::motivoNoVisible()` explica en la lista por qué una Publicada no se ve.
+- **Filtros sin sorpresas (22/11/2026).** Las listas leen sus filtros con
+  `Controller::filtros($request, $reglas)`: un valor inválido se ignora (antes
+  `$request->validate()` regresaba a la página anterior). Las búsquedas usan
+  `whereContiene()` / `orWhereContiene()` (macro en `AppServiceProvider`): `%`,
+  `_` y `!` se escapan con `ESCAPE '!'`, igual en MySQL y SQLite.
 - **Filtro global en todas las listas que crecen (22/11/2026).** `x-filtro.barra`
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`

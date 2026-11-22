@@ -29,7 +29,7 @@ class OfertaController extends Controller
     public function index(Request $request): View
     {
         // Filtros globales (x-filtro.barra, 22/11/2026). Buscar = texto libre.
-        $filtros = $request->validate([
+        $filtros = $this->filtros($request, [
             'buscar' => ['nullable', 'string', 'max:100'],
             'estado' => ['nullable', Rule::enum(EstadoOferta::class)],
             'tratamiento' => ['nullable', 'integer'],
@@ -38,7 +38,7 @@ class OfertaController extends Controller
         return view('admin.ofertas.index', [
             // Primero las que esperan revisión.
             'ofertas' => Oferta::with(['tratamiento' => fn ($q) => $q->select('id', 'nombre', 'activo')->withCount(['servicios as servicios_activos' => fn ($s) => $s->where('activo', true)])])
-                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->where('titulo', 'like', '%'.$texto.'%'))
+                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->whereContiene('titulo', $texto))
                 ->when($filtros['estado'] ?? null, fn ($q, $estado) => $q->where('estado', $estado))
                 ->when($filtros['tratamiento'] ?? null, fn ($q, $id) => $q->where('id_tratamiento', $id))
                 ->conLugaresUsados()

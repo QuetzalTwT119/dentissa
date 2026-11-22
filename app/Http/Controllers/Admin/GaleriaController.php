@@ -16,14 +16,14 @@ class GaleriaController extends Controller
     public function index(Request $request): View
     {
         // Filtros globales (x-filtro.barra, 22/11/2026). Buscar = texto libre.
-        $filtros = $request->validate([
+        $filtros = $this->filtros($request, [
             'buscar' => ['nullable', 'string', 'max:100'],
             'activa' => ['nullable', 'in:1,0'],
         ]);
 
         return view('admin.galeria.index', [
             'imagenes' => Imagen::where('tipo', TipoImagen::Galeria)
-                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->where('titulo', 'like', '%'.$texto.'%'))
+                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->whereContiene('titulo', $texto))
                 ->when(isset($filtros['activa']), fn ($q) => $q->where('activa', $filtros['activa'] === '1'))
                 ->orderBy('orden')
                 ->paginate($this->paginationPageSize($request))

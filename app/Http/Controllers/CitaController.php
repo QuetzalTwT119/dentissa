@@ -39,14 +39,14 @@ class CitaController extends Controller
             return $this->semana($request);
         }
 
-        $validated = $request->validate([
+        $validated = $this->filtros($request, [
             'fecha' => ['nullable', 'date'],
             'estado' => ['nullable', Rule::enum(EstadoCita::class)],
             'buscar' => ['nullable', 'string', 'max:100'],
             'todas' => ['nullable', 'boolean'],
         ]);
 
-        $filtros = $request->only(['fecha', 'estado', 'buscar']);
+        $filtros = array_intersect_key($validated, array_flip(['fecha', 'estado', 'buscar']));
         $estado = $validated['estado'] ?? null;
 
         if (filled($validated['buscar'] ?? null) || $request->boolean('todas')) {
@@ -84,16 +84,15 @@ class CitaController extends Controller
             ->when($estado, fn ($q) => $q->where('estado', $estado))
             ->when($terminos !== [], function ($q) use ($terminos) {
                 foreach ($terminos as $termino) {
-                    $coincidencia = '%'.$termino.'%';
 
-                    $q->where(function ($buscar) use ($coincidencia) {
+                    $q->where(function ($buscar) use ($termino) {
                         $buscar->whereHas('paciente', fn ($paciente) => $paciente
-                            ->where('nombre', 'like', $coincidencia)
-                            ->orWhere('apellido', 'like', $coincidencia)
-                            ->orWhere('telefono', 'like', $coincidencia)
-                            ->orWhere('email', 'like', $coincidencia))
-                            ->orWhereHas('servicio', fn ($servicio) => $servicio->where('nombre', 'like', $coincidencia))
-                            ->orWhereHas('tratamiento', fn ($tratamiento) => $tratamiento->where('nombre', 'like', $coincidencia));
+                            ->whereContiene('nombre', $termino)
+                            ->orWhereContiene('apellido', $termino)
+                            ->orWhereContiene('telefono', $termino)
+                            ->orWhereContiene('email', $termino))
+                            ->orWhereHas('servicio', fn ($servicio) => $servicio->whereContiene('nombre', $termino))
+                            ->orWhereHas('tratamiento', fn ($tratamiento) => $tratamiento->whereContiene('nombre', $termino));
                     });
                 }
             });

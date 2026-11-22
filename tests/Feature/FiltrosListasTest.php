@@ -99,4 +99,54 @@ class FiltrosListasTest extends TestCase
         $this->assertStringContainsString('Recepción', $html);
         $this->assertStringNotContainsString('Consultorio 2', $html);
     }
+
+    /**
+     * QA de filtros (22/11/2026): un valor inválido (?estado=xyz) o una búsqueda
+     * de más de 100 caracteres regresaba a la página anterior sin explicar nada.
+     * Ahora se ignora ese filtro y la lista se muestra.
+     */
+    public function test_un_filtro_invalido_se_ignora_y_la_lista_se_muestra(): void
+    {
+        $casos = [
+            'admin.ofertas.index' => ['estado' => 'xyz', 'buscar' => str_repeat('x', 101)],
+            'admin.tratamientos.index' => ['activo' => '7', 'buscar' => str_repeat('x', 101)],
+            'admin.usuarios.index' => ['rol' => 'xyz', 'activo' => '9'],
+            'admin.testimonios.index' => ['estado' => 'xyz'],
+            'admin.mensajes.index' => ['leido' => 'xyz'],
+            'admin.pacientes.index' => ['buscar' => str_repeat('x', 101)],
+            'admin.preguntas-frecuentes.index' => ['activa' => 'xyz'],
+            'admin.casos.index' => ['activo' => 'xyz'],
+            'admin.galeria.index' => ['activa' => 'xyz'],
+            'admin.auditoria.index' => ['desde' => 'no-es-fecha', 'usuario_id' => 'abc'],
+            'citas.index' => ['estado' => 'xyz', 'fecha' => 'no-es-fecha'],
+            'notificaciones.index' => ['estado' => 'xyz'],
+        ];
+
+        foreach ($casos as $ruta => $filtros) {
+            $this->actingAs($this->admin)->get(route($ruta, $filtros))->assertOk();
+        }
+    }
+
+    /** QA: "%" y "_" eran comodines de la base de datos y buscar "%" devolvía todo. */
+    public function test_porcentaje_y_guion_bajo_se_buscan_tal_cual(): void
+    {
+        $base = ['descripcion' => 'Para pacientes nuevos y de siempre.', 'tipo' => 'descuento', 'tipo_valor' => 'porcentaje', 'valor_descuento' => 10,
+            'fecha_inicio' => now()->toDateString(), 'fecha_fin' => now()->addMonth()->toDateString(), 'estado' => 'activa'];
+        Oferta::create($base + ['titulo' => 'Limpieza al 10% menos']);
+        Oferta::create($base + ['titulo' => 'Blanqueamiento navideño']);
+
+        $html = $this->ver('admin.ofertas.index', ['buscar' => '%']);
+        $this->assertStringContainsString('Limpieza al 10% menos', $html);
+        $this->assertStringNotContainsString('Blanqueamiento navideño', $html);
+
+        $html = $this->ver('admin.ofertas.index', ['buscar' => '_']);
+        $this->assertStringNotContainsString('Limpieza al 10% menos', $html);
+        $this->assertStringNotContainsString('Blanqueamiento navideño', $html);
+
+        \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'López', 'telefono' => '5551112222', 'email' => 'ana_lopez@example.test']);
+        \App\Models\Paciente::create(['nombre' => 'Luis', 'apellido' => 'Pérez', 'telefono' => '5553334444', 'email' => 'luisperez@example.test']);
+        $html = $this->ver('admin.pacientes.index', ['buscar' => '_']);
+        $this->assertStringContainsString('ana_lopez@example.test', $html);
+        $this->assertStringNotContainsString('luisperez@example.test', $html);
+    }
 }

@@ -21,6 +21,7 @@ use App\Observers\AuditoriaObserver;
 use App\Services\Respaldo\DestinoRespaldo;
 use App\Services\Respaldo\GoogleDriveDestino;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
@@ -61,6 +62,20 @@ class AppServiceProvider extends ServiceProvider
         // Teléfono, WhatsApp, correo y dirección que la doctora cambia en el panel
         // (22/11/2026) se ponen encima de los de .env.
         DatosConsultorio::aplicarAConfiguracion();
+
+        // Búsqueda de texto de las listas (22/11/2026): "%" y "_" se buscan tal
+        // cual. Con LIKE normal eran comodines y buscar "%" devolvía todo.
+        // El escape "!" funciona igual en MySQL y en SQLite (pruebas).
+        QueryBuilder::macro('whereContiene', function (string $columna, string $texto, string $boolean = 'and') {
+            /** @var QueryBuilder $this */
+            $patron = '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $texto).'%';
+
+            return $this->whereRaw($this->getGrammar()->wrap($columna)." like ? escape '!'", [$patron], $boolean);
+        });
+        QueryBuilder::macro('orWhereContiene', function (string $columna, string $texto) {
+            /** @var QueryBuilder $this */
+            return $this->whereContiene($columna, $texto, 'or');
+        });
 
         $this->configurarLimiteAgendaPublica();
     }

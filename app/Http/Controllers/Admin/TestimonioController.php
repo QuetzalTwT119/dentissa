@@ -21,19 +21,19 @@ class TestimonioController extends Controller
      */
     public function index(Request $request): View
     {
-        $validated = $request->validate([
+        $validated = $this->filtros($request, [
             'estado' => ['nullable', Rule::enum(EstadoTestimonio::class)],
         ]);
 
         $testimonios = Testimonio::with('paciente:id,nombre,apellido')
-            ->when($request->filled('estado'), fn ($q) => $q->where('estado', $validated['estado']))
+            ->when(filled($validated['estado'] ?? null), fn ($q) => $q->where('estado', $validated['estado']))
             ->orderByDesc('created_at')
             ->paginate($this->paginationPageSize($request))
             ->withQueryString();
 
         return view('admin.testimonios.index', [
             'testimonios' => $testimonios,
-            'filtros' => $request->only('estado'),
+            'filtros' => $validated,
         ]);
     }
 

@@ -12,7 +12,7 @@ class NotificacionSistemaController extends Controller
 {
     public function index(Request $request): View
     {
-        $filtros = $request->validate([
+        $filtros = $this->filtros($request, [
             'estado' => ['nullable', 'in:todas,pendientes,leidas'],
         ]);
 
