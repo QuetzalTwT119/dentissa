@@ -98,14 +98,14 @@ paso a paso" y dos formas de contacto:
 - **Agendar mi valoración** abre la agenda en línea.
 - **¿Prefieres llamar?** muestra el teléfono del consultorio; en el celular,
   al tocarlo se marca directamente. Es el mismo número del pie de página
-  (`DENTISSA_TELEFONO`).
+  (lo cambia la doctora en **Configuración → Datos del consultorio**).
 - Debajo aparece si el consultorio está abierto en este momento, por ejemplo
   "Abierto hoy hasta las 18:00" o "Cerrado ahora · abre el lunes a las 8:00".
   Se calcula con la hora de la clínica a partir de **Horarios**: si el
   administrador cambia el horario, la portada lo refleja sin más pasos.
   El **pie de página** muestra también el horario de la semana (por ejemplo
   "Lunes a viernes de 8:00 a 18:00 hrs"); los días cerrados no aparecen.
-  En **Panel › Horarios**, "Citas a la vez" es cuántos pacientes se pueden
+  En **Configuración → Horarios de atención**, "Citas a la vez" es cuántos pacientes se pueden
   atender a la misma hora (1 si hay un solo sillón o dentista).
 
 Más abajo, **Tratamientos para tu salud y armonía** muestra las especialidades
@@ -427,6 +427,15 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
   la lista) y no se ve en la portada. Revísala y toca **✓ Publicar** en su
   fila; el sistema pide confirmar. Una vencida no se puede publicar hasta
   cambiar "Válida hasta".
+- **Configuración** (menú del panel, solo administradores) es una sola página
+  con dos bloques, cada uno con su botón de guardar:
+  - **Datos del consultorio:** teléfono, WhatsApp de contacto ("Es el mismo
+    número que el teléfono" o uno distinto), correo y dirección. Lo que se
+    guarde se ve de inmediato en la portada, el pie, "¿Prefieres llamar?", la
+    página del recordatorio y la respuesta automática del bot. Úsalo si se
+    pierde o cambia el celular. Pide confirmación y queda en Auditoría. El
+    número del bot de WhatsApp no se cambia aquí (se configura en Meta).
+  - **Horarios de atención:** los días, las horas y las citas a la vez.
 - **Guardar cambios** (en cualquier pantalla de editar) aparece apagado hasta
   que cambias algo; si regresas todo como estaba, se vuelve a apagar. Al
   guardar, el sistema sigue pidiendo confirmar. Para salir sin guardar usa

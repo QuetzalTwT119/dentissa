@@ -42,13 +42,15 @@ class HorariosAtencionTest extends TestCase
         $this->get('/')->assertOk()->assertDontSee('Sábado de 9:00');
     }
 
-    public function test_la_pantalla_es_compacta_con_guardar_arriba_e_interruptor(): void
+    /** 22/11/2026: Horarios es un bloque de Configuración, con su botón al final del bloque. */
+    public function test_la_pantalla_es_compacta_con_guardar_e_interruptor(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
 
-        $this->actingAs($admin)->get(route('admin.horarios.edit'))
+        $this->actingAs($admin)->get(route('admin.configuracion'))
             ->assertOk()
-            ->assertSee('form="form-horarios"', false)
+            ->assertSee('id="form-horarios"', false)
+            ->assertSee('Guardar horarios')
             ->assertSee('role="switch"', false)
             ->assertSee('Citas a la vez')
             ->assertDontSee('Capacidad simultánea')
@@ -60,7 +62,7 @@ class HorariosAtencionTest extends TestCase
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
 
         // Índice 1 = lunes: abre a las 18 y "cierra" a las 8.
-        $this->actingAs($admin)->from(route('admin.horarios.edit'))
+        $this->actingAs($admin)->from(route('admin.configuracion'))
             ->put(route('admin.horarios.update'), ['dias' => $this->dias([1 => ['hora_apertura' => 18, 'hora_cierre' => 8]])])
             ->assertSessionHasErrors('dias.1.hora_cierre');
 
@@ -70,6 +72,6 @@ class HorariosAtencionTest extends TestCase
         $this->actingAs($admin)
             ->put(route('admin.horarios.update'), ['dias' => $this->dias([0 => ['hora_apertura' => 18, 'hora_cierre' => 8]])])
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('admin.horarios.edit'));
+            ->assertRedirect(route('admin.configuracion').'#horarios');
     }
 }

@@ -1335,6 +1335,30 @@ administrador y el asistente gestionan los demás cambios desde el panel
   Desde el 22/11/2026 el valor por defecto es el celular del consultorio,
   **755 113 1833** (antes 755 102 0089); es distinto del número del bot de
   WhatsApp, como pide el diagnóstico remoto.
+- **Datos del consultorio editables (22/11/2026).** Tabla `datos_consultorio`
+  (una fila: `telefono`, `whatsapp`, `correo`, `direccion`), modelo
+  `DatosConsultorio` con caché (`datos_consultorio`, se borra al guardar).
+  `AppServiceProvider::boot()` llama a `DatosConsultorio::aplicarAConfiguracion()`,
+  que pone lo guardado encima de `config('dentissa.contacto')` (incluido
+  `telefono_enlace`; sin WhatsApp propio usa el teléfono con +52). Un campo
+  vacío o la tabla sin migrar dejan los valores de `.env`. Guardar:
+  `PUT admin.consultorio.update` (solo admin, `registrarCambio`
+  `consultorio.actualizado` con valores antes/después).
+- **Las pruebas nunca usan credenciales reales (22/11/2026).** `tests/TestCase.php`
+  pone en `null` el token y el número de WhatsApp, el token de Telegram y las
+  credenciales de Gmail, y llama a `Http::preventStrayRequests()`: una llamada
+  HTTP sin `Http::fake()` hace fallar la prueba. Antes, con las credenciales
+  reales en `.env`, 10 pruebas (7 archivos) mandaron WhatsApp de verdad a
+  teléfonos de prueba; 3 de recordatorios usaban números al azar.
+- **Barra de desplazamiento del panel (22/11/2026).** En PC `.panel-contenido`
+  con `max-w-*` ocupa todo el ancho y centra su contenido con relleno lateral
+  (`--ancho-contenido`): la barra queda en la orilla de la ventana y no en
+  medio, junto a las tarjetas.
+- **Configuración en una sola página (22/11/2026).** `GET admin.configuracion`
+  (`ConfiguracionController`) muestra `admin/configuracion/_consultorio` y
+  `_horarios`, cada uno con su `<form>`; las rutas `admin.horarios.edit` y
+  `admin.consultorio.edit` redirigen a `/admin/configuracion#horarios` y
+  `#consultorio`. En el menú, "Configuración" es un enlace directo.
 - Los datos del paciente se vinculan por teléfono y correo, y el formulario
   público valida los campos.
 - Como el formulario es público, `POST /agendar-cita` usa el limitador

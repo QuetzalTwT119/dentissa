@@ -63,10 +63,8 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                     <x-dropdown-link :href="route('admin.preguntas-frecuentes.index')">Preguntas frecuentes</x-dropdown-link>
                 </x-nav-dropdown>
 
-                <x-nav-dropdown :active="request()->routeIs('admin.horarios.*')">
-                    <x-slot name="label">Configuración</x-slot>
-                    <x-dropdown-link :href="route('admin.horarios.edit')">Horarios</x-dropdown-link>
-                </x-nav-dropdown>
+                {{-- Configuración: una sola página con todos los ajustes (22/11/2026). --}}
+                <x-nav-link :href="route('admin.configuracion')" :active="request()->routeIs('admin.configuracion')">Configuración</x-nav-link>
             @endif
         </div>
 
@@ -182,7 +180,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 <x-responsive-nav-link :href="route('admin.casos.index')" :active="request()->routeIs('admin.casos.*')">Casos</x-responsive-nav-link>
                 @endif
                 <x-responsive-nav-link :href="route('admin.preguntas-frecuentes.index')" :active="request()->routeIs('admin.preguntas-frecuentes.*')">Preguntas frecuentes</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.horarios.edit')" :active="request()->routeIs('admin.horarios.*')">Horarios</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.configuracion')" :active="request()->routeIs('admin.configuracion')">Configuración</x-responsive-nav-link>
             @endif
         </div>
         <div class="mt-4 rounded-2xl border border-line bg-white p-3">
