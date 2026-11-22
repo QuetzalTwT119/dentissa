@@ -395,7 +395,8 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 
 ## 3.2 Promociones y testimonios en la portada
 
-- En la portada, sección **Ofertas**, solo aparecen las ofertas **Publicadas**
+- En la portada, sección **Ofertas** (un carrusel que se desliza, hasta 24,
+  primero las que vencen antes), solo aparecen las ofertas **Publicadas**
   dentro de sus fechas (beneficio, tratamiento, imagen si tiene, vigencia y
   lugares que quedan). Las que están **En revisión** u **Ocultas** solo se ven
   en el panel.

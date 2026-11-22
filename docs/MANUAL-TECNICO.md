@@ -1359,6 +1359,13 @@ administrador y el asistente gestionan los demás cambios desde el panel
   tabla se desplazaba por dentro).
   En los botones redondos de solo ícono, mientras se envía, `.btn-spinner`
   ocupa el lugar del ícono (antes quedaba apilado encima).
+- **Ofertas en la portada y la agenda (22/11/2026, QA con 21 ofertas).**
+  `Oferta::paraPortada()` es la única regla de la portada (publicadas, con
+  lugar, las que vencen primero, hasta `MAXIMO_PORTADA` = 24) y se muestra
+  en el carrusel global `carruselServicios` con la descripción completa.
+  `CitaPublicaController::ofertasPorTratamiento()` manda TODAS las ofertas de
+  cada tratamiento y la agenda toma la primera vigente en la fecha elegida,
+  igual que `Oferta::aplicableA()`. Descuento máximo 99 % (100 % = Gratis).
 - **"Auditoría" se llama "Control de actividades" (22/11/2026).** Solo cambia lo
   que ve el usuario (menú, título, mensajes y manual de usuario); la ruta
   `admin.auditoria.index`, la tabla `logs_auditoria` y `AuditoriaService` siguen igual.
