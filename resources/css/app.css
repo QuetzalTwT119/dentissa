@@ -830,7 +830,10 @@
  */
 .tabla-larga table > thead > tr > :first-child {
     z-index: 3;
-    background-color: rgb(var(--c-shell));
+    /* El mismo tono que el resto del encabezado (bg-shell/50 sobre blanco), pero
+       opaco para tapar lo que pasa por debajo al deslizar de lado (22/11/2026:
+       antes era shell sólido y la primera celda se veía de otro color). */
+    background-color: color-mix(in srgb, rgb(var(--c-shell)) 50%, #fff);
 }
 
 /* La celda fija toma el mismo tono que la fila al pasar el mouse (antes se quedaba blanca). */
