@@ -6,8 +6,12 @@
                            que="el tratamiento" :nombre="$t->nombre">
         (acciones extra opcionales, p. ej. Aprobar)
     </x-admin.acciones-fila>
+
+    bloqueoEliminar (22/11/2026): motivo por el que NO se puede eliminar (p. ej.
+    citas activas). En lugar de la papelera sale ⚠ con el motivo; antes salía
+    la papelera y el servidor rechazaba la eliminación.
 --}}
-@props(['editar' => null, 'eliminar' => null, 'que' => 'el registro', 'nombre' => null, 'confirmarTitulo' => null])
+@props(['editar' => null, 'eliminar' => null, 'que' => 'el registro', 'nombre' => null, 'confirmarTitulo' => null, 'bloqueoEliminar' => null])
 
 @php
     $quien = trim($que.($nombre ? ' «'.$nombre.'»' : ''));
@@ -26,7 +30,11 @@
         </a>
     @endif
 
-    @if ($eliminar)
+    @if ($eliminar && $bloqueoEliminar)
+        <span class="grid h-11 w-11 place-items-center lg:h-9 lg:w-9" data-no-eliminable>
+            <x-ayuda tono="aviso" etiqueta="No se puede eliminar">{{ $bloqueoEliminar }}</x-ayuda>
+        </span>
+    @elseif ($eliminar)
         <form method="POST" action="{{ $eliminar }}" class="inline-flex"
               data-confirmar="Esta acción no se puede deshacer."
               data-confirmar-titulo="{{ $confirmarTitulo ?? '¿Eliminar '.$quien.'?' }}"

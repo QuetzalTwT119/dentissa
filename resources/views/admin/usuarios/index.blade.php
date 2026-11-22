@@ -71,21 +71,25 @@ $rolClase = [
                                 <x-admin.status-badge :active="$usuario->activo" />
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5 lg:justify-center">
-                                    <x-admin.acciones-fila :editar="route('admin.usuarios.edit', $usuario)" que="el usuario" />
-                                    <form method="POST" action="{{ route('admin.usuarios.activo.toggle', $usuario) }}"
-                                          data-confirmar="{{ $usuario->activo ? 'No podrá iniciar sesión hasta que lo vuelvas a activar.' : 'Podrá volver a iniciar sesión con su contraseña.' }}"
-                                          data-confirmar-titulo="{{ $usuario->activo ? '¿Desactivar' : '¿Activar' }} a {{ $usuario->nombre }} {{ $usuario->apellido }}?"
-                                          data-confirmar-boton="{{ $usuario->activo ? 'Sí, desactivar' : 'Sí, activar' }}"
-                                          data-confirmar-tono="{{ $usuario->activo ? 'peligro' : 'normal' }}">
-                                        @csrf
-                                        @method('patch')
-                                        <button type="submit" title="{{ $usuario->activo ? 'Desactivar' : 'Activar' }}" aria-label="{{ $usuario->activo ? 'Desactivar usuario' : 'Activar usuario' }}"
-                                                class="rounded-xl p-2 transition {{ $usuario->activo ? 'text-rose-600 hover:bg-rose-50 hover:text-rose-800' : 'text-sage-600 hover:bg-sage-50 hover:text-sage-700' }}">
-                                            <x-icon name="power" />
-                                        </button>
-                                    </form>
-                                </div>
+                                {{--
+                                    22/11/2026: el activar/desactivar usa el botón global (antes era cuadrado y
+                                    más chico) y en la cuenta propia sale ⚠: el servidor no deja
+                                    desactivarse a uno mismo y antes mostraba una página de error.
+                                --}}
+                                <x-admin.acciones-fila :editar="route('admin.usuarios.edit', $usuario)" que="el usuario" :nombre="$usuario->nombre.' '.$usuario->apellido">
+                                    @if ($usuario->is(auth()->user()))
+                                        <span class="grid h-11 w-11 place-items-center lg:h-9 lg:w-9" data-cuenta-propia>
+                                            <x-ayuda tono="info" etiqueta="Es tu cuenta">No puedes desactivar tu propia cuenta. Otro administrador puede hacerlo.</x-ayuda>
+                                        </span>
+                                    @else
+                                        <x-admin.boton-fila :action="route('admin.usuarios.activo.toggle', $usuario)" icono="power"
+                                                            :color="$usuario->activo ? 'rose' : 'sage'" :tono="$usuario->activo ? 'peligro' : 'normal'"
+                                                            :etiqueta="($usuario->activo ? 'Desactivar a ' : 'Activar a ').$usuario->nombre.' '.$usuario->apellido"
+                                                            :titulo="($usuario->activo ? '¿Desactivar a ' : '¿Activar a ').$usuario->nombre.' '.$usuario->apellido.'?'"
+                                                            :mensaje="$usuario->activo ? 'No podrá iniciar sesión hasta que lo vuelvas a activar.' : 'Podrá volver a iniciar sesión con su contraseña.'"
+                                                            :boton="$usuario->activo ? 'Sí, desactivar' : 'Sí, activar'" />
+                                    @endif
+                                </x-admin.acciones-fila>
                             </td>
                         </tr>
                     @empty

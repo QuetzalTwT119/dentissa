@@ -112,15 +112,10 @@ class OfertaController extends Controller
 
     public function publicar(Request $request, Oferta $oferta, AuditoriaService $auditoria): RedirectResponse
     {
-        // Ligada a un tratamiento que ya no se agenda en línea: no se publica (no se podría usar).
-        if ($oferta->id_tratamiento && ! Tratamiento::agendables()->whereKey($oferta->id_tratamiento)->exists()) {
+        // Misma regla que decide si la lista muestra ✓ (Oferta::motivoNoPublicable()).
+        if ($motivo = $oferta->motivoNoPublicable()) {
             return Redirect::route('admin.ofertas.index')
-                ->with('error', "La oferta «{$oferta->titulo}» es de un tratamiento inactivo. Actívalo en Catálogo o cambia el tratamiento antes de publicarla.");
-        }
-
-        if ($oferta->fecha_fin->lt(today())) {
-            return Redirect::route('admin.ofertas.index')
-                ->with('error', "La oferta «{$oferta->titulo}» ya venció. Cambia «Válida hasta» antes de publicarla.");
+                ->with('error', "La oferta «{$oferta->titulo}» no se puede publicar: {$motivo}");
         }
 
         $auditoria->registrarCambio($request, 'oferta.publicada', $oferta, ['estado'], fn () => $oferta->update(['estado' => EstadoOferta::Activa]));

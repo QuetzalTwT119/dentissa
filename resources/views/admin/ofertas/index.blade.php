@@ -86,8 +86,18 @@
                             <td class="px-6 py-4 text-right">
                                 {{-- Mismo grupo que Editar/Eliminar, sin separador (21/11/2026). --}}
                                 <x-admin.acciones-fila :editar="route('admin.ofertas.edit', $oferta)" :eliminar="route('admin.ofertas.destroy', $oferta)" que="la oferta" confirmar-titulo="¿Eliminar la oferta «{{ $oferta->titulo }}»?">
-                                    {{-- En revisión u oculta: ✓ publica. Publicada: ocultar (sigue aquí para reactivarla). --}}
-                                    @if ($oferta->estado !== \App\Enums\EstadoOferta::Activa)
+                                    {{--
+                                        En revisión u oculta: ✓ publica, solo si se puede (22/11/2026: antes
+                                        salía ✓ en ofertas vencidas o de tratamiento inactivo y el servidor
+                                        las rechazaba). Si no se puede, ⚠ en su lugar dice por qué.
+                                        Publicada: ocultar (sigue aquí para reactivarla).
+                                    --}}
+                                    @php $noPublicable = $oferta->estado !== \App\Enums\EstadoOferta::Activa ? $oferta->motivoNoPublicable() : null; @endphp
+                                    @if ($noPublicable)
+                                        <span class="grid h-11 w-11 place-items-center lg:h-9 lg:w-9" data-no-publicable>
+                                            <x-ayuda tono="aviso" etiqueta="No se puede publicar">{{ $noPublicable }}</x-ayuda>
+                                        </span>
+                                    @elseif ($oferta->estado !== \App\Enums\EstadoOferta::Activa)
                                         <x-admin.boton-fila :action="route('admin.ofertas.publicar', $oferta)" icono="check" color="sage"
                                                             :etiqueta="'Publicar la oferta '.$oferta->titulo"
                                                             titulo="¿Publicar «{{ $oferta->titulo }}»?"

@@ -19,7 +19,8 @@ class ServicioController extends Controller
     public function index(Request $request): View
     {
         return view('admin.servicios.index', [
-            'servicios' => Servicio::withCount('tratamientos')->orderBy('orden')->orderBy('id')->paginate($this->paginationPageSize($request)),
+            // citas_activas: con alguna, no se puede eliminar (22/11/2026, la lista lo dice).
+            'servicios' => Servicio::withCount(['tratamientos', 'citas as citas_activas' => fn ($c) => $c->whereNotIn('estado', [\App\Enums\EstadoCita::Cancelada, \App\Enums\EstadoCita::Completada, \App\Enums\EstadoCita::NoAsistio])])->orderBy('orden')->orderBy('id')->paginate($this->paginationPageSize($request)),
         ]);
     }
 

@@ -38,7 +38,9 @@ class FiltrosListasTest extends TestCase
 
     public function test_las_listas_que_crecen_tienen_el_filtro_global(): void
     {
-        foreach (['admin.ofertas.index', 'admin.tratamientos.index', 'admin.preguntas-frecuentes.index', 'admin.casos.index', 'admin.galeria.index'] as $ruta) {
+        // Notificaciones también (22/11/2026: antes usaba pestañas en lugar del menú).
+        $this->assertStringNotContainsString('aria-label="Filtrar notificaciones" class="flex', $this->ver('notificaciones.index'));
+        foreach (['notificaciones.index', 'admin.ofertas.index', 'admin.tratamientos.index', 'admin.preguntas-frecuentes.index', 'admin.casos.index', 'admin.galeria.index'] as $ruta) {
             $this->assertStringContainsString('data-filtro-barra', $this->ver($ruta), $ruta);
         }
     }

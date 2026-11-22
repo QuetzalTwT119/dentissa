@@ -1367,6 +1367,11 @@ administrador y el asistente gestionan los demás cambios desde el panel
   cada tratamiento y la agenda toma la primera vigente en la fecha elegida,
   igual que `Oferta::aplicableA()`. Descuento máximo 99 % (100 % = Gratis).
   `Oferta::motivoNoVisible()` explica en la lista por qué una Publicada no se ve.
+- **Acciones posibles (22/11/2026).** Ningún botón de fila ofrece algo que el
+  servidor rechace: `Oferta::motivoNoPublicable()` (lista y `publicar()`),
+  `x-admin.acciones-fila` con `bloqueo-eliminar` (Servicios y Tratamientos con
+  `citas_activas`) y la cuenta propia en Usuarios. En su lugar, `x-ayuda` ⚠ con el
+  motivo (`AccionesPosiblesTest`).
 - **Filtros sin sorpresas (22/11/2026).** Las listas leen sus filtros con
   `Controller::filtros($request, $reglas)`: un valor inválido se ignora (antes
   `$request->validate()` regresaba a la página anterior). Las búsquedas usan

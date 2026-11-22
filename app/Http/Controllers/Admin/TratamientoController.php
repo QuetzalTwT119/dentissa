@@ -24,7 +24,9 @@ class TratamientoController extends Controller
         ]);
 
         return view('admin.tratamientos.index', [
+            // citas_activas: con alguna, no se puede eliminar (22/11/2026, la lista lo dice).
             'tratamientos' => Tratamiento::query()
+                ->withCount(['citas as citas_activas' => fn ($c) => $c->whereNotIn('estado', [\App\Enums\EstadoCita::Cancelada, \App\Enums\EstadoCita::Completada, \App\Enums\EstadoCita::NoAsistio])])
                 ->with(['servicios' => fn ($q) => $q->select('servicios.id', 'servicios.nombre', 'servicios.activo')
                     ->withCount(['tratamientos as tratamientos_activos_count' => fn ($t) => $t->where('tratamientos.activo', true)])])
                 ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->whereContiene('nombre', $texto))

@@ -167,6 +167,24 @@ class Oferta extends Model
         };
     }
 
+    /**
+     * Por qué NO se puede publicar; null si sí (22/11/2026). Una sola regla para
+     * el botón ✓ de la lista y para OfertaController::publicar(): antes la lista
+     * ofrecía ✓ en ofertas que el servidor después rechazaba.
+     */
+    public function motivoNoPublicable(): ?string
+    {
+        if ($this->fecha_fin->lt(today())) {
+            return 'Ya venció. Cambia «Válida hasta» antes de publicarla.';
+        }
+
+        if ($this->id_tratamiento && ! Tratamiento::agendables()->whereKey($this->id_tratamiento)->exists()) {
+            return 'Su tratamiento está inactivo. Actívalo en Catálogo o cambia el tratamiento antes de publicarla.';
+        }
+
+        return null;
+    }
+
     /** Citas que ocupan un lugar: todas menos canceladas e inasistencias (esas lo liberan). */
     public const ESTADOS_QUE_LIBERAN = [EstadoCita::Cancelada, EstadoCita::NoAsistio];
 

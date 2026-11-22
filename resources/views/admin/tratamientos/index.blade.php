@@ -96,7 +96,7 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5 lg:justify-center">
-                                    <x-admin.acciones-fila :editar="route('admin.tratamientos.edit', $tratamiento)" :eliminar="route('admin.tratamientos.destroy', $tratamiento)" que="el tratamiento" confirmar-titulo="¿Eliminar el tratamiento «{{ $tratamiento->nombre }}»?" />
+                                    <x-admin.acciones-fila :editar="route('admin.tratamientos.edit', $tratamiento)" :eliminar="route('admin.tratamientos.destroy', $tratamiento)" :bloqueo-eliminar="$tratamiento->citas_activas ? 'Tiene '.$tratamiento->citas_activas.' '.($tratamiento->citas_activas === 1 ? 'cita activa' : 'citas activas').'. Puedes desactivarlo en lugar de eliminarlo.' : null" que="el tratamiento" confirmar-titulo="¿Eliminar el tratamiento «{{ $tratamiento->nombre }}»?" />
                                 </div>
                             </td>
                         </tr>
