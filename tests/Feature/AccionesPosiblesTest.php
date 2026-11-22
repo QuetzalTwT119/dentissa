@@ -161,7 +161,9 @@ class AccionesPosiblesTest extends TestCase
         ]);
 
         $html = $this->actingAs($this->admin)->get(route('admin.auditoria.index'))->assertOk()->getContent();
-        $this->assertDoesNotMatchRegularExpression('~font-mono text-ink font-semibold">null<~', $html);
-        $this->assertStringContainsString('font-mono text-ink font-semibold">—<', $html);
+        $this->assertStringNotContainsString('>null<', $html);
+        // 22/11/2026: valores en palabras (DetalleBitacora), ya no rutas ni true/false.
+        $this->assertStringContainsString('>Sin foto<', $html);
+        $this->assertStringContainsString('>Foto subida<', $html);
     }
 }

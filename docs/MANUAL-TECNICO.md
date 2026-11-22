@@ -1381,6 +1381,14 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **"Ver cambios" legible (H-49, 22/11/2026).** `App\Support\DetalleBitacora::filas($registro)`
+  devuelve `[campo, antes, despues]` en palabras: con antes y después solo lo que cambió;
+  oculta campos internos (`icono`, `id`, marcas de tiempo); nombres por tabla
+  (`servicios.activo` = "Disponible"); ids → nombres con una consulta por tipo y página
+  (`reiniciar()` al inicio de la vista). La vista abre el detalle como `<tr colspan=5>`
+  debajo del evento (Alpine `abiertos` en la tarjeta), con la caja fija a la izquierda
+  (`sticky`) para leerse en celular sin deslizar la tabla. Al agregar un campo nuevo a la
+  bitácora, darle nombre en `DetalleBitacora::CAMPOS` y, si es una lista de opciones, en `VALORES`.
 - **Servicio: un formulario y un nombre (H-48, 22/11/2026).** `create` y `edit` incluyen
   `admin/servicios/_formulario` (`$esNuevo = ! $servicio->exists`); `create()` manda
   `new Servicio(['activo' => true])` y los tratamientos agendables (`tratamientosAgendables()`),
