@@ -51,19 +51,21 @@
                                 {{ $paciente->telefono ?? '—' }}
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span class="inline-flex items-center justify-center min-w-[2.25rem] rounded-full bg-cream px-2.5 py-1 text-xs font-semibold text-ink border border-line">
+                                {{-- El número también abre el historial (22/11/2026). --}}
+                                <a href="{{ route('admin.pacientes.historial.index', $paciente) }}"
+                                   title="Ver las consultas de {{ $paciente->nombre }}" aria-label="{{ $paciente->historial_clinico_count }} {{ $paciente->historial_clinico_count === 1 ? 'consulta' : 'consultas' }}: ver el historial de {{ $paciente->nombre }}"
+                                   class="inline-flex min-h-11 min-w-[2.75rem] items-center justify-center rounded-full border border-line bg-cream px-2.5 text-xs font-semibold text-ink transition hover:border-brand-300 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:min-h-8" data-consultas>
                                     {{ number_format($paciente->historial_clinico_count, 0, '.', ',') }}
-                                </span>
+                                </a>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="inline-flex items-center gap-1.5">
-                                    <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" title="Ver historial clínico" aria-label="Ver historial clínico"
-                                       class="inline-flex min-h-11 items-center gap-1 rounded-xl bg-brand-50 px-3 py-1.5 text-xs font-semibold lg:min-h-0 text-brand-700 border border-brand-200/60 transition hover:bg-brand-600 hover:text-white hover:border-brand-600 shadow-xs">
-                                        <x-icon name="eye" class="h-3.5 w-3.5" />
-                                        <span>Historial</span>
+                                {{-- Solo íconos, como en todas las listas (22/11/2026): 📋 historial y ✎ editar. --}}
+                                <x-admin.acciones-fila :editar="route('admin.pacientes.edit', $paciente)" que="el paciente" :nombre="$paciente->nombre_completo">
+                                    <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" title="Historial clínico" aria-label="Historial clínico de {{ $paciente->nombre_completo }}" data-ver-historial
+                                       class="grid h-11 w-11 place-items-center rounded-full text-brand-600 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:h-9 lg:w-9">
+                                        <x-icon name="expediente" />
                                     </a>
-                                    <x-admin.acciones-fila :editar="route('admin.pacientes.edit', $paciente)" que="el paciente" />
-                                </div>
+                                </x-admin.acciones-fila>
                             </td>
                         </tr>
                     @empty

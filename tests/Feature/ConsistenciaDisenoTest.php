@@ -93,8 +93,8 @@ class ConsistenciaDisenoTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.pacientes.index'))
             ->assertOk()
-            ->assertSee('inline-flex min-h-11 items-center gap-1 rounded-xl bg-brand-50', false)
-            // Editar usa el componente compartido: 44 px en celular, compacto desde lg.
+            // Historial (📋, H-54) y Editar usan el mismo tamaño: 44 px en celular, compacto desde lg.
+            ->assertSee('data-ver-historial', false)
             ->assertSee('grid h-11 w-11 place-items-center rounded-full', false);
     }
 

@@ -68,4 +68,20 @@ class IconosAccionesTest extends TestCase
             $this->assertStringNotContainsString('lg:text-center">Acciones', $html, $ruta);
         }
     }
+
+    /** 22/11/2026 (decisión del usuario): "Historial" de Pacientes también es ícono (📋), no botón con palabra. */
+    public function test_historial_de_pacientes_es_icono_y_el_numero_de_consultas_lo_abre(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $paciente = Paciente::create(['nombre' => 'Ana', 'apellido' => 'Martínez', 'telefono' => '5512345678']);
+        $historial = route('admin.pacientes.historial.index', $paciente);
+
+        $html = $this->actingAs($admin)->get(route('admin.pacientes.index'))->assertOk()->getContent();
+
+        $this->assertStringContainsString('aria-label="Historial clínico de Ana Martínez"', $html);
+        $this->assertStringNotContainsString('<span>Historial</span>', $html);
+        // Dos caminos al historial: el ícono y el número de consultas.
+        $this->assertSame(2, substr_count($html, 'href="'.$historial.'"'));
+        $this->assertStringContainsString('0 consultas: ver el historial de Ana', $html);
+    }
 }
