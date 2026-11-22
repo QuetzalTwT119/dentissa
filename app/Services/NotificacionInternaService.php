@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\Permisos;
 use App\Enums\RolUsuario;
 use App\Events\NotificacionSistemaCreada;
 use App\Models\Cita;
@@ -20,7 +21,8 @@ class NotificacionInternaService
      */
     public function alertaSistema(string $evento, string $titulo, string $mensaje): void
     {
-        $admins = User::query()->where('activo', true)->where('rol', RolUsuario::Admin->value)->get(['id', 'email']);
+        // Alertas del sistema: a quien administra la configuración (antes "admin").
+        $admins = User::query()->where('activo', true)->whereIn('rol', Permisos::valoresCon('configuracion'))->get(['id', 'email']);
 
         foreach ($admins as $admin) {
             try {
@@ -71,7 +73,8 @@ class NotificacionInternaService
         $conOferta = $oferta ? " Con oferta «{$oferta->titulo}» ({$oferta->etiquetaBeneficio()})." : '';
         $destinatarios = User::query()
             ->where('activo', true)
-            ->whereIn('rol', [RolUsuario::Admin->value, RolUsuario::Asistente->value])
+            // Avisos de citas: a quien puede ver notificaciones (config/permisos.php).
+            ->whereIn('rol', Permisos::valoresCon('notificaciones'))
             ->when($actorId, fn ($query) => $query->whereKeyNot($actorId))
             ->pluck('id');
 

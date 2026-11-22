@@ -1,0 +1,60 @@
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Permisos por rol (RBAC), 22/11/2026
+|--------------------------------------------------------------------------
+|
+| ÚNICO lugar donde se decide qué puede ver y hacer cada rol. Lo leen:
+|   - el middleware "permiso" (todas las rutas del panel),
+|   - User::puede() / RolUsuario::puede() (menú, panel de inicio, políticas),
+|   - Permisos::rolesCon() (a quién se mandan avisos internos, canal en vivo).
+|
+| "modulos": cada módulo agrupa nombres de ruta (se aceptan comodines *).
+| Una ruta del panel que no esté en ningún módulo se NIEGA (falla cerrado);
+| PermisosPorModuloTest revisa que ninguna quede sin módulo.
+|
+| "roles": qué módulos tiene cada rol. '*' = todos.
+|   - super_admin: la doctora dueña; todo.
+|   - doctor: por ahora exactamente lo que tenía el antiguo "admin".
+|     Para restringirlo más adelante, quita módulos de su lista.
+|   - asistente: por ahora SOLO el panel de inicio.
+|     Para habilitarle algo, agrega el módulo a su lista.
+|
+| Cerrar sesión no es un módulo: siempre está disponible.
+*/
+
+return [
+
+    'modulos' => [
+        'inicio' => ['dashboard'],
+        'cuenta' => ['profile.*', 'dos-pasos.*'],
+        'notificaciones' => ['notificaciones.*'],
+        'agenda' => ['citas.*', 'asistente-agenda.*'],
+        'pacientes' => ['admin.pacientes.*', 'historial.imagenes.show'],
+        'usuarios' => ['admin.usuarios.*'],
+        'reportes' => ['admin.reportes.*'],
+        'mensajes' => ['admin.mensajes.*'],
+        'control_actividades' => ['admin.auditoria.*'],
+        'catalogo' => ['admin.servicios.*', 'admin.tratamientos.*'],
+        'contenido' => [
+            'admin.ofertas.*', 'admin.testimonios.*', 'admin.galeria.*', 'admin.casos.*', 'admin.preguntas-frecuentes.*',
+            'ofertas.index', 'galeria.index',
+        ],
+        'configuracion' => ['admin.configuracion', 'admin.horarios.*', 'admin.consultorio.*'],
+    ],
+
+    'roles' => [
+        'super_admin' => ['*'],
+
+        // Igual que el antiguo "admin" (todas las rutas del panel). Temporal.
+        'doctor' => [
+            'inicio', 'cuenta', 'notificaciones', 'agenda', 'pacientes', 'usuarios', 'reportes',
+            'mensajes', 'control_actividades', 'catalogo', 'contenido', 'configuracion',
+        ],
+
+        // Solo el panel de inicio, por ahora.
+        'asistente' => ['inicio'],
+    ],
+
+];

@@ -38,8 +38,15 @@ mismas opciones y la campana para abrir una vista rápida de notificaciones.
 En el teléfono, los listados anchos conservan sus
 columnas dentro de un área que puedes desplazar lateralmente; los filtros y
 controles de carga se acomodan en varias filas para facilitar el toque.
-**Control de actividades** solo está disponible para administración; las cuentas de
-asistente no ven esa opción.
+**Roles del personal** (desde el 22/11/2026):
+- **Doctora titular** (la dueña): entra a todo.
+- **Doctor** (doctores asociados): por ahora, lo mismo que la doctora titular,
+  salvo que no puede desactivar, eliminar ni crear una cuenta de Doctora titular.
+- **Asistente**: por ahora **solo el panel de inicio**; no ve el menú de secciones,
+  la campana ni Mi perfil (sí puede cerrar sesión). Para cambiar su contraseña,
+  usa "¿La olvidaste?" en la pantalla de acceso.
+
+El menú solo muestra lo que cada rol puede abrir.
 
 Los listados de registros muestran **20 elementos por página de forma predeterminada**. En el pie del listado puedes elegir **20** o **50** registros por página. Cuando
 hay más resultados, al final aparecen los botones **Anterior**, los números de

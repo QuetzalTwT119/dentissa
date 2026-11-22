@@ -28,7 +28,7 @@ class FiltrosListasTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     private function ver(string $ruta, array $filtros = []): string

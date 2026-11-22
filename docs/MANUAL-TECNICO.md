@@ -652,18 +652,41 @@ los metadatos definidos por los emisores de auditoría. Las entradas históricas
 de canales externos creadas antes de limitar el alcance permanecen en la base,
 pero no se muestran en esta vista.
 
-## 13. Autorización por rol
+## 13. Autorización por rol (RBAC, 22/11/2026)
 
-Las rutas autenticadas de agenda usan `auth`; las rutas bajo `/admin` añaden el
-middleware `role:admin`. El endpoint de PDF del historial vuelve a la ficha con
-un aviso cuando el historial aún no tiene consultas; las notas `notas_doctor`
-no se renderizan en ese PDF. `CitaPolicy` permite las operaciones internas de cita
-al personal con rol `admin` o `asistente`, mientras que los adjuntos del
-historial clínico están reservados a `admin`. La prueba
-`PermisosPorRolTest` verifica que el asistente reciba 403 en 12 páginas
-administrativas y al intentar modificar horarios, y que un visitante sea
-redirigido al login. Las 3 pruebas (15 aserciones) y la suite completa pasaron
-en SQLite en memoria y en MySQL 8.4 con el schema aislado `dentissa_test`.
+**Tres roles** (`App\Enums\RolUsuario`): `super_admin` (la doctora dueña, "Doctora
+titular"), `doctor` (doctores asociados) y `asistente`. Antes eran `admin` y
+`asistente`; la migración `2026_11_22_000003_roles_super_admin_doctor_asistente`
+cambia `users.rol` de `enum` a `string(20)` y pasa las cuentas `admin` a `super_admin`.
+
+**Un solo mapa de permisos: `config/permisos.php`.**
+- `modulos`: cada módulo agrupa nombres de ruta (con comodines): `inicio`, `cuenta`
+  (Mi perfil y dos pasos), `notificaciones`, `agenda`, `pacientes`, `usuarios`,
+  `reportes`, `mensajes`, `control_actividades`, `catalogo`, `contenido`, `configuracion`.
+- `roles`: `super_admin` → `*`; `doctor` → todos los módulos (igual que el antiguo
+  admin, temporal); `asistente` → solo `inicio`.
+- Para quitarle algo a `doctor` o darle algo a `asistente`, se edita su lista; no hay
+  que tocar rutas, menús ni controladores.
+
+**Quién lo lee:** el middleware `permiso` (`App\Http\Middleware\VerificarPermiso`,
+sustituye a `role:admin`) en el panel de inicio, en el grupo autenticado y en
+`/admin`: busca el módulo de la ruta actual (`App\Support\Permisos::moduloDeRuta()`)
+y niega con 403 si el rol no lo tiene. **Una ruta protegida sin módulo se niega a
+todos** (falla cerrado); `PermisosPorModuloTest` revisa que no quede ninguna.
+`User::puede($modulo)` lo usan el menú (`layouts/navigation`), el panel de inicio,
+`CitaPolicy` (módulo `agenda`), `HistorialImagenController` (`pacientes`), el canal
+en vivo (`notificaciones`) y `User::debeUsarDosPasos()` (quien tiene `pacientes`).
+`Permisos::valoresCon($modulo)` decide a quién llegan los avisos internos
+(`notificaciones`) y las alertas del sistema (`configuracion`).
+
+**Protección de la cuenta titular:** solo una `super_admin` crea otra `super_admin`
+y desactiva o elimina una cuenta `super_admin` (`UsuarioController::rolesAsignables()`
+y `protegerSuperAdmin()`). No da permisos nuevos a nadie: evita que un `doctor`
+(que conserva Usuarios) bloquee o borre a la dueña.
+
+El PDF del historial vuelve a la ficha con un aviso cuando aún no hay consultas; las
+notas `notas_doctor` no se renderizan en ese PDF. Pruebas: `PermisosPorModuloTest`
+(mapa completo, matriz de los 3 roles, menú, cuenta titular) y `PermisosPorRolTest`.
 
 ## 14. Respaldos y recuperación
 

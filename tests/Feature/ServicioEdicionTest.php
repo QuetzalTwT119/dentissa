@@ -25,7 +25,7 @@ class ServicioEdicionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     public function test_la_pantalla_muestra_la_foto_actual_y_un_solo_boton_de_guardar(): void

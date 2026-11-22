@@ -33,7 +33,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_cada_formulario_tiene_un_solo_titulo_principal(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         foreach (self::FORMULARIOS as $ruta) {
             $html = $this->actingAs($admin)->get(route($ruta))->assertOk()->getContent();
@@ -44,7 +44,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_los_campos_de_texto_y_listas_miden_al_menos_44_px(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         foreach ([...self::FORMULARIOS, 'admin.pacientes.index', 'admin.usuarios.index', 'admin.auditoria.index', 'asistente-agenda.create', 'citas.index'] as $ruta) {
             $html = $this->actingAs($admin)->get(route($ruta))->assertOk()->getContent();
@@ -75,7 +75,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_el_perfil_no_se_desborda_en_celular(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         // Sin columna explícita, la fila de pestañas ensanchaba la cuadrícula 120 px en 375 px.
         $this->actingAs($admin)
@@ -87,7 +87,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_las_acciones_de_paciente_son_comodas_al_tacto(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'Prueba', 'telefono' => '5512345678', 'email' => 'ana@example.test']);
 
         $this->actingAs($admin)
@@ -110,7 +110,7 @@ class ConsistenciaDisenoTest extends TestCase
             ->all();
         $this->assertSame([], $nativos, 'Usa data-confirmar="…" (components/dialogo-confirmar).');
 
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         \App\Models\Servicio::create(['nombre' => 'Odontología General', 'orden' => 1, 'activo' => true]);
 
         $this->actingAs($admin)
@@ -123,7 +123,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_crear_y_guardar_piden_confirmacion(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $servicio = \App\Models\Servicio::create(['nombre' => 'Odontología General', 'orden' => 1, 'activo' => true]);
 
         foreach (['admin.servicios.create', 'admin.tratamientos.create', 'admin.ofertas.create', 'admin.usuarios.create', 'citas.create'] as $ruta) {
@@ -135,7 +135,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_galeria_y_casos_se_ocultan_del_menu_sin_borrarse_y_el_vacio_abarca_la_tabla(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $html = $this->actingAs($admin)->get(route('admin.ofertas.index'))->assertOk()->getContent();
         $this->assertStringNotContainsString('href="'.route('admin.galeria.index').'"', $html);
@@ -151,7 +151,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_editar_y_eliminar_son_iguales_en_todas_las_listas_y_los_filtros_van_en_la_barra(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'Prueba', 'telefono' => '5512345678', 'email' => 'ana@example.test']);
         \App\Models\PreguntaFrecuente::create(['pregunta' => '¿Atienden niños?', 'respuesta' => 'Sí.', 'orden' => 1, 'activa' => true]);
         \App\Models\Testimonio::create(['id_paciente' => $paciente->id, 'calificacion' => 5, 'comentario' => 'Muy bien atendida.', 'estado' => 'pendiente']);
@@ -185,7 +185,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_cada_lista_tiene_un_solo_boton_para_crear(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         foreach (['casos', 'galeria', 'ofertas', 'preguntas-frecuentes', 'servicios', 'tratamientos', 'usuarios'] as $modulo) {
             $html = $this->actingAs($admin)->get(route("admin.{$modulo}.index"))->assertOk()->getContent();
@@ -199,7 +199,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_el_asistente_de_chat_solo_esta_en_las_paginas_publicas(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         // Es para pacientes: portada y agenda en línea.
         $this->get('/')->assertOk()->assertSee('asistente-flotante', false);
@@ -218,7 +218,7 @@ class ConsistenciaDisenoTest extends TestCase
      */
     public function test_los_campos_obligatorios_llevan_asterisco_y_el_formulario_lo_explica(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $servicio = \App\Models\Servicio::create(['nombre' => 'Odontología General', 'orden' => 1, 'activo' => true]);
 
         $paginas = [
@@ -283,7 +283,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_los_formularios_del_panel_van_en_columnas(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         foreach (['admin.usuarios.create', 'admin.ofertas.create', 'admin.preguntas-frecuentes.create', 'citas.create'] as $ruta) {
             $this->actingAs($admin)->get(route($ruta))->assertOk()->assertSee('formulario-panel', false);
@@ -295,7 +295,7 @@ class ConsistenciaDisenoTest extends TestCase
 
     public function test_reportes_filtra_al_cambiar_la_fecha_y_descarga_desde_la_tarjeta(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $html = $this->actingAs($admin)->get(route('admin.reportes.index'))->assertOk()->getContent();
 
         $this->assertStringNotContainsString('>Filtrar</button>', $html);
@@ -321,7 +321,7 @@ class ConsistenciaDisenoTest extends TestCase
             ->all();
         $this->assertSame([], $propios, 'Formularios de filtro hechos a mano (usa <x-filtro.barra>)');
 
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         foreach (['admin.usuarios.index', 'admin.mensajes.index', 'admin.testimonios.index', 'admin.pacientes.index', 'admin.auditoria.index', 'citas.index', 'admin.reportes.index'] as $ruta) {
             $html = $this->actingAs($admin)->get(route($ruta))->assertOk()->getContent();
             $this->assertStringContainsString('data-filtro-barra', $html, $ruta);
@@ -391,7 +391,7 @@ class ConsistenciaDisenoTest extends TestCase
         // El botón de fila global siempre lleva la confirmación.
         $this->assertStringContainsString('data-confirmar="{{ $mensaje }}"', File::get(resource_path('views/components/admin/boton-fila.blade.php')));
 
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $this->actingAs($admin)->get(route('admin.mensajes.index'))->assertOk();
         $this->actingAs($admin)->get(route('admin.servicios.index'))->assertOk();
     }

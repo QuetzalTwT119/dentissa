@@ -35,8 +35,9 @@ class NotificacionesPorAtenderTest extends TestCase
         Event::fake([NotificacionSistemaCreada::class]);
         Carbon::setTestNow('2030-01-09 10:00:00');
 
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin]);
-        $this->asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
+        // 22/11/2026: el otro miembro del personal con notificaciones ahora es doctor.
+        $this->asistente = User::factory()->create(['rol' => RolUsuario::Doctor]);
     }
 
     protected function tearDown(): void

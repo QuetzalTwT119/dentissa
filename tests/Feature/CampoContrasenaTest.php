@@ -19,7 +19,7 @@ class CampoContrasenaTest extends TestCase
 
     public function test_los_formularios_de_contrasena_dejan_verla_y_avisan_si_coincide(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         foreach ([route('admin.usuarios.create'), route('profile.edit')] as $url) {
             $html = $this->actingAs($admin)->get($url)->assertOk()->getContent();
@@ -33,7 +33,7 @@ class CampoContrasenaTest extends TestCase
 
     public function test_si_no_coinciden_al_crear_se_rechaza(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)->post(route('admin.usuarios.store'), [
             'nombre' => 'Laura', 'apellido' => 'Gómez', 'email' => 'laura@example.test', 'telefono' => '7551020089',

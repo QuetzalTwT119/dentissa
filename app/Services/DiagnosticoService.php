@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\Permisos;
 use App\Enums\RolUsuario;
 use App\Models\User;
 use App\Services\Google\GoogleAccessToken;
@@ -200,7 +201,7 @@ class DiagnosticoService
         try {
             $sinActivar = User::query()
                 ->where('activo', true)
-                ->where('rol', RolUsuario::Admin->value)
+                ->whereIn('rol', Permisos::valoresCon('pacientes'))
                 ->whereNull('dos_pasos_confirmado_en')
                 ->count();
 

@@ -3,7 +3,7 @@
 use App\Exceptions\AuditoriaNoDisponible;
 use App\Http\Middleware\CabecerasSeguridad;
 use App\Http\Middleware\CerrarSesionUsuarioInactivo;
-use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\VerificarPermiso;
 use App\Http\Middleware\ExigirDosPasos;
 use App\Http\Middleware\NoCachearRespuesta;
 use Illuminate\Foundation\Application;
@@ -27,7 +27,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
 
         $middleware->alias([
-            'role' => EnsureUserHasRole::class,
+            // Permiso por módulo según config/permisos.php (22/11/2026; antes "role:admin").
+            'permiso' => VerificarPermiso::class,
             'no-cache' => NoCachearRespuesta::class,
         ]);
 

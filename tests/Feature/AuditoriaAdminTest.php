@@ -17,7 +17,7 @@ class AuditoriaAdminTest extends TestCase
         $admin = User::factory()->create([
             'nombre' => 'Melissa',
             'apellido' => 'Admin',
-            'rol' => RolUsuario::Admin,
+            'rol' => RolUsuario::SuperAdmin,
         ]);
         $asistente = User::factory()->create([
             'nombre' => 'Ana',
@@ -69,7 +69,7 @@ class AuditoriaAdminTest extends TestCase
 
     public function test_el_filtro_de_accion_solo_ofrece_eventos_visibles_en_la_bitacora(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         LogAuditoria::create([
             'id_usuario' => $admin->id,
@@ -118,7 +118,7 @@ class AuditoriaAdminTest extends TestCase
 
     public function test_eventos_sin_usuario_del_personal_no_aparecen_en_la_bitacora(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         foreach (['publico' => 31, 'telegram' => 32, 'interna' => 33] as $canal => $idCita) {
             LogAuditoria::create([

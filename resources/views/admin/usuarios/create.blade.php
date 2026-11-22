@@ -44,8 +44,10 @@
                     <div>
                         <x-input-label for="rol" value="Rol" />
                         <x-select id="rol" name="rol" class="mt-1.5">
-                            <option value="asistente" @selected(old('rol', 'asistente') === 'asistente')>Asistente</option>
-                            <option value="admin" @selected(old('rol') === 'admin')>Admin</option>
+                            {{-- Roles del mapa de permisos (22/11/2026); super_admin solo lo da otra super_admin. --}}
+                            @foreach ($rolesAsignables as $rol)
+                                <option value="{{ $rol->value }}" @selected(old('rol', 'asistente') === $rol->value)>{{ $rol->etiqueta() }}</option>
+                            @endforeach
                         </x-select>
                         <x-input-error :messages="$errors->get('rol')" class="mt-2" />
                     </div>

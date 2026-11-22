@@ -99,7 +99,7 @@ class DetalleBitacoraTest extends TestCase
     /** 22/11/2026 (decisión del usuario): el detalle se abre en una ventana, fuera de la tabla. */
     public function test_el_detalle_se_abre_en_una_ventana(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         LogAuditoria::query()->create([
             'id_usuario' => $admin->id, 'accion' => 'cita.iniciada', 'tabla' => 'citas', 'registro_id' => 2, 'fecha' => now(),
             'datos_anteriores' => ['estado' => 'confirmada'], 'datos_nuevos' => ['estado' => 'en_curso'],

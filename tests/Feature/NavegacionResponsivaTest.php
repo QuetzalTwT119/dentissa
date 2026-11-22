@@ -13,7 +13,7 @@ class NavegacionResponsivaTest extends TestCase
 
     public function test_la_navegacion_interna_conserva_la_marca_y_agrupa_secciones_por_funcion(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)
             ->get(route('citas.index'))
@@ -44,7 +44,7 @@ class NavegacionResponsivaTest extends TestCase
 
     public function test_la_lista_de_pacientes_se_apila_en_pantallas_angostas_sin_desplazarse_de_lado(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         // Tabla corta del modo "Mixta" (ver TablasMixtasTest).
         $this->actingAs($admin)
@@ -58,7 +58,7 @@ class NavegacionResponsivaTest extends TestCase
 
     public function test_el_formulario_de_usuario_apila_campos_en_movil(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)
             ->get(route('admin.usuarios.create'))
@@ -68,7 +68,7 @@ class NavegacionResponsivaTest extends TestCase
 
     public function test_el_encabezado_de_testimonios_apila_filtro_y_accion_en_movil(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)
             ->get(route('admin.testimonios.index'))

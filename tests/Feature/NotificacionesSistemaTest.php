@@ -24,9 +24,11 @@ class NotificacionesSistemaTest extends TestCase
     {
         Event::fake([NotificacionSistemaCreada::class]);
 
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
-        User::factory()->create(['rol' => RolUsuario::Asistente, 'activo' => false]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
+        // 22/11/2026: los avisos van a quien tiene el módulo de notificaciones (doctor), ya no a la asistente.
+        $asistente = User::factory()->create(['rol' => RolUsuario::Doctor]);
+        User::factory()->create(['rol' => RolUsuario::Doctor, 'activo' => false]);
+        User::factory()->create(['rol' => RolUsuario::Asistente]);
 
         app(NotificacionInternaService::class)->cambioCita(
             Cita::make(['fecha_hora' => now()]),
@@ -46,7 +48,7 @@ class NotificacionesSistemaTest extends TestCase
 
     public function test_admin_y_asistente_pueden_ver_y_marcar_sus_notificaciones(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $notificacion = NotificacionSistema::create([
             'user_id' => $admin->id,
             'evento' => 'agendada',
@@ -73,7 +75,7 @@ class NotificacionesSistemaTest extends TestCase
 
     public function test_abrir_un_aviso_lo_puede_marcar_como_leido_y_devuelve_el_total_actualizado(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $notificacion = NotificacionSistema::create([
             'user_id' => $admin->id,
             'evento' => 'agendada',
@@ -92,7 +94,7 @@ class NotificacionesSistemaTest extends TestCase
 
     public function test_la_campana_muestra_vista_previa_rapida_sin_exponer_avisos_de_otras_cuentas(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
 
         NotificacionSistema::create([
@@ -129,7 +131,7 @@ class NotificacionesSistemaTest extends TestCase
 
     public function test_abrir_la_campana_marca_los_avisos_como_vistos_sin_cerrar_los_pendientes(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $notificacion = NotificacionSistema::create([
             'user_id' => $admin->id,
             'evento' => 'agendada',
@@ -154,7 +156,7 @@ class NotificacionesSistemaTest extends TestCase
 
     public function test_el_centro_ordena_los_avisos_por_dia_y_muestra_su_tipo(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         NotificacionSistema::create([
             'user_id' => $admin->id,
@@ -173,7 +175,7 @@ class NotificacionesSistemaTest extends TestCase
 
     public function test_la_bandeja_filtra_notificaciones_pendientes_y_leidas_y_permite_restaurar_una(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $pendiente = NotificacionSistema::create([
             'user_id' => $admin->id,
             'evento' => 'agendada',
@@ -210,7 +212,7 @@ class NotificacionesSistemaTest extends TestCase
 
     public function test_usuario_autenticado_consulta_solo_sus_actualizaciones_en_vivo(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
 
         $propia = NotificacionSistema::create([
@@ -249,7 +251,7 @@ class NotificacionesSistemaTest extends TestCase
         // se vuelven a registrar en el broadcaster Reverb recién activado.
         require base_path('routes/channels.php');
 
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
 
         $this->actingAs($admin)
@@ -269,8 +271,8 @@ class NotificacionesSistemaTest extends TestCase
 
     public function test_una_cuenta_no_puede_marcar_la_notificacion_de_otra(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
+        $asistente = User::factory()->create(['rol' => RolUsuario::Doctor]);
         $notificacion = NotificacionSistema::create([
             'user_id' => $admin->id,
             'evento' => 'agendada',
@@ -291,7 +293,7 @@ class NotificacionesSistemaTest extends TestCase
 
     public function test_el_sondeo_de_notificaciones_no_consume_el_mensaje_de_la_accion_previa(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'Ficticio',

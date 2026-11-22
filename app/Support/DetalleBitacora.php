@@ -63,7 +63,7 @@ class DetalleBitacora
         'tipo_consulta' => ['primera_vez' => 'Primera vez', 'seguimiento' => 'Seguimiento', 'urgencia' => 'Urgencia', 'control' => 'Control'],
         'tipo_valor' => ['porcentaje' => 'Porcentaje', 'monto' => 'Cantidad fija', 'monto_fijo' => 'Cantidad fija'],
         'tipo' => ['descuento' => 'Descuento', 'precio_especial' => 'Precio especial', 'gratis' => 'Gratis'],
-        'rol' => ['admin' => 'Administración', 'asistente' => 'Asistente'],
+        'rol' => ['super_admin' => 'Doctora titular', 'doctor' => 'Doctor', 'asistente' => 'Asistente', 'admin' => 'Administración'],
         'canal' => ['interna' => 'El consultorio', 'publica' => 'El paciente (en línea)', 'telegram' => 'Telegram', 'whatsapp' => 'WhatsApp'],
         'dia_semana' => ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
     ];

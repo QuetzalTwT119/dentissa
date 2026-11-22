@@ -42,9 +42,31 @@ class UsuarioController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('admin.usuarios.create');
+        return view('admin.usuarios.create', [
+            'rolesAsignables' => $this->rolesAsignables($request->user()),
+        ]);
+    }
+
+    /**
+     * Roles que puede dar quien crea la cuenta (22/11/2026). Solo la doctora
+     * titular (super_admin) crea otra cuenta super_admin: así nadie con menos
+     * permisos se los puede dar a sí mismo o a otra cuenta.
+     *
+     * @return list<RolUsuario>
+     */
+    private function rolesAsignables(User $quien): array
+    {
+        return $quien->rol === RolUsuario::SuperAdmin
+            ? [RolUsuario::Asistente, RolUsuario::Doctor, RolUsuario::SuperAdmin]
+            : [RolUsuario::Asistente, RolUsuario::Doctor];
+    }
+
+    /** La cuenta super_admin solo la desactiva o elimina otra super_admin. */
+    private function protegerSuperAdmin(Request $request, User $usuario): void
+    {
+        abort_if($usuario->rol === RolUsuario::SuperAdmin && $request->user()->rol !== RolUsuario::SuperAdmin, 403);
     }
 
     public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
@@ -54,7 +76,7 @@ class UsuarioController extends Controller
             'apellido' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'telefono' => ['required', 'string', 'max:20'],
-            'rol' => ['required', Rule::enum(RolUsuario::class)],
+            'rol' => ['required', Rule::in(array_map(fn (RolUsuario $r) => $r->value, $this->rolesAsignables($request->user())))],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -84,6 +106,7 @@ class UsuarioController extends Controller
     public function destroy(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse
     {
         abort_if($usuario->is($request->user()), 422, 'No puedes eliminar tu propia cuenta.');
+        $this->protegerSuperAdmin($request, $usuario);
 
         $consultas = $usuario->consultasRegistradas()->count();
         if ($consultas > 0) {
@@ -106,6 +129,7 @@ class UsuarioController extends Controller
     public function toggleActivo(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse
     {
         abort_if($usuario->id === $request->user()->id, 422, 'No puedes desactivar tu propia cuenta.');
+        $this->protegerSuperAdmin($request, $usuario);
 
         $auditoria->registrarCambio(
             $request,

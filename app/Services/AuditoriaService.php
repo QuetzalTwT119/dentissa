@@ -76,7 +76,7 @@ class AuditoriaService
 
         // La bitácora sirve para rendición de cuentas del personal, no para
         // registrar solicitudes hechas por pacientes o integraciones externas.
-        if (! $usuario || ! in_array($usuario->rol, [RolUsuario::Admin, RolUsuario::Asistente], true)) {
+        if (! $usuario || ! $usuario->rol instanceof RolUsuario) {
             return;
         }
 

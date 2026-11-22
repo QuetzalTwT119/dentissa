@@ -150,7 +150,7 @@ $etiquetasTabla = [
                                             {{ $registro->usuario ? $registro->usuario->nombre.' '.$registro->usuario->apellido : ($registro->actor_nombre ?? 'Usuario no disponible') }}
                                         </p>
                                         <p class="text-caption text-muted">
-                                            {{ $registro->actor_rol ? ucfirst($registro->actor_rol) : ($registro->usuario ? ucfirst($registro->usuario->rol?->value ?? 'Personal') : 'Personal') }}
+                                            {{-- Nombre del rol (22/11/2026); "admin" es de antes de los 3 roles. --}}{{ (\App\Enums\RolUsuario::tryFrom((string) ($registro->actor_rol ?? $registro->usuario?->rol?->value)))?->etiqueta() ?? (['admin' => 'Administración'][$registro->actor_rol] ?? 'Personal') }}
                                         </p>
                                     </div>
                                 </div>

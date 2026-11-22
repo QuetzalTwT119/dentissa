@@ -344,7 +344,7 @@ class CitaPublicaTest extends TestCase
     public function test_el_personal_puede_excluir_la_cita_que_esta_reagendando_del_calculo_de_horarios(): void
     {
         $cita = $this->crearCitaExistente();
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $asistente = User::factory()->create(['rol' => RolUsuario::Doctor]); // Personal con Agenda (22/11/2026: la asistente ya no la tiene).
 
         $this->actingAs($asistente)
             ->getJson(route('disponibilidad.index', [

@@ -29,7 +29,7 @@ class AccionesPosiblesTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin, 'activo' => true]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
     }
 
     public function test_ofertas_que_no_se_pueden_publicar_no_ofrecen_el_boton(): void

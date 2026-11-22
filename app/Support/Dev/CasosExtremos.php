@@ -49,7 +49,7 @@ class CasosExtremos
             'nombre' => $conjunto === 'peor' ? self::NOMBRE_LARGO : 'Melissa',
             'apellido' => $conjunto === 'peor' ? self::APELLIDO_LARGO : 'López N.',
             'email' => $conjunto === 'peor' ? self::CORREO_LARGO : 'admin@dentissa.test',
-            'rol' => RolUsuario::Admin,
+            'rol' => RolUsuario::SuperAdmin,
             'foto_perfil' => null,
         ]);
 

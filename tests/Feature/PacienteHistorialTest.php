@@ -16,7 +16,7 @@ class PacienteHistorialTest extends TestCase
 
     public function test_el_admin_puede_buscar_y_actualizar_datos_del_paciente(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente('Sofia', 'QA');
         $paciente->update(['telefono' => '5551236789']);
 
@@ -76,7 +76,7 @@ class PacienteHistorialTest extends TestCase
 
     public function test_el_admin_no_puede_asignar_un_correo_duplicado_ni_un_telefono_invalido(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente('Sofia', 'QA');
         $otroPaciente = $this->crearPaciente('Otro', 'Paciente');
 
@@ -117,7 +117,7 @@ class PacienteHistorialTest extends TestCase
 
     public function test_el_admin_puede_crear_editar_y_eliminar_una_consulta(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
 
         $this->actingAs($admin)
@@ -194,7 +194,7 @@ class PacienteHistorialTest extends TestCase
 
     public function test_el_admin_puede_descargar_el_historial_en_pdf(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
         HistorialClinico::create([
             'id_paciente' => $paciente->id,
@@ -215,7 +215,7 @@ class PacienteHistorialTest extends TestCase
 
     public function test_el_pdf_no_se_ofrece_ni_se_genera_si_el_historial_esta_vacio(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
 
         $response = $this->actingAs($admin)
@@ -256,7 +256,7 @@ class PacienteHistorialTest extends TestCase
     /** 22/11/2026: el teléfono es obligatorio (por él se avisa por WhatsApp); el correo sigue opcional. */
     public function test_el_telefono_es_obligatorio_y_el_correo_opcional(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente('Sofia', 'QA');
 
         $this->actingAs($admin)->from(route('admin.pacientes.edit', $paciente))

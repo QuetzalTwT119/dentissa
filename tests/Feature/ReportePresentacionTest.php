@@ -33,7 +33,7 @@ class ReportePresentacionTest extends TestCase
 
     public function test_filtro_rechaza_fechas_futuras_y_acepta_hoy(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $manana = now()->addDay()->toDateString();
 
         $this->actingAs($admin)
@@ -67,7 +67,7 @@ class ReportePresentacionTest extends TestCase
         $servicio->shouldReceive('generar')->once()->andReturn($reporte);
         $this->instance(ReporteService::class, $servicio);
 
-        $respuesta = $this->actingAs(User::factory()->create(['rol' => RolUsuario::Admin]))
+        $respuesta = $this->actingAs(User::factory()->create(['rol' => RolUsuario::SuperAdmin]))
             ->get(route('admin.reportes.excel'));
         $contenido = $respuesta->streamedContent();
 
@@ -107,7 +107,7 @@ class ReportePresentacionTest extends TestCase
         $servicio->shouldReceive('generar')->once()->andReturn($reporte);
         $this->instance(ReporteService::class, $servicio);
 
-        return $this->actingAs(User::factory()->create(['rol' => RolUsuario::Admin]))
+        return $this->actingAs(User::factory()->create(['rol' => RolUsuario::SuperAdmin]))
             ->get(route('admin.reportes.index'));
     }
 

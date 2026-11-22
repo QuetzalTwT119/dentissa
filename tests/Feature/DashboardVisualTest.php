@@ -13,7 +13,7 @@ class DashboardVisualTest extends TestCase
 
     public function test_admin_sees_the_branded_dashboard_and_its_main_actions(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)
             ->get(route('dashboard'))
@@ -35,9 +35,12 @@ class DashboardVisualTest extends TestCase
         $this->actingAs($asistente)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Panel de asistencia')
+            // 22/11/2026: la asistente solo tiene el panel de inicio; sin botones a secciones cerradas.
             ->assertSee('Tu espacio de trabajo')
-            ->assertSee('Ver agenda')
+            ->assertSee('data-solo-inicio', false)
+            ->assertDontSee('Ver agenda')
+            ->assertDontSee(route('citas.index'), false)
+            ->assertDontSee(route('profile.edit'), false)
             ->assertDontSee('Portal de Paciente')
             ->assertDontSee('Ver mis citas');
     }

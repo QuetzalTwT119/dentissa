@@ -18,7 +18,7 @@ class HistorialImagenAccessTest extends TestCase
     {
         Storage::fake('local');
         Storage::disk('local')->put('historial/adjunto.jpg', 'imagen de prueba');
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $imagen = $this->crearImagen(TipoImagen::HistorialClinico, 'historial/adjunto.jpg');
 
         $this->actingAs($admin)
@@ -47,7 +47,7 @@ class HistorialImagenAccessTest extends TestCase
 
     public function test_la_ruta_privada_no_sirve_imagenes_de_otros_modulos(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $imagen = $this->crearImagen(TipoImagen::Galeria);
 
         $this->actingAs($admin)

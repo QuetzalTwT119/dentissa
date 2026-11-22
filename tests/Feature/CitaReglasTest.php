@@ -32,7 +32,7 @@ class CitaReglasTest extends TestCase
 
     public function test_el_filtro_de_citas_permite_fechas_futuras_y_combina_fecha_con_estado(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $fecha = Carbon::today()->addDays(14);
 
@@ -76,7 +76,7 @@ class CitaReglasTest extends TestCase
 
     public function test_el_buscador_de_citas_acepta_nombre_completo_telefono_servicio_y_tratamiento(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $pacienteEncontrado = Paciente::create([
             'nombre' => 'Ana María',
@@ -129,7 +129,7 @@ class CitaReglasTest extends TestCase
 
     public function test_el_listado_de_citas_muestra_20_por_defecto_y_permite_elegir_50(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $paciente = $this->crearPaciente();
 
@@ -162,7 +162,7 @@ class CitaReglasTest extends TestCase
 
     public function test_no_se_puede_agendar_un_tratamiento_que_no_pertenece_al_servicio(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
         $servicioElegido = Servicio::create(['nombre' => 'Servicio elegido', 'activo' => true]);
         $otroServicio = Servicio::create(['nombre' => 'Otro servicio', 'activo' => true]);
@@ -189,7 +189,7 @@ class CitaReglasTest extends TestCase
 
     public function test_no_se_puede_agendar_un_servicio_inactivo(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
         $servicio = Servicio::create(['nombre' => 'Servicio inactivo', 'activo' => false]);
         $tratamiento = Tratamiento::create([
@@ -267,7 +267,7 @@ class CitaReglasTest extends TestCase
 
     public function test_el_personal_puede_iniciar_y_completar_una_cita_confirmada(): void
     {
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $asistente = User::factory()->create(['rol' => RolUsuario::Doctor]); // Personal con Agenda (22/11/2026: la asistente ya no la tiene).
         $paciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $cita = Cita::create([
@@ -296,7 +296,7 @@ class CitaReglasTest extends TestCase
 
     public function test_una_cita_en_curso_muestra_completar_sin_acciones_secundarias(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $cita = Cita::create([
@@ -321,7 +321,7 @@ class CitaReglasTest extends TestCase
 
     public function test_el_personal_puede_crear_una_cita_interna_ya_confirmada(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $fecha = $this->fechaFutura();
@@ -358,7 +358,7 @@ class CitaReglasTest extends TestCase
 
     public function test_no_se_supera_la_capacidad_simultanea_para_un_mismo_horario(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $primerPaciente = $this->crearPaciente();
         $segundoPaciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
@@ -391,16 +391,19 @@ class CitaReglasTest extends TestCase
 
     public function test_solo_el_personal_puede_autorizar_la_creacion_interna(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
+        $doctor = User::factory()->create(['rol' => RolUsuario::Doctor]);
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
 
         $this->assertTrue(Gate::forUser($admin)->allows('create', Cita::class));
-        $this->assertTrue(Gate::forUser($asistente)->allows('create', Cita::class));
+        $this->assertTrue(Gate::forUser($doctor)->allows('create', Cita::class));
+        // 22/11/2026: la asistente ya no tiene la Agenda (config/permisos.php).
+        $this->assertFalse(Gate::forUser($asistente)->allows('create', Cita::class));
     }
 
     public function test_una_cita_agendada_puede_confirmarse(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $cita = Cita::create([
@@ -461,7 +464,7 @@ class CitaReglasTest extends TestCase
 
     public function test_una_cita_agendada_puede_cancelarse_con_motivo(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $cita = Cita::create([
@@ -496,7 +499,7 @@ class CitaReglasTest extends TestCase
 
     public function test_una_cita_agendada_puede_reagendarse_a_otro_horario(): void
     {
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $asistente = User::factory()->create(['rol' => RolUsuario::Doctor]); // Personal con Agenda (22/11/2026: la asistente ya no la tiene).
         $paciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $fechaOriginal = $this->fechaFutura()->setTime(10, 0);
@@ -534,7 +537,7 @@ class CitaReglasTest extends TestCase
 
     public function test_una_cita_confirmada_conserva_su_estado_al_reagendarse(): void
     {
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $asistente = User::factory()->create(['rol' => RolUsuario::Doctor]); // Personal con Agenda (22/11/2026: la asistente ya no la tiene).
         $paciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $fechaConfirmacion = now()->subMinute();
@@ -568,7 +571,7 @@ class CitaReglasTest extends TestCase
 
     public function test_una_cita_confirmada_puede_marcarse_como_no_asistio(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $cita = Cita::create([
@@ -596,7 +599,7 @@ class CitaReglasTest extends TestCase
 
     public function test_no_se_puede_marcar_una_cita_futura_como_no_asistio(): void
     {
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $asistente = User::factory()->create(['rol' => RolUsuario::Doctor]); // Personal con Agenda (22/11/2026: la asistente ya no la tiene).
         $paciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
         $cita = Cita::create([
@@ -622,7 +625,7 @@ class CitaReglasTest extends TestCase
 
     public function test_las_transiciones_invalidas_no_cambian_el_estado_de_la_cita(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = $this->crearPaciente();
         [$servicio, $tratamiento] = $this->crearCatalogo();
 

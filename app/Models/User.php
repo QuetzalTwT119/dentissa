@@ -48,10 +48,16 @@ class User extends Authenticatable
         return $this->dos_pasos_confirmado_en !== null && filled($this->dos_pasos_secreto);
     }
 
-    /** El administrador ve historiales clínicos: para él es obligatoria. */
+    /** ¿Su rol tiene este módulo? (config/permisos.php). */
+    public function puede(string $modulo): bool
+    {
+        return $this->rol instanceof RolUsuario && $this->rol->puede($modulo);
+    }
+
+    /** Quien ve historiales clínicos (módulo "pacientes") debe usar dos pasos. */
     public function debeUsarDosPasos(): bool
     {
-        return $this->rol === RolUsuario::Admin
+        return $this->puede('pacientes')
             && (bool) config('dentissa.seguridad.dos_pasos_admin_obligatorio');
     }
 

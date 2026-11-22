@@ -14,7 +14,7 @@ class PreguntaFrecuenteTest extends TestCase
 
     public function test_el_admin_puede_publicar_una_faq_y_el_asistente_responde_con_su_texto_aprobado(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)
             ->post(route('admin.preguntas-frecuentes.store'), [
@@ -43,7 +43,7 @@ class PreguntaFrecuenteTest extends TestCase
 
     public function test_desmarcar_activa_despublica_la_faq_y_el_asistente_usa_el_fallback(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $pregunta = PreguntaFrecuente::create([
             'pregunta' => '¿Cuánto cuesta una limpieza dental?',
             'respuesta' => 'El consultorio confirma el costo vigente antes de la cita.',
@@ -76,7 +76,7 @@ class PreguntaFrecuenteTest extends TestCase
 
     public function test_el_admin_puede_crear_una_faq_desactivada_sin_publicarla(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)
             ->post(route('admin.preguntas-frecuentes.store'), [
@@ -102,7 +102,7 @@ class PreguntaFrecuenteTest extends TestCase
 
     public function test_acepta_variantes_aprobadas_para_parafrasis(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)
             ->get(route('admin.preguntas-frecuentes.create'))

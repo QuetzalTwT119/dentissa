@@ -22,7 +22,7 @@ class AsistenteAgendaTest extends TestCase
 
     public function test_el_asistente_rechaza_fechas_pasadas_en_el_servidor(): void
     {
-        $usuario = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $usuario = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'De prueba',
@@ -54,7 +54,7 @@ class AsistenteAgendaTest extends TestCase
 
     public function test_el_asistente_respeta_el_margen_y_puede_preparar_una_cita(): void
     {
-        $usuario = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $usuario = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'De prueba',

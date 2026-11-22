@@ -20,13 +20,13 @@ class RolPropioTest extends TestCase
 
     public function test_usuarios_ya_no_se_editan(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin, 'activo' => true]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente, 'activo' => true]);
 
         // Sin rutas de editar ni guardar cambios: nadie cambia un rol (ni el propio).
         $this->actingAs($admin)->get('/admin/usuarios/'.$asistente->id.'/edit')->assertNotFound();
         $this->actingAs($admin)->put('/admin/usuarios/'.$admin->id, ['rol' => 'asistente'])->assertStatus(405);
-        $this->assertSame(RolUsuario::Admin, $admin->fresh()->rol);
+        $this->assertSame(RolUsuario::SuperAdmin, $admin->fresh()->rol);
 
         $html = $this->actingAs($admin)->get(route('admin.usuarios.index'))->assertOk()->getContent();
         $this->assertStringNotContainsString('aria-label="Editar', $html);
@@ -35,7 +35,7 @@ class RolPropioTest extends TestCase
 
     public function test_eliminar_sin_consultas_si_y_con_consultas_o_la_propia_no(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin, 'activo' => true]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
         $nueva = User::factory()->create(['rol' => RolUsuario::Asistente, 'nombre' => 'Laura', 'apellido' => 'Gómez']);
         $doctora = User::factory()->create(['rol' => RolUsuario::Asistente, 'nombre' => 'Rosa', 'apellido' => 'Díaz']);
         $paciente = Paciente::create(['nombre' => 'Ana', 'apellido' => 'Martínez', 'telefono' => '5512345678']);

@@ -27,7 +27,7 @@ class CasillasDesmarcadasTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     /** Desde H-12 el estado del tratamiento se cambia desde la lista, no con una casilla. */

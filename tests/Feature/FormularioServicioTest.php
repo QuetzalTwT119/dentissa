@@ -24,7 +24,7 @@ class FormularioServicioTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     public function test_nuevo_y_editar_usan_el_mismo_formulario(): void

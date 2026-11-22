@@ -49,7 +49,7 @@ class PermisosPorRolTest extends TestCase
     {
         // Regresión: comillas dobles anidadas en old("...") impedían que Blade
         // compilara <x-text-input> y los campos no aparecían en pantalla.
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)
             ->get(route('admin.configuracion'))
@@ -62,7 +62,7 @@ class PermisosPorRolTest extends TestCase
 
     public function test_lista_de_usuarios_tiene_contexto_correcto_y_filtros_accesibles(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)
             ->get(route('admin.usuarios.index'))

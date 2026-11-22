@@ -70,7 +70,7 @@ class ServiciosTratamientosSeederTest extends TestCase
     public function test_la_categoria_se_conserva_en_los_datos_pero_el_panel_ya_no_la_pide(): void
     {
         $this->seed(ServiciosTratamientosSeeder::class);
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $valoracion = Tratamiento::where('nombre', 'Valoración')->firstOrFail();
 
         // Decisión del 20/11/2026: la categoría no se usaba en ningún lado; el dato se conserva.

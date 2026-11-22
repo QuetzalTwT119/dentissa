@@ -24,7 +24,7 @@ class AuditoriaAtomicaTest extends TestCase
 
     public function test_la_auditoria_se_guarda_en_la_transaccion_del_modelo(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
@@ -87,7 +87,7 @@ class AuditoriaAtomicaTest extends TestCase
 
     public function test_la_cancelacion_de_cita_se_revierte_si_falla_la_auditoria(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
@@ -126,7 +126,7 @@ class AuditoriaAtomicaTest extends TestCase
 
     public function test_los_datos_oficiales_del_paciente_se_revierten_si_falla_la_auditoria(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
@@ -154,7 +154,7 @@ class AuditoriaAtomicaTest extends TestCase
 
     public function test_el_historial_clinico_se_revierte_si_falla_la_auditoria(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',

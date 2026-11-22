@@ -23,7 +23,7 @@ class IconosAccionesTest extends TestCase
 
     public function test_acciones_solo_con_iconos_claros_y_info_gris(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create(['nombre' => 'Ana', 'apellido' => 'Martínez', 'telefono' => '5512345678']);
         Testimonio::create(['id_paciente' => $paciente->id, 'calificacion' => 5, 'comentario' => 'Excelente atención en todo.', 'estado' => 'pendiente']);
         MensajeContacto::create(['nombre' => 'Luis', 'email' => 'luis@example.test', 'mensaje' => 'Quisiera informes.', 'leido' => false]);
@@ -52,7 +52,7 @@ class IconosAccionesTest extends TestCase
      */
     public function test_acciones_a_la_derecha_y_bloqueos_con_su_accion_apagada(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $tratamiento = \App\Models\Tratamiento::create(['nombre' => 'Ortodoncia', 'duracion_estimada' => 60, 'activo' => false]);
         \App\Models\Oferta::create(['titulo' => 'Brackets', 'descripcion' => 'Para pacientes nuevos y de siempre.', 'tipo' => 'descuento', 'tipo_valor' => 'porcentaje', 'valor_descuento' => 15,
             'fecha_inicio' => now()->toDateString(), 'fecha_fin' => now()->addMonth()->toDateString(), 'estado' => 'inactiva', 'id_tratamiento' => $tratamiento->id]);
@@ -72,7 +72,7 @@ class IconosAccionesTest extends TestCase
     /** 22/11/2026 (decisión del usuario): "Historial" de Pacientes también es ícono (📋), no botón con palabra. */
     public function test_historial_de_pacientes_es_icono_y_el_numero_de_consultas_lo_abre(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create(['nombre' => 'Ana', 'apellido' => 'Martínez', 'telefono' => '5512345678']);
         $historial = route('admin.pacientes.historial.index', $paciente);
 

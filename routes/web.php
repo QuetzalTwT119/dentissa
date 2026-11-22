@@ -164,23 +164,24 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified', 'no-cache'])->name('dashboard');
+})->middleware(['auth', 'verified', 'no-cache', 'permiso'])->name('dashboard');
 
-Route::middleware(['auth', 'no-cache'])->group(function () {
+// Panel: cada ruta pasa por "permiso" (módulo según config/permisos.php, 22/11/2026).
+Route::middleware(['auth', 'no-cache', 'permiso'])->group(function () {
     Route::get('/notificaciones', [NotificacionSistemaController::class, 'index'])
-        ->middleware('role:admin,asistente')->name('notificaciones.index');
+        ->name('notificaciones.index');
     Route::get('/notificaciones/actualizaciones', [NotificacionSistemaController::class, 'actualizaciones'])
-        ->middleware('role:admin,asistente')->name('notificaciones.actualizaciones');
+        ->name('notificaciones.actualizaciones');
     Route::patch('/notificaciones/{notificacion}/leida', [NotificacionSistemaController::class, 'marcarLeida'])
-        ->middleware('role:admin,asistente')->name('notificaciones.leida');
+        ->name('notificaciones.leida');
     Route::patch('/notificaciones/{notificacion}/atendida', [NotificacionSistemaController::class, 'marcarAtendida'])
-        ->middleware('role:admin,asistente')->name('notificaciones.atendida');
+        ->name('notificaciones.atendida');
     Route::patch('/notificaciones/{notificacion}/pendiente', [NotificacionSistemaController::class, 'marcarPendiente'])
-        ->middleware('role:admin,asistente')->name('notificaciones.pendiente');
+        ->name('notificaciones.pendiente');
     Route::patch('/notificaciones/leidas', [NotificacionSistemaController::class, 'marcarTodasLeidas'])
-        ->middleware('role:admin,asistente')->name('notificaciones.leidas');
+        ->name('notificaciones.leidas');
     Route::patch('/notificaciones/vistas', [NotificacionSistemaController::class, 'marcarTodasVistas'])
-        ->middleware('role:admin,asistente')->name('notificaciones.vistas');
+        ->name('notificaciones.vistas');
     Route::get('/asistente-agenda', [AsistenteAgendaController::class, 'create'])->name('asistente-agenda.create');
     Route::post('/asistente-agenda/proponer', [AsistenteAgendaController::class, 'proponer'])->name('asistente-agenda.proponer');
 
@@ -213,11 +214,11 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
     Route::get('/galeria', [GaleriaController::class, 'index'])->name('galeria.index');
 });
 
-Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin.')->group(function () {
     // 22/11/2026: "Auditoría" se llama "Control de actividades"; la dirección de antes redirige.
     Route::get('control-de-actividades', [AuditoriaController::class, 'index'])->name('auditoria.index');
     // Conserva los filtros (?accion=…) de un enlace guardado.
-    Route::get('auditoria', fn (\Illuminate\Http\Request $request) => redirect()->route('admin.auditoria.index', $request->query(), 301));
+    Route::get('auditoria', fn (\Illuminate\Http\Request $request) => redirect()->route('admin.auditoria.index', $request->query(), 301))->name('auditoria.anterior');
     Route::patch('servicios/{servicio}/tratamientos', [ServicioController::class, 'syncTratamientos'])->name('servicios.tratamientos.sync');
     Route::patch('servicios/{servicio}/mover/{direccion}', [ServicioController::class, 'mover'])
         ->whereIn('direccion', ['arriba', 'abajo'])->name('servicios.mover');

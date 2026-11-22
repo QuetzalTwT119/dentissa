@@ -49,7 +49,7 @@ class DemoPresentacionSeederTest extends TestCase
         $admin = User::where('email', 'admin.demo@example.invalid')->firstOrFail();
         $asistente = User::where('email', 'asistente.demo@example.invalid')->firstOrFail();
 
-        $this->assertSame(RolUsuario::Admin, $admin->rol);
+        $this->assertSame(RolUsuario::SuperAdmin, $admin->rol);
         $this->assertSame(RolUsuario::Asistente, $asistente->rol);
         $this->assertTrue(password_verify('ClaveAdminDemo-98x!random', $admin->password));
         $this->assertTrue(password_verify('ClaveAsistenteDemo-74x!random', $asistente->password));

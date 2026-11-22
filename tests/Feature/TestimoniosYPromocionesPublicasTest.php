@@ -44,7 +44,7 @@ class TestimoniosYPromocionesPublicasTest extends TestCase
 
     public function test_el_paciente_deja_su_testimonio_y_queda_pendiente_con_aviso_a_la_clinica(): void
     {
-        User::factory()->create(['rol' => RolUsuario::Admin, 'activo' => true]);
+        User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
 
         $this->enviar()
             ->assertRedirect(url('/').'#testimonios')
@@ -88,7 +88,7 @@ class TestimoniosYPromocionesPublicasTest extends TestCase
             ->assertSee('whitespace-pre-line', false)
             ->assertSee("Primera línea.\nSegunda línea.", false);
 
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $buscar = fn (string $texto) => $this->actingAs($admin)->get(route('admin.testimonios.index', ['buscar' => $texto]))->assertOk();
 
         $buscar('Ana Martínez')->assertSee('Primera línea.')->assertDontSee('Me costó encontrar');
@@ -146,7 +146,7 @@ class TestimoniosYPromocionesPublicasTest extends TestCase
      */
     public function test_que_ofreces_se_guarda_en_las_columnas_y_se_ve_igual_en_todas_partes(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $base = ['descripcion' => 'Válida para pacientes nuevos y de siempre.', 'fecha_fin' => now()->addMonth()->toDateString()];
 
         $casos = [
@@ -202,7 +202,7 @@ class TestimoniosYPromocionesPublicasTest extends TestCase
 
     public function test_que_ofreces_valida_la_cantidad(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $base = ['titulo' => 'Prueba de oferta', 'descripcion' => 'Válida para pacientes nuevos y de siempre.', 'fecha_fin' => now()->addWeek()->toDateString()];
 
         $this->actingAs($admin)->post(route('admin.ofertas.store'), $base + ['beneficio' => 'descuento', 'unidad' => 'porcentaje', 'cantidad' => 120])
@@ -231,7 +231,7 @@ class TestimoniosYPromocionesPublicasTest extends TestCase
     /** 21/11/2026: validación estricta antes de guardar (frontend y backend). */
     public function test_la_oferta_rechaza_enlaces_spam_y_textos_cortos(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $base = ['titulo' => 'Limpieza de fin de año', 'descripcion' => 'Válida para pacientes nuevos y de siempre.',
             'beneficio' => 'descuento', 'unidad' => 'porcentaje', 'cantidad' => 20, 'fecha_fin' => now()->addWeek()->toDateString()];
 
@@ -261,7 +261,7 @@ class TestimoniosYPromocionesPublicasTest extends TestCase
     /** 21/11/2026: En revisión → Publicada → Oculta. Solo las publicadas se ven al público. */
     public function test_solo_las_publicadas_se_ven_y_editar_una_publicada_la_regresa_a_revision(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $oferta = Oferta::create(['titulo' => 'Resina estética', 'descripcion' => 'Para pacientes nuevos y de siempre.', 'tipo' => 'descuento', 'tipo_valor' => 'monto_fijo', 'valor_descuento' => 300,
             'fecha_inicio' => now()->toDateString(), 'fecha_fin' => now()->addWeek()->toDateString(), 'estado' => 'pendiente']);
 
@@ -302,7 +302,7 @@ class TestimoniosYPromocionesPublicasTest extends TestCase
      */
     public function test_beneficio_tiene_tres_opciones_con_el_diseno_global(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $html = $this->actingAs($admin)->get(route('admin.ofertas.create'))->assertOk()
             ->assertSee('Beneficio para el paciente')

@@ -57,6 +57,7 @@ class CitaPolicy
 
     private function esPersonal(User $user): bool
     {
-        return in_array($user->rol, [RolUsuario::Asistente, RolUsuario::Admin], true);
+        // Quien tiene el módulo "agenda" (config/permisos.php, 22/11/2026).
+        return $user->puede('agenda');
     }
 }

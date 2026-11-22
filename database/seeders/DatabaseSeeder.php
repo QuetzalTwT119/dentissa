@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@dentissa.com',
             'telefono' => '0000000000',
             'password' => Hash::make('password'),
-            'rol' => RolUsuario::Admin,
+            'rol' => RolUsuario::SuperAdmin,
             'activo' => true,
             'email_verified_at' => now(),
         ]);
