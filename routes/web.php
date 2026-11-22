@@ -221,6 +221,7 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::patch('servicios/{servicio}/tratamientos', [ServicioController::class, 'syncTratamientos'])->name('servicios.tratamientos.sync');
     Route::patch('servicios/{servicio}/mover/{direccion}', [ServicioController::class, 'mover'])
         ->whereIn('direccion', ['arriba', 'abajo'])->name('servicios.mover');
+    Route::patch('servicios/{servicio}/estado', [ServicioController::class, 'estado'])->name('servicios.estado');
     Route::resource('servicios', ServicioController::class)->except('show');
     Route::patch('tratamientos/{tratamiento}/estado', [TratamientoController::class, 'alternarEstado'])->name('tratamientos.estado');
     Route::resource('tratamientos', TratamientoController::class)->except('show');
@@ -268,6 +269,7 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::get('galeria/{imagen}/editar', [AdminGaleriaController::class, 'edit'])->name('galeria.edit');
     Route::put('galeria/{imagen}', [AdminGaleriaController::class, 'update'])->name('galeria.update');
     Route::delete('galeria/{imagen}', [AdminGaleriaController::class, 'destroy'])->name('galeria.destroy');
+    Route::patch('galeria/{imagen}/estado', [AdminGaleriaController::class, 'estado'])->name('galeria.estado');
 
     // Configuración: una sola página (22/11/2026). Las direcciones de antes llevan a su bloque.
     Route::get('configuracion', [ConfiguracionController::class, 'index'])->name('configuracion');
@@ -276,10 +278,12 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::redirect('consultorio', '/admin/configuracion#consultorio')->name('consultorio.edit');
     Route::put('consultorio', [DatosConsultorioController::class, 'update'])->name('consultorio.update');
 
+    Route::patch('casos/{caso}/estado', [CasoController::class, 'estado'])->name('casos.estado');
     Route::resource('casos', CasoController::class)->except('show');
     Route::post('casos/{caso}/imagenes', [CasoController::class, 'storeImagen'])->name('casos.imagenes.store');
     Route::delete('casos/{caso}/imagenes/{imagen}', [CasoController::class, 'destroyImagen'])->name('casos.imagenes.destroy');
 
+    Route::patch('preguntas-frecuentes/{preguntas_frecuente}/estado', [PreguntaFrecuenteController::class, 'estado'])->name('preguntas-frecuentes.estado');
     Route::resource('preguntas-frecuentes', PreguntaFrecuenteController::class)->except('show');
 });
 

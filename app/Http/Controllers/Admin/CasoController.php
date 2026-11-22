@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\TipoImagen;
+use App\Http\Controllers\Concerns\AlternaEstado;
 use App\Http\Controllers\Controller;
 use App\Models\Caso;
 use App\Models\Imagen;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Redirect;
 
 class CasoController extends Controller
 {
+    use AlternaEstado;
+
     public function index(Request $request): View
     {
         // Filtros globales (x-filtro.barra, 22/11/2026). Buscar = texto libre.
@@ -68,6 +71,12 @@ class CasoController extends Controller
         );
 
         return Redirect::route('admin.casos.index')->with('success', "Caso «{$caso->titulo}» guardado.");
+    }
+
+    /** Interruptor de la lista (x-admin.interruptor-estado). */
+    public function estado(Request $request, Caso $caso): RedirectResponse
+    {
+        return $this->alternarCampo($request, $caso, 'activo', 'caso.estado_cambiado', "Caso «{$caso->titulo}» activo: se muestra en la portada.", "Caso «{$caso->titulo}» inactivo: ya no se muestra en la portada.");
     }
 
     public function destroy(Request $request, Caso $caso, AuditoriaService $auditoria): RedirectResponse

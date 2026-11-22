@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\TipoImagen;
+use App\Http\Controllers\Concerns\AlternaEstado;
 use App\Http\Controllers\Controller;
 use App\Models\Imagen;
 use App\Services\AuditoriaService;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Redirect;
 
 class GaleriaController extends Controller
 {
+    use AlternaEstado;
+
     public function index(Request $request): View
     {
         // Filtros globales (x-filtro.barra, 22/11/2026). Buscar = texto libre.
@@ -101,6 +104,12 @@ class GaleriaController extends Controller
         );
 
         return Redirect::route('admin.galeria.index')->with('success', 'Foto de la galería guardada.');
+    }
+
+    /** Interruptor de la lista (x-admin.interruptor-estado). */
+    public function estado(Request $request, Imagen $imagen): RedirectResponse
+    {
+        return $this->alternarCampo($request, $imagen, 'activa', 'galeria.estado_cambiado', "Foto «{$imagen->titulo}» activa: se muestra en la galería.", "Foto «{$imagen->titulo}» inactiva: ya no se muestra en la galería.");
     }
 
     public function destroy(Request $request, Imagen $imagen, AuditoriaService $auditoria): RedirectResponse

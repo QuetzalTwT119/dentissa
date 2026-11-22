@@ -39,7 +39,9 @@
                                         <h3 class="truncate text-sm font-semibold text-ink">{{ $imagen->titulo ?: 'Sin título' }}</h3>
                                         <div class="mt-1.5 flex items-center justify-between text-xs text-muted">
                                             <span>Orden: <strong class="text-ink">{{ $imagen->orden }}</strong></span>
-                                            <x-admin.status-badge :active="$imagen->activa" />
+                                            <x-admin.interruptor-estado :action="route('admin.galeria.estado', $imagen)" :activo="$imagen->activa" :nombre="$imagen->titulo ?: 'Foto'"
+                                                                        textoActivo="Activa" textoInactivo="Inactiva"
+                                                                        desactivar="Dejará de mostrarse en la galería." activar="Se mostrará en la galería." />
                                         </div>
                                     </div>
                                 </div>

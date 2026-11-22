@@ -41,11 +41,9 @@
                             <td class="px-6 py-4 text-center text-ink-soft font-semibold whitespace-nowrap">{{ $pregunta->orden }}</td>
                             <td class="px-6 py-4 font-semibold text-ink">{{ $pregunta->pregunta }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <x-admin.status-badge
-                                    :active="$pregunta->activa"
-                                    activeText="Visible"
-                                    inactiveText="Oculta"
-                                />
+                                <x-admin.interruptor-estado :action="route('admin.preguntas-frecuentes.estado', $pregunta)" :activo="$pregunta->activa" :nombre="$pregunta->pregunta"
+                                                            textoActivo="Visible" textoInactivo="Oculta"
+                                                            desactivar="Dejará de mostrarse en la portada y el asistente no la usará." activar="Se mostrará en la portada y el asistente la usará." />
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5 lg:justify-center">

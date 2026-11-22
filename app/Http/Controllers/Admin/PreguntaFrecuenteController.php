@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\AlternaEstado;
 use App\Http\Controllers\Controller;
 use App\Models\PreguntaFrecuente;
 use App\Services\AuditoriaService;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Redirect;
 
 class PreguntaFrecuenteController extends Controller
 {
+    use AlternaEstado;
+
     public function index(Request $request): View
     {
         // Filtros globales (x-filtro.barra, 22/11/2026). Buscar = texto libre.
@@ -69,6 +72,12 @@ class PreguntaFrecuenteController extends Controller
         );
 
         return Redirect::route('admin.preguntas-frecuentes.index')->with('success', 'Pregunta frecuente guardada.');
+    }
+
+    /** Interruptor de la lista (x-admin.interruptor-estado). */
+    public function estado(Request $request, PreguntaFrecuente $preguntas_frecuente): RedirectResponse
+    {
+        return $this->alternarCampo($request, $preguntas_frecuente, 'activa', 'faq.estado_cambiado', 'Pregunta visible: se muestra en la portada y el asistente la usa.', 'Pregunta oculta: ya no se muestra en la portada ni la usa el asistente.');
     }
 
     public function destroy(Request $request, PreguntaFrecuente $preguntas_frecuente, AuditoriaService $auditoria): RedirectResponse

@@ -94,6 +94,52 @@ class AccionesPosiblesTest extends TestCase
         $this->assertStringNotContainsString('class="rounded-xl p-2 transition', $html);
     }
 
+    /**
+     * 22/11/2026 (encontrado por el usuario): el estado se veía de tres formas
+     * (interruptor en Tratamientos, etiqueta en Servicios/Casos/Galería/
+     * Preguntas, etiqueta + botón en Usuarios). Ahora todas usan el interruptor
+     * global, que pide confirmación y queda en Control de actividades.
+     */
+    public function test_todo_lo_que_se_enciende_y_apaga_usa_el_mismo_interruptor(): void
+    {
+        $servicio = Servicio::create(['nombre' => 'Ortodoncia', 'orden' => 1, 'activo' => true]);
+        $caso = \App\Models\Caso::create(['titulo' => 'Sonrisa nueva', 'orden' => 1, 'activo' => false]);
+        $foto = \App\Models\Imagen::create(['titulo' => 'Recepción', 'url' => 'galeria/a.jpg', 'tipo' => \App\Enums\TipoImagen::Galeria, 'orden' => 1, 'activa' => true]);
+        $pregunta = \App\Models\PreguntaFrecuente::create(['pregunta' => '¿Atienden sábados?', 'respuesta' => 'Sí, de 9 a 14 h.', 'orden' => 1, 'activa' => true]);
+        $otro = User::factory()->create(['rol' => RolUsuario::Asistente, 'activo' => true]);
+
+        $casos = [
+            ['admin.servicios.index', 'admin.servicios.estado', $servicio, 'activo', 'servicio.estado_cambiado'],
+            ['admin.casos.index', 'admin.casos.estado', $caso, 'activo', 'caso.estado_cambiado'],
+            ['admin.galeria.index', 'admin.galeria.estado', $foto, 'activa', 'galeria.estado_cambiado'],
+            ['admin.preguntas-frecuentes.index', 'admin.preguntas-frecuentes.estado', $pregunta, 'activa', 'faq.estado_cambiado'],
+            ['admin.usuarios.index', 'admin.usuarios.activo.toggle', $otro, 'activo', 'usuario.desactivado'],
+        ];
+
+        foreach ($casos as [$lista, $ruta, $modelo, $campo, $accion]) {
+            $html = $this->actingAs($this->admin)->get(route($lista))->assertOk()->getContent();
+            $this->assertStringContainsString('data-interruptor-estado', $html, $lista);
+            $this->assertStringContainsString('role="switch"', $html, $lista);
+            $this->assertStringContainsString('action="'.route($ruta, $modelo).'"', $html, $lista);
+            $this->assertStringContainsString('data-confirmar-titulo=', $html, $lista);
+
+            $antes = (bool) $modelo->{$campo};
+            $this->actingAs($this->admin)->from(route($lista))->patch(route($ruta, $modelo))
+                ->assertRedirect(route($lista))->assertSessionHas('success');
+            $this->assertSame(! $antes, (bool) $modelo->fresh()->{$campo}, $ruta);
+            $this->assertDatabaseHas('logs_auditoria', ['accion' => $accion, 'registro_id' => $modelo->getKey()]);
+        }
+
+        // Usuarios: el botón aparte de Acciones ya no existe; la cuenta propia sale bloqueada.
+        $html = $this->actingAs($this->admin)->get(route('admin.usuarios.index'))->getContent();
+        $this->assertStringNotContainsString('aria-label="Desactivar a ', $html);
+        $this->assertStringContainsString('data-interruptor-bloqueado', $html);
+
+        // La asistente no puede cambiar estados del catálogo.
+        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente, 'activo' => true]);
+        $this->actingAs($asistente)->patch(route('admin.servicios.estado', $servicio))->assertForbidden();
+    }
+
     /** QA del panel (22/11/2026): Galería usaba enlaces de texto propios en lugar de las acciones globales. */
     public function test_galeria_usa_las_acciones_globales(): void
     {

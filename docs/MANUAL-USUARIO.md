@@ -381,9 +381,14 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
   derecha, **Así lo verá el paciente** muestra la opción tal como aparece en la
   agenda en línea y en qué especialidad está (eso se cambia en el servicio).
 - **Activar o desactivar un tratamiento**: con el interruptor de la columna
-  **Estado** en la lista. Activar es inmediato; desactivar pide confirmación y
+  **Estado** en la lista. Activar y desactivar piden confirmación; desactivar
   avisa si una especialidad se quedaría sin tratamientos (pasaría a "Agenda por
   teléfono"). **Sin precio no se puede activar**: la fila dice "Falta precio".
+- **El mismo interruptor en todas las listas** (Servicios, Tratamientos, Casos,
+  Galería, Preguntas frecuentes y Usuarios): la columna **Estado** muestra si
+  está encendido y se cambia ahí mismo, sin entrar a Editar. Siempre pide
+  confirmación y dice qué pasará (por ejemplo, "Dejará de mostrarse en la
+  portada"). Tu propia cuenta sale atenuada con ⓘ: no puedes desactivarte.
 - Las confirmaciones (eliminar, cancelar una cita, desactivar…) usan la ventana
   de Dentissa; se cancelan con **Esc**, con **Cancelar** o tocando fuera.
 - En cada lista, arriba se ve cuántos registros hay y cuántos mostrar por página

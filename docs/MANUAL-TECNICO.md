@@ -1381,6 +1381,13 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Interruptor de estado global (H-46, 22/11/2026).** `x-admin.interruptor-estado`
+  (`action`, `activo`, `nombre`, `activar`/`desactivar` para el diálogo, `textoActivo`/
+  `textoInactivo`, slot `bloqueo`). Rutas `PATCH …/{modelo}/estado` en servicios, casos,
+  galería y preguntas frecuentes, con el trait `Concerns\AlternaEstado` (`alternarCampo()`:
+  invierte el campo con `AuditoriaService::registrarCambio` y regresa con mensaje).
+  Tratamientos (`tratamientos.estado`) y Usuarios (`usuarios.activo.toggle`) conservan
+  sus reglas (precio, cuenta propia) y usan el mismo componente.
 - **Servicios con filtro global (H-45, 22/11/2026).** `buscar` y `activo` como
   Tratamientos. La vista recibe `posiciones` (id → lugar real en el carrusel) y
   `totalServicios`; con `filtrando` no se muestran las flechas de `servicios.mover`.

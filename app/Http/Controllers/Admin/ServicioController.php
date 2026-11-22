@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\EstadoCita;
+use App\Http\Controllers\Concerns\AlternaEstado;
 use App\Http\Controllers\Controller;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
@@ -16,6 +17,8 @@ use Illuminate\Validation\Rule;
 
 class ServicioController extends Controller
 {
+    use AlternaEstado;
+
     public function index(Request $request): View
     {
         // Filtro global (22/11/2026), igual que Tratamientos. Antes no lo tenía
@@ -172,6 +175,12 @@ class ServicioController extends Controller
         });
 
         return Redirect::back()->with('success', "«{$servicio->nombre}» se movió ".($direccion === 'arriba' ? 'hacia arriba.' : 'hacia abajo.'));
+    }
+
+    /** Interruptor de la lista (x-admin.interruptor-estado). */
+    public function estado(Request $request, Servicio $servicio): RedirectResponse
+    {
+        return $this->alternarCampo($request, $servicio, 'activo', 'servicio.estado_cambiado', "«{$servicio->nombre}» está activo: se muestra en la portada.", "«{$servicio->nombre}» está inactivo: ya no se muestra en la portada.");
     }
 
     public function destroy(Request $request, Servicio $servicio, AuditoriaService $auditoria): RedirectResponse

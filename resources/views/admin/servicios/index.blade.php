@@ -82,7 +82,9 @@
                                 </x-chip>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <x-admin.status-badge :active="$servicio->activo" />
+                                <x-admin.interruptor-estado :action="route('admin.servicios.estado', $servicio)" :activo="$servicio->activo" :nombre="$servicio->nombre"
+                                                            desactivar="Dejará de mostrarse en el carrusel de la portada."
+                                                            activar="Se mostrará en el carrusel de la portada." />
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5 lg:justify-center">

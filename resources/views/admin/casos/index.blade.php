@@ -49,7 +49,8 @@
                             </td>
                             <td class="px-6 py-4 text-center text-ink-soft font-semibold whitespace-nowrap">{{ $caso->orden }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <x-admin.status-badge :active="$caso->activo" />
+                                <x-admin.interruptor-estado :action="route('admin.casos.estado', $caso)" :activo="$caso->activo" :nombre="$caso->titulo"
+                                                            desactivar="Dejará de mostrarse en la portada." activar="Se mostrará en la portada." />
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5 lg:justify-center">

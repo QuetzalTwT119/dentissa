@@ -57,42 +57,15 @@
                                             .' sin tratamientos y la portada '.($quedanVacios->count() === 1 ? 'la' : 'las').' mostrará como "Agenda por teléfono".';
                                     }
                                 @endphp
-                                @if (! $tratamiento->activo && ! $tratamiento->precioFormateado())
-                                    {{-- Sin precio no se publica: interruptor apagado y bloqueado, con el camino para resolverlo. --}}
-                                    <div class="flex items-center gap-2.5" data-falta-precio>
-                                        <span aria-hidden="true" class="relative h-6 w-11 shrink-0 cursor-not-allowed rounded-full bg-line opacity-60">
-                                            <span class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm"></span>
-                                        </span>
-                                        <a href="{{ route('admin.tratamientos.edit', $tratamiento) }}" class="inline-flex min-h-11 items-center text-sm font-semibold text-brand-700 hover:text-brand-800 lg:min-h-0">Falta precio</a>
-                                    </div>
-                                @else
-                                    {{-- Clic en el estado: todo cambio pide confirmación (21/11/2026); desactivar explica qué pasará. --}}
-                                    <form method="POST" action="{{ route('admin.tratamientos.estado', $tratamiento) }}"
-                                          @if ($tratamiento->activo)
-                                              data-confirmar="{{ $consecuencia }}"
-                                              data-confirmar-titulo="¿Desactivar «{{ $tratamiento->nombre }}»?"
-                                              data-confirmar-boton="Sí, desactivar"
-                                              data-confirmar-tono="peligro"
-                                          @else
-                                              data-confirmar="Los pacientes podrán agendarlo de nuevo."
-                                              data-confirmar-titulo="¿Activar «{{ $tratamiento->nombre }}»?"
-                                              data-confirmar-boton="Sí, activar"
-                                              data-confirmar-tono="normal"
-                                          @endif>
-                                        @csrf
-                                        @method('patch')
-                                        {{-- Interruptor (no una etiqueta): se reconoce a simple vista como algo que se enciende y apaga. --}}
-                                        <button type="submit" data-alternar-estado role="switch" aria-checked="{{ $tratamiento->activo ? 'true' : 'false' }}"
-                                                title="{{ $tratamiento->activo ? 'Clic para desactivar' : 'Clic para activar' }}"
-                                                aria-label="{{ $tratamiento->nombre }} activo"
-                                                class="group inline-flex min-h-11 items-center gap-2.5 rounded-full pr-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300">
-                                            <span aria-hidden="true" class="relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 {{ $tratamiento->activo ? 'bg-sage-600' : 'bg-line group-hover:bg-peach-300' }}">
-                                                <span class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ease-out motion-reduce:transition-none {{ $tratamiento->activo ? 'translate-x-5' : '' }}"></span>
-                                            </span>
-                                            <span class="text-sm font-medium {{ $tratamiento->activo ? 'text-sage-700' : 'text-muted' }}">{{ $tratamiento->activo ? 'Activo' : 'Inactivo' }}</span>
-                                        </button>
-                                    </form>
-                                @endif
+                                {{-- Interruptor global; sin precio sale bloqueado con el camino para resolverlo. --}}
+                                <x-admin.interruptor-estado :action="route('admin.tratamientos.estado', $tratamiento)" :activo="$tratamiento->activo" :nombre="$tratamiento->nombre"
+                                                            :desactivar="$consecuencia" activar="Los pacientes podrán agendarlo de nuevo.">
+                                    @if (! $tratamiento->activo && ! $tratamiento->precioFormateado())
+                                        <x-slot:bloqueo>
+                                            <a href="{{ route('admin.tratamientos.edit', $tratamiento) }}" data-falta-precio class="inline-flex min-h-11 items-center text-sm font-semibold text-brand-700 hover:text-brand-800 lg:min-h-0">Falta precio</a>
+                                        </x-slot:bloqueo>
+                                    @endif
+                                </x-admin.interruptor-estado>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5 lg:justify-center">

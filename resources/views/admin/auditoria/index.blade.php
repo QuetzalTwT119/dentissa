@@ -59,6 +59,10 @@ $etiquetasAccion = [
     'mensaje.eliminado' => 'Mensaje de contacto eliminado',
     'servicio.reordenado' => 'Servicios reordenados',
     'tratamiento.estado_cambiado' => 'Tratamiento activado o desactivado',
+    'servicio.estado_cambiado' => 'Servicio activado o desactivado',
+    'caso.estado_cambiado' => 'Caso activado o desactivado',
+    'galeria.estado_cambiado' => 'Foto de galería activada o desactivada',
+    'faq.estado_cambiado' => 'Pregunta mostrada u ocultada',
     // Eventos sin detalle del observador (cambios que no pasan por AuditoriaService).
     'creado' => 'Registro creado',
     'actualizado' => 'Registro actualizado',
