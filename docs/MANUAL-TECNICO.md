@@ -1395,6 +1395,13 @@ administrador y el asistente gestionan los demás cambios desde el panel
   antes la ponía MySQL en hora universal y se veía 6 horas adelantado. La migración
   `2026_11_22_000002_corregir_hora_y_duplicados_de_la_bitacora` (solo MySQL) corrige la
   hora del historial y borra los genéricos duplicados (en local: 374 → 218 registros).
+- **Texto largo con "Leer completo" (H-44, 22/11/2026).** `x-texto-expandible`
+  (`texto`, `lineas` 2–5, `comillas`) recorta con `line-clamp` y respeta saltos de línea;
+  en `init()` mide si hay texto oculto y solo entonces muestra el botón. Se usa en
+  los testimonios de la portada y del panel. Testimonios del panel tiene `buscar`
+  (paciente por palabra en nombre o apellido, o comentario) con `whereContiene`.
+  Nota de pruebas: el navegador integrado puede pausar `requestAnimationFrame`;
+  `x-show` espera un cuadro para mostrar, así que hay que forzar el dibujado.
 - **Configuración en una sola página (22/11/2026).** `GET admin.configuracion`
   (`ConfiguracionController`) muestra `admin/configuracion/_consultorio` y
   `_horarios`, cada uno con su `<form>`; las rutas `admin.horarios.edit` y

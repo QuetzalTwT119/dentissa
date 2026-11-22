@@ -470,6 +470,10 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 - La clínica **no crea ni edita** testimonios: solo los **aprueba**, **rechaza**
   (se quedan en la lista como "Rechazado", sin publicarse, y se pueden aprobar
   después) o **elimina** (se borran para siempre, por ejemplo si el paciente lo pide).
+- Los testimonios largos muestran unas líneas y el botón **Leer completo**, en la
+  portada y en el panel, para leerlos enteros antes de aprobarlos. El buscador de
+  la lista encuentra por nombre del paciente o por lo que escribió, y se combina
+  con el filtro de estado.
 
 ## 4. Asistente de agenda
 

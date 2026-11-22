@@ -27,7 +27,8 @@ $estadoClase = [
 
                 <x-pagination-summary :items="$testimonios" label="testimonios">
                     <x-slot:filtros>
-                        <x-filtro.barra :action="route('admin.testimonios.index')" :campos="['estado']">
+                        <x-filtro.barra :action="route('admin.testimonios.index')" :campos="['buscar', 'estado']">
+                            <x-filtro.buscar name="buscar" etiqueta="Buscar testimonios" placeholder="Paciente o comentario…" />
                             <x-filtro.select name="estado" etiqueta="Filtrar por estado" todos="Todos los testimonios" :opciones="['pendiente' => 'Pendientes', 'aprobado' => 'Aprobados', 'rechazado' => 'Rechazados']" />
                         </x-filtro.barra>
                     </x-slot:filtros>
@@ -53,7 +54,10 @@ $estadoClase = [
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-amber-400 tracking-label font-semibold whitespace-nowrap">{{ str_repeat('★', $testimonio->calificacion) }}</td>
-                            <td class="max-w-[18rem] truncate px-6 py-4 text-ink" title="{{ $testimonio->comentario }}">{{ $testimonio->comentario }}</td>
+                            {{-- Para moderar hay que leerlo entero: 3 líneas y "Leer completo" (antes una línea cortada). --}}
+                            <td class="min-w-[16rem] max-w-[26rem] whitespace-normal px-6 py-4 text-ink">
+                                <x-texto-expandible :texto="$testimonio->comentario" lineas="3" />
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <x-chip class="{{ $estadoClase[$testimonio->estado->value] ?? 'bg-shell text-ink' }}">
                                     {{ $estadoLabel[$testimonio->estado->value] ?? $testimonio->estado->value }}

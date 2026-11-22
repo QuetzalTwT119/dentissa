@@ -73,6 +73,32 @@ class TestimoniosYPromocionesPublicasTest extends TestCase
             ->assertDontSee('Martínez');
     }
 
+    /**
+     * QA de testimonios (22/11/2026): el largo se cortaba sin poder leerlo
+     * (portada y panel) y la lista no tenía buscador como las demás.
+     */
+    public function test_el_testimonio_largo_se_lee_completo_y_el_panel_busca_por_paciente_o_texto(): void
+    {
+        $otro = Paciente::create(['nombre' => 'Luis', 'apellido' => 'Pérez', 'telefono' => '55 8765 4321']);
+        Testimonio::create(['id_paciente' => $this->paciente->id, 'calificacion' => 5, 'comentario' => "Primera línea.\nSegunda línea.", 'estado' => 'aprobado', 'fecha_publicacion' => now()]);
+        Testimonio::create(['id_paciente' => $otro->id, 'calificacion' => 3, 'comentario' => 'Me costó encontrar el consultorio 100%.', 'estado' => 'pendiente']);
+
+        $this->get('/')->assertOk()
+            ->assertSee('Leer completo')
+            ->assertSee('whitespace-pre-line', false)
+            ->assertSee("Primera línea.\nSegunda línea.", false);
+
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $buscar = fn (string $texto) => $this->actingAs($admin)->get(route('admin.testimonios.index', ['buscar' => $texto]))->assertOk();
+
+        $buscar('Ana Martínez')->assertSee('Primera línea.')->assertDontSee('Me costó encontrar');
+        $buscar('consultorio')->assertSee('Me costó encontrar')->assertDontSee('Primera línea.');
+        $buscar('%')->assertSee('Me costó encontrar')->assertDontSee('Primera línea.');
+        $buscar('nadie así')->assertSee('No hay testimonios registrados con esos criterios');
+        $this->actingAs($admin)->get(route('admin.testimonios.index', ['buscar' => 'pérez', 'estado' => 'aprobado']))
+            ->assertOk()->assertSee('No hay testimonios registrados con esos criterios');
+    }
+
     public function test_un_contacto_desconocido_recibe_la_misma_respuesta_y_no_se_guarda(): void
     {
         $this->enviar(['contacto' => '55 9999 0000'])->assertSessionHas('testimonio_enviado');
