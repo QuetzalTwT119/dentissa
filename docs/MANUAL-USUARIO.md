@@ -27,11 +27,13 @@ El enlace se envía a la dirección asociada a esa cuenta de Dentissa. En el
 prototipo, la clínica puede usar Gmail API como canal emisor; eso no cambia el
 destinatario ni requiere que cada usuario conecte su propio Google.
 
-La navegación interna muestra la marca Dentissa, un acceso a **Inicio**, otro a
+La navegación interna muestra la marca (el logotipo con la firma **Dra. Melissa
+López**, igual que en la portada), un acceso a **Inicio**, otro a
 la **Agenda** y otro al **Asistente**. En administración, **Gestión** agrupa
 Pacientes, Usuarios, Reportes, Mensajes y Control de actividades; los
 menús **Catálogo**, **Contenido** y **Configuración** reúnen el resto de las
-secciones. En pantallas angostas, usa el botón de menú para encontrar las
+secciones. El menú completo se ve en computadora, laptop, TV y proyector (desde
+1024 px de ancho; en las más chicas solo se ve el círculo del logotipo y tu foto). En celular y tableta, usa el botón de menú (☰) para encontrar las
 mismas opciones y la campana para abrir una vista rápida de notificaciones.
 En el teléfono, los listados anchos conservan sus
 columnas dentro de un área que puedes desplazar lateralmente; los filtros y

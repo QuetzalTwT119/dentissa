@@ -76,13 +76,7 @@
             <!-- Barra superior -->
             <header class="sticky top-0 z-20 pt-[env(safe-area-inset-top)] border-b border-line/70 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
                 <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-                    <a href="{{ url('/') }}" class="flex min-w-0 items-center gap-3 rounded-full" aria-label="Volver al inicio">
-                        <img src="/images/brand/logo-rosa-transparente.png" alt="Dentissa" class="h-10 w-10 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-peach-200">
-                        <span class="min-w-0 leading-none">
-                            <span class="block truncate firma text-[1.1rem] leading-none text-brand-700 sm:text-[1.2rem]">Dra. Melissa López N.</span>
-                            <span class="mt-1 hidden text-caption font-semibold uppercase tracking-label text-muted sm:block">Odontología Integral & Armonización</span>
-                        </span>
-                    </a>
+                    <x-marca :href="url('/')" aria-label="Volver al inicio" />
 
                     <a href="{{ url('/') }}" class="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full border border-line bg-white px-3 text-sm sm:px-4 font-semibold text-ink transition-colors hover:border-peach-300 hover:text-brand-700" aria-label="Volver al inicio">
                         <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

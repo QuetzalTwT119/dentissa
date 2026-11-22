@@ -96,14 +96,8 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <nav class="flex h-[4.5rem] items-center justify-between gap-4" aria-label="Navegación principal">
 
-                <!-- Logo con firma cursiva -->
-                <a href="{{ url('/') }}" class="flex min-w-0 shrink-0 items-center gap-3 rounded-full">
-                    <img src="{{ asset('images/9.jpg') }}" alt="Logo Dentissa" class="h-11 w-11 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-peach-200" width="44" height="44">
-                    <span class="min-w-0 leading-none">
-                        <span class="block truncate firma text-[1.2rem] leading-none text-brand-700 sm:text-[1.35rem]">Dra. Melissa López</span>
-                        <span class="mt-1 block text-caption font-semibold uppercase tracking-label text-muted">Odontología Integral</span>
-                    </span>
-                </a>
+                <!-- Marca global (x-marca) -->
+                <x-marca :href="url('/')" aria-label="Dra. Melissa López, Odontología Integral: ir al inicio" />
 
                 <!-- Menú de escritorio (>= 1024px) -->
                 <div class="hidden items-center gap-7 whitespace-nowrap text-sm font-medium text-ink-soft xl:flex">

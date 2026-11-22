@@ -23,7 +23,9 @@ class DashboardVisualTest extends TestCase
             ->assertSee('Agendar cita')
             ->assertSee('Pacientes')
             ->assertSee('Gestión')
-            ->assertSee('logo-rosa-transparente.png');
+            // Marca global (22/11/2026): la misma firma que la portada.
+            ->assertSee('data-marca', false)
+            ->assertSee('Dra. Melissa López');
     }
 
     public function test_assistant_dashboard_speaks_to_the_staff_not_to_patients(): void

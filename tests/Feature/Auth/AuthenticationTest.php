@@ -20,7 +20,9 @@ class AuthenticationTest extends TestCase
             ->assertSee('Melissa López N.')
             ->assertSee('Cada cita merece una atención bien coordinada.')
             ->assertSee('hero-inicio.jpg')
-            ->assertSee('rounded-full bg-white/95 p-1')
+            // Marca global sobre la foto (22/11/2026).
+            ->assertSee('data-marca', false)
+            ->assertSee('Dra. Melissa López')
             ->assertDontSee('rounded-2xl border border-white/20 bg-white/95')
             ->assertSee('Acceso privado del consultorio')
             ->assertSee('Acceso · Melissa López N. — Odontología Integral')
