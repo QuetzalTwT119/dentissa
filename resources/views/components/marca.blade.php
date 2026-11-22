@@ -5,15 +5,15 @@
     "Melissa López N." y panel "Dentissa / Administración").
 
     <x-marca :href="url('/')" />
-    <x-marca :href="route('dashboard')" texto-desde="xl" />   (panel: en pantallas medianas solo el círculo)
+    <x-marca :href="route('dashboard')" texto-desde="xl" />   (panel: entre 1024 y 1280 px solo el círculo)
     <x-marca tono="oscuro" tamano="grande" />                  (sobre foto oscura)
 
     Props:
       - href: a dónde lleva (sin href, no es enlace).
       - tono: claro (por omisión) | oscuro (texto blanco sobre fondo oscuro).
       - tamano: normal | grande.
-      - textoDesde: '' (siempre) | 'sm' | 'xl': desde qué ancho se ve el nombre;
-        abajo de eso queda solo el círculo (el nombre sigue para lectores de pantalla).
+      - textoDesde: '' (siempre) | 'sm' (desde 640 px) | 'xl' (todo menos 1024–1280 px):
+        donde no se ve queda solo el círculo (el nombre sigue para lectores de pantalla).
 --}}
 @props(['href' => null, 'tono' => 'claro', 'tamano' => 'normal', 'textoDesde' => ''])
 
@@ -21,7 +21,9 @@
     $oscuro = $tono === 'oscuro';
     $grande = $tamano === 'grande';
     // Clases literales para que Tailwind las incluya.
-    $textoVisible = ['' => '', 'sm' => 'sr-only sm:not-sr-only', 'xl' => 'sr-only xl:not-sr-only'][$textoDesde] ?? '';
+    // 'xl' (panel): la firma se esconde SOLO entre 1024 y 1280 px, donde el menú
+    // completo necesita el espacio. En celular y tableta (hamburguesa) sí cabe.
+    $textoVisible = ['' => '', 'sm' => 'sr-only sm:not-sr-only', 'xl' => 'lg:sr-only xl:not-sr-only'][$textoDesde] ?? '';
     $etiqueta = $href ? 'a' : 'span';
 @endphp
 

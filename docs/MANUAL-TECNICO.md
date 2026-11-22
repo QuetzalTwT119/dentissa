@@ -1384,7 +1384,7 @@ administrador y el asistente gestionan los demás cambios desde el panel
 - **Menú del panel desde 1024 px y marca única (H-47, 22/11/2026).** `layouts/navigation`
   muestra el menú completo con `lg:` (antes `2xl:`, 1536 px); entre `lg` y `xl` reduce
   el relleno de los enlaces (`px-3 xl:px-4`, también en `x-nav-link` y `x-nav-dropdown`) y
-  esconde el nombre del usuario y el de la marca con `sr-only … xl:not-sr-only` (siguen
+  esconde el nombre del usuario (`sr-only xl:not-sr-only`) y la firma de la marca solo en ese rango (`lg:sr-only xl:not-sr-only`) (siguen
   para lectores de pantalla). `x-marca` (`href`, `tono` claro/oscuro, `tamano`,
   `textoDesde`) es el logotipo con firma en portada, agenda pública, inicio de sesión y
   panel; usa `images/9.jpg` (31 KB; el PNG pesaba 150 KB). Regla: el sistema se usa en
