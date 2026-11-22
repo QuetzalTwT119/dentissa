@@ -463,14 +463,7 @@
     display: none !important;
 }
 
-html {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-html::-webkit-scrollbar {
-    display: none;
-}
+/* Scrollbar: se usa la predeterminada del navegador en todas las vistas */
 
 .notification-preview-title {
     display: block;
@@ -1097,6 +1090,26 @@ html::-webkit-scrollbar {
         /* Lo posicionado (p. ej. textos .sr-only) se mide aquí y no estira la página. */
         position: relative;
     }
+
+    /*
+     * 22/11/2026: la barra de desplazamiento va en la orilla derecha de la
+     * ventana, como en cualquier página. Antes .panel-contenido medía lo mismo
+     * que su contenido centrado (max-w-*) y la barra quedaba en medio, pegada
+     * a las tarjetas. Ahora ocupa todo el ancho y el relleno lateral centra el
+     * contenido con el mismo ancho de siempre (W − 2 × 2 rem de lg:px-8).
+     */
+    .panel-contenido[class*="max-w-"] {
+        --ancho-contenido: 80rem; /* max-w-7xl */
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: max(2rem, calc((100% - var(--ancho-contenido)) / 2 + 2rem));
+        padding-right: max(2rem, calc((100% - var(--ancho-contenido)) / 2 + 2rem));
+    }
+
+    .panel-contenido.max-w-6xl { --ancho-contenido: 72rem; }
+    .panel-contenido.max-w-5xl { --ancho-contenido: 64rem; }
+    .panel-contenido.max-w-3xl { --ancho-contenido: 48rem; }
 
     .panel-contenido > * {
         flex-shrink: 0;
