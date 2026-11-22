@@ -44,57 +44,26 @@ class PacienteController extends Controller
     {
         return view('admin.pacientes.edit', [
             'paciente' => $paciente,
-            'tutoresDisponibles' => Paciente::where('id', '!=', $paciente->id)
-                ->get()
-                ->map(fn (Paciente $p) => [
-                    'id' => $p->id,
-                    'nombre' => $p->nombre_completo,
-                ])
-                ->values(),
         ]);
     }
 
     public function update(Request $request, Paciente $paciente, AuditoriaService $auditoria): RedirectResponse
     {
-        $request->merge([
-            'curp' => $request->filled('curp') ? strtoupper($request->string('curp')) : null,
-            'rfc' => $request->filled('rfc') ? strtoupper($request->string('rfc')) : null,
-            'ine_clave' => $request->filled('ine_clave') ? strtoupper($request->string('ine_clave')) : null,
-        ]);
 
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             'apellido' => ['required', 'string', 'max:100'],
             'telefono' => [
-                'nullable', 'string', 'max:20',
+                'required', 'string', 'max:20',
                 'regex:/^(?:\\+?52[\\s().-]*)?(?:[0-9][\\s().-]*){10}$/',
             ],
             'email' => [
                 'nullable', 'email', 'max:100',
                 Rule::unique('pacientes', 'email')->ignore($paciente->id),
             ],
-            'curp' => [
-                'nullable', 'string', 'size:18',
-                'regex:/^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]{2}$/',
-                Rule::unique('pacientes', 'curp')->ignore($paciente->id),
-            ],
-            'rfc' => [
-                'nullable', 'string', 'size:13',
-                'regex:/^[A-ZÑ&]{4}\d{6}[A-Z0-9]{3}$/',
-                Rule::unique('pacientes', 'rfc')->ignore($paciente->id),
-            ],
-            'ine_clave' => [
-                'nullable', 'string', 'size:18',
-                Rule::unique('pacientes', 'ine_clave')->ignore($paciente->id),
-            ],
-            'tutor_id' => [
-                'nullable', 'integer',
-                Rule::exists('pacientes', 'id'),
-                Rule::notIn([$paciente->id]),
-            ],
         ]);
 
-        $camposModificados = collect(['nombre', 'apellido', 'telefono', 'email', 'curp', 'rfc', 'ine_clave', 'tutor_id'])
+        $camposModificados = collect(['nombre', 'apellido', 'telefono', 'email'])
             ->filter(fn (string $campo) => $paciente->getAttribute($campo) !== ($validated[$campo] ?? null))
             ->values()
             ->all();
@@ -103,12 +72,9 @@ class PacienteController extends Controller
             $paciente->update([
                 'nombre' => $validated['nombre'],
                 'apellido' => $validated['apellido'],
-                'telefono' => $validated['telefono'] ?? null,
+                'telefono' => $validated['telefono'],
                 'email' => $validated['email'] ?? null,
-                'curp' => $validated['curp'] ?? null,
-                'rfc' => $validated['rfc'] ?? null,
-                'ine_clave' => $validated['ine_clave'] ?? null,
-                'tutor_id' => $validated['tutor_id'] ?? null,
+                // CURP, RFC, INE y tutor ya no se editan (22/11/2026): lo guardado se conserva.
             ]);
 
             $auditoria->registrar('paciente.datos_actualizados', $paciente, datosNuevos: [

@@ -138,23 +138,17 @@ class AuditoriaAtomicaTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('admin.pacientes.update', $paciente), [
-                'nombre' => $paciente->nombre,
+                'nombre' => 'Nombre que no debe quedar',
                 'apellido' => $paciente->apellido,
-                'telefono' => $paciente->telefono,
+                'telefono' => $paciente->telefono ?? '7551020089',
                 'email' => $paciente->email,
-                'curp' => 'GORP800101HDFRZL09',
-                'rfc' => 'GORP800101AB1',
-                'ine_clave' => 'ABC123456789012345',
-                'tutor_id' => null,
             ])
             ->assertStatus(503)
             ->assertSee('No se guardaron los cambios');
 
         $this->assertDatabaseHas('pacientes', [
             'id' => $paciente->id,
-            'curp' => null,
-            'rfc' => null,
-            'ine_clave' => null,
+            'nombre' => $paciente->nombre,
         ]);
     }
 

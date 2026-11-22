@@ -24,7 +24,7 @@
                 </div>
 
                 <p class="mt-6 text-sm text-ink-soft lg:hidden">
-                    Actualiza los datos de contacto y, si hace falta, los identificadores oficiales o la relación familiar.
+                    Actualiza el nombre y los datos de contacto del paciente.
                 </p>
 
                 <form method="POST" action="{{ route('admin.pacientes.update', $paciente) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los datos del paciente?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="formulario-panel mt-6 space-y-6 lg:mt-4">
@@ -33,7 +33,7 @@
 
                     <x-form-obligatorios />
                     <!-- Sección: Datos Personales -->
-                    <div class="rounded-xl bg-cream/60 p-4 sm:p-6 border border-line/70 space-y-4 lg:p-4">
+                    <div class="col-completa rounded-xl bg-cream/60 p-4 sm:p-6 border border-line/70 space-y-4 lg:p-4">
                         <h4 class="text-xs font-semibold uppercase tracking-label text-muted flex items-center gap-1.5">
                             <span class="h-2 w-2 rounded-full bg-brand-500"></span>
                             Datos Personales y Contacto
@@ -55,9 +55,10 @@
                             </div>
 
                             <div>
-                                <x-input-label for="telefono" value="Teléfono (opcional)" />
-                                <x-text-input id="telefono" name="telefono" type="tel" class="mt-1.5 block w-full"
-                                              value="{{ old('telefono', $paciente->telefono) }}" maxlength="20"
+                                {{-- Obligatorio (22/11/2026): por él se le avisa por WhatsApp y se le reconoce al agendar. --}}
+                                <x-input-label :required="true" for="telefono" value="Teléfono celular" />
+                                <x-text-input id="telefono" name="telefono" type="tel" inputmode="numeric" class="mt-1.5 block w-full"
+                                              value="{{ old('telefono', $paciente->telefono) }}" maxlength="20" required
                                               placeholder="10 dígitos; +52 opcional" />
                                 <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                             </div>
@@ -71,50 +72,8 @@
                         </div>
                     </div>
 
-                    <!-- Sección: Identificadores Oficiales -->
-                    <div class="rounded-xl bg-white p-4 sm:p-6 border border-line/70 space-y-4 lg:p-4">
-                        <h4 class="text-xs font-semibold uppercase tracking-label text-muted flex items-center gap-1.5">
-                            <span class="h-2 w-2 rounded-full bg-teal-600"></span>
-                            Identificadores Oficiales y Tutoría
-                        </h4>
-
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div>
-                                <x-input-label for="curp" value="CURP" />
-                                <x-text-input id="curp" name="curp" class="mt-1.5 block w-full uppercase" maxlength="18"
-                                              value="{{ old('curp', $paciente->curp) }}" placeholder="Ej. GORP800101HDFRZL09"
-                                              oninput="this.value = this.value.toUpperCase()" />
-                                <x-input-error :messages="$errors->get('curp')" class="mt-2" />
-                            </div>
-
-                            <div>
-                                <x-input-label for="rfc" value="RFC" />
-                                <x-text-input id="rfc" name="rfc" class="mt-1.5 block w-full uppercase" maxlength="13"
-                                              value="{{ old('rfc', $paciente->rfc) }}" placeholder="Ej. GORP800101AB1"
-                                              oninput="this.value = this.value.toUpperCase()" />
-                                <x-input-error :messages="$errors->get('rfc')" class="mt-2" />
-                            </div>
-
-                            <div>
-                                <x-input-label for="ine_clave" value="Clave de elector (INE)" />
-                                <x-text-input id="ine_clave" name="ine_clave" class="mt-1.5 block w-full uppercase" maxlength="18"
-                                              value="{{ old('ine_clave', $paciente->ine_clave) }}"
-                                              oninput="this.value = this.value.toUpperCase()" />
-                                <x-input-error :messages="$errors->get('ine_clave')" class="mt-2" />
-                            </div>
-
-                            <div>
-                                <x-input-label for="tutor_id" value="Tutor o responsable (opcional)" />
-                                <x-select id="tutor_id" name="tutor_id" class="mt-1.5">
-                                    <option value="">Ninguno — paciente independiente</option>
-                                    @foreach ($tutoresDisponibles as $t)
-                                        <option value="{{ $t['id'] }}" @selected(old('tutor_id', $paciente->tutor_id) == $t['id'])>{{ $t['nombre'] }}</option>
-                                    @endforeach
-                                </x-select>
-                                <x-input-error :messages="$errors->get('tutor_id')" class="mt-2" />
-                            </div>
-                        </div>
-                    </div>
+                    {{-- Sin CURP, RFC, clave de elector ni tutor (22/11/2026, decisión del usuario): no se usaban.
+                         Lo ya guardado se conserva en la base; esta pantalla ya no lo pide ni lo cambia. --}}
 
                     <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button>Guardar cambios</x-primary-button>

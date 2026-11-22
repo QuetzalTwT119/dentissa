@@ -35,8 +35,12 @@ class PacienteHistorialTest extends TestCase
             ->assertOk()
             ->assertSee('Nombre')
             ->assertSee('Apellido')
-            ->assertSee('Teléfono (opcional)')
-            ->assertSee('Correo electrónico (opcional)');
+            // 22/11/2026: teléfono obligatorio; sin CURP, RFC, INE ni tutor.
+            ->assertSee('Teléfono celular')
+            ->assertSee('Correo electrónico (opcional)')
+            ->assertDontSee('name="curp"', false)
+            ->assertDontSee('name="tutor_id"', false)
+            ->assertDontSee('Identificadores Oficiales');
 
         $this->actingAs($admin)
             ->put(route('admin.pacientes.update', $paciente), [
@@ -44,10 +48,8 @@ class PacienteHistorialTest extends TestCase
                 'apellido' => 'QA Actualizada',
                 'telefono' => '+52 (755) 555-1234',
                 'email' => 'sofia.actualizada@example.test',
+                // Si llegaran, se ignoran: ya no se editan desde aquí.
                 'curp' => 'GORP800101HDFRZL09',
-                'rfc' => 'GORP800101AB1',
-                'ine_clave' => 'ABC123456789012345',
-                'tutor_id' => null,
             ])
             ->assertRedirect(route('admin.pacientes.index'));
 
@@ -57,9 +59,7 @@ class PacienteHistorialTest extends TestCase
             'apellido' => 'QA Actualizada',
             'telefono' => '+52 (755) 555-1234',
             'email' => 'sofia.actualizada@example.test',
-            'curp' => 'GORP800101HDFRZL09',
-            'rfc' => 'GORP800101AB1',
-            'ine_clave' => 'ABC123456789012345',
+            'curp' => null,
         ]);
         $evento = LogAuditoria::where('id_usuario', $admin->id)
             ->where('accion', 'paciente.datos_actualizados')
@@ -67,7 +67,7 @@ class PacienteHistorialTest extends TestCase
             ->where('registro_id', $paciente->id)
             ->firstOrFail();
         $this->assertEqualsCanonicalizing(
-            ['nombre', 'apellido', 'telefono', 'email', 'curp', 'rfc', 'ine_clave'],
+            ['nombre', 'apellido', 'telefono', 'email'],
             $evento->datos_nuevos['campos_modificados']
         );
         $this->assertStringNotContainsString('sofia.actualizada@example.test', json_encode($evento->datos_nuevos));
@@ -85,10 +85,6 @@ class PacienteHistorialTest extends TestCase
             'apellido' => 'QA',
             'telefono' => '5551236789',
             'email' => $otroPaciente->email,
-            'curp' => null,
-            'rfc' => null,
-            'ine_clave' => null,
-            'tutor_id' => null,
         ];
 
         $this->actingAs($admin)
@@ -255,5 +251,21 @@ class PacienteHistorialTest extends TestCase
             'telefono' => '5555555555',
             'email' => fake()->unique()->safeEmail(),
         ]);
+    }
+
+    /** 22/11/2026: el teléfono es obligatorio (por él se avisa por WhatsApp); el correo sigue opcional. */
+    public function test_el_telefono_es_obligatorio_y_el_correo_opcional(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $paciente = $this->crearPaciente('Sofia', 'QA');
+
+        $this->actingAs($admin)->from(route('admin.pacientes.edit', $paciente))
+            ->put(route('admin.pacientes.update', $paciente), ['nombre' => 'Sofia', 'apellido' => 'QA', 'telefono' => '', 'email' => ''])
+            ->assertSessionHasErrors('telefono');
+
+        $this->actingAs($admin)
+            ->put(route('admin.pacientes.update', $paciente), ['nombre' => 'Sofia', 'apellido' => 'QA', 'telefono' => '7551020089', 'email' => ''])
+            ->assertSessionHasNoErrors();
+        $this->assertNull($paciente->fresh()->email);
     }
 }

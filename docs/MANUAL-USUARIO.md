@@ -585,13 +585,16 @@ apoyarse en una respuesta activa, el chat conserva su mensaje de respaldo.
 Desde `/admin/pacientes`:
 
 1. Buscar por una parte del nombre, correo o teléfono, o seleccionar un paciente de la lista.
-2. Abrir **Editar** para corregir su nombre, apellido, teléfono y correo. Nombre y apellido son obligatorios; teléfono y correo son opcionales. El correo debe ser único y el teléfono debe contener diez dígitos, con código `+52` opcional.
-3. En esa misma pantalla, actualizar si hace falta CURP, RFC, clave de elector o tutor/responsable; son opcionales.
-4. Abrir **Ver historial**.
-5. Pulsar **Nueva consulta**.
-6. Completar los campos indicados como **obligatorios**: fecha, tipo y motivo. Diagnóstico, tratamiento, medicamentos, observaciones y notas privadas son opcionales; la cita relacionada también es opcional cuando aparece.
-7. Guardar la consulta.
-8. Consultar, editar o eliminar las consultas. El PDF se habilita cuando existe al menos una consulta.
+2. Abrir **Editar** (✎) para corregir su nombre, apellido, teléfono celular y correo. Nombre, apellido y **teléfono celular son obligatorios** (por el teléfono se le avisa por WhatsApp y se le reconoce al agendar); el correo es opcional y debe ser único. El teléfono debe tener diez dígitos, con código `+52` opcional.
+3. Abrir el **historial** (📋), o tocar su número de consultas.
+4. Pulsar **Nueva consulta**.
+5. Completar los campos indicados como **obligatorios**: fecha, tipo y motivo. Diagnóstico, tratamiento, medicamentos, observaciones y notas privadas son opcionales; la cita relacionada también es opcional cuando aparece.
+6. Guardar la consulta.
+7. Consultar, editar o eliminar las consultas. El PDF se habilita cuando existe al menos una consulta.
+
+**Cita y consulta no son lo mismo:** la cita es la reservación de la Agenda (día, hora y
+estado); la consulta es la nota médica del expediente. Completar una cita no crea la
+consulta: hay que registrarla en el historial del paciente.
 
 El historial clínico está reservado al administrador. El campo **Notas privadas del doctor**
 es visible para el administrador y no se incluye en el PDF descargable.
