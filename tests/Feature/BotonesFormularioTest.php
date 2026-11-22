@@ -38,6 +38,8 @@ class BotonesFormularioTest extends TestCase
         $this->assertStringContainsString('button.place-items-center[aria-busy="true"] > :not(.btn-spinner)', $css);
         // Las listas ya no se desplazan por dentro de la tarjeta.
         $this->assertStringNotContainsString('.panel-contenido .tabla-larga.tabla-panel > [x-ref="desplazable"]', $css);
+        // Ni encabezados pegados arriba: parecía que la tabla se desplazaba por dentro.
+        $this->assertStringNotContainsString('.panel-contenido .tabla-panel thead th {', $css);
     }
 
     public function test_guardar_cambios_espera_a_que_algo_cambie(): void

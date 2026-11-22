@@ -823,13 +823,12 @@
 }
 
 /*
- * 21/11/2026: la esquina (encabezado de la primera columna) queda fija arriba y a
- * la izquierda, por ENCIMA de las celdas fijas de las filas y con el mismo color
- * que el resto del encabezado. Antes tenía z-index 1 y otro tono: al bajar, el
- * título de la primera fila se montaba sobre "TÍTULO".
+ * La esquina (encabezado de la primera columna) queda por ENCIMA de las celdas
+ * fijas de las filas y con el mismo color que el resto del encabezado. Solo es
+ * fija a la izquierda (al deslizar de lado); desde el 22/11/2026 el encabezado
+ * sube con la página al bajar.
  */
 .tabla-larga table > thead > tr > :first-child {
-    top: 0;
     z-index: 3;
     background-color: rgb(var(--c-shell));
 }
@@ -1131,29 +1130,10 @@
      */
 
     /*
-     * Tabla larga que SÍ cabe a lo ancho: sin la capa de desplazamiento
-     * lateral, para que sus encabezados también queden fijos al bajar (esa
-     * capa los atrapaba). Si no cabe (data-desborda), conserva el
-     * desplazamiento de lado.
+     * Sin encabezados de columna fijos (22/11/2026): con el encabezado pegado
+     * arriba, las filas pasaban por debajo y parecía que la tabla se
+     * desplazaba por dentro. Ahora la tarjeta completa sube con la página.
      */
-    .panel-contenido .tabla-larga:not([data-desborda]) > [x-ref="desplazable"] {
-        overflow: visible;
-    }
-
-    /* Encabezados de columna fijos mientras se baja por la lista. */
-    .panel-contenido .lista-panel .fila-cita-cabecera {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background-color: rgb(var(--c-shell));
-    }
-
-    .panel-contenido .tabla-panel thead th {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background-color: rgb(var(--c-shell));
-    }
 }
 
 /*
