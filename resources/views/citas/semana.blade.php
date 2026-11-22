@@ -158,6 +158,7 @@
                                                 </span>
                                                 <span @class(['mt-1 block font-medium text-ink [overflow-wrap:anywhere]', 'line-through' => $cita->estado->esInactiva()])>{{ $cita->paciente?->nombre_completo ?? 'Paciente' }}</span>
                                                 <span class="block text-xs text-muted">{{ $cita->tratamiento?->nombre ?? 'Sin tratamiento' }}</span>
+                                                <x-cita-oferta :cita="$cita" />
                                                 {{-- Una cita larga aparece en varios bloques; la marca va solo donde empieza. --}}
                                                 @if ($cita->asistencia_confirmada_en && ! $cita->estado->esInactiva())
                                                     <span class="mt-1 block text-xs font-medium text-sage-700" @if ($empiezaAqui) data-asistencia-confirmada @endif>✓ Confirmó asistencia</span>
@@ -187,6 +188,7 @@
                                                 </span>
                                                 <span class="mt-1 block font-medium text-ink [overflow-wrap:anywhere]">{{ $cita->paciente?->nombre_completo ?? 'Paciente' }}</span>
                                                 <span class="block text-xs text-muted">{{ $cita->tratamiento?->nombre ?? 'Sin tratamiento' }}</span>
+                                                <x-cita-oferta :cita="$cita" />
                                                 @if ($cita->asistencia_confirmada_en && ! $cita->estado->esInactiva())
                                                     <span class="mt-1 block text-xs font-medium text-sage-700" data-asistencia-confirmada>✓ Confirmó asistencia</span>
                                                 @endif

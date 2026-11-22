@@ -50,6 +50,13 @@
                                 <dt class="text-xs font-semibold uppercase tracking-label text-muted">Fecha y hora</dt>
                                 <dd class="mt-1 font-semibold text-brand-700">{{ ucfirst($resumen['fecha']) }} · {{ $resumen['hora'] }} hrs</dd>
                             </div>
+                            @if (! empty($resumen['oferta']))
+                                <div class="px-5 py-3.5" data-resumen-oferta>
+                                    <dt class="text-xs font-semibold uppercase tracking-label text-muted">Oferta</dt>
+                                    <dd class="mt-1 font-semibold text-brand-700">{{ $resumen['oferta'] }}</dd>
+                                    <dd class="mt-0.5 text-footnote text-muted">Se aplica en el consultorio el día de tu cita.</dd>
+                                </div>
+                            @endif
                             @if (! empty($resumen['precio']))
                                 <div class="px-5 py-3.5" data-aviso-pago>
                                     <dt class="text-xs font-semibold uppercase tracking-label text-muted">Precio</dt>
@@ -98,7 +105,16 @@
                     ],
                     servicios: @js($servicios),
                     idServicio: @js(old('id_servicio', $servicioInicial ?? '')),
-                    idTratamiento: @js(old('id_tratamiento', '')),
+                    idTratamiento: @js(old('id_tratamiento', $tratamientoInicial ?? '')),
+                    // Oferta vigente de cada tratamiento (21/11/2026): se avisa al elegirlo.
+                    ofertas: @js((object) ($ofertasPorTratamiento ?? [])),
+                    get ofertaTratamiento() {
+                        return this.ofertas[Number(this.idTratamiento)] ?? null;
+                    },
+                    // Aplica si la cita es dentro de la vigencia (sin fecha elegida todavía, se muestra).
+                    get ofertaAplica() {
+                        return Boolean(this.ofertaTratamiento && (!this.fecha || this.fecha <= this.ofertaTratamiento.hasta));
+                    },
                     fecha: @js(old('fecha', '')),
                     hora: @js(old('hora', null)),
                     // Resumen: 09:00 a 10:00 (las horas del calendario solo muestran el inicio).
@@ -245,6 +261,8 @@
                                                         </span>
                                                         <span class="min-w-0">
                                                             <span class="block text-callout font-semibold text-ink" x-text="tratamiento.nombre"></span>
+                                                            <span x-show="ofertas[tratamiento.id]" class="mt-1 inline-flex rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-800 ring-1 ring-inset ring-brand-200" data-etiqueta-oferta
+                                                                  x-text="ofertas[tratamiento.id] ? `Oferta ${ofertas[tratamiento.id].etiqueta}` : ''"></span>
                                                             <span class="mt-0.5 block text-footnote text-muted sm:hidden" x-text="[formatoDuracion(tratamiento.duracion_estimada), formatoPrecio(tratamiento.precio_referencia)].filter(Boolean).join(' · ')"></span>
                                                         </span>
                                                     </span>
@@ -256,6 +274,11 @@
                                                 </button>
                                             </template>
                                         </div>
+
+                                        <p x-show="ofertaTratamiento" x-cloak class="mt-3 rounded-xl border border-brand-200 bg-brand-50 px-3.5 py-2.5 text-footnote text-brand-800" data-aviso-oferta role="status">
+                                            <span class="font-semibold" x-text="ofertaTratamiento?.titulo"></span>:
+                                            <span x-text="ofertaTratamiento ? `${ofertaTratamiento.etiqueta} en citas hasta el ${ofertaTratamiento.hasta_legible}. Se aplica en el consultorio.` : ''"></span>
+                                        </p>
 
                                         <p x-show="servicioSeleccionado.tratamientos.length > 0" data-aviso-pago class="mt-3 flex items-center gap-2 text-footnote text-muted">
                                             <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg>
@@ -349,6 +372,7 @@
                                         <span class="font-semibold text-ink" x-text="tratamientoSeleccionado?.nombre"></span>
                                         · <span x-text="fechaLegible"></span>
                                         · <span class="font-semibold tabular-nums text-ink" x-text="hora ? `${hora} hrs` : ''"></span>
+                                        <span x-show="ofertaAplica" x-cloak class="font-semibold text-brand-700" x-text="ofertaAplica ? `· Oferta ${ofertaTratamiento.etiqueta}` : ''"></span>
                                     </span>
                                     <button type="button" @click="mover('atras'); paso = 1" class="link inline-flex min-h-11 items-center text-footnote">Cambiar</button>
                                 </div>
@@ -468,6 +492,13 @@
                                     <dd class="min-w-0 text-right">
                                         <span class="block font-semibold text-ink" x-text="tratamientoSeleccionado ? formatoPrecio(tratamientoSeleccionado.precio_referencia) : ''"></span>
                                         <span class="block text-xs text-muted">Se paga en el consultorio</span>
+                                    </dd>
+                                </div>
+                                <div class="flex justify-between gap-4 py-2.5" x-show="ofertaTratamiento" x-cloak data-resumen-oferta>
+                                    <dt class="shrink-0 text-muted">Oferta</dt>
+                                    <dd class="min-w-0 text-right">
+                                        <span class="block font-semibold" :class="ofertaAplica ? 'text-brand-700' : 'text-muted line-through'" x-text="ofertaTratamiento?.etiqueta"></span>
+                                        <span class="block text-xs text-muted" x-text="ofertaAplica ? 'Se aplica en el consultorio' : `Solo en citas hasta el ${ofertaTratamiento?.hasta_legible}`"></span>
                                     </dd>
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">

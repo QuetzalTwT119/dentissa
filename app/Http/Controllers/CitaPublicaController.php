@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\HorarioAtencion;
+use App\Models\Oferta;
 use App\Models\Servicio;
 use App\Services\CrearCitaService;
 use App\Services\NotificacionService;
@@ -27,9 +28,22 @@ class CitaPublicaController extends Controller
         // elegida, solo si es una de las que se pueden agendar en línea.
         $servicioInicial = $servicios->firstWhere('id', (int) $request->query('servicio'))?->id;
 
+        // ?tratamiento=ID llega desde "Agendar" en una oferta de la portada: abre
+        // con su especialidad y ese tratamiento ya elegidos (21/11/2026).
+        $tratamientoInicial = null;
+        if ($idTratamiento = (int) $request->query('tratamiento')) {
+            $servicioDelTratamiento = $servicios->first(fn ($s) => $s->tratamientos->contains('id', $idTratamiento));
+            if ($servicioDelTratamiento) {
+                $servicioInicial = $servicioDelTratamiento->id;
+                $tratamientoInicial = $idTratamiento;
+            }
+        }
+
         return view('citas-publicas.create', [
             'servicios' => $servicios,
             'servicioInicial' => $servicioInicial,
+            'tratamientoInicial' => $tratamientoInicial,
+            'ofertasPorTratamiento' => $this->ofertasPorTratamiento(),
             'horarioRegular' => HorarioAtencion::resumenSemanal(),
         ]);
     }
@@ -78,13 +92,41 @@ class CitaPublicaController extends Controller
         $cita->loadMissing('tratamiento');
         $fechaHora = $cita->fecha_hora->copy()->locale('es');
 
+        $cita->loadMissing('oferta');
+
         return Redirect::route('citas.publica.create')
             ->with('success', 'Tu cita quedó confirmada. Te esperamos.')
             ->with('cita_resumen', [
                 'tratamiento' => $cita->tratamiento?->nombre,
+                'oferta' => $cita->oferta ? "{$cita->oferta->titulo} ({$cita->oferta->etiquetaBeneficio()})" : null,
                 'precio' => $cita->tratamiento?->precioFormateado(),
                 'fecha' => $fechaHora->translatedFormat('l j \d\e F \d\e Y'),
                 'hora' => $fechaHora->format('H:i'),
             ]);
+    }
+
+    /**
+     * Oferta publicada y con lugar de cada tratamiento (21/11/2026), para avisar
+     * al paciente al elegirlo. La que vence primero si hay varias. El servidor
+     * vuelve a revisarla al guardar la cita (CrearCitaService).
+     *
+     * @return array<int, array{titulo: string, etiqueta: string, hasta: string, hasta_legible: string}>
+     */
+    private function ofertasPorTratamiento(): array
+    {
+        return Oferta::publicadas()
+            ->whereNotNull('id_tratamiento')
+            ->conLugaresUsados()
+            ->orderBy('fecha_fin')
+            ->get()
+            ->reject(fn (Oferta $oferta) => $oferta->lugaresQuedan() === 0)
+            ->unique('id_tratamiento')
+            ->mapWithKeys(fn (Oferta $oferta) => [$oferta->id_tratamiento => [
+                'titulo' => $oferta->titulo,
+                'etiqueta' => $oferta->etiquetaBeneficio(),
+                'hasta' => $oferta->fecha_fin->toDateString(),
+                'hasta_legible' => $oferta->fecha_fin->locale('es')->translatedFormat('j \d\e F'),
+            ]])
+            ->all();
     }
 }

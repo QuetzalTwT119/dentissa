@@ -4,11 +4,6 @@
             title="Editar oferta"
             subtitle="Ajuste de cupos, vigencia y precios de promoción."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.ofertas.index') }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al listado</x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
@@ -26,7 +21,7 @@
                         <x-primary-button>Guardar cambios</x-primary-button>
 
                         <a href="{{ route('admin.ofertas.index') }}">
-                            <x-secondary-button type="button">Volver</x-secondary-button>
+                            <x-secondary-button type="button">Cancelar</x-secondary-button>
                         </a>
                     </div>
                 </form>

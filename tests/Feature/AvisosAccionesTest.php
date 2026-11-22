@@ -81,7 +81,7 @@ class AvisosAccionesTest extends TestCase
 
         $oferta = Oferta::create([
             'titulo' => 'Limpieza de temporada', 'tipo' => 'descuento', 'tipo_valor' => 'porcentaje', 'valor_descuento' => 10,
-            'fecha_inicio' => now()->toDateString(), 'fecha_fin' => now()->addMonth()->toDateString(), 'activa' => true,
+            'fecha_inicio' => now()->toDateString(), 'fecha_fin' => now()->addMonth()->toDateString(), 'estado' => 'activa',
         ]);
         $this->actingAs($this->admin)
             ->delete(route('admin.ofertas.destroy', $oferta))

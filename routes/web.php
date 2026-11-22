@@ -127,8 +127,6 @@ Route::post('/asistente-paciente/responder', [AsistentePacienteController::class
     ->name('asistente-paciente.responder');
 
 Route::get('/', function () {
-    $hoy = now()->toDateString();
-
     return view('welcome', [
         'canLogin' => Route::has('login'),
         'estadoConsultorio' => HorarioAtencion::estadoActual(),
@@ -140,13 +138,15 @@ Route::get('/', function () {
             ->orderBy('orden')
             ->orderBy('id')
             ->get(),
+        // Publicadas, con tratamiento agendable y con lugar (las agotadas ya no se anuncian).
         'ofertas' => Oferta::with('tratamiento:id,nombre')
-            ->where('activa', true)
-            ->whereDate('fecha_inicio', '<=', $hoy)
-            ->whereDate('fecha_fin', '>=', $hoy)
+            ->publicadas()
+            ->conLugaresUsados()
             ->orderBy('fecha_fin')
             ->take(12)
-            ->get(),
+            ->get()
+            ->reject(fn (Oferta $oferta) => $oferta->lugaresQuedan() === 0)
+            ->values(),
         'testimonios' => Testimonio::with('paciente:id,nombre,apellido')
             ->where('estado', 'aprobado')
             ->orderByDesc('fecha_publicacion')
@@ -261,6 +261,8 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::delete('testimonios/{testimonio}', [AdminTestimonioController::class, 'destroy'])->name('testimonios.destroy');
 
     Route::resource('ofertas', AdminOfertaController::class)->except('show');
+    Route::patch('ofertas/{oferta}/publicar', [AdminOfertaController::class, 'publicar'])->name('ofertas.publicar');
+    Route::patch('ofertas/{oferta}/ocultar', [AdminOfertaController::class, 'ocultar'])->name('ofertas.ocultar');
 
     Route::get('galeria', [AdminGaleriaController::class, 'index'])->name('galeria.index');
     Route::get('galeria/crear', [AdminGaleriaController::class, 'create'])->name('galeria.create');

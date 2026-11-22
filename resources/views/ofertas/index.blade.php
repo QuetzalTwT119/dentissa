@@ -14,14 +14,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                 @forelse ($ofertas as $oferta)
                     @php
-                        $valor = null;
-                        if ($oferta->precio_especial) {
-                            $valor = 'Precio especial: $'.$oferta->precio_especial;
-                        } elseif ($oferta->valor_descuento) {
-                            $valor = $oferta->tipo_valor === 'porcentaje'
-                                ? $oferta->valor_descuento.'% de descuento'
-                                : '$'.$oferta->valor_descuento.' de descuento';
-                        }
+                        // Misma etiqueta que la portada y el panel (Oferta::etiquetaBeneficio).
+                        $valor = $oferta->etiquetaBeneficio();
                     @endphp
                     <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:border-peach-300 h-full flex flex-col justify-between">
                         <div>

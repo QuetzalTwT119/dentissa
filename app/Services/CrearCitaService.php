@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\EstadoCita;
 use App\Models\Cita;
+use App\Models\Oferta;
 use App\Models\Paciente;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -58,10 +59,15 @@ class CrearCitaService
                     'aviso_privacidad_version' => config('dentissa.privacidad.version'),
                 ])->save();
 
+                $oferta = $this->ofertaConLugar($tratamiento->id, $fechaHora);
+
                 $cita = Cita::create([
                     'id_paciente' => $paciente->id,
                     'id_servicio' => $datos['id_servicio'],
                     'id_tratamiento' => $tratamiento->id,
+                    // La oferta vigente del tratamiento queda en la cita: la doctora
+                    // la ve en la agenda y la aplica al cobrar (21/11/2026).
+                    'id_oferta' => $oferta?->id,
                     'fecha_hora' => $fechaHora,
                     'duracion_estimada' => $tratamiento->duracion_estimada,
                     'motivo' => $datos['motivo'] ?? null,
@@ -76,6 +82,7 @@ class CrearCitaService
                     'estado' => $cita->estado?->value ?? EstadoCita::Confirmada->value,
                     'fecha_hora' => $cita->fecha_hora->toIso8601String(),
                     'canal' => $canal,
+                    'id_oferta' => $oferta?->id,
                 ], request: $request);
                 $this->notificacionesInternas->cambioCita(
                     $cita,
@@ -98,6 +105,22 @@ class CrearCitaService
 
             throw $e;
         }
+    }
+
+    /**
+     * Oferta que se aplica a la cita, con su fila bloqueada mientras se guarda:
+     * dos pacientes que agendan a la vez no pueden tomar el último lugar.
+     */
+    private function ofertaConLugar(int $idTratamiento, Carbon $fechaHora): ?Oferta
+    {
+        $candidata = Oferta::aplicableA($idTratamiento, $fechaHora);
+        if (! $candidata) {
+            return null;
+        }
+
+        $oferta = Oferta::whereKey($candidata->id)->lockForUpdate()->first();
+
+        return $oferta && $oferta->lugaresQuedan() !== 0 ? $oferta : null;
     }
 
     /**

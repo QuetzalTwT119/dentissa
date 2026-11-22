@@ -52,6 +52,16 @@ class Tratamiento extends Model
         return $this->hasMany(Cita::class, 'id_tratamiento');
     }
 
+    /**
+     * Se puede agendar en línea: activo y dentro de al menos una especialidad
+     * activa (21/11/2026). Las ofertas solo se ligan a estos tratamientos.
+     */
+    public function scopeAgendables(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->where('activo', true)
+            ->whereHas('servicios', fn ($q) => $q->where('activo', true));
+    }
+
     public function ofertas(): HasMany
     {
         return $this->hasMany(Oferta::class, 'id_tratamiento');

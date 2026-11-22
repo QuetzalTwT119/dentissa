@@ -10,12 +10,8 @@ class OfertaController extends Controller
 {
     public function index(Request $request): View
     {
-        $hoy = now()->toDateString();
-
         $ofertas = Oferta::with('tratamiento:id,nombre')
-            ->where('activa', true)
-            ->whereDate('fecha_inicio', '<=', $hoy)
-            ->whereDate('fecha_fin', '>=', $hoy)
+            ->publicadas()
             ->orderBy('fecha_fin')
             ->paginate($this->paginationPageSize($request));
 
