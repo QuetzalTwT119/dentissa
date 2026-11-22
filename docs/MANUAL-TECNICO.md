@@ -1381,6 +1381,12 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Rol propio y último administrador (H-55, 22/11/2026).** `UsuarioController::update()` rechaza
+  (`ValidationException` en `rol`) cambiar el rol de la cuenta con sesión y degradar al último
+  administrador activo; la vista de la cuenta propia muestra el rol sin `<select>`. Mismo
+  criterio que `toggleActivo` (no desactivarse a uno mismo).
+- **Historial como ícono (H-54).** `x-icon` `expediente`; el enlace va en el slot de
+  `x-admin.acciones-fila` y la cifra de Consultas también lleva al historial.
 - **Acciones solo con íconos (H-53, 22/11/2026).** Regla: las acciones de fila son solo
   ícono (se quitó `texto` de `x-admin.boton-fila`); cada una con un dibujo propio de `x-icon`:
   `eye`/`eye-off` (publicar/ocultar), `thumb-up`/`thumb-down` (aprobar/rechazar),

@@ -44,10 +44,19 @@
 
                     <div>
                         <x-input-label for="rol" value="Rol" />
-                        <x-select id="rol" name="rol" class="mt-1.5">
-                            <option value="asistente" @selected(old('rol', $usuario->rol->value) === 'asistente')>Asistente</option>
-                            <option value="admin" @selected(old('rol', $usuario->rol->value) === 'admin')>Admin</option>
-                        </x-select>
+                        @if ($usuario->is(auth()->user()))
+                            {{-- Tu propio rol no se cambia aquí (22/11/2026): quitártelo te dejaba sin acceso. --}}
+                            <input type="hidden" name="rol" value="{{ $usuario->rol->value }}">
+                            <p class="mt-1.5 flex min-h-11 items-center gap-2 rounded-xl border border-line bg-cream/50 px-3.5 text-sm text-ink" data-rol-propio>
+                                {{ $usuario->rol->value === 'admin' ? 'Admin' : 'Asistente' }}
+                                <x-ayuda etiqueta="Es tu cuenta">No puedes cambiar tu propio rol. Otro administrador puede hacerlo.</x-ayuda>
+                            </p>
+                        @else
+                            <x-select id="rol" name="rol" class="mt-1.5">
+                                <option value="asistente" @selected(old('rol', $usuario->rol->value) === 'asistente')>Asistente</option>
+                                <option value="admin" @selected(old('rol', $usuario->rol->value) === 'admin')>Admin</option>
+                            </x-select>
+                        @endif
                         <x-input-error :messages="$errors->get('rol')" class="mt-2" />
                     </div>
 

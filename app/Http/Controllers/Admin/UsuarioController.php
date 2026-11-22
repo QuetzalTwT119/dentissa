@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules;
 
 /**
@@ -92,6 +93,19 @@ class UsuarioController extends Controller
             'rol' => ['required', Rule::enum(RolUsuario::class)],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        // 22/11/2026: la doctora se quitó a sí misma el rol de administración desde
+        // aquí y se quedó sin acceso a todo el panel (era la única). Igual que
+        // "Desactivar", el rol propio lo cambia OTRO administrador, y nunca se
+        // degrada al último administrador activo.
+        $cambiaRol = $usuario->rol !== RolUsuario::from($validated['rol']);
+        if ($cambiaRol && $usuario->is($request->user())) {
+            throw ValidationException::withMessages(['rol' => 'No puedes cambiar tu propio rol. Otro administrador puede hacerlo.']);
+        }
+        if ($cambiaRol && $usuario->rol === RolUsuario::Admin && $usuario->activo
+            && User::where('rol', RolUsuario::Admin->value)->where('activo', true)->count() <= 1) {
+            throw ValidationException::withMessages(['rol' => 'Es el único administrador activo: la clínica se quedaría sin quien administre el panel. Primero da el rol de administración a otra cuenta.']);
+        }
 
         $auditoria->registrarCambio(
             $request,

@@ -397,7 +397,8 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
   portada"). Tu propia cuenta sale atenuada con ⓘ: no puedes desactivarte.
 - **Íconos de las acciones** (columna Acciones, a la derecha): ✎ editar, 🗑 eliminar,
   ojo = publicar, ojo tachado = ocultar, pulgar arriba = aprobar, pulgar abajo = rechazar,
-  sobre abierto = marcar leído, sobre cerrado = marcar sin leer. Al pasar el mouse dicen qué
+  sobre abierto = marcar leído, sobre cerrado = marcar sin leer, 📋 = historial clínico del
+  paciente (también se abre tocando su número de consultas). Al pasar el mouse dicen qué
   hacen y siempre piden confirmación. Si un ícono sale apagado con ⚠, esa acción no se
   puede hacer; toca el ⚠ para ver por qué. El ⓘ gris solo explica.
 - Las confirmaciones (eliminar, cancelar una cita, desactivar…) usan la ventana
@@ -604,7 +605,9 @@ Para crear otra cuenta administrativa, entra a **Gestión → Usuarios → Nuevo
 usuario**, captura los datos, selecciona **Admin**, escribe una contraseña
 segura y guarda. El correo debe ser único. También puedes cambiar el rol de una
 cuenta existente desde **Editar**; conserva tu cuenta actual hasta confirmar
-que puedes iniciar sesión con la nueva.
+que puedes iniciar sesión con la nueva. **Tu propio rol no se puede cambiar** (otro
+administrador puede hacerlo), y el sistema no deja quitarle el rol al último
+administrador activo, para que la clínica nunca se quede sin quien administre el panel.
 
 ### Seguridad de la cuenta
 
