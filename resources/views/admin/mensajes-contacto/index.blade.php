@@ -52,7 +52,7 @@
                             <td class="px-6 py-4 text-right">
                                 <x-admin.acciones-fila :eliminar="route('admin.mensajes.destroy', $mensaje)" que="el mensaje" :nombre="$mensaje->nombre">
                                     <x-admin.boton-fila :action="route('admin.mensajes.toggleLeido', $mensaje)"
-                                                        :icono="$mensaje->leido ? 'eye' : 'check'" :color="$mensaje->leido ? 'muted' : 'sage'"
+                                                        :icono="$mensaje->leido ? 'eye-off' : 'check'" :color="$mensaje->leido ? 'muted' : 'sage'" :texto="$mensaje->leido ? 'Marcar sin leer' : 'Marcar leído'"
                                                         :etiqueta="$mensaje->leido ? 'Marcar como sin leer' : 'Marcar como leído'"
                                                         :titulo="$mensaje->leido ? '¿Marcar el mensaje como sin leer?' : '¿Marcar el mensaje como leído?'"
                                                         :mensaje="'Mensaje de '.$mensaje->nombre.'. Puedes cambiarlo de nuevo cuando quieras.'"

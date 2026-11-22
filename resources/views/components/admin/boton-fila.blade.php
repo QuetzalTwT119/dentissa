@@ -15,6 +15,9 @@
       - titulo, mensaje, boton: textos del diálogo de confirmación.
       - tono: normal (por omisión) | peligro.
       - color: brand | sage | amber | rose | muted.
+      - texto: palabra visible junto al ícono (22/11/2026). Para acciones que el ícono
+        solo no explica (Publicar, Ocultar, Aprobar, Rechazar…). Editar, eliminar y
+        las flechas se entienden solos y quedan sin texto.
 --}}
 @props([
     'action',
@@ -27,6 +30,7 @@
     'tono' => 'normal',
     'color' => 'brand',
     'deshabilitado' => false,
+    'texto' => null,
 ])
 
 @php
@@ -48,13 +52,19 @@
     @endif
     <button type="submit" title="{{ $etiqueta }}" aria-label="{{ $etiqueta }}" @disabled($deshabilitado)
             {{ $attributes->class([
-                'grid h-11 w-11 place-items-center rounded-full transition-colors duration-150 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent lg:h-9 lg:w-9',
+                'rounded-full transition-colors duration-150 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent',
+        // Con texto: píldora con borde (se ve como botón); sin texto: círculo como Editar/Eliminar.
+        'inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap border border-line bg-white px-3 text-xs font-semibold lg:min-h-9' => filled($texto),
+        'grid h-11 w-11 place-items-center lg:h-9 lg:w-9' => blank($texto),
                 $colores[$color] ?? $colores['brand'],
             ]) }}>
         @if ($icono)
             <x-icon :name="$icono" />
         @else
             {{ $slot }}
+        @endif
+        @if (filled($texto))
+            <span>{{ $texto }}</span>
         @endif
     </button>
 </form>

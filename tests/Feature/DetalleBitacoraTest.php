@@ -96,7 +96,8 @@ class DetalleBitacoraTest extends TestCase
             DetalleBitacora::filas($this->registro('pacientes', null, ['campos_modificados' => ['nombre', 'telefono']])));
     }
 
-    public function test_el_detalle_se_abre_como_fila_completa(): void
+    /** 22/11/2026 (decisión del usuario): el detalle se abre en una ventana, fuera de la tabla. */
+    public function test_el_detalle_se_abre_en_una_ventana(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
         LogAuditoria::query()->create([
@@ -106,8 +107,10 @@ class DetalleBitacoraTest extends TestCase
 
         $this->actingAs($admin)->get(route('admin.auditoria.index'))->assertOk()
             ->assertSee('data-ver-cambios', false)
-            ->assertSee('data-detalle-cambios', false)
-            ->assertSee('colspan="5"', false)
+            ->assertSee('data-ventana-cambios', false)
+            ->assertSee('role="dialog" aria-modal="true"', false)
+            ->assertSee("\$dispatch('open-modal', 'cambios-", false)
+            ->assertDontSee('data-detalle-cambios', false)
             ->assertSee('Confirmada')
             ->assertSee('En curso')
             ->assertDontSee('en_curso')

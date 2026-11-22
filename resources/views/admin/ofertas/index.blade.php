@@ -98,13 +98,13 @@
                                             <x-ayuda tono="aviso" etiqueta="No se puede publicar">{{ $noPublicable }}</x-ayuda>
                                         </span>
                                     @elseif ($oferta->estado !== \App\Enums\EstadoOferta::Activa)
-                                        <x-admin.boton-fila :action="route('admin.ofertas.publicar', $oferta)" icono="check" color="sage"
+                                        <x-admin.boton-fila :action="route('admin.ofertas.publicar', $oferta)" icono="check" color="sage" texto="Publicar"
                                                             :etiqueta="'Publicar la oferta '.$oferta->titulo"
                                                             titulo="¿Publicar «{{ $oferta->titulo }}»?"
                                                             mensaje="Revisa título, beneficio, descripción y fechas: se mostrará en la portada hasta «Válida hasta»."
                                                             boton="Sí, publicar" />
                                     @else
-                                        <x-admin.boton-fila :action="route('admin.ofertas.ocultar', $oferta)" icono="power" color="amber"
+                                        <x-admin.boton-fila :action="route('admin.ofertas.ocultar', $oferta)" icono="eye-off" color="amber" texto="Ocultar"
                                                             :etiqueta="'Ocultar la oferta '.$oferta->titulo"
                                                             titulo="¿Ocultar «{{ $oferta->titulo }}»?"
                                                             mensaje="Dejará de verse en la portada. Seguirá aquí para editarla o volver a publicarla."

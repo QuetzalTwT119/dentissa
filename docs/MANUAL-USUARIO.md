@@ -653,10 +653,10 @@ se puede abrir y editar en Excel o LibreOffice Calc.
 
 El administrador puede abrir **Configuración → Control de actividades** para consultar los
 cambios realizados por cuentas del administrador o de las asistentes. La vista
-permite filtrar por fechas, usuario y acción. **Ver cambios** abre debajo del evento
-una tabla con cada dato que cambió, cómo estaba **Antes** y cómo quedó **Después**, en
+permite filtrar por fechas, usuario y acción. **Ver cambios** abre una ventana con
+qué se hizo, quién y cuándo, y una tabla con cada dato que cambió, cómo estaba **Antes** y cómo quedó **Después**, en
 palabras (por ejemplo, Estado: Confirmada → En curso). Si algo se creó solo se ve cómo
-quedó, y si se borró, lo que tenía. Es de solo lectura; las asistentes no tienen acceso. Las
+quedó, y si se borró, lo que tenía. La ventana se cierra con **Cerrar**, con Esc o tocando fuera. Es de solo lectura; las asistentes no tienen acceso. Las
 solicitudes iniciadas por pacientes desde el portal o Telegram no aparecen en
 la bitácora. Los registros anteriores de esos canales se conservan en la base
 de datos, pero no se muestran como cambios del personal. Se registran cambios

@@ -1381,6 +1381,12 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Íconos claros y ventana de cambios (H-51, 22/11/2026).** `x-admin.boton-fila` tiene `texto`
+  (píldora con ícono + palabra) para acciones que el ícono no explica; regla: editar, eliminar
+  y flechas sin texto. Ícono nuevo `eye-off` en `x-icon`. `x-ayuda` tono info: círculo
+  `fill-amber-400` con la "i" `fill-amber-950`. "Ver cambios" usa `x-modal`
+  (`$dispatch('open-modal', 'cambios-{id}')`); las ventanas se dibujan después de la
+  tabla para que la tabla que se desliza de lado no las descoloque.
 - **"Disponible" solo en la lista (H-50, 22/11/2026).** `ServicioController::validated()` ya no
   acepta `activo` ni `icono`: `store()` crea con `activo = true` y `update()` no lo toca; solo
   `estado()` (interruptor de la lista) lo cambia. `_formulario` avisa si el servicio está oculto.
