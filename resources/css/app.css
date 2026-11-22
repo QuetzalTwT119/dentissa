@@ -1130,6 +1130,16 @@
      * en Configuración y los formularios. El menú sigue fijo arriba.
      */
 
+    /*
+     * Tabla larga que SÍ cabe a lo ancho: sin la capa de desplazamiento
+     * lateral, para que sus encabezados también queden fijos al bajar (esa
+     * capa los atrapaba). Si no cabe (data-desborda), conserva el
+     * desplazamiento de lado.
+     */
+    .panel-contenido .tabla-larga:not([data-desborda]) > [x-ref="desplazable"] {
+        overflow: visible;
+    }
+
     /* Encabezados de columna fijos mientras se baja por la lista. */
     .panel-contenido .lista-panel .fila-cita-cabecera {
         position: sticky;
