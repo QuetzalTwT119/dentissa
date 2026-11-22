@@ -7,21 +7,15 @@
         />
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             <x-pagination-summary :items="$ofertas" label="ofertas" :integrated="false" />
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                 @forelse ($ofertas as $oferta)
                     @php
-                        $valor = null;
-                        if ($oferta->precio_especial) {
-                            $valor = 'Precio especial: $'.$oferta->precio_especial;
-                        } elseif ($oferta->valor_descuento) {
-                            $valor = $oferta->tipo_valor === 'porcentaje'
-                                ? $oferta->valor_descuento.'% de descuento'
-                                : '$'.$oferta->valor_descuento.' de descuento';
-                        }
+                        // Misma etiqueta que la portada y el panel (Oferta::etiquetaBeneficio).
+                        $valor = $oferta->etiquetaBeneficio();
                     @endphp
                     <div class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition hover:border-peach-300 h-full flex flex-col justify-between">
                         <div>

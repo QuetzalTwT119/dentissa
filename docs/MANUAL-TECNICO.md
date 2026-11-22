@@ -1134,12 +1134,144 @@ Un barrido de 41 pantallas a 375 y 1280 px dejó cuatro reglas, protegidas por
   una sola vez en `layouts/app` y `app.js` intercepta el envío en fase de
   captura. Cada botón actúa en su propio clic: no se usa el evento `close` del
   `<dialog>`, que algunos navegadores no disparan.
+- **Ofertas: "Beneficio para el paciente" (21/11/2026).** El formulario envía
+  `beneficio` (`descuento|precio|gratis`), `unidad` (`porcentaje|monto`, solo
+  con descuento) y `cantidad`; `Oferta::claveDeFormulario()` lo convierte a la
+  clave interna (`porcentaje|monto|precio|gratis`) y `Oferta::columnasDeBeneficio()`
+  lo traduce a las columnas de siempre (`tipo`, `tipo_valor`, `valor_descuento`,
+  `precio_especial`), sin migración. `beneficio()`, `cantidadBeneficio()` y
+  `etiquetaBeneficio()` son la única regla para leerlo: la usan el formulario
+  de edición, la portada, la lista del panel y `/ofertas`. Lo opcional
+  (descripción, tratamiento, cupo, inicio, imagen) va en un `<details
+  data-mas-detalles>` que se abre solo si ya tiene datos o errores. En la
+  portada las ofertas son tarjetas compactas en cuadrícula (4 por fila en PC),
+  sin carrusel.
+- **Ofertas: revisión antes de publicar (21/11/2026).** La columna `activa`
+  (booleano) se reemplazó por `estado` (`App\Enums\EstadoOferta`:
+  `pendiente` = En revisión, `activa` = Publicada, `inactiva` = Oculta) con la
+  migración `2026_11_21_000001_cambiar_activa_por_estado_en_ofertas` (las
+  existentes conservan cómo se veían). `store` siempre guarda `pendiente` y
+  `fecha_inicio` = hoy (sin campos "Empieza" ni "Mostrar"); `update` regresa a
+  `pendiente` una publicada si cambia algo de `CAMPOS_PUBLICOS`. Rutas
+  `PATCH admin.ofertas.publicar` (rechaza vencidas) y `admin.ofertas.ocultar`,
+  ambas auditadas (`oferta.publicada`, `oferta.ocultada`). El público (portada y
+  `/ofertas`) usa solo `Oferta::publicadas()`. Validación: título 5–120,
+  descripción obligatoria 20–300, `fecha_fin` ≥ hoy, y la regla
+  `App\Rules\SinEnlaces` (enlaces, dominios, correos, HTML y caracteres
+  repetidos) en título y descripción; el formulario repite `required`,
+  `minlength`, `maxlength` y `min`. Solo el rol admin entra a estas rutas, así
+  que no hay "creador" por oferta: todo administrador ve todas en el panel.
+- **Ofertas en la cita (21/11/2026).** Migración
+  `2026_11_21_000002_add_id_oferta_to_citas_table` (`citas.id_oferta`, FK
+  `nullOnDelete`). `CrearCitaService` (web y Telegram) llama a
+  `Oferta::aplicableA(idTratamiento, fecha)` (publicada, tratamiento agendable,
+  fecha de la cita ≤ `fecha_fin`, con lugar; la que vence primero) y bloquea la
+  fila con `lockForUpdate()` para no vender el último lugar dos veces. Los
+  lugares se cuentan con citas reales: `scopeConLugaresUsados()`,
+  `lugaresUsados()`, `lugaresQuedan()`; canceladas y no asistidas liberan
+  (`ESTADOS_QUE_LIBERAN`). La columna `cupos_utilizados` ya no se usa.
+  `Tratamiento::scopeAgendables()` (activo + especialidad activa) filtra el
+  selector, la validación (`Rule::in`), `publicadas()` y `publicar()`. La agenda
+  pública recibe `ofertasPorTratamiento` y `?tratamiento=ID`; el personal ve
+  `x-cita-oferta` y la notificación interna agrega "Con oferta «…»". Descuento
+  nuevo solo en % (la unidad `monto` se acepta solo al editar una oferta vieja).
+- **"Guardar cambios" espera cambios (21/11/2026, global en `app.js`).** Todo
+  `<form>` con `_method` PUT/PATCH y al menos un campo editable empieza con sus
+  botones de enviar desactivados (también los de fuera con `form="id"`) y se
+  activan cuando la huella de `FormData` difiere de la inicial; si se regresa al
+  valor original se desactivan otra vez. No aplica a formularios de un solo
+  botón ni si la página volvió con errores; `data-sin-esperar-cambios` lo
+  excluye. El diálogo de confirmación se conserva: el botón evita guardar
+  "nada" y el diálogo evita guardar por accidente.
+- **Un solo botón para regresar (21/11/2026).** Los formularios ya no tienen
+  "Volver al listado" arriba y "Cancelar"/"Volver" abajo: queda "Cancelar"
+  junto a "Guardar" (en Servicios y Tratamientos, en PC ambos van arriba).
+  `BotonesFormularioTest` lo vigila.
+- **Validación de grupos de opciones (22/11/2026).** `x-opcion` acepta
+  `requerido` (atributo `required` en el radio). La validación global de
+  `app.js` pone un solo aviso al final del `<fieldset>` para los radios (antes
+  no se contemplaban: Beneficio no avisaba al guardar vacío) y al elegir uno
+  limpia `aria-invalid` de todo el grupo; `.opcion:has([aria-invalid])` pinta el
+  borde rosa. En Ofertas, "Tratamiento al que aplica" salió de "Más detalles"
+  porque decide si la oferta se aplica al agendar.
+- **Ayuda con ícono global (21/11/2026).** `x-ayuda` (`tono="aviso|info"`,
+  `etiqueta`): símbolo junto a un dato que muestra un globo al pasar el mouse,
+  enfocar con teclado o tocar en celular (el `title` del navegador no funciona
+  en táctil). El globo es `position: fixed` (no lo recortan las tablas que se
+  desplazan), se abre abajo o arriba según el espacio y se cierra con Esc, al
+  tocar fuera o al desplazar. Primer uso: "Tratamiento inactivo" en Ofertas.
+- **Tablas largas: esquina fija (21/11/2026).** El encabezado de la primera
+  columna es `top: 0` + `left: 0` con `z-index: 3` y el color del encabezado;
+  antes tenía `z-index: 1`, otro tono, y al bajar la primera fila se montaba
+  encima. La celda fija toma el tono de la fila al pasar el mouse.
+- **Opción elegible global (21/11/2026).** `x-opcion` (componente) + clase
+  `.opcion` en `resources/css/app.css`: radio oculto dentro de un `<label>`;
+  elegida = `brand-50` de fondo, borde `brand-400`, texto `brand-800`, sin
+  palomita. También aplica a `<button aria-checked|aria-pressed="true">`. Se usa
+  en Beneficio y en la unidad % / $ de Ofertas. Pendiente decidir si unifica
+  los horarios de la agenda (relleno `brand-600`) y las tarjetas de tratamiento.
+- **Todo cambio pide confirmación (21/11/2026).** Cualquier `<form method="POST">`
+  del panel lleva `data-confirmar` (tono `normal` si se puede deshacer,
+  `peligro` si no). Los botones de fila que cambian algo usan
+  `x-admin.boton-fila`, que siempre confirma. `ConsistenciaDisenoTest`
+  falla si aparece uno sin confirmación; excepciones: `asistente-agenda.proponer`
+  (no guarda), `dos-pasos.confirmar` (el código es la confirmación) y
+  `verification.send`.
 - **Toda acción avisa qué pasó.** `components/avisos-sesion` (en `layouts/app`)
   pinta `session('success')` y `session('error')` en todo el panel, abajo a la
   derecha (los avisos de notificaciones nuevas salen arriba). El de éxito se va
   a los 6 s; el de error se queda hasta cerrarlo. Cada acción de crear, guardar,
   eliminar, aprobar o activar envía un mensaje que dice qué y a cuál («Tratamiento
   «Valoración» creado.»). Las pantallas no pintan copias propias.
+- **En PC la pantalla se adapta al alto de la ventana, no a px fijos.** (20/11/2026,
+  agenda en línea.) Se mide con la ventana real del usuario (1920×1080 al 125 %
+  con barra de marcadores ≈ 1536×748), no con el alto del monitor. Patrón: el
+  `<main>` mide `calc(100dvh - barra superior)`, la tarjeta `max-h-full flex
+  flex-col` crece con su contenido hasta ese tope, el cuerpo del paso es
+  `flex-1 min-h-0 overflow-y-auto` y la barra de botones `sticky` con
+  `-bottom-6` (compensa el relleno). Si el contenido no cabe (pantallas bajas o
+  listas largas), se desplaza solo el interior y los botones siguen a la vista.
+  Textos de ayuda secundarios se ocultan con `lg:[@media(max-height:820px)]:hidden`.
+  En celular el flujo es normal con la barra fija abajo.
+- **Todo el panel se ajusta a la ventana en PC (20/11/2026).** Mismo patrón
+  aplicado a las 41 pantallas con clases compartidas (reglas en `app.css`,
+  bloques "Panel ajustado" y "Formularios del panel"):
+  - `layouts/app` → `.panel-marco` (alto de la ventana) y `.panel-encabezado`.
+  - Cada pantalla → `.panel-pagina > .panel-contenido`. Si algo no cabe, se
+    desplaza solo `.panel-contenido`; el menú y el título quedan fijos.
+  - Listas: `x-admin.table` lleva `.tabla-panel` (la lista de citas y la de
+    notificaciones, `.lista-panel`). La tarjeta se encoge, la tabla se desplaza
+    por dentro con encabezados fijos; filtros y paginación siempre a la vista.
+  - Formularios: `.formulario-panel` en el `<form>` = 2 columnas (las filas
+    de 2 campos se integran a la cuadrícula; `.formulario-3` = 3 columnas;
+    `.col-completa` ocupa el ancho). La barra de botones (último hijo) queda
+    pegada abajo. Nueva cita (`.formulario-cita`): datos a la izquierda y el
+    calendario (`.col-fecha`) a la derecha.
+  - Perfil: pestañas (una sección a la vez) en lugar de secciones apiladas.
+  - Pantallas bajas (`max-height: 820px`): se ocultan descripciones
+    secundarias (subtítulo de la página y de las tarjetas).
+  - Verificación: se midió cada pantalla en 1536×748 (ventana real del
+    usuario), 1024×700 y 375×812 con un recorrido automático en el navegador;
+    `ConsistenciaDisenoTest` exige `.panel-contenido` en toda pantalla nueva.
+  - Local: `PHP_CLI_SERVER_WORKERS=4` en `compose.yaml` (antes `php artisan
+    serve` atendía una petición a la vez y cada página tardaba ~2 s).
+- **Catálogo de componentes globales del panel (21/11/2026).** Lo que se
+  repite usa un componente; `ConsistenciaDisenoTest` falla si se vuelve a
+  hacer a mano:
+
+  | Pieza | Componente | Notas |
+  |---|---|---|
+  | Encabezado de página | `x-admin.header` (badge, title, subtitle, slot actions) | Excepción: Editar servicio/tratamiento (ruta + Guardar arriba) |
+  | Tarjeta | `x-admin.card` | `overflow-clip` (no rompe la barra de botones fija) |
+  | Filtros de lista | `x-filtro.barra` + `.select` / `.buscar` / `.fecha` | Se aplican solos; activo resaltado; "Limpiar filtros" solo si hay filtro; el buscador actualiza sin recargar |
+  | Campo de texto / largo / lista | `x-text-input` / `x-textarea` / `x-select` | Mismo borde, foco y alto mínimo de 44 px |
+  | Botón principal / secundario | `x-primary-button` (o `.btn-brand` en enlaces) / `x-secondary-button` | Las acciones de fila de Citas son más chicas a propósito |
+  | Etiqueta redonda | `x-chip` (forma) + color con significado | `x-admin.status-badge` para Activo/Inactivo |
+  | Acciones de fila, vacío, paginación, avisos, confirmar | `x-admin.acciones-fila`, `x-admin.boton-fila` (nuevo), `x-admin.empty-state`, `x-pagination-summary`, `x-avisos-sesion`, `x-dialogo-confirmar` | Ya eran globales |
+
+  Se quedan únicos (un solo uso): portada y agenda pública (estilo para
+  pacientes), bienvenida de Inicio, pestañas de días de Citas; las tarjetas
+  `<section>`/`<article>` conservan las mismas clases que `x-admin.card`.
 - **Validación del navegador con el diseño propio.** `app.js` escucha `invalid`
   en captura, cancela la burbuja genérica y escribe el error en rojo debajo del
   campo (o de su envoltorio `.relative`), con `aria-invalid` y foco en el primero.
@@ -1200,6 +1332,9 @@ administrador y el asistente gestionan los demás cambios desde el panel
   valor por defecto es el número que publica la portada, para que ninguna página
   muestre un número de ejemplo. `telefono_enlace` arma el `tel:` con +52, y una
   variable vacía también usa el valor por defecto (`ContactoClinicaTest`).
+  Desde el 22/11/2026 el valor por defecto es el celular del consultorio,
+  **755 113 1833** (antes 755 102 0089); es distinto del número del bot de
+  WhatsApp, como pide el diagnóstico remoto.
 - Los datos del paciente se vinculan por teléfono y correo, y el formulario
   público valida los campos.
 - Como el formulario es público, `POST /agendar-cita` usa el limitador

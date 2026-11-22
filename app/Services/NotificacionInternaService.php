@@ -66,6 +66,9 @@ class NotificacionInternaService
 
         [$titulo, $prefijo] = $etiquetas[$evento];
         $fecha = $cita->fecha_hora->translatedFormat('d M Y, H:i');
+        // Cita agendada con una oferta (21/11/2026): la doctora la aplica al cobrar.
+        $oferta = $cita->id_oferta ? $cita->oferta : null;
+        $conOferta = $oferta ? " Con oferta «{$oferta->titulo}» ({$oferta->etiquetaBeneficio()})." : '';
         $destinatarios = User::query()
             ->where('activo', true)
             ->whereIn('rol', [RolUsuario::Admin->value, RolUsuario::Asistente->value])
@@ -79,7 +82,7 @@ class NotificacionInternaService
                     'id_cita' => $cita->id,
                     'evento' => $evento,
                     'titulo' => $titulo,
-                    'mensaje' => "{$prefijo} {$fecha}.",
+                    'mensaje' => "{$prefijo} {$fecha}.{$conOferta}",
                     // La ruta relativa conserva la sesión aunque se acceda por localhost,
                     // IP local o un dominio de producción distinto.
                     'url' => route('citas.index', [], false),

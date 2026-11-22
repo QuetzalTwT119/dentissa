@@ -22,7 +22,6 @@ class ConsistenciaDisenoTest extends TestCase
         'admin.servicios.create',
         'admin.tratamientos.create',
         'admin.ofertas.create',
-        'admin.testimonios.create',
         'admin.preguntas-frecuentes.create',
         'admin.galeria.create',
         'admin.casos.create',
@@ -95,7 +94,8 @@ class ConsistenciaDisenoTest extends TestCase
             ->get(route('admin.pacientes.index'))
             ->assertOk()
             ->assertSee('inline-flex min-h-11 items-center gap-1 rounded-xl bg-brand-50', false)
-            ->assertSee('inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line', false);
+            // Editar usa el componente compartido: 44 px en celular, compacto desde lg.
+            ->assertSee('grid h-11 w-11 place-items-center rounded-full', false);
     }
 
     public function test_las_confirmaciones_usan_el_dialogo_propio_y_no_el_del_navegador(): void
@@ -149,11 +149,45 @@ class ConsistenciaDisenoTest extends TestCase
         $this->actingAs($admin)->get(route('admin.ofertas.index'))->assertSee('href="'.route('admin.galeria.index').'"', false);
     }
 
+    public function test_editar_y_eliminar_son_iguales_en_todas_las_listas_y_los_filtros_van_en_la_barra(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $paciente = \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'Prueba', 'telefono' => '5512345678', 'email' => 'ana@example.test']);
+        \App\Models\PreguntaFrecuente::create(['pregunta' => '¿Atienden niños?', 'respuesta' => 'Sí.', 'orden' => 1, 'activa' => true]);
+        \App\Models\Testimonio::create(['id_paciente' => $paciente->id, 'calificacion' => 5, 'comentario' => 'Muy bien atendida.', 'estado' => 'pendiente']);
+
+        foreach (['preguntas-frecuentes', 'testimonios'] as $modulo) {
+            $html = $this->actingAs($admin)->get(route("admin.{$modulo}.index"))->assertOk()->getContent();
+            // Mismo botón (componente compartido) para editar y eliminar.
+            if ($modulo !== 'testimonios') { // los testimonios no se editan
+                $this->assertStringContainsString('lg:h-9 lg:w-9 text-brand-600', $html, "{$modulo}: editar");
+            }
+            $this->assertStringContainsString('lg:h-9 lg:w-9 text-rose-600', $html, "{$modulo}: eliminar");
+            $this->assertStringContainsString('data-confirmar-boton="Sí, eliminar"', $html);
+        }
+
+        // Un solo botón de eliminar por fila (antes Testimonios mostraba dos).
+        $html = $this->actingAs($admin)->get(route('admin.testimonios.index'))->getContent();
+        $this->assertSame(1, substr_count($html, 'aria-label="Eliminar el testimonio'));
+        $this->assertStringContainsString('Aprobar testimonio de Ana', $html);
+        // La clínica modera, no escribe ni cambia testimonios.
+        $this->assertStringNotContainsString('aria-label="Editar el testimonio', $html);
+        $this->assertStringNotContainsString('Nuevo testimonio', $html);
+        $this->assertFalse(\Illuminate\Support\Facades\Route::has('admin.testimonios.edit'));
+        $this->assertFalse(\Illuminate\Support\Facades\Route::has('admin.testimonios.create'));
+
+        // El filtro de testimonios vive dentro de la barra (sin franja aparte).
+        $html = $this->actingAs($admin)->get(route('admin.testimonios.index'))->getContent();
+        $barra = strpos($html, 'data-paginacion="arriba"');
+        $this->assertGreaterThan($barra, strpos($html, 'id="filtro_estado"'));
+        $this->assertStringNotContainsString('Filtrar por estado:', $html);
+    }
+
     public function test_cada_lista_tiene_un_solo_boton_para_crear(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
 
-        foreach (['casos', 'galeria', 'ofertas', 'preguntas-frecuentes', 'servicios', 'testimonios', 'tratamientos', 'usuarios'] as $modulo) {
+        foreach (['casos', 'galeria', 'ofertas', 'preguntas-frecuentes', 'servicios', 'tratamientos', 'usuarios'] as $modulo) {
             $html = $this->actingAs($admin)->get(route("admin.{$modulo}.index"))->assertOk()->getContent();
             $crear = route("admin.{$modulo}.create");
 
@@ -218,5 +252,147 @@ class ConsistenciaDisenoTest extends TestCase
                 $this->assertStringContainsString('data-nota-obligatorios', $html, "{$url}: falta la nota \"Los campos con * son obligatorios\".");
             }
         }
+    }
+
+    /**
+     * Revisión del 20/11/2026: en PC (ventana real de 1536×748) varias pantallas
+     * obligaban a desplazar la página. Regla: todo el panel usa el marco ajustado
+     * a la ventana (app.css, "Panel ajustado"); las listas desplazan solo su tabla
+     * y los formularios van en columnas con los botones siempre a la vista.
+     */
+    public function test_todas_las_pantallas_del_panel_se_ajustan_a_la_ventana(): void
+    {
+        $sinMarco = collect(File::allFiles(resource_path('views')))
+            ->filter(fn ($archivo) => str_ends_with($archivo->getFilename(), '.blade.php'))
+            ->filter(fn ($archivo) => str_contains($archivo->getContents(), '<x-app-layout>'))
+            ->reject(fn ($archivo) => str_contains($archivo->getContents(), 'panel-contenido'))
+            ->reject(fn ($archivo) => str_contains($archivo->getContents(), "@include('admin.tratamientos._formulario'"))
+            ->map(fn ($archivo) => $archivo->getRelativePathname())
+            ->values()
+            ->all();
+        $this->assertSame([], $sinMarco, 'Pantallas del panel sin .panel-contenido');
+
+        $this->assertStringContainsString('panel-marco', File::get(resource_path('views/layouts/app.blade.php')));
+        $this->assertStringContainsString('tabla-panel', File::get(resource_path('views/components/admin/table.blade.php')));
+
+        $css = File::get(resource_path('css/app.css'));
+        foreach (['.panel-marco {', '.panel-contenido {', '.formulario-panel {', 'position: sticky;'] as $regla) {
+            $this->assertStringContainsString($regla, $css);
+        }
+    }
+
+    public function test_los_formularios_del_panel_van_en_columnas(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+
+        foreach (['admin.usuarios.create', 'admin.ofertas.create', 'admin.preguntas-frecuentes.create', 'citas.create'] as $ruta) {
+            $this->actingAs($admin)->get(route($ruta))->assertOk()->assertSee('formulario-panel', false);
+        }
+        $this->actingAs($admin)->get(route('citas.create'))->assertSee('col-fecha', false);
+        // Perfil: una sección a la vez (pestañas) en lugar de una página larga.
+        $this->actingAs($admin)->get(route('profile.edit'))->assertSee("seccion === 'password'", false);
+    }
+
+    public function test_reportes_filtra_al_cambiar_la_fecha_y_descarga_desde_la_tarjeta(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $html = $this->actingAs($admin)->get(route('admin.reportes.index'))->assertOk()->getContent();
+
+        $this->assertStringNotContainsString('>Filtrar</button>', $html);
+        $this->assertStringContainsString('$el.form.requestSubmit()', $html);
+        // Las descargas van dentro del formulario del filtro (respetan el rango elegido).
+        // Las descargas van en la misma tarjeta del filtro, a la derecha.
+        $tarjeta = str($html)->after('data-filtro-barra')->before('<!-- Tarjetas de Métricas');
+        $this->assertStringContainsString('Descargar PDF', $tarjeta);
+        $this->assertStringContainsString('Descargar Excel', $tarjeta);
+        // La flecha de las listas desplegables ya no tapa el texto.
+        $this->assertStringContainsString('select:not([multiple]):not([size])', File::get(resource_path('css/app.css')));
+    }
+
+    /** 21/11/2026: cada pantalla tenía su propio diseño de filtros; ahora todas usan components/filtro. */
+    public function test_todos_los_filtros_usan_el_componente_global(): void
+    {
+        $propios = collect(File::allFiles(resource_path('views')))
+            ->filter(fn ($a) => str_ends_with($a->getFilename(), '.blade.php'))
+            ->reject(fn ($a) => str_contains($a->getPathname(), 'components'))
+            ->filter(fn ($a) => str_contains($a->getContents(), 'method="GET"'))
+            ->map(fn ($a) => $a->getRelativePathname())
+            ->values()
+            ->all();
+        $this->assertSame([], $propios, 'Formularios de filtro hechos a mano (usa <x-filtro.barra>)');
+
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        foreach (['admin.usuarios.index', 'admin.mensajes.index', 'admin.testimonios.index', 'admin.pacientes.index', 'admin.auditoria.index', 'citas.index', 'admin.reportes.index'] as $ruta) {
+            $html = $this->actingAs($admin)->get(route($ruta))->assertOk()->getContent();
+            $this->assertStringContainsString('data-filtro-barra', $html, $ruta);
+            $this->assertStringNotContainsString('>Filtrar</button>', $html, $ruta);
+        }
+    }
+
+    /**
+     * 21/11/2026: encabezados, tarjetas, campos largos, listas, botones y chips
+     * estaban hechos a mano con diseños distintos. En las pantallas del panel
+     * se usan los componentes globales.
+     */
+    public function test_las_piezas_del_panel_usan_los_componentes_globales(): void
+    {
+        $panel = collect(File::allFiles(resource_path('views')))
+            ->filter(fn ($a) => str_ends_with($a->getFilename(), '.blade.php'))
+            ->filter(fn ($a) => preg_match('#[\\\\/](admin|citas|asistente-agenda|profile|notificaciones)[\\\\/]#', $a->getPathname()))
+            ->mapWithKeys(fn ($a) => [str_replace('\\', '/', $a->getRelativePathname()) => $a->getContents()]);
+
+        // Encabezado: x-admin.header (salvo Editar servicio/tratamiento, con ruta y Guardar arriba).
+        $encabezados = $panel->filter(fn ($c, $r) => str_contains($c, '<x-slot name="header">') && ! str_contains($c, '<x-admin.header')
+            && ! str_contains($r, 'servicios/edit') && ! str_contains($r, 'tratamientos/'))->keys()->all();
+        $this->assertSame([], $encabezados, 'Encabezados hechos a mano');
+
+        // Campos largos y listas de formulario: x-textarea / x-select.
+        $this->assertSame([], $panel->filter(fn ($c) => str_contains($c, '<textarea'))->keys()->all(), 'textarea a mano');
+        $this->assertSame([], $panel->filter(fn ($c) => str_contains($c, '<select'))->keys()->all(), 'select a mano');
+
+        // Botón principal: x-primary-button o .btn-brand, no la cadena de clases copiada.
+        $this->assertSame([], $panel->filter(fn ($c) => str_contains($c, 'rounded-full bg-brand-600 px-5 py-2.5'))->keys()->all(), 'botón rosa a mano');
+
+        // Chips: x-chip.
+        $this->assertSame([], $panel->filter(fn ($c) => preg_match('/<span class="inline-flex items-center (gap-1\.5 )?rounded-full[^"]*px-2\.5 py-0\.5 text-xs font-semibold/', $c))->keys()->all(), 'chip a mano');
+
+        // La tarjeta recorta sin crear contenedor de desplazamiento (la barra de botones sigue fija).
+        $this->assertStringContainsString('overflow-clip', File::get(resource_path('views/components/admin/card.blade.php')));
+    }
+
+    /**
+     * 21/11/2026: aprobar/rechazar testimonios, confirmar/iniciar/completar citas,
+     * marcar leído, mover servicios, etc. se hacían de un clic. Regla: todo
+     * formulario del panel que cambia algo pide confirmación con el diálogo del
+     * sistema (data-confirmar → components/dialogo-confirmar).
+     */
+    public function test_todo_cambio_del_panel_pide_confirmacion(): void
+    {
+        // Formularios que no cambian datos o donde escribir el código ya es la confirmación.
+        $excepciones = ['asistente-agenda.proponer', 'dos-pasos.confirmar', 'verification.send'];
+
+        $sinConfirmar = collect(File::allFiles(resource_path('views')))
+            ->filter(fn ($a) => str_ends_with($a->getFilename(), '.blade.php'))
+            ->filter(fn ($a) => preg_match('#[\\\\/](admin|citas|asistente-agenda|profile|notificaciones)[\\\\/]#', $a->getPathname()))
+            ->flatMap(function ($archivo) {
+                // La etiqueta <form …> completa; "->" de Blade no la corta.
+                preg_match_all('/<form\b(?:->|[^>])*>/is', $archivo->getContents(), $etiquetas);
+
+                return collect($etiquetas[0])
+                    ->filter(fn ($form) => preg_match('/method="post"/i', $form) && ! str_contains($form, 'data-confirmar'))
+                    ->map(fn ($form) => str_replace('\\', '/', $archivo->getRelativePathname()).' → '.(preg_match("/route\\('([^']+)/", $form, $r) ? $r[1] : $form));
+            })
+            ->reject(fn ($linea) => collect($excepciones)->contains(fn ($ruta) => str_ends_with($linea, $ruta)))
+            ->values()
+            ->all();
+
+        $this->assertSame([], $sinConfirmar, 'Formularios que cambian datos sin data-confirmar (usa <x-admin.boton-fila> en filas)');
+
+        // El botón de fila global siempre lleva la confirmación.
+        $this->assertStringContainsString('data-confirmar="{{ $mensaje }}"', File::get(resource_path('views/components/admin/boton-fila.blade.php')));
+
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $this->actingAs($admin)->get(route('admin.mensajes.index'))->assertOk();
+        $this->actingAs($admin)->get(route('admin.servicios.index'))->assertOk();
     }
 }

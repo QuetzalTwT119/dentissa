@@ -9,7 +9,7 @@
         </div>
     </header>
 
-    <form method="post" action="{{ route('password.update') }}" class="mt-6 grid grid-cols-1 gap-x-5 gap-y-5 md:grid-cols-2">
+    <form method="post" action="{{ route('password.update') }}" data-confirmar="Se cerrarán tus sesiones en otros dispositivos." data-confirmar-titulo="¿Cambiar tu contraseña?" data-confirmar-boton="Sí, cambiar" data-confirmar-tono="normal" class="mt-6 grid grid-cols-1 gap-x-5 gap-y-5 md:grid-cols-2">
         @csrf
         @method('put')
 

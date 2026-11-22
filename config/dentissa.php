@@ -4,7 +4,8 @@
 // se arma aquí una sola vez; un número nacional de 10 dígitos recibe +52.
 // `?:` y no el default de env(): .env.example trae DENTISSA_TELEFONO vacío y
 // env() devolvería '' en lugar del número.
-$telefonoClinica = env('DENTISSA_TELEFONO') ?: '755 102 0089';
+// 22/11/2026: celular del consultorio (antes 755 102 0089).
+$telefonoClinica = env('DENTISSA_TELEFONO') ?: '755 113 1833';
 $digitosTelefono = preg_replace('/\D/', '', (string) $telefonoClinica);
 
 return [
@@ -91,7 +92,7 @@ return [
     'contacto' => [
         'telefono' => $telefonoClinica,
         'telefono_enlace' => 'tel:+'.(strlen($digitosTelefono) === 10 ? '52'.$digitosTelefono : $digitosTelefono),
-        'whatsapp' => env('DENTISSA_WHATSAPP') ?: '527551020089',
+        'whatsapp' => env('DENTISSA_WHATSAPP') ?: '527551131833',
         'correo' => env('DENTISSA_CORREO', 'hola@dentissa.demo'),
         'direccion' => env('DENTISSA_DIRECCION', 'Consultorio de demostración · Ciudad de México'),
         'horario_texto' => env('DENTISSA_HORARIO_TEXTO', 'Lunes a viernes · 9:00 a 18:00'),
@@ -178,7 +179,7 @@ return [
     'whatsapp' => [
         'phone_number_id' => env('DENTISSA_WHATSAPP_PHONE_ID'),
         'access_token' => env('DENTISSA_WHATSAPP_TOKEN'),
-        'api_version' => env('DENTISSA_WHATSAPP_API_VERSION', 'v21.0'),
+        'api_version' => env('DENTISSA_WHATSAPP_API_VERSION', 'v25.0'),
         'plantilla_idioma' => env('DENTISSA_WHATSAPP_IDIOMA', 'es_MX'),
         // Webhook de respuestas (botones del recordatorio). El secreto de la
         // app firma cada aviso de Meta; el token de verificación lo eliges tú

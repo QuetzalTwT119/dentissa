@@ -3,7 +3,7 @@
     'description' => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'border-b border-line/80 px-5 py-5 sm:px-6']) }}>
+<div {{ $attributes->merge(['class' => 'border-b border-line/80 px-5 py-5 sm:px-6 lg:py-3.5']) }}>
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         @if ($title || $description)
             <div>
@@ -11,7 +11,8 @@
                     <h3 class="text-headline font-semibold text-ink">{{ $title }}</h3>
                 @endif
                 @if ($description)
-                    <p class="mt-0.5 text-sm text-muted">{{ $description }}</p>
+                    {{-- En PC con poca altura se oculta: es ayuda secundaria y le quita espacio a la tabla. --}}
+                    <p class="mt-0.5 text-sm text-muted lg:[@media(max-height:820px)]:hidden">{{ $description }}</p>
                 @endif
             </div>
         @endif
@@ -26,7 +27,7 @@
     </div>
 
     @if (isset($extra))
-        <div class="mt-5 pt-4 border-t border-line/70">
+        <div class="mt-5 pt-4 border-t border-line/70 lg:mt-3 lg:pt-3">
             {{ $extra }}
         </div>
     @endif

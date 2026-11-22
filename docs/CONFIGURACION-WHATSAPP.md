@@ -148,7 +148,7 @@ Agregar en `.env` (ya están declaradas, vacías, en `.env` y `.env.example`):
 ```
 DENTISSA_WHATSAPP_PHONE_ID=el_id_que_copiaste
 DENTISSA_WHATSAPP_TOKEN=el_token_permanente_del_usuario_del_sistema
-DENTISSA_WHATSAPP_API_VERSION=v21.0
+DENTISSA_WHATSAPP_API_VERSION=v25.0
 DENTISSA_WHATSAPP_IDIOMA=es_MX
 DENTISSA_WHATSAPP_APP_SECRET=clave_secreta_de_la_app
 DENTISSA_WHATSAPP_VERIFY_TOKEN=frase_que_tu_eliges

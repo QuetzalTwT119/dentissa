@@ -34,6 +34,8 @@ $etiquetasAccion = [
     'oferta.creada' => 'Oferta creada',
     'oferta.actualizada' => 'Oferta actualizada',
     'oferta.eliminada' => 'Oferta eliminada',
+    'oferta.publicada' => 'Oferta publicada',
+    'oferta.ocultada' => 'Oferta ocultada',
     'galeria.imagen_agregada' => 'Imagen agregada a galería',
     'galeria.imagen_actualizada' => 'Imagen de galería actualizada',
     'galeria.imagen_eliminada' => 'Imagen de galería eliminada',
@@ -81,115 +83,31 @@ $etiquetasTabla = [
         />
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             
             <!-- Contenedor Principal de la Bitácora (Estructura Unificada como en Directorio de Pacientes) -->
             <x-admin.card>
-                <!-- Barra superior con contexto y filtros integrados -->
-                <div class="border-b border-line/80 p-6 bg-gradient-to-r from-white via-white to-cream/50">
-                    <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                        <div class="max-w-2xl">
-                            <h3 class="text-headline font-semibold text-ink">Actividad registrada</h3>
-                            <p class="mt-1 text-sm text-ink-soft">
-                                Consulta de solo lectura para administración. Solo se registran acciones hechas por cuentas
-                                del personal. Las solicitudes del portal o Telegram no se muestran aquí. Los detalles no incluyen contraseñas ni notas clínicas.
-                            </p>
-                        </div>
-
-                        <!-- Conteo de eventos accesible -->
-                        <div class="flex flex-wrap items-center gap-2 shrink-0 self-start lg:self-auto" role="status">
-                            @if (!empty($filtros['desde']) || !empty($filtros['hasta']) || !empty($filtros['usuario_id']) || !empty($filtros['accion']))
-                                <span class="inline-flex items-center gap-1 rounded-full bg-peach-50 px-2.5 py-0.5 text-caption font-semibold text-brand-600 border border-peach-300/60">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                                    Filtros activos
-                                </span>
-                            @endif
-                            <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1 text-xs font-semibold text-ink-soft shadow-2xs">
-                                <span class="h-1.5 w-1.5 rounded-full bg-sage-500" aria-hidden="true"></span>
-                                {{ $registros->total() }} {{ $registros->total() === 1 ? 'evento' : 'eventos' }} encontrados
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Fila de Filtros compactos integrados (estilo Citas / Pacientes) -->
-                    <form method="GET" action="{{ route('admin.auditoria.index') }}" class="mt-5 pt-4 border-t border-line/70">
-                        @if (request()->filled('per_page'))
-                            <input type="hidden" name="per_page" value="{{ request('per_page') }}">
-                        @endif
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
-                            <!-- Desde -->
-                            <div class="lg:col-span-2">
-                                <label for="filtro_desde" class="block text-sm font-semibold text-ink mb-1.5">
-                                    Desde
-                                </label>
-                                <input id="filtro_desde" type="date" name="desde" value="{{ $filtros['desde'] ?? '' }}"
-                                       aria-label="Fecha inicial desde"
-                                       class="min-h-11 block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
-                            </div>
-
-                            <!-- Hasta -->
-                            <div class="lg:col-span-2">
-                                <label for="filtro_hasta" class="block text-sm font-semibold text-ink mb-1.5">
-                                    Hasta
-                                </label>
-                                <input id="filtro_hasta" type="date" name="hasta" value="{{ $filtros['hasta'] ?? '' }}"
-                                       aria-label="Fecha final hasta"
-                                       class="min-h-11 block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
-                            </div>
-
-                            <!-- Usuario -->
-                            <div class="lg:col-span-3">
-                                <label for="filtro_usuario" class="block text-sm font-semibold text-ink mb-1.5">
-                                    Usuario
-                                </label>
-                                <select id="filtro_usuario" name="usuario_id"
-                                        aria-label="Filtrar por usuario"
-                                        class="min-h-11 block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
-                                    <option value="">Todos los usuarios</option>
-                                    @foreach ($usuarios as $usuario)
-                                        <option value="{{ $usuario->id }}" @selected((string) ($filtros['usuario_id'] ?? '') === (string) $usuario->id)>
-                                            {{ $usuario->nombre }} {{ $usuario->apellido }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Acción -->
-                            <div class="lg:col-span-3">
-                                <label for="filtro_accion" class="block text-sm font-semibold text-ink mb-1.5">
-                                    Acción
-                                </label>
-                                <select id="filtro_accion" name="accion"
-                                        aria-label="Filtrar por acción"
-                                        class="min-h-11 block w-full rounded-xl border border-field bg-white px-3 py-2 text-sm text-ink shadow-2xs transition hover:border-brand-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
-                                    <option value="">Todas las acciones</option>
-                                    @foreach ($acciones as $accion)
-                                        <option value="{{ $accion }}" @selected(($filtros['accion'] ?? '') === $accion)>
-                                            {{ $etiquetasAccion[$accion] ?? str_replace('.', ' · ', ucfirst($accion)) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Botones -->
-                            <div class="sm:col-span-2 lg:col-span-2 flex items-center gap-2">
-                                <button type="submit"
-                                        class="btn-brand h-11 flex-1">
-                                    Filtrar
-                                </button>
-                                <a href="{{ route('admin.auditoria.index', request()->filled('per_page') ? ['per_page' => request('per_page')] : []) }}"
-                                   class="btn-secondary h-11 flex-1">
-                                    Limpiar
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                {{-- Nota breve (antes un bloque alto con el conteo repetido y filtros propios). --}}
+                <p class="border-b border-line/80 px-6 py-2.5 text-xs text-muted lg:[@media(max-height:820px)]:hidden">
+                    Solo lectura. Se registran acciones de cuentas del personal (no del portal ni Telegram); los detalles no incluyen contraseñas ni notas clínicas.
+                </p>
 
                 <!-- Tabla (Directamente integrada en el contenedor igual que Pacientes y Mensajes) -->
-                <x-pagination-summary :items="$registros" label="eventos" />
+                @php
+                    $opcionesUsuario = $usuarios->mapWithKeys(fn ($u) => [$u->id => trim($u->nombre.' '.$u->apellido)])->all();
+                    $opcionesAccion = collect($acciones)->mapWithKeys(fn ($a) => [$a => $etiquetasAccion[$a] ?? str_replace('.', ' · ', ucfirst($a))])->all();
+                @endphp
+                <x-pagination-summary :items="$registros" label="eventos">
+                    <x-slot:filtros>
+                        <x-filtro.barra :action="route('admin.auditoria.index')" :campos="['desde', 'hasta', 'usuario_id', 'accion']">
+                            <x-filtro.fecha name="desde" etiqueta="Desde" :max="now()->toDateString()" />
+                            <x-filtro.fecha name="hasta" etiqueta="Hasta" :max="now()->toDateString()" />
+                            <x-filtro.select name="usuario_id" id="filtro_usuario" etiqueta="Filtrar por usuario" todos="Todos los usuarios" :opciones="$opcionesUsuario" />
+                            <x-filtro.select name="accion" id="filtro_accion" etiqueta="Filtrar por acción" todos="Todas las acciones" :opciones="$opcionesAccion" />
+                        </x-filtro.barra>
+                    </x-slot:filtros>
+                </x-pagination-summary>
                 <x-admin.table minWidth="min-w-[850px]" :larga="true">
                     <x-slot:head>
                         <tr>
@@ -224,10 +142,10 @@ $etiquetasTabla = [
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-brand-50 text-brand-800 border border-brand-200/70">
+                                <x-chip class="bg-brand-50 text-brand-800 border border-brand-200/70">
                                     <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
                                     {{ $etiquetasAccion[$registro->accion] ?? str_replace('.', ' · ', ucfirst($registro->accion ?? 'Evento')) }}
-                                </span>
+                                </x-chip>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="inline-flex items-center gap-1.5 text-sm text-ink">

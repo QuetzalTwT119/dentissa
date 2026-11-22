@@ -17,39 +17,24 @@ $rolClase = [
         </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             @if ($errors->any())
                 <x-alert type="error" :message="$errors->first()" />
             @endif
 
             <x-admin.card>
-                <x-admin.card-header
-                    title="Equipo registrado"
-                    description="Gestiona las cuentas y los roles del personal que accede a la plataforma."
-                >
-                    <x-slot:actions>
-                        <form method="GET" action="{{ route('admin.usuarios.index') }}" class="flex flex-wrap items-center gap-2.5">
-                            <select name="rol" aria-label="Filtrar por rol" onchange="this.form.submit()"
-                                    class="min-h-11 rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
-                                <option value="">Todos los roles</option>
-                                <option value="asistente" @selected(($filtros['rol'] ?? '') === 'asistente')>Asistente</option>
-                                <option value="admin" @selected(($filtros['rol'] ?? '') === 'admin')>Admin</option>
-                            </select>
-                            <select name="activo" aria-label="Filtrar por estado" onchange="this.form.submit()"
-                                    class="min-h-11 rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
-                                <option value="">Todos los estados</option>
-                                <option value="1" @selected(($filtros['activo'] ?? '') === '1')>Activos</option>
-                                <option value="0" @selected(($filtros['activo'] ?? '') === '0')>Inactivos</option>
-                            </select>
-                        </form>
 
-                    </x-slot:actions>
-                </x-admin.card-header>
 
                 <x-pagination-summary :items="$usuarios" label="usuarios">
+                    <x-slot:filtros>
+                        <x-filtro.barra :action="route('admin.usuarios.index')" :campos="['rol', 'activo']">
+                            <x-filtro.select name="rol" etiqueta="Filtrar por rol" todos="Todos los roles" :opciones="['asistente' => 'Asistente', 'admin' => 'Admin']" />
+                            <x-filtro.select name="activo" etiqueta="Filtrar por estado" todos="Todos los estados" :opciones="['1' => 'Activos', '0' => 'Inactivos']" />
+                        </x-filtro.barra>
+                    </x-slot:filtros>
                     <x-slot:acciones>
-                        <a href="{{ route('admin.usuarios.create') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-brand transition-[background-color,transform] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
+                        <a href="{{ route('admin.usuarios.create') }}" class="btn-brand min-h-11 px-5">
                             <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
                             Nuevo usuario
                         </a>
@@ -63,7 +48,7 @@ $rolClase = [
                             <th class="px-6 py-3.5">Teléfono</th>
                             <th class="px-6 py-3.5">Rol</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right">Acciones</th>
+                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -78,19 +63,16 @@ $rolClase = [
                             <td class="px-6 py-4 text-ink-soft">{{ $usuario->email }}</td>
                             <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $usuario->telefono ?? '—' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $rolClase[$usuario->rol->value] ?? 'bg-shell text-ink' }}">
+                                <x-chip class="{{ $rolClase[$usuario->rol->value] ?? 'bg-shell text-ink' }}">
                                     {{ $rolLabel[$usuario->rol->value] ?? $usuario->rol->value }}
-                                </span>
+                                </x-chip>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <x-admin.status-badge :active="$usuario->activo" />
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.usuarios.edit', $usuario) }}" title="Editar" aria-label="Editar usuario"
-                                       class="rounded-xl p-2 text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
-                                        <x-icon name="edit" />
-                                    </a>
+                                <div class="flex items-center justify-end gap-1.5 lg:justify-center">
+                                    <x-admin.acciones-fila :editar="route('admin.usuarios.edit', $usuario)" que="el usuario" />
                                     <form method="POST" action="{{ route('admin.usuarios.activo.toggle', $usuario) }}"
                                           data-confirmar="{{ $usuario->activo ? 'No podrá iniciar sesión hasta que lo vuelvas a activar.' : 'Podrá volver a iniciar sesión con su contraseña.' }}"
                                           data-confirmar-titulo="{{ $usuario->activo ? '¿Desactivar' : '¿Activar' }} a {{ $usuario->nombre }} {{ $usuario->apellido }}?"

@@ -22,7 +22,7 @@
     $claseCampo = 'mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200';
 @endphp
 
-<div class="pb-8 pt-4">
+<div class="panel-contenido pb-8 pt-4 lg:pb-3 lg:pt-3">
     <form id="form-tratamiento" method="POST" action="{{ $accion }}"
           data-confirmar="{{ $editando ? 'Los cambios se aplicarán de inmediato.' : 'Se guardará y quedará disponible en el panel.' }}"
           data-confirmar-titulo="{{ $editando ? '¿Guardar los cambios del tratamiento?' : '¿Crear el tratamiento?' }}"
@@ -104,10 +104,10 @@
             </section>
 
             {{-- Celular y tableta: guardar abajo, al alcance del pulgar. --}}
-            <div class="flex flex-col gap-2.5 rounded-3xl border border-line bg-white p-4 shadow-soft lg:hidden">
+            <x-admin.card class="flex flex-col gap-2.5 p-4 lg:hidden">
                 <x-primary-button class="w-full justify-center">{{ $editando ? 'Guardar cambios' : 'Crear tratamiento' }}</x-primary-button>
                 <a href="{{ route('admin.tratamientos.index') }}" class="inline-flex min-h-11 items-center justify-center rounded-full text-sm font-semibold text-ink-soft transition hover:text-ink">Cancelar</a>
-            </div>
+            </x-admin.card>
         </aside>
     </form>
 </div>

@@ -39,6 +39,7 @@
     <div role="cell" class="fila-cita-tratamiento min-w-0">
         <p class="line-clamp-2 text-sm font-medium text-ink-soft" title="{{ $cita->tratamiento->nombre ?? '' }}">{{ $cita->tratamiento->nombre ?? '—' }}</p>
         <p class="text-xs text-muted">{{ $cita->servicio->nombre ?? '—' }}@if ($minutos > 0) · {{ $duracion }}@endif</p>
+        <x-cita-oferta :cita="$cita" />
     </div>
 
     <div role="cell" class="fila-cita-estado">

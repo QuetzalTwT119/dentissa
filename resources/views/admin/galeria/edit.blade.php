@@ -1,22 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h1 class="mt-1.5 text-title-2 text-ink">
-                    Editar imagen
-                </h1>
-                <p class="mt-1 max-w-2xl text-sm text-muted">Actualización de foto, título y visibilidad.</p>
-            </div>
-            <a href="{{ route('admin.galeria.index') }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al listado</x-secondary-button>
-            </a>
-        </div>
+        <x-admin.header
+            title="Editar imagen"
+            subtitle="Actualización de foto, título y visibilidad."
+        >
+        </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <form method="POST" action="{{ route('admin.galeria.update', $imagen) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios de la foto?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" enctype="multipart/form-data" class="space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <x-admin.card class="p-5 sm:p-8">
+                <form method="POST" action="{{ route('admin.galeria.update', $imagen) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios de la foto?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" enctype="multipart/form-data" class="formulario-panel space-y-6">
                     @csrf
                     @method('put')
 
@@ -28,8 +22,7 @@
 
                     <div>
                         <x-input-label for="descripcion" value="Descripción (opcional)" />
-                        <textarea id="descripcion" name="descripcion" rows="3"
-                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion', $imagen->descripcion) }}</textarea>
+                        <x-textarea id="descripcion" name="descripcion" rows="3" class="mt-1.5">{{ old('descripcion', $imagen->descripcion) }}</x-textarea>
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 
@@ -57,11 +50,11 @@
                         <x-primary-button>Guardar cambios</x-primary-button>
 
                         <a href="{{ route('admin.galeria.index') }}">
-                            <x-secondary-button type="button">Volver</x-secondary-button>
+                            <x-secondary-button type="button">Cancelar</x-secondary-button>
                         </a>
                     </div>
                 </form>
-            </div>
+            </x-admin.card>
         </div>
     </div>
 </x-app-layout>

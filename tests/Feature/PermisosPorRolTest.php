@@ -67,7 +67,7 @@ class PermisosPorRolTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.usuarios.index'))
             ->assertOk()
-            ->assertSee('Gestiona las cuentas y los roles del personal que accede a la plataforma.')
+            ->assertSee('data-filtro-barra', false)
             ->assertSee('aria-label="Filtrar por rol"', false)
             ->assertSee('aria-label="Filtrar por estado"', false);
     }

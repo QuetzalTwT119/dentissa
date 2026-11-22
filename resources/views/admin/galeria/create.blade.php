@@ -1,22 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h1 class="mt-1.5 text-title-2 text-ink">
-                    Nueva imagen
-                </h1>
-                <p class="mt-1 max-w-2xl text-sm text-muted">Carga de fotografía de instalaciones o consultorio.</p>
-            </div>
-            <a href="{{ route('admin.galeria.index') }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al listado</x-secondary-button>
-            </a>
-        </div>
+        <x-admin.header
+            title="Nueva imagen"
+            subtitle="Carga de fotografía de instalaciones o consultorio."
+        >
+        </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <form method="POST" action="{{ route('admin.galeria.store') }}" data-confirmar="Se guardará y quedará disponible en el panel." data-confirmar-titulo="¿Agregar la foto?" data-confirmar-boton="Sí, crear" data-confirmar-tono="normal" enctype="multipart/form-data" class="space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <x-admin.card class="p-5 sm:p-8">
+                <form method="POST" action="{{ route('admin.galeria.store') }}" data-confirmar="Se guardará y quedará disponible en el panel." data-confirmar-titulo="¿Agregar la foto?" data-confirmar-boton="Sí, crear" data-confirmar-tono="normal" enctype="multipart/form-data" class="formulario-panel space-y-6">
                     @csrf
 
                     <x-form-obligatorios />
@@ -28,8 +22,7 @@
 
                     <div>
                         <x-input-label for="descripcion" value="Descripción (opcional)" />
-                        <textarea id="descripcion" name="descripcion" rows="3"
-                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion') }}</textarea>
+                        <x-textarea id="descripcion" name="descripcion" rows="3" class="mt-1.5">{{ old('descripcion') }}</x-textarea>
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 
@@ -58,7 +51,7 @@
                         </a>
                     </div>
                 </form>
-            </div>
+            </x-admin.card>
         </div>
     </div>
 </x-app-layout>

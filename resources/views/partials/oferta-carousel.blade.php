@@ -8,14 +8,8 @@
         <div x-ref="track" @scroll="handleScroll" class="no-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-2">
             @foreach ($ofertas as $index => $oferta)
                 @php
-                    $valor = null;
-                    if ($oferta->precio_especial) {
-                        $valor = 'Precio especial: $'.$oferta->precio_especial;
-                    } elseif ($oferta->valor_descuento) {
-                        $valor = $oferta->tipo_valor === 'porcentaje'
-                            ? $oferta->valor_descuento.'% de descuento'
-                            : '$'.$oferta->valor_descuento.' de descuento';
-                    }
+                    // Misma etiqueta que la portada y el panel (Oferta::etiquetaBeneficio).
+                        $valor = $oferta->etiquetaBeneficio();
                 @endphp
                 <div class="w-[85%] shrink-0 snap-start overflow-hidden rounded-2xl border border-line bg-white shadow-soft transition duration-200 ease-out hover:border-peach-300 sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)]"
                      style="animation-delay: {{ $index * 60 }}ms">

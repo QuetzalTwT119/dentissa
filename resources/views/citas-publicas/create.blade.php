@@ -27,7 +27,7 @@
             $claseSiguiente = 'btn-brand flex-[2] py-3 sm:flex-none sm:px-8';
             // Fila de botones de cada paso: en el celular queda fija abajo (con el margen
             // de la zona del gesto de inicio); desde 640 px vuelve a su lugar normal.
-            $claseBarra = 'sticky bottom-0 z-10 -mx-5 -mb-5 flex gap-3 border-t border-line/80 bg-white/95 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur supports-[backdrop-filter]:bg-white/85 sm:static sm:mx-0 sm:mb-0 sm:justify-between sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none';
+            $claseBarra = 'sticky bottom-0 z-10 -mx-5 -mb-5 flex gap-3 border-t border-line/80 bg-white/95 px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur supports-[backdrop-filter]:bg-white/85 sm:static sm:mx-0 sm:mb-0 sm:justify-between sm:border-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none lg:sticky lg:-bottom-6 lg:-mx-6 lg:-mb-6 lg:border-t lg:bg-white lg:px-6 lg:py-4';
         @endphp
 
         @if (session('success'))
@@ -50,6 +50,13 @@
                                 <dt class="text-xs font-semibold uppercase tracking-label text-muted">Fecha y hora</dt>
                                 <dd class="mt-1 font-semibold text-brand-700">{{ ucfirst($resumen['fecha']) }} · {{ $resumen['hora'] }} hrs</dd>
                             </div>
+                            @if (! empty($resumen['oferta']))
+                                <div class="px-5 py-3.5" data-resumen-oferta>
+                                    <dt class="text-xs font-semibold uppercase tracking-label text-muted">Oferta</dt>
+                                    <dd class="mt-1 font-semibold text-brand-700">{{ $resumen['oferta'] }}</dd>
+                                    <dd class="mt-0.5 text-footnote text-muted">Se aplica en el consultorio el día de tu cita.</dd>
+                                </div>
+                            @endif
                             @if (! empty($resumen['precio']))
                                 <div class="px-5 py-3.5" data-aviso-pago>
                                     <dt class="text-xs font-semibold uppercase tracking-label text-muted">Precio</dt>
@@ -86,21 +93,37 @@
                 </div>
             </header>
 
-            <main class="pt-6 pb-28 sm:pb-16 sm:pt-10"
+            <main class="pt-6 pb-28 sm:pb-16 sm:pt-6 lg:h-[calc(100dvh-4.0625rem)] lg:py-5"
                  x-data="{
                     paso: {{ $errors->any() ? 3 : 0 }},
-                    pasos: ['Tipo de atención', 'Fecha y hora', 'Resumen', 'Datos'],
+                    pasos: ['Tipo de atención', 'Día', 'Hora', 'Datos'],
                     encabezados: [
                         { etiqueta: 'Selección clínica', titulo: '¿Qué tipo de atención necesitas?', texto: 'Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.' },
-                        { etiqueta: 'Calendario', titulo: '¿Cuándo te queda mejor?', texto: 'Elige un día con lugar y después tu horario. La agenda se confirma en tiempo real con el consultorio.' },
-                        { etiqueta: 'Confirmación', titulo: 'Resumen de la cita', texto: 'Revisa el tratamiento, la fecha y la hora antes de continuar' },
+                        { etiqueta: 'Calendario', titulo: '¿Qué día te queda mejor?', texto: 'Los días con punto tienen lugar. La agenda se confirma en tiempo real con el consultorio.' },
+                        { etiqueta: 'Horario', titulo: '¿A qué hora?', texto: 'Estas son las horas libres del día que elegiste.' },
                         { etiqueta: 'Datos de contacto', titulo: 'Datos para agendar', texto: 'Los usamos para confirmar tu cita médica y enviarte recordatorios.' },
                     ],
                     servicios: @js($servicios),
                     idServicio: @js(old('id_servicio', $servicioInicial ?? '')),
-                    idTratamiento: @js(old('id_tratamiento', '')),
+                    idTratamiento: @js(old('id_tratamiento', $tratamientoInicial ?? '')),
+                    // Oferta vigente de cada tratamiento (21/11/2026): se avisa al elegirlo.
+                    ofertas: @js((object) ($ofertasPorTratamiento ?? [])),
+                    get ofertaTratamiento() {
+                        return this.ofertas[Number(this.idTratamiento)] ?? null;
+                    },
+                    // Aplica si la cita es dentro de la vigencia (sin fecha elegida todavía, se muestra).
+                    get ofertaAplica() {
+                        return Boolean(this.ofertaTratamiento && (!this.fecha || this.fecha <= this.ofertaTratamiento.hasta));
+                    },
                     fecha: @js(old('fecha', '')),
                     hora: @js(old('hora', null)),
+                    // Resumen: 09:00 a 10:00 (las horas del calendario solo muestran el inicio).
+                    get horaConFin() {
+                        const dur = Number(this.tratamientoSeleccionado?.duracion_estimada) || 0;
+                        if (!this.hora || !dur) return this.hora;
+                        const t = Number(this.hora.slice(0, 2)) * 60 + Number(this.hora.slice(3, 5)) + dur;
+                        return `${this.hora} a ${String(Math.floor(t / 60) % 24).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+                    },
                     horarios: [],
                     loadingHorarios: false,
                     descripciones: {
@@ -153,23 +176,24 @@
                  :data-direccion="direccion"
                  x-init="$watch('paso', () => { if ($refs.tarjeta.getBoundingClientRect().top < 0) $refs.tarjeta.scrollIntoView({ block: 'start' }) })"
             >
-                <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.75fr)] lg:gap-8">
+                <div class="mx-auto grid max-w-6xl grid-cols-1 items-start gap-6 px-4 sm:px-6 lg:h-full lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.75fr)] lg:grid-rows-1 lg:gap-8">
 
                     <!-- Tarjeta principal con los pasos -->
-                    <section x-ref="tarjeta" class="w-full scroll-mt-20 overflow-clip rounded-4xl border border-line bg-white shadow-soft">
+                    {{-- En PC la tarjeta crece con su contenido hasta el alto de la ventana; si no cabe, se desplaza solo su interior (la barra de botones sigue a la vista). --}}
+                    <section x-ref="tarjeta" class="w-full scroll-mt-20 overflow-clip rounded-4xl border border-line bg-white shadow-soft lg:flex lg:max-h-full lg:flex-col">
 
                         <!-- Encabezado del paso actual (uno solo para los 5 pasos) -->
-                        <div class="border-b border-line/80 bg-gradient-to-b from-peach-50 to-white px-5 pb-6 pt-6 sm:px-8 sm:pt-8">
+                        <div class="border-b border-line/80 bg-gradient-to-b from-peach-50 to-white px-5 pb-6 pt-6 sm:px-8 sm:pt-8 lg:shrink-0 lg:pb-4 lg:pt-5">
                             <p class="eyebrow flex-wrap gap-x-2 gap-y-1">
                                 <span class="whitespace-nowrap" x-text="`Paso ${paso + 1} de ${pasos.length}`">Paso 1 de 5</span>
                                 <span aria-hidden="true">·</span>
                                 <span class="whitespace-nowrap" x-text="encabezados[paso].etiqueta">Selección clínica</span>
                             </p>
-                            <h1 class="mt-3 text-title-2 text-ink"
+                            <h1 class="mt-3 text-title-2 text-ink lg:mt-2"
                                 x-text="paso === 0 && servicioSeleccionado ? 'Elige un tratamiento' : encabezados[paso].titulo">¿Qué tipo de atención necesitas?</h1>
-                            <p class="mt-2 max-w-lg text-callout text-muted" x-text="paso === 0 && servicioSeleccionado ? 'Selecciona el procedimiento que necesitas; cada uno muestra su duración aproximada.' : encabezados[paso].texto">Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.</p>
+                            <p class="mt-2 max-w-lg text-callout text-muted lg:[@media(max-height:820px)]:hidden" x-text="paso === 0 && servicioSeleccionado ? 'Selecciona el procedimiento que necesitas; cada uno muestra su duración aproximada.' : encabezados[paso].texto">Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.</p>
 
-                            <div class="mt-5 flex gap-1.5" aria-hidden="true">
+                            <div class="mt-5 flex gap-1.5 lg:mt-4" aria-hidden="true">
                                 <template x-for="(p, i) in pasos" :key="i">
                                     <span class="h-1.5 flex-1 rounded-full transition-colors duration-200"
                                           :class="i < paso ? 'bg-sage-500' : (i === paso ? 'bg-brand-500' : 'bg-line')"></span>
@@ -179,7 +203,7 @@
 
                         <!-- PASO 0: SERVICIO Y TRATAMIENTO -->
                         <template x-if="paso === 0">
-                            <div class="p-5 sm:p-8">
+                            <div class="p-5 sm:p-8 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:p-6">
                                 <!-- Especialidades -->
                                 <template x-if="!servicioSeleccionado">
                                     <div class="paso-anim grid gap-3">
@@ -224,7 +248,7 @@
                                                 <button type="button"
                                                         role="radio"
                                                         :aria-checked="(Number(idTratamiento) === tratamiento.id).toString()"
-                                                        @click="idTratamiento = tratamiento.id"
+                                                        @click="if (idTratamiento !== tratamiento.id) { fecha = ''; hora = null; horarios = []; } idTratamiento = tratamiento.id"
                                                         class="flex w-full items-start justify-between gap-3 rounded-2xl border p-4 text-left transition-[border-color,background-color] duration-150"
                                                         :class="Number(idTratamiento) === tratamiento.id
                                                             ? 'border-brand-400 bg-brand-50/60 ring-1 ring-brand-400'
@@ -237,6 +261,8 @@
                                                         </span>
                                                         <span class="min-w-0">
                                                             <span class="block text-callout font-semibold text-ink" x-text="tratamiento.nombre"></span>
+                                                            <span x-show="ofertas[tratamiento.id]" class="mt-1 inline-flex rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-800 ring-1 ring-inset ring-brand-200" data-etiqueta-oferta
+                                                                  x-text="ofertas[tratamiento.id] ? `Oferta ${ofertas[tratamiento.id].etiqueta}` : ''"></span>
                                                             <span class="mt-0.5 block text-footnote text-muted sm:hidden" x-text="[formatoDuracion(tratamiento.duracion_estimada), formatoPrecio(tratamiento.precio_referencia)].filter(Boolean).join(' · ')"></span>
                                                         </span>
                                                     </span>
@@ -248,6 +274,11 @@
                                                 </button>
                                             </template>
                                         </div>
+
+                                        <p x-show="ofertaTratamiento" x-cloak class="mt-3 rounded-xl border border-brand-200 bg-brand-50 px-3.5 py-2.5 text-footnote text-brand-800" data-aviso-oferta role="status">
+                                            <span class="font-semibold" x-text="ofertaTratamiento?.titulo"></span>:
+                                            <span x-text="ofertaTratamiento ? `${ofertaTratamiento.etiqueta} en citas hasta el ${ofertaTratamiento.hasta_legible}. Se aplica en el consultorio.` : ''"></span>
+                                        </p>
 
                                         <p x-show="servicioSeleccionado.tratamientos.length > 0" data-aviso-pago class="mt-3 flex items-center gap-2 text-footnote text-muted">
                                             <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg>
@@ -273,45 +304,38 @@
                             </div>
                         </template>
 
-                        <!-- PASO 1: FECHA Y HORA (calendario del mes + horarios del día) -->
+                        <!-- PASO 1: DÍA (solo el mes; tocar otra vez el día lo quita) -->
                         <template x-if="paso === 1">
-                            <div class="paso-anim space-y-6 p-5 sm:p-8">
-                                <div>
-                                    @include('partials.disponibilidad-picker')
-                                    <p class="mt-4 text-footnote text-muted">Horario regular: {{ $horarioRegular }}</p>
+                            <div class="paso-anim space-y-6 p-5 sm:p-8 lg:min-h-0 lg:flex-1 lg:space-y-5 lg:overflow-y-auto lg:p-6">
+                                <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_13rem] lg:items-center lg:gap-8">
+                                    @include('partials.disponibilidad-picker', ['vista' => 'dia'])
+                                    <div class="mt-4 rounded-2xl bg-cream px-4 py-3 text-center text-footnote text-muted lg:mt-0 lg:text-left">
+                                        <p class="font-semibold text-ink-soft">Horario del consultorio</p>
+                                        @foreach (\App\Models\HorarioAtencion::lineasSemanales() as $linea)
+                                            <p class="mt-1">{{ $linea }}</p>
+                                        @endforeach
+                                        <p class="mt-2 hidden lg:block">Toca otra vez el día elegido para quitarlo.</p>
+                                    </div>
                                 </div>
 
-                                <p x-show="!hora" class="-mb-3 text-footnote text-muted sm:text-right" aria-live="polite" x-text="fecha ? 'Elige un horario para continuar.' : 'Elige un día para continuar.'"></p>
                                 <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
-                                    <button type="button" :disabled="!hora" @click="siguiente()" class="{{ $claseSiguiente }}">Revisar resumen</button>
+                                    {{-- El aviso va en la barra (no en un renglón aparte) para no obligar a desplazarse. --}}
+                                    <p x-show="!fecha" class="hidden self-center text-footnote text-muted sm:ml-auto sm:block" aria-live="polite">Elige un día para continuar.</p>
+                                    <button type="button" :disabled="!fecha" @click="siguiente()" class="{{ $claseSiguiente }}">Elegir hora</button>
                                 </div>
                             </div>
                         </template>
 
-                        <!-- PASO 2: RESUMEN DE LA CITA -->
+                        <!-- PASO 2: HORA (horas libres del día elegido, en cuadrícula) -->
                         <template x-if="paso === 2">
-                            <div class="paso-anim space-y-6 p-5 sm:p-8">
-                                <div class="overflow-hidden rounded-3xl border border-line">
-                                    <div class="bg-cream px-5 py-4">
-                                        <p class="text-xs font-semibold uppercase tracking-label text-muted">Consulta en Dentissa</p>
-                                        <h3 class="mt-1 font-serif text-title-3 text-ink" x-text="tratamientoSeleccionado?.nombre"></h3>
-                                    </div>
-                                    <dl class="grid grid-cols-1 divide-y divide-line/80 border-t border-line sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-                                        <div class="px-5 py-4">
-                                            <dt class="text-xs font-semibold uppercase tracking-label text-muted">Especialidad</dt>
-                                            <dd class="mt-1 font-semibold text-ink" x-text="servicioSeleccionado?.nombre"></dd>
-                                        </div>
-                                        <div class="px-5 py-4">
-                                            <dt class="text-xs font-semibold uppercase tracking-label text-muted">Fecha y hora</dt>
-                                            <dd class="mt-1 font-semibold text-brand-700" x-text="fechaLegible + ' — ' + hora + ' hrs'"></dd>
-                                        </div>
-                                    </dl>
-                                </div>
+                            <div class="paso-anim space-y-6 p-5 sm:p-8 lg:min-h-0 lg:flex-1 lg:space-y-5 lg:overflow-y-auto lg:p-6">
+                                @include('partials.disponibilidad-picker', ['vista' => 'horas'])
 
                                 <div class="{{ $claseBarra }}">
-                                    <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
-                                    <button type="button" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a mis datos</button>
+                                    <button type="button" @click="anterior()" class="{{ $claseAtras }}">Cambiar día</button>
+                                    <p x-show="!hora" class="hidden self-center text-footnote text-muted sm:ml-auto sm:block" aria-live="polite">Elige un horario para continuar.</p>
+                                    <button type="button" :disabled="!hora" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a mis datos</button>
                                 </div>
                             </div>
                         </template>
@@ -336,7 +360,7 @@
                                 // Palomita verde dentro del campo cuando el dato ya está bien.
                                 $palomita = '<span aria-hidden="true" class="pointer-events-none absolute right-3 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-sage-50 text-xs font-bold text-sage-600">✓</span>';
                             @endphp
-                            <form method="POST" action="{{ route('citas.publica.store') }}" class="paso-anim space-y-5 p-5 sm:p-8" novalidate
+                            <form method="POST" action="{{ route('citas.publica.store') }}" class="paso-anim space-y-5 p-5 sm:p-8 lg:min-h-0 lg:flex-1 lg:space-y-4 lg:overflow-y-auto lg:p-6" novalidate
                                   x-data="datosPaciente(@js($datosIniciales))"
                                   x-on:submit="enviar($event)"
                                   x-init="$nextTick(() => $el.querySelector('[aria-invalid=true]')?.focus())">
@@ -348,6 +372,7 @@
                                         <span class="font-semibold text-ink" x-text="tratamientoSeleccionado?.nombre"></span>
                                         · <span x-text="fechaLegible"></span>
                                         · <span class="font-semibold tabular-nums text-ink" x-text="hora ? `${hora} hrs` : ''"></span>
+                                        <span x-show="ofertaAplica" x-cloak class="font-semibold text-brand-700" x-text="ofertaAplica ? `· Oferta ${ofertaTratamiento.etiqueta}` : ''"></span>
                                     </span>
                                     <button type="button" @click="mover('atras'); paso = 1" class="link inline-flex min-h-11 items-center text-footnote">Cambiar</button>
                                 </div>
@@ -366,13 +391,13 @@
                                     @foreach ([
                                         ['nombre', 'Nombre', 'text', 'given-name', 'text', 'Ej. Ana', 100],
                                         ['apellido', 'Apellido', 'text', 'family-name', 'text', 'Ej. Pérez', 100],
-                                        ['telefono', 'Teléfono (WhatsApp)', 'tel', 'tel-national', 'numeric', '55 1234 5678', 12],
-                                        ['email', 'Correo electrónico', 'email', 'email', 'email', 'Ej. ana@correo.com', 100],
+                                        ['telefono', 'Teléfono (WhatsApp)', 'tel', 'tel-national', 'numeric', '755 123 4567', 12],
+                                        ['email', 'Correo electrónico', 'email', 'email', 'email', 'Ej. ana@correo.com', 100], // opcional
                                     ] as [$campo, $etiqueta, $tipo, $autocompletar, $teclado, $ejemplo, $maximo])
                                         <div>
-                                            <label for="{{ $campo }}" class="{{ $claseEtiqueta }}">{{ $etiqueta }} <span class="text-brand-600" aria-hidden="true">*</span></label>
+                                            <label for="{{ $campo }}" class="{{ $claseEtiqueta }}">{{ $etiqueta }} @if ($campo === 'email')<span class="font-normal text-muted">(opcional)</span>@else<span class="text-brand-600" aria-hidden="true">*</span>@endif</label>
                                             <div class="relative">
-                                                <input id="{{ $campo }}" enterkeyhint="next" type="{{ $tipo }}" name="{{ $campo }}" autocomplete="{{ $autocompletar }}" inputmode="{{ $teclado }}" maxlength="{{ $maximo }}" required
+                                                <input id="{{ $campo }}" enterkeyhint="next" type="{{ $tipo }}" name="{{ $campo }}" autocomplete="{{ $autocompletar }}" inputmode="{{ $teclado }}" maxlength="{{ $maximo }}" @required($campo !== 'email')
                                                        placeholder="{{ $ejemplo }}" value="{{ old($campo) }}"
                                                        @if ($campo === 'telefono')
                                                            :value="valores.telefono" x-on:input="escribirTelefono($event)"
@@ -391,11 +416,7 @@
                                     @endforeach
                                 </div>
 
-                                <div>
-                                    <label for="motivo" class="{{ $claseEtiqueta }}">Motivo de la visita <span class="font-normal text-muted">(opcional)</span></label>
-                                    <textarea id="motivo" name="motivo" maxlength="1000" placeholder="Cuéntanos brevemente si tienes alguna molestia o si es revisión de rutina..." rows="3"
-                                              class="{{ $claseCampo }} py-3">{{ old('motivo') }}</textarea>
-                                </div>
+                                {{-- "Motivo de la visita" se quitó (20/11/2026): se platica en la consulta. El servidor lo sigue aceptando como opcional. --}}
 
                                 {{-- Consentimiento expreso: el motivo puede contener datos de salud. --}}
                                 <div>
@@ -432,7 +453,7 @@
                     </section>
 
                     <!-- Resumen lateral (ticket) -->
-                    <aside class="w-full self-start rounded-4xl border border-line bg-white p-5 shadow-soft sm:p-7 lg:sticky lg:top-24">
+                    <aside class="w-full self-start rounded-4xl border border-line bg-white p-5 shadow-soft sm:p-7 lg:max-h-full lg:overflow-y-auto lg:p-6">
                         <div class="flex items-start justify-between gap-4">
                             <div>
                                 <p class="eyebrow">Agenda en línea</p>
@@ -443,10 +464,10 @@
                             </span>
                         </div>
 
-                        <p class="mt-2 text-callout text-muted">Elige lo que necesitas y revisa la disponibilidad antes de confirmar.</p>
+                        <p class="mt-2 text-callout text-muted lg:[@media(max-height:820px)]:hidden">Elige lo que necesitas y revisa la disponibilidad antes de confirmar.</p>
 
                         <!-- Progreso -->
-                        <div class="mt-5 hidden rounded-2xl bg-cream p-4 lg:block" role="progressbar" aria-label="Progreso de la cita" aria-valuemin="1" :aria-valuemax="pasos.length" :aria-valuenow="paso + 1">
+                        <div class="sr-only" role="progressbar" aria-label="Progreso de la cita" aria-valuemin="1" :aria-valuemax="pasos.length" :aria-valuenow="paso + 1">
                             <div class="flex items-center justify-between gap-3 text-xs font-semibold">
                                 <span class="text-muted">Paso actual</span>
                                 <span class="text-brand-700" x-text="`Paso ${paso + 1} de ${pasos.length}`"></span>
@@ -473,18 +494,25 @@
                                         <span class="block text-xs text-muted">Se paga en el consultorio</span>
                                     </dd>
                                 </div>
+                                <div class="flex justify-between gap-4 py-2.5" x-show="ofertaTratamiento" x-cloak data-resumen-oferta>
+                                    <dt class="shrink-0 text-muted">Oferta</dt>
+                                    <dd class="min-w-0 text-right">
+                                        <span class="block font-semibold" :class="ofertaAplica ? 'text-brand-700' : 'text-muted line-through'" x-text="ofertaTratamiento?.etiqueta"></span>
+                                        <span class="block text-xs text-muted" x-text="ofertaAplica ? 'Se aplica en el consultorio' : `Solo en citas hasta el ${ofertaTratamiento?.hasta_legible}`"></span>
+                                    </dd>
+                                </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Fecha</dt>
                                     <dd class="min-w-0 text-right font-semibold text-ink" :class="!fecha && 'font-normal text-muted'" x-text="fechaLegible || 'Pendiente'"></dd>
                                 </div>
                                 <div class="flex justify-between gap-4 py-2.5">
                                     <dt class="shrink-0 text-muted">Hora</dt>
-                                    <dd class="min-w-0 text-right font-semibold text-brand-700" :class="!hora && 'font-normal text-muted'" x-text="hora || 'Pendiente'"></dd>
+                                    <dd class="min-w-0 text-right font-semibold text-brand-700" :class="!hora && 'font-normal text-muted'" x-text="horaConFin || 'Pendiente'"></dd>
                                 </div>
                             </dl>
                         </div>
 
-                        <p class="mt-4 text-center text-footnote text-muted">Elige un horario disponible y completa tus datos para reservar tu cita.</p>
+                        <p class="mt-4 text-center text-footnote text-muted lg:[@media(max-height:820px)]:hidden">Elige un horario disponible y completa tus datos para reservar tu cita.</p>
                     </aside>
                 </div>
             </main>

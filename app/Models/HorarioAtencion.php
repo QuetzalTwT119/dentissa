@@ -65,6 +65,21 @@ class HorarioAtencion extends Model
      */
     public static function resumenSemanal(): string
     {
+        $lineas = static::lineasSemanales();
+
+        return $lineas === []
+            ? 'Consulta la disponibilidad al elegir el día.'
+            : implode(' • ', $lineas).'.';
+    }
+
+    /**
+     * Mismo agrupado que resumenSemanal(), una línea por grupo:
+     * ["Lunes a viernes de 8:00 a 18:00 hrs", "Sábado de 9:00 a 14:00 hrs"].
+     *
+     * @return list<string>
+     */
+    public static function lineasSemanales(): array
+    {
         $nombres = [1 => 'lunes', 2 => 'martes', 3 => 'miércoles', 4 => 'jueves', 5 => 'viernes', 6 => 'sábado', 0 => 'domingo'];
         $horarios = static::where('abierto', true)->get()->keyBy('dia_semana');
 
@@ -96,8 +111,6 @@ class HorarioAtencion extends Model
             return ucfirst($dias)." de {$grupo['rango']} hrs";
         });
 
-        return $partes->isEmpty()
-            ? 'Consulta la disponibilidad al elegir el día.'
-            : $partes->join(' • ').'.';
+        return $partes->values()->all();
     }
 }

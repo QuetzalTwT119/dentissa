@@ -13,27 +13,49 @@
         </div>
 
         @if ($testimonios->isNotEmpty())
-            <div class="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
-                @foreach ($testimonios as $testimonio)
-                    @php
-                        $paciente = $testimonio->paciente;
-                        $nombre = $paciente ? trim($paciente->nombre.' '.mb_substr((string) $paciente->apellido, 0, 1).($paciente->apellido ? '.' : '')) : 'Paciente';
-                        $iniciales = $paciente ? mb_strtoupper(mb_substr($paciente->nombre, 0, 1).mb_substr((string) $paciente->apellido, 0, 1)) : 'P';
-                        $estrellas = max(1, min(5, (int) ($testimonio->calificacion ?: 5)));
-                    @endphp
-                    <figure class="card-boutique flex h-full flex-col p-6 sm:p-7" data-testimonio-publico>
-                        <svg class="h-7 w-7 text-peach-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.6 6C6.5 7.3 4.5 10 4.5 13.4V18h6v-6H7.6c.2-1.9 1.4-3.4 3.2-4.2L9.6 6zm9 0c-3.1 1.3-5.1 4-5.1 7.4V18h6v-6h-2.9c.2-1.9 1.4-3.4 3.2-4.2L18.6 6z"/></svg>
-                        <div class="mt-3 text-sm tracking-label text-amber-500" aria-label="{{ $estrellas }} de 5 estrellas">{{ str_repeat('★', $estrellas) }}<span class="text-line">{{ str_repeat('★', 5 - $estrellas) }}</span></div>
-                        <blockquote class="mt-3 flex-1 font-serif text-title-3 italic text-ink">“{{ $testimonio->comentario }}”</blockquote>
-                        <figcaption class="mt-6 flex items-center gap-3 border-t border-line/80 pt-5">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold text-brand-800" aria-hidden="true">{{ $iniciales }}</span>
-                            <span class="min-w-0">
-                                <span class="block truncate text-sm font-semibold text-ink">{{ $nombre }}</span>
-                                <span class="block truncate text-xs text-muted">Paciente de Dentissa</span>
-                            </span>
-                        </figcaption>
-                    </figure>
-                @endforeach
+            {{-- Mismo carrusel que las especialidades (carruselServicios): tarjetas compactas. --}}
+            <div x-data="carruselServicios" class="relative mt-10" role="region" aria-roledescription="carrusel" aria-label="Opiniones de pacientes" data-carrusel-testimonios>
+                <button type="button" x-show="posiciones > 1" x-on:click="anterior()" class="carrusel-flecha carrusel-flecha-izq focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Opiniones anteriores">
+                    <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+
+                <div x-ref="pista" x-on:scroll.passive="alDesplazar()" tabindex="0" @class(['carrusel-pista focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400', 'carrusel-pista--pocas' => $testimonios->count() <= 2]) aria-label="Opiniones; desliza para ver más">
+                    @foreach ($testimonios as $testimonio)
+                        @php
+                            $paciente = $testimonio->paciente;
+                            $nombre = $paciente ? trim($paciente->nombre.' '.mb_substr((string) $paciente->apellido, 0, 1).($paciente->apellido ? '.' : '')) : 'Paciente';
+                            $iniciales = $paciente ? mb_strtoupper(mb_substr($paciente->nombre, 0, 1).mb_substr((string) $paciente->apellido, 0, 1)) : 'P';
+                            $estrellas = max(1, min(5, (int) ($testimonio->calificacion ?: 5)));
+                        @endphp
+                        <figure class="card-boutique flex h-full flex-col p-5 sm:p-6" data-testimonio-publico>
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="text-sm tracking-label text-amber-500" aria-label="{{ $estrellas }} de 5 estrellas">{{ str_repeat('★', $estrellas) }}<span class="text-line">{{ str_repeat('★', 5 - $estrellas) }}</span></div>
+                                <svg class="h-5 w-5 text-peach-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.6 6C6.5 7.3 4.5 10 4.5 13.4V18h6v-6H7.6c.2-1.9 1.4-3.4 3.2-4.2L9.6 6zm9 0c-3.1 1.3-5.1 4-5.1 7.4V18h6v-6h-2.9c.2-1.9 1.4-3.4 3.2-4.2L18.6 6z"/></svg>
+                            </div>
+                            <blockquote class="mt-3 flex-1 text-callout italic leading-relaxed text-ink line-clamp-5" title="{{ $testimonio->comentario }}">“{{ $testimonio->comentario }}”</blockquote>
+                            <figcaption class="mt-4 flex items-center gap-3 border-t border-line/80 pt-4">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold text-brand-800" aria-hidden="true">{{ $iniciales }}</span>
+                                <span class="min-w-0">
+                                    <span class="block truncate text-sm font-semibold text-ink">{{ $nombre }}</span>
+                                    <span class="block truncate text-xs text-muted">Paciente de Dentissa</span>
+                                </span>
+                            </figcaption>
+                        </figure>
+                    @endforeach
+                </div>
+
+                <button type="button" x-show="posiciones > 1" x-on:click="siguiente()" class="carrusel-flecha carrusel-flecha-der focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400" aria-label="Más opiniones">
+                    <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
+
+                <div x-show="posiciones > 1" class="mt-5 flex items-center justify-center" aria-hidden="true">
+                    <template x-for="i in posiciones" :key="i">
+                        <button type="button" tabindex="-1" x-on:click="ir(i - 1)" class="flex h-6 items-center px-1">
+                            <span class="h-2 rounded-full transition-[width,background-color,opacity] duration-200 ease-out"
+                                  :class="actual === i - 1 ? 'w-[1.375rem] bg-brand-600' : 'w-2 bg-peach-300 opacity-70 hover:opacity-100'"></span>
+                        </button>
+                    </template>
+                </div>
             </div>
         @else
             <p class="mx-auto mt-10 max-w-md text-center text-callout text-muted">Aún no hay opiniones publicadas. ¡Tu experiencia puede ser la primera!</p>

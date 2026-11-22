@@ -1,22 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h1 class="mt-1.5 text-title-2 text-ink">
-                    Nueva consulta — {{ $paciente->nombre }} {{ $paciente->apellido }}
-                </h1>
-                <p class="mt-1 max-w-2xl text-sm text-muted">Registro de atención médica, diagnóstico y prescripción.</p>
-            </div>
-            <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al historial</x-secondary-button>
-            </a>
-        </div>
+        <x-admin.header
+            title="Nueva consulta — {{ $paciente->nombre }} {{ $paciente->apellido }}"
+            subtitle="Registro de atención médica, diagnóstico y prescripción."
+        >
+        </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <form method="POST" action="{{ route('admin.pacientes.historial.store', $paciente) }}" class="space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <x-admin.card class="p-5 sm:p-8">
+                <form method="POST" action="{{ route('admin.pacientes.historial.store', $paciente) }}" data-confirmar="Se guardará en el historial del paciente." data-confirmar-titulo="¿Crear el registro?" data-confirmar-boton="Sí, crear" data-confirmar-tono="normal" class="formulario-panel space-y-6">
                     @csrf
 
                     <x-form-obligatorios />
@@ -30,7 +24,7 @@
                         </a>
                     </div>
                 </form>
-            </div>
+            </x-admin.card>
         </div>
     </div>
 </x-app-layout>

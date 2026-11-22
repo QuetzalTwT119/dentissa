@@ -18,7 +18,7 @@
             {{ $title }}
         </h1>
         @if ($desc)
-            <p class="mt-1 max-w-2xl text-sm text-muted">{{ $desc }}</p>
+            <p class="mt-1 max-w-2xl text-sm text-muted lg:[@media(max-height:820px)]:hidden">{{ $desc }}</p>
         @endif
     </div>
 

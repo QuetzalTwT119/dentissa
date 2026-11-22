@@ -5,23 +5,15 @@
             title="Editar paciente — {{ $paciente->nombre }} {{ $paciente->apellido }}"
             subtitle="Actualización de contacto y datos oficiales del expediente."
         >
-            <x-slot:actions>
-                <a href="{{ route('admin.pacientes.index') }}" class="hidden sm:inline-block">
-                    <x-secondary-button type="button" class="inline-flex items-center gap-1.5">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                        Volver al listado
-                    </x-secondary-button>
-                </a>
-            </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-6">
             
             <!-- Tarjeta de Identificación Rápida -->
-            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <div class="flex items-center gap-4 pb-6 border-b border-line/80">
+            <x-admin.card class="p-5 sm:p-8">
+                <div class="flex items-center gap-4 pb-6 border-b border-line/80 lg:pb-4">
                     <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-100 to-peach-100 text-base font-semibold text-brand-700 border border-brand-200 shadow-soft">
                         {{ strtoupper(substr($paciente->nombre, 0, 1) . substr($paciente->apellido, 0, 1)) }}
                     </div>
@@ -31,17 +23,17 @@
                     </div>
                 </div>
 
-                <p class="mt-6 text-sm text-ink-soft">
+                <p class="mt-6 text-sm text-ink-soft lg:hidden">
                     Actualiza los datos de contacto y, si hace falta, los identificadores oficiales o la relación familiar.
                 </p>
 
-                <form method="POST" action="{{ route('admin.pacientes.update', $paciente) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los datos del paciente?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="mt-6 space-y-6">
+                <form method="POST" action="{{ route('admin.pacientes.update', $paciente) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los datos del paciente?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="formulario-panel mt-6 space-y-6 lg:mt-4">
                     @csrf
                     @method('put')
 
                     <x-form-obligatorios />
                     <!-- Sección: Datos Personales -->
-                    <div class="rounded-xl bg-cream/60 p-4 sm:p-6 border border-line/70 space-y-4">
+                    <div class="rounded-xl bg-cream/60 p-4 sm:p-6 border border-line/70 space-y-4 lg:p-4">
                         <h4 class="text-xs font-semibold uppercase tracking-label text-muted flex items-center gap-1.5">
                             <span class="h-2 w-2 rounded-full bg-brand-500"></span>
                             Datos Personales y Contacto
@@ -80,13 +72,13 @@
                     </div>
 
                     <!-- Sección: Identificadores Oficiales -->
-                    <div class="rounded-xl bg-white p-4 sm:p-6 border border-line/70 space-y-4">
+                    <div class="rounded-xl bg-white p-4 sm:p-6 border border-line/70 space-y-4 lg:p-4">
                         <h4 class="text-xs font-semibold uppercase tracking-label text-muted flex items-center gap-1.5">
                             <span class="h-2 w-2 rounded-full bg-teal-600"></span>
                             Identificadores Oficiales y Tutoría
                         </h4>
 
-                        <div class="space-y-4">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
                                 <x-input-label for="curp" value="CURP" />
                                 <x-text-input id="curp" name="curp" class="mt-1.5 block w-full uppercase" maxlength="18"
@@ -113,13 +105,12 @@
 
                             <div>
                                 <x-input-label for="tutor_id" value="Tutor o responsable (opcional)" />
-                                <select id="tutor_id" name="tutor_id"
-                                        class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                                <x-select id="tutor_id" name="tutor_id" class="mt-1.5">
                                     <option value="">Ninguno — paciente independiente</option>
                                     @foreach ($tutoresDisponibles as $t)
                                         <option value="{{ $t['id'] }}" @selected(old('tutor_id', $paciente->tutor_id) == $t['id'])>{{ $t['nombre'] }}</option>
                                     @endforeach
-                                </select>
+                                </x-select>
                                 <x-input-error :messages="$errors->get('tutor_id')" class="mt-2" />
                             </div>
                         </div>
@@ -129,11 +120,11 @@
                         <x-primary-button>Guardar cambios</x-primary-button>
 
                         <a href="{{ route('admin.pacientes.index') }}">
-                            <x-secondary-button type="button">Volver</x-secondary-button>
+                            <x-secondary-button type="button">Cancelar</x-secondary-button>
                         </a>
                     </div>
                 </form>
-            </div>
+            </x-admin.card>
         </div>
     </div>
 </x-app-layout>

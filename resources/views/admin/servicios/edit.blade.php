@@ -27,7 +27,7 @@
             </div>
             <div class="flex items-center gap-2.5">
                 <a href="{{ route('admin.servicios.index') }}" class="hidden sm:inline-block">
-                    <x-secondary-button type="button">Volver al listado</x-secondary-button>
+                    <x-secondary-button type="button">Cancelar</x-secondary-button>
                 </a>
                 {{-- En escritorio el botón vive arriba: siempre a la vista y sin desplazarse. --}}
                 <x-primary-button form="form-servicio" class="hidden lg:inline-flex" data-guardar-arriba>Guardar cambios</x-primary-button>
@@ -35,7 +35,7 @@
         </div>
     </x-slot>
 
-    <div class="pb-8 pt-4">
+    <div class="panel-contenido pb-8 pt-4 lg:pb-3 lg:pt-3">
         <form id="form-servicio" method="POST" action="{{ route('admin.servicios.update', $servicio) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del servicio?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" enctype="multipart/form-data"
               x-data="{ vistaPrevia: null, nombreArchivo: '', seleccionados: {{ $asignadosActuales->count() }}, nombre: @js(old('nombre', $servicio->nombre)), descripcion: @js((string) old('descripcion', $servicio->descripcion)), predeterminada: @js((string) $descripcionPredeterminada) }"
               class="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:px-8">
@@ -74,8 +74,7 @@
                         --}}
                         <div>
                             <x-input-label for="descripcion" value="Descripción en la portada" />
-                            <textarea id="descripcion" name="descripcion" rows="2" x-model="descripcion"
-                                      class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion', $servicio->descripcion) }}</textarea>
+                            <x-textarea id="descripcion" name="descripcion" rows="2" x-model="descripcion" class="mt-1.5">{{ old('descripcion', $servicio->descripcion) }}</x-textarea>
                             <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                         </div>
                     </div>
@@ -145,10 +144,10 @@
                 </section>
 
                 {{-- Celular y tableta: guardar abajo, al alcance del pulgar. --}}
-                <div class="flex flex-col gap-2.5 rounded-3xl border border-line bg-white p-4 shadow-soft lg:hidden">
+                <x-admin.card class="flex flex-col gap-2.5 p-4 lg:hidden">
                     <x-primary-button class="w-full justify-center">Guardar cambios</x-primary-button>
                     <a href="{{ route('admin.servicios.index') }}" class="inline-flex min-h-11 items-center justify-center rounded-full text-sm font-semibold text-ink-soft transition hover:text-ink">Cancelar</a>
-                </div>
+                </x-admin.card>
             </aside>
         </form>
     </div>

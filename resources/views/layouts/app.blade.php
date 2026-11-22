@@ -17,13 +17,14 @@
     </head>
     <body class="h-full bg-cream font-sans text-ink antialiased" @auth data-notifications-updates-url="{{ route('notificaciones.actualizaciones', [], false) }}" data-notifications-cursor="{{ auth()->user()->notificacionesSistema()->max('id') ?? 0 }}" data-notifications-read-url="{{ route('notificaciones.leida', ['notificacion' => '__NOTIFICATION_ID__'], false) }}" data-notifications-mark-seen-url="{{ route('notificaciones.vistas', [], false) }}" data-realtime-user-id="{{ auth()->id() }}" data-realtime-key="{{ config('broadcasting.connections.reverb.key') }}" data-realtime-host="{{ config('reverb.client.host') }}" data-realtime-port="{{ config('reverb.client.port') }}" data-realtime-scheme="{{ config('reverb.client.scheme') }}" @endauth>
 
-        <div class="min-h-full flex flex-col">
+        {{-- .panel-marco: en PC mide el alto de la ventana (reglas en app.css, "Panel ajustado"). --}}
+        <div class="panel-marco min-h-full flex flex-col">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header>
-                    <div class="mx-auto max-w-7xl px-4 pb-2 pt-8 sm:px-6 sm:pt-10 lg:px-8">
+                <header class="panel-encabezado">
+                    <div class="mx-auto max-w-7xl px-4 pb-2 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:pb-0 lg:pt-5">
                         {{ $header }}
                     </div>
                 </header>

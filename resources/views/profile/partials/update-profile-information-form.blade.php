@@ -13,7 +13,7 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2">
+    <form method="post" action="{{ route('profile.update') }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar tus datos?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="mt-6 grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2 lg:mt-4 lg:gap-y-4">
         @csrf
         @method('patch')
 

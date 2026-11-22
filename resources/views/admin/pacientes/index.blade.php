@@ -3,32 +3,20 @@
         <x-admin.header badge="Gestión Clínica" title="Directorio de Pacientes" description="Directorio oficial de pacientes, tutores e historiales clínicos." />
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             
             <!-- Contenedor Principal de la Tabla -->
             <x-admin.card>
-                <!-- Barra superior con buscador -->
-                <x-admin.card-header title="Expedientes registrados" description="Selecciona un paciente para consultar o registrar su historial clínico.">
-                    <form method="GET" action="{{ route('admin.pacientes.index') }}" class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-                        <div class="relative w-full sm:w-72">
-                            <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                            </span>
-                            <input enterkeyhint="search" type="text" name="buscar" value="{{ $filtros['buscar'] ?? '' }}" placeholder="Nombre, correo o teléfono…" aria-label="Buscar pacientes por nombre, correo o teléfono"
-                                   class="w-full rounded-xl border border-field bg-white min-h-11 pl-9 pr-3.5 py-2 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200 sm:w-72">
-                        </div>
-                        <x-secondary-button type="submit" class="shrink-0">Buscar</x-secondary-button>
-                        @if (!empty($filtros['buscar']))
-                            <a href="{{ route('admin.pacientes.index') }}" class="text-sm font-semibold text-brand-600 transition hover:text-brand-800">Limpiar</a>
-                        @endif
-                    </form>
-                </x-admin.card-header>
 
                 <!-- Tabla con scroll horizontal responsivo -->
-                <x-pagination-summary :items="$pacientes" label="pacientes" />
+                <x-pagination-summary :items="$pacientes" label="pacientes">
+                    <x-slot:filtros>
+                        <x-filtro.barra :action="route('admin.pacientes.index')" :campos="['buscar']">
+                            <x-filtro.buscar etiqueta="Buscar pacientes por nombre, correo o teléfono" placeholder="Nombre, correo o teléfono…" />
+                        </x-filtro.barra>
+                    </x-slot:filtros>
+                </x-pagination-summary>
                 <x-admin.table minWidth="min-w-[760px]">
                     <x-slot:head>
                         <tr>
@@ -36,7 +24,7 @@
                             <th class="px-6 py-4">Correo</th>
                             <th class="px-6 py-4">Teléfono</th>
                             <th class="px-6 py-4 text-center">Consultas</th>
-                            <th class="px-6 py-4 text-right">Acciones</th>
+                            <th class="px-6 py-4 text-right lg:text-center">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -74,10 +62,7 @@
                                         <x-icon name="eye" class="h-3.5 w-3.5" />
                                         <span>Historial</span>
                                     </a>
-                                    <a href="{{ route('admin.pacientes.edit', $paciente) }}" title="Editar datos" aria-label="Editar datos del paciente"
-                                       class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line bg-white p-2 text-muted transition lg:min-h-0 lg:min-w-0 hover:bg-cream hover:text-ink hover:border-brand-200 shadow-xs">
-                                        <x-icon name="edit" class="h-4 w-4" />
-                                    </a>
+                                    <x-admin.acciones-fila :editar="route('admin.pacientes.edit', $paciente)" que="el paciente" />
                                 </div>
                             </td>
                         </tr>

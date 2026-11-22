@@ -24,7 +24,7 @@ class TablasMixtasTest extends TestCase
         'admin.testimonios.index',
         'admin.preguntas-frecuentes.index',
         'admin.casos.index',
-        'admin.horarios.edit',
+        // admin.horarios.edit ya no es tabla: un renglón por día (HorariosAtencionTest).
     ];
 
     /** Columnas que no caben en un celular: se desplazan de lado. */
@@ -62,7 +62,7 @@ class TablasMixtasTest extends TestCase
             $this->actingAs($admin)->get(route($ruta))
                 ->assertOk()
                 ->assertSee('x-data="tablaLarga"', false)
-                ->assertSee('class="tabla-larga"', false)
+                ->assertSee('class="tabla-larga tabla-panel"', false)
                 ->assertSee('overflow-x-auto', false)
                 ->assertSee($anchoMinimo, false)
                 ->assertSee('Desliza para ver más columnas');

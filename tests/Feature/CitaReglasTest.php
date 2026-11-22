@@ -109,9 +109,10 @@ class CitaReglasTest extends TestCase
             ->assertDontSee('Rosa Leal')
             ->assertSee('value="Ana Torres"', false)
             ->assertSee('value="confirmada" selected', false)
-            ->assertSee('data-citas-live-search', false)
-            ->assertSee('data-citas-results', false)
-            ->assertSee('entrada.addEventListener', false);
+            // Buscador global (components/filtro): actualiza solo la zona de citas sin recargar.
+            ->assertSee('data-filtro-buscar', false)
+            ->assertSee('data-filtro-resultados="[data-citas-results]"', false)
+            ->assertSee('data-citas-results', false);
 
         $this->actingAs($admin)
             ->get(route('citas.index', ['buscar' => '5555550012']))

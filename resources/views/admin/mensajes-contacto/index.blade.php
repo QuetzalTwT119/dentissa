@@ -7,31 +7,21 @@
         />
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             @if ($errors->any())
                 <x-alert type="error" :message="$errors->first()" />
             @endif
 
             <x-admin.card>
-                <x-admin.card-header
-                    title="Bandeja de entrada"
-                    description="Mensajes enviados desde el formulario de contacto del sitio público."
-                >
-                    <x-slot:actions>
-                        <form method="GET" action="{{ route('admin.mensajes.index') }}" class="flex items-center gap-2.5">
-                            <label for="filtro_leido" class="text-xs font-semibold uppercase tracking-label text-muted">Filtrar:</label>
-                            <select id="filtro_leido" name="leido" onchange="this.form.submit()" aria-label="Filtrar por estado del mensaje"
-                                    class="min-h-11 rounded-xl border border-field bg-white px-3 py-1.5 text-sm text-ink shadow-xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
-                                <option value="">Todos</option>
-                                <option value="0" @selected(($filtros['leido'] ?? '') === '0')>Sin leer</option>
-                                <option value="1" @selected(($filtros['leido'] ?? '') === '1')>Leídos</option>
-                            </select>
-                        </form>
-                    </x-slot:actions>
-                </x-admin.card-header>
 
-                <x-pagination-summary :items="$mensajes" label="mensajes" />
+                <x-pagination-summary :items="$mensajes" label="mensajes">
+                    <x-slot:filtros>
+                        <x-filtro.barra :action="route('admin.mensajes.index')" :campos="['leido']">
+                            <x-filtro.select name="leido" id="filtro_leido" etiqueta="Filtrar por estado del mensaje" todos="Todos los mensajes" :opciones="['0' => 'Sin leer', '1' => 'Leídos']" />
+                        </x-filtro.barra>
+                    </x-slot:filtros>
+                </x-pagination-summary>
                 <x-admin.table minWidth="min-w-[760px]" :larga="true">
                     <x-slot:head>
                         <tr>
@@ -41,7 +31,7 @@
                             <th class="px-6 py-3.5">Teléfono</th>
                             <th class="px-6 py-3.5">Mensaje</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right">Acciones</th>
+                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -60,25 +50,14 @@
                                 />
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5">
-                                    <form method="POST" action="{{ route('admin.mensajes.toggleLeido', $mensaje) }}">
-                                        @csrf
-                                        @method('patch')
-                                        <button type="submit" title="{{ $mensaje->leido ? 'Marcar como sin leer' : 'Marcar como leído' }}" aria-label="{{ $mensaje->leido ? 'Marcar como sin leer' : 'Marcar como leído' }}"
-                                                class="rounded-xl p-2 text-sage-600 transition hover:bg-sage-50 hover:text-sage-700">
-                                            <x-icon name="check" />
-                                        </button>
-                                    </form>
-                                    <form method="POST" action="{{ route('admin.mensajes.destroy', $mensaje) }}"
-                                          data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar este mensaje?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" title="Eliminar" aria-label="Eliminar mensaje"
-                                                class="rounded-xl p-2 text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">
-                                            <x-icon name="trash" />
-                                        </button>
-                                    </form>
-                                </div>
+                                <x-admin.acciones-fila :eliminar="route('admin.mensajes.destroy', $mensaje)" que="el mensaje" :nombre="$mensaje->nombre">
+                                    <x-admin.boton-fila :action="route('admin.mensajes.toggleLeido', $mensaje)"
+                                                        :icono="$mensaje->leido ? 'eye' : 'check'" :color="$mensaje->leido ? 'muted' : 'sage'"
+                                                        :etiqueta="$mensaje->leido ? 'Marcar como sin leer' : 'Marcar como leído'"
+                                                        :titulo="$mensaje->leido ? '¿Marcar el mensaje como sin leer?' : '¿Marcar el mensaje como leído?'"
+                                                        :mensaje="'Mensaje de '.$mensaje->nombre.'. Puedes cambiarlo de nuevo cuando quieras.'"
+                                                        :boton="$mensaje->leido ? 'Sí, sin leer' : 'Sí, leído'" />
+                                </x-admin.acciones-fila>
                             </td>
                         </tr>
                     @empty

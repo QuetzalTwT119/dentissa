@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\EstadoCita;
 use App\Models\Cita;
+use App\Models\Oferta;
 use App\Models\Paciente;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -50,14 +51,7 @@ class CrearCitaService
                     return ['cita' => null, 'creada' => false];
                 }
 
-                $paciente = Paciente::firstOrCreate(
-                    ['email' => $datos['email']],
-                    [
-                        'nombre' => $datos['nombre'],
-                        'apellido' => $datos['apellido'],
-                        'telefono' => $datos['telefono'],
-                    ],
-                );
+                $paciente = $this->buscarOCrearPaciente($datos);
 
                 // Evidencia del consentimiento: fecha y versión del aviso aceptado.
                 $paciente->forceFill([
@@ -65,10 +59,15 @@ class CrearCitaService
                     'aviso_privacidad_version' => config('dentissa.privacidad.version'),
                 ])->save();
 
+                $oferta = $this->ofertaConLugar($tratamiento->id, $fechaHora);
+
                 $cita = Cita::create([
                     'id_paciente' => $paciente->id,
                     'id_servicio' => $datos['id_servicio'],
                     'id_tratamiento' => $tratamiento->id,
+                    // La oferta vigente del tratamiento queda en la cita: la doctora
+                    // la ve en la agenda y la aplica al cobrar (21/11/2026).
+                    'id_oferta' => $oferta?->id,
                     'fecha_hora' => $fechaHora,
                     'duracion_estimada' => $tratamiento->duracion_estimada,
                     'motivo' => $datos['motivo'] ?? null,
@@ -83,6 +82,7 @@ class CrearCitaService
                     'estado' => $cita->estado?->value ?? EstadoCita::Confirmada->value,
                     'fecha_hora' => $cita->fecha_hora->toIso8601String(),
                     'canal' => $canal,
+                    'id_oferta' => $oferta?->id,
                 ], request: $request);
                 $this->notificacionesInternas->cambioCita(
                     $cita,
@@ -105,5 +105,51 @@ class CrearCitaService
 
             throw $e;
         }
+    }
+
+    /**
+     * Oferta que se aplica a la cita, con su fila bloqueada mientras se guarda:
+     * dos pacientes que agendan a la vez no pueden tomar el último lugar.
+     */
+    private function ofertaConLugar(int $idTratamiento, Carbon $fechaHora): ?Oferta
+    {
+        $candidata = Oferta::aplicableA($idTratamiento, $fechaHora);
+        if (! $candidata) {
+            return null;
+        }
+
+        $oferta = Oferta::whereKey($candidata->id)->lockForUpdate()->first();
+
+        return $oferta && $oferta->lugaresQuedan() !== 0 ? $oferta : null;
+    }
+
+    /**
+     * El correo es opcional desde el 20/11/2026: se busca por correo si lo hay;
+     * si no, por celular (el que no tiene correo vuelve a ser el mismo paciente).
+     * Si se encontró por celular y ahora dio correo, se le guarda.
+     */
+    private function buscarOCrearPaciente(array $datos): Paciente
+    {
+        $email = trim((string) ($datos['email'] ?? '')) ?: null;
+
+        $paciente = $email ? Paciente::where('email', $email)->first() : null;
+        $paciente ??= Paciente::where('telefono', $datos['telefono'])
+            ->when($email, fn ($q) => $q->whereNull('email'))
+            ->first();
+
+        if (! $paciente) {
+            return Paciente::create([
+                'nombre' => $datos['nombre'],
+                'apellido' => $datos['apellido'],
+                'telefono' => $datos['telefono'],
+                'email' => $email,
+            ]);
+        }
+
+        if ($email && ! $paciente->email) {
+            $paciente->update(['email' => $email]);
+        }
+
+        return $paciente;
     }
 }

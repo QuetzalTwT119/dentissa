@@ -13,8 +13,9 @@
 --}}
 @php
     $conAcciones = isset($acciones) && $acciones->isNotEmpty();
+    $conFiltros = isset($filtros) && $filtros->isNotEmpty();
 @endphp
-@if ($items && ($items->total() > 0 || ($conAcciones && ($posicion ?? 'arriba') === 'arriba')))
+@if ($items && ($items->total() > 0 || (($conAcciones || $conFiltros) && ($posicion ?? 'arriba') === 'arriba')))
     @php
         // "1 cita" / "1,284 citas": singular cuando hay exactamente uno y
         // separador de miles al estilo de México.
@@ -42,15 +43,22 @@
         <div {{ $attributes->merge(['class' => $integrated ? 'border-b border-line/80 bg-cream/50 px-4 py-3 sm:px-6' : 'mb-4 border-b border-line/80 pb-3 text-xs text-muted']) }} data-paginacion="arriba">
             {{-- En celular, la acción principal va primero; en pantallas anchas, a la derecha. --}}
             <div class="flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
-                @if ($items->total() > 0)
                 <div class="flex flex-wrap items-center justify-center gap-3 sm:justify-start sm:gap-4">
-                    <p class="inline-flex items-center gap-2 text-xs text-muted">
+                    {{-- Filtros de la lista (p. ej. Estado), a la izquierda, antes del conteo. --}}
+                    @if ($conFiltros)
+                        <div class="flex flex-wrap items-center gap-2">{{ $filtros }}</div>
+                    @endif
+                {{-- Siempre presente (vacío sin resultados) para que el buscador global lo actualice sin recargar. --}}
+                <p @class(['inline-flex items-center gap-2 text-xs text-muted', 'hidden' => $items->total() === 0]) data-filtro-conteo>
+                    @if ($items->total() > 0)
                         <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true"></span>
                         <span>
                             Mostrando <strong class="font-semibold text-ink">{{ $paginator->firstItem() }}–{{ $paginator->lastItem() }}</strong>
                             de <strong class="font-semibold tabular-nums text-ink">{{ $totalFormateado }}</strong> {{ $etiquetaTotal }}
                         </span>
-                    </p>
+                    @endif
+                </p>
+                @if ($items->total() > 0)
 
                     {{-- Selector de registros por página con diseño Dentissa. --}}
                     <div x-data="{ open: false, perPage: {{ $perPageActual }} }"
@@ -120,10 +128,8 @@
                             <span class="font-medium text-ink-soft">por página</span>
                         </form>
                     </div>
-                </div>
-                @else
-                    <span class="hidden sm:block" aria-hidden="true"></span>
                 @endif
+                </div>
 
                 {{-- Derecha: acciones de la lista. --}}
                 @if ($conAcciones)
@@ -132,4 +138,7 @@
             </div>
         </div>
     @endif
+@elseif ($items && ($posicion ?? 'arriba') === 'abajo')
+    {{-- Sin resultados: marcador vacío para que el buscador global pueda volver a llenarlo. --}}
+    <div data-paginacion="abajo" hidden></div>
 @endif

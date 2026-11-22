@@ -55,7 +55,7 @@
 
 <x-app-layout>
     @if (! $esAdmin)
-        <div class="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
+        <div class="panel-contenido mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
             <div class="relative overflow-hidden rounded-4xl border border-line bg-white px-6 py-10 text-center shadow-soft sm:px-12 sm:py-14">
                 <div aria-hidden="true" class="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-peach-100/70 blur-3xl"></div>
                 <div aria-hidden="true" class="pointer-events-none absolute -bottom-16 -left-16 h-56 w-56 rounded-full bg-brand-50 blur-3xl"></div>
@@ -82,10 +82,10 @@
             </div>
         </div>
     @else
-        <div class="mx-auto max-w-7xl space-y-10 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <div class="panel-contenido mx-auto max-w-7xl space-y-10 px-4 py-8 sm:px-6 lg:space-y-5 lg:px-8 lg:py-5">
 
             <!-- Bienvenida -->
-            <section class="relative overflow-hidden rounded-4xl bg-gradient-to-br from-peach-100 via-peach-50 to-white p-6 ring-1 ring-inset ring-peach-200/70 sm:p-10">
+            <section class="relative overflow-hidden rounded-4xl bg-gradient-to-br from-peach-100 via-peach-50 to-white p-6 ring-1 ring-inset ring-peach-200/70 sm:p-10 lg:px-8 lg:py-6">
                 <div aria-hidden="true" class="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-brand-200/40 blur-3xl"></div>
 
                 <div class="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
@@ -112,7 +112,7 @@
                 </div>
 
                 <!-- Atajos de la jornada -->
-                <div class="relative mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div class="relative mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:mt-5">
                     @foreach ([
                         [route('citas.index'), 'Agenda activa', 'Consultas de hoy'],
                         [route('admin.pacientes.index'), 'Expedientes', 'Directorio oficial'],
@@ -142,29 +142,32 @@
                     </a>
                 </div>
 
-                <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-4 lg:grid-cols-3">
                     @foreach ($accesos as $acceso)
-                        <a href="{{ $acceso['url'] }}" class="card-boutique group flex h-full flex-col p-6">
+                        <a href="{{ $acceso['url'] }}" class="card-boutique group flex h-full flex-col p-6 lg:flex-row lg:items-start lg:gap-4 lg:p-5">
                             <span @class([
-                                'flex h-12 w-12 items-center justify-center rounded-2xl ring-1 ring-inset transition-colors duration-150',
+                                'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1 ring-inset transition-colors duration-150',
                                 'bg-brand-600 text-white ring-brand-600' => $loop->first,
                                 'bg-peach-50 text-brand-700 ring-peach-200 group-hover:bg-peach-100' => ! $loop->first,
                             ])>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="h-6 w-6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $acceso['icono'] }}"/></svg>
                             </span>
-                            <h3 class="mt-5 font-serif text-title-3 text-ink">{{ $acceso['titulo'] }}</h3>
+                            <div class="min-w-0 flex-1 lg:flex lg:flex-col">
+                            <h3 class="mt-5 font-serif text-title-3 text-ink lg:mt-0">{{ $acceso['titulo'] }}</h3>
                             <p class="mt-1.5 flex-1 text-callout text-muted">{{ $acceso['texto'] }}</p>
-                            <span class="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-brand-700">
+                            <span class="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-brand-700 lg:mt-2">
                                 {{ $acceso['accion'] }}
                                 <svg class="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6"/></svg>
                             </span>
+                            </div>
                         </a>
                     @endforeach
                 </div>
             </section>
 
             <!-- Consejo de operación -->
-            <section class="flex flex-col gap-4 rounded-3xl border border-sage-500/20 bg-sage-50 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            {{-- Consejo: ayuda secundaria; en PC con poca altura se oculta para que el inicio quepa. --}}
+            <section class="flex flex-col gap-4 rounded-3xl border border-sage-500/20 bg-sage-50 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6 lg:py-4 lg:[@media(max-height:820px)]:hidden">
                 <div class="flex items-start gap-4">
                     <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-sage-600">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>

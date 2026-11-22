@@ -189,21 +189,19 @@ class CasillasDesmarcadasTest extends TestCase
         $this->assertStringNotContainsString('¿Desactivar «Carillas de Porcelana»?', $html);
     }
 
+    /** 21/11/2026: ya no hay casilla "Mostrar"; se oculta desde la lista. */
     public function test_desactivar_una_oferta(): void
     {
         $oferta = Oferta::create([
             'titulo' => 'Limpieza de temporada', 'tipo' => 'descuento', 'tipo_valor' => 'porcentaje', 'valor_descuento' => 10,
-            'fecha_inicio' => now()->toDateString(), 'fecha_fin' => now()->addMonth()->toDateString(), 'activa' => true,
+            'fecha_inicio' => now()->toDateString(), 'fecha_fin' => now()->addMonth()->toDateString(), 'estado' => 'activa',
         ]);
 
         $this->actingAs($this->admin)
-            ->put(route('admin.ofertas.update', $oferta), [
-                'titulo' => 'Limpieza de temporada', 'tipo' => 'descuento', 'tipo_valor' => 'porcentaje', 'valor_descuento' => 10,
-                'fecha_inicio' => now()->toDateString(), 'fecha_fin' => now()->addMonth()->toDateString(),
-            ])
-            ->assertSessionHasNoErrors();
+            ->patch(route('admin.ofertas.ocultar', $oferta))
+            ->assertSessionHas('success');
 
-        $this->assertFalse((bool) $oferta->fresh()->activa);
+        $this->assertSame('inactiva', $oferta->fresh()->estado->value);
     }
 
     public function test_desactivar_una_foto_de_la_galeria(): void

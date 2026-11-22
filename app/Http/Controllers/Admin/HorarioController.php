@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Redirect;
 
 class HorarioController extends Controller
@@ -36,6 +37,14 @@ class HorarioController extends Controller
             'dias.*.hora_cierre' => ['required', 'integer', 'between:0,23'],
             'dias.*.capacidad_simultanea' => ['required', 'integer', 'min:1'],
         ]);
+
+        foreach ($validated['dias'] as $indice => $dia) {
+            if (! empty($dia['abierto']) && $dia['hora_cierre'] <= $dia['hora_apertura']) {
+                throw ValidationException::withMessages([
+                    "dias.$indice.hora_cierre" => 'La hora de cierre debe ser después de la de apertura.',
+                ]);
+            }
+        }
 
         DB::transaction(function () use ($request, $validated, $auditoria) {
             foreach ($validated['dias'] as $dia) {

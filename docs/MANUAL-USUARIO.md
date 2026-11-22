@@ -103,6 +103,10 @@ paso a paso" y dos formas de contacto:
   "Abierto hoy hasta las 18:00" o "Cerrado ahora · abre el lunes a las 8:00".
   Se calcula con la hora de la clínica a partir de **Horarios**: si el
   administrador cambia el horario, la portada lo refleja sin más pasos.
+  El **pie de página** muestra también el horario de la semana (por ejemplo
+  "Lunes a viernes de 8:00 a 18:00 hrs"); los días cerrados no aparecen.
+  En **Panel › Horarios**, "Citas a la vez" es cuántos pacientes se pueden
+  atender a la misma hora (1 si hay un solo sillón o dentista).
 
 Más abajo, **Tratamientos para tu salud y armonía** muestra las especialidades
 activas en una fila de tarjetas con foto:
@@ -146,6 +150,9 @@ El proceso tiene 4 pasos. Arriba siempre se ve "Paso X de 4".
      quedan pocos lugares (3 o menos). Los días tachados ya no tienen
      horarios; los días grises son pasados o el consultorio no abre.
    - Cambia de mes con las flechas **‹ ›** (hasta 12 meses adelante).
+   - Los pasos son: tipo de atención → día → hora → datos. Las horas libres
+     aparecen en cuadrícula; tocar otra vez el día o la hora elegidos los quita. El correo es opcional (sin correo se avisa por WhatsApp); el
+     celular de 10 dígitos es obligatorio.
    - Al pulsar un día aparecen sus horarios, cada uno con su hora de término
      (por ejemplo, "09:30 a 10:15"). En el celular aparecen debajo del
      calendario.
@@ -388,12 +395,65 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 
 ## 3.2 Promociones y testimonios en la portada
 
-- Las **ofertas activas** dentro de sus fechas aparecen en la portada en
-  **Promociones** (descuento, tratamiento, vigencia y lugares que quedan).
+- En la portada, sección **Ofertas**, solo aparecen las ofertas **Publicadas**
+  dentro de sus fechas (beneficio, tratamiento, imagen si tiene, vigencia y
+  lugares que quedan). Las que están **En revisión** u **Ocultas** solo se ven
+  en el panel.
+- **Crear una oferta** (Contenido → Ofertas → Nueva oferta): se llenan
+  **título** (5 a 120 letras), **Beneficio para el paciente**, la **cantidad**,
+  **descripción** (20 a 300 letras) y **Válida hasta** (hoy o después). La
+  oferta cuenta desde el día en que se crea. **Tratamiento al que aplica** está
+  a la vista (opcional): sin tratamiento, la oferta solo se anuncia y no se
+  aplica al agendar. Lugares e imagen están en **Más detalles (opcional)**.
+  Si guardas sin llenar algo obligatorio, cada campo dice qué falta (en
+  Beneficio: "Elige una opción") y el cursor va al primero.
+  - **Beneficio para el paciente** tiene 3 opciones: **Descuento**, **Precio
+    especial** o **Gratis**. La elegida se ve con fondo rosa claro y borde rosa.
+    Al tocar otra, la anterior se desmarca; al tocar la elegida, se quita (al
+    guardar pedirá "Elige el beneficio para el paciente").
+  - **Descuento** es siempre en **%** (el símbolo aparece dentro del campo).
+    Para un monto en pesos usa **Precio especial**.
+  - **Tratamiento al que aplica:** solo aparecen los que se agendan en línea
+    (activos y dentro de una especialidad activa). Si después se desactiva, la
+    oferta deja de verse en la portada, la lista muestra un símbolo ⚠ junto al
+    tratamiento (al pasar el mouse o tocarlo explica qué pasa y qué hacer) y no
+    se puede publicar hasta activarlo o cambiarlo.
+  - Título y descripción **no aceptan enlaces, correos, código ni letras
+    repetidas** (por ejemplo "!!!!!!").
+  - Cómo se ve cada opción en la portada: **Descuento** "20" → **−20%**;
+    **Precio especial** "2800" →
+    **Precio especial $2,800**; **Gratis** → sin cantidad, **Gratis**.
+- **Publicar:** al guardar, la oferta queda **En revisión** (aviso amarillo en
+  la lista) y no se ve en la portada. Revísala y toca **✓ Publicar** en su
+  fila; el sistema pide confirmar. Una vencida no se puede publicar hasta
+  cambiar "Válida hasta".
+- **Guardar cambios** (en cualquier pantalla de editar) aparece apagado hasta
+  que cambias algo; si regresas todo como estaba, se vuelve a apagar. Al
+  guardar, el sistema sigue pidiendo confirmar. Para salir sin guardar usa
+  **Cancelar**, junto a "Guardar".
+- **Ofertas al agendar:** si el paciente elige un tratamiento con oferta
+  publicada, ve la etiqueta (por ejemplo "Oferta −20%"), un aviso con la
+  vigencia y la oferta en el resumen. Si la fecha de su cita es posterior a
+  "Válida hasta", el resumen avisa que ya no aplica. "Agendar" en la tarjeta de
+  la portada abre la agenda con ese tratamiento elegido.
+- **La doctora aplica el descuento al cobrar:** la cita guarda la oferta. En la
+  agenda (lista, semana y detalle) aparece "Oferta −20% · título" y la campana
+  dice "Con oferta «…»". El sistema no cobra ni calcula el total.
+- **Lugares:** cada cita agendada con la oferta ocupa un lugar; cancelar o
+  marcar "No asistió" lo libera. Sin lugares, la oferta deja de anunciarse en
+  la portada y las citas nuevas ya no la llevan.
+- **Ocultar:** en una oferta **Publicada**, el botón de encendido la oculta de
+  la portada; sigue en la lista como **Oculta** para editarla o publicarla otra
+  vez con ✓.
+- **Editar una publicada:** si cambias lo que ve el paciente, vuelve a
+  **En revisión** hasta que la publiques de nuevo.
 - **Testimonios:** el paciente escribe el suyo en la portada (**Comparte tu
   experiencia**) con el teléfono o correo con el que agendó. Llega como
   **pendiente**, la campana avisa al personal y, al **aprobarlo** en Contenido →
   Testimonios, se publica con su nombre y la inicial de su apellido.
+- La clínica **no crea ni edita** testimonios: solo los **aprueba**, **rechaza**
+  (se quedan en la lista como "Rechazado", sin publicarse, y se pueden aprobar
+  después) o **elimina** (se borran para siempre, por ejemplo si el paciente lo pide).
 
 ## 4. Asistente de agenda
 

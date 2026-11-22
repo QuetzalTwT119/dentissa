@@ -1,28 +1,20 @@
-@php
-$tipoLabel = [
-    'descuento' => 'Descuento',
-    'paquete' => 'Paquete',
-    'bonificacion' => 'Bonificación',
-];
-@endphp
-
 <x-app-layout>
     <x-slot name="header">
         <x-admin.header
             badge="Promociones"
             title="Ofertas"
-            subtitle="Promociones estacionales, paquetes dentales y beneficios vigentes."
+            subtitle="Una oferta nueva queda En revisión; publícala con ✓ para que se vea en la portada."
         >
         </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             <x-admin.card>
 
                 <x-pagination-summary :items="$ofertas" label="ofertas">
                     <x-slot:acciones>
-                        <a href="{{ route('admin.ofertas.create') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-brand transition-[background-color,transform] duration-150 ease-out hover:bg-brand-700 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
+                        <a href="{{ route('admin.ofertas.create') }}" class="btn-brand min-h-11 px-5">
                             <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
                             Nueva oferta
                         </a>
@@ -32,49 +24,64 @@ $tipoLabel = [
                     <x-slot:head>
                         <tr>
                             <th class="px-6 py-3.5">Título</th>
-                            <th class="px-6 py-3.5">Tipo</th>
+                            <th class="px-6 py-3.5">Beneficio</th>
                             <th class="px-6 py-3.5">Tratamiento</th>
                             <th class="px-6 py-3.5">Vigencia</th>
                             <th class="px-6 py-3.5 text-center">Cupos</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right">Acciones</th>
+                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
                         </tr>
                     </x-slot:head>
 
                     @forelse ($ofertas as $oferta)
                         <tr class="transition hover:bg-cream/60">
-                            <td class="px-6 py-4 font-semibold text-ink whitespace-nowrap">{{ $oferta->titulo }}</td>
+                            {{-- El título puede ocupar 2 líneas: en una sola, uno largo empujaba Acciones fuera de la tabla. --}}
+                            <td class="min-w-[10rem] max-w-[15rem] px-6 py-4 font-semibold leading-snug text-ink">{{ $oferta->titulo }}</td>
                             <td class="px-6 py-4 text-ink-soft whitespace-nowrap">
-                                <span class="inline-flex items-center rounded-full bg-peach-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 border border-peach-200">
-                                    {{ $tipoLabel[$oferta->tipo->value] ?? $oferta->tipo->value }}
+                                <x-chip class="bg-peach-50 text-brand-700 border border-peach-200">
+                                    {{ $oferta->etiquetaBeneficio() }}
+                                </x-chip>
+                            </td>
+                            <td class="min-w-[8rem] px-6 py-4 leading-snug text-ink-soft">
+                                <span class="inline-flex items-center gap-0.5">
+                                    {{ $oferta->tratamiento->nombre ?? '—' }}
+                                    {{-- Tratamiento que ya no se agenda en línea: símbolo con la explicación (antes una frase larga). --}}
+                                    @if ($oferta->tratamiento && (! $oferta->tratamiento->activo || ! $oferta->tratamiento->servicios_activos))
+                                        <x-ayuda tono="aviso" etiqueta="Tratamiento inactivo" data-tratamiento-inactivo>
+                                            Esta oferta no se muestra en la portada ni se puede publicar. Activa el tratamiento en Catálogo → Tratamientos o elige otro al editarla.
+                                        </x-ayuda>
+                                    @endif
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $oferta->tratamiento->nombre ?? '—' }}</td>
-                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $oferta->fecha_inicio }} al {{ $oferta->fecha_fin }}</td>
+                            <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $oferta->fecha_inicio->locale('es')->translatedFormat('j M') }} – {{ $oferta->fecha_fin->locale('es')->translatedFormat('j M Y') }}</td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center rounded-full bg-cream px-2.5 py-0.5 text-xs font-semibold text-ink border border-line">
-                                    {{ $oferta->cupo_total > 0 ? $oferta->cupos_utilizados.'/'.$oferta->cupo_total : 'Sin límite' }}
-                                </span>
+                                <x-chip class="bg-cream text-ink border border-line">
+                                    {{-- Lugares ocupados por citas reales agendadas con la oferta. --}}
+                                    {{ $oferta->cupo_total > 0 ? $oferta->lugaresUsados().'/'.$oferta->cupo_total : 'Sin límite' }}
+                                </x-chip>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <x-admin.status-badge :active="$oferta->activa" />
+                                @php $colorEstado = ['pendiente' => 'bg-amber-50 text-amber-800 ring-amber-500/25', 'activa' => 'bg-sage-50 text-sage-700 ring-sage-500/20', 'inactiva' => 'bg-shell text-ink-soft ring-line'][$oferta->estado->value]; @endphp
+                                <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset {{ $colorEstado }}" data-estado-oferta="{{ $oferta->estado->value }}">{{ $oferta->estado->etiqueta() }}</span>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.ofertas.edit', $oferta) }}" title="Editar" aria-label="Editar oferta"
-                                       class="rounded-xl p-2 text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
-                                        <x-icon name="edit" />
-                                    </a>
-                                    <form method="POST" action="{{ route('admin.ofertas.destroy', $oferta) }}"
-                                          data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar la oferta «{{ $oferta->titulo }}»?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" title="Eliminar" aria-label="Eliminar oferta"
-                                                class="rounded-xl p-2 text-rose-600 transition hover:bg-rose-50 hover:text-rose-800">
-                                            <x-icon name="trash" />
-                                        </button>
-                                    </form>
-                                </div>
+                                {{-- Mismo grupo que Editar/Eliminar, sin separador (21/11/2026). --}}
+                                <x-admin.acciones-fila :editar="route('admin.ofertas.edit', $oferta)" :eliminar="route('admin.ofertas.destroy', $oferta)" que="la oferta" confirmar-titulo="¿Eliminar la oferta «{{ $oferta->titulo }}»?">
+                                    {{-- En revisión u oculta: ✓ publica. Publicada: ocultar (sigue aquí para reactivarla). --}}
+                                    @if ($oferta->estado !== \App\Enums\EstadoOferta::Activa)
+                                        <x-admin.boton-fila :action="route('admin.ofertas.publicar', $oferta)" icono="check" color="sage"
+                                                            :etiqueta="'Publicar la oferta '.$oferta->titulo"
+                                                            titulo="¿Publicar «{{ $oferta->titulo }}»?"
+                                                            mensaje="Revisa título, beneficio, descripción y fechas: se mostrará en la portada hasta «Válida hasta»."
+                                                            boton="Sí, publicar" />
+                                    @else
+                                        <x-admin.boton-fila :action="route('admin.ofertas.ocultar', $oferta)" icono="power" color="amber"
+                                                            :etiqueta="'Ocultar la oferta '.$oferta->titulo"
+                                                            titulo="¿Ocultar «{{ $oferta->titulo }}»?"
+                                                            mensaje="Dejará de verse en la portada. Seguirá aquí para editarla o volver a publicarla."
+                                                            boton="Sí, ocultar" />
+                                    @endif
+                                </x-admin.acciones-fila>
                             </td>
                         </tr>
                     @empty

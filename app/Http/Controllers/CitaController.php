@@ -63,7 +63,7 @@ class CitaController extends Controller
 
         return view('citas.index', [
             'dia' => $dia,
-            'citasDelDia' => Cita::with(['paciente', 'servicio', 'tratamiento'])
+            'citasDelDia' => Cita::with(['paciente', 'servicio', 'tratamiento', 'oferta'])
                 ->whereDate('fecha_hora', $dia)
                 ->when($estado, fn ($q) => $q->where('estado', $estado))
                 ->orderBy('fecha_hora')
@@ -80,7 +80,7 @@ class CitaController extends Controller
     {
         $terminos = preg_split('/\s+/', trim($buscar), -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
-        return Cita::with(['paciente', 'servicio', 'tratamiento'])
+        return Cita::with(['paciente', 'servicio', 'tratamiento', 'oferta'])
             ->when($estado, fn ($q) => $q->where('estado', $estado))
             ->when($terminos !== [], function ($q) use ($terminos) {
                 foreach ($terminos as $termino) {
@@ -146,7 +146,7 @@ class CitaController extends Controller
         $domingo = $lunes->copy()->addDays(6);
 
         // Una sola consulta para toda la semana, con sus relaciones (evita N+1).
-        $citasPorDia = Cita::with(['paciente', 'tratamiento'])
+        $citasPorDia = Cita::with(['paciente', 'tratamiento', 'oferta'])
             ->whereBetween('fecha_hora', [$lunes, $domingo->copy()->endOfDay()])
             ->orderBy('fecha_hora')
             ->get()

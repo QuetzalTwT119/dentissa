@@ -1,22 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h1 class="mt-1.5 text-title-2 text-ink">
-                    Editar caso — {{ $caso->titulo }}
-                </h1>
-                <p class="mt-1 max-w-2xl text-sm text-muted">Gestión de información y fotografías del caso clínico.</p>
-            </div>
-            <a href="{{ route('admin.casos.index') }}" class="hidden sm:inline-block">
-                <x-secondary-button type="button">Volver al listado</x-secondary-button>
-            </a>
-        </div>
+        <x-admin.header
+            title="Editar caso — {{ $caso->titulo }}"
+            subtitle="Gestión de información y fotografías del caso clínico."
+        >
+        </x-admin.header>
     </x-slot>
 
-    <div class="py-8 sm:py-10">
-        <div class="mx-auto max-w-2xl space-y-6 px-4 sm:px-6 lg:px-8">
-            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
-                <form method="POST" action="{{ route('admin.casos.update', $caso) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del caso?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="space-y-6">
+    <div class="panel-pagina py-8 sm:py-10">
+        <div class="panel-contenido mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <x-admin.card class="p-5 sm:p-8">
+                <form method="POST" action="{{ route('admin.casos.update', $caso) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del caso?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="formulario-panel space-y-6">
                     @csrf
                     @method('put')
 
@@ -29,8 +23,7 @@
 
                     <div>
                         <x-input-label for="descripcion" value="Descripción breve" />
-                        <textarea id="descripcion" name="descripcion" rows="3"
-                                  class="mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition placeholder:text-muted focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">{{ old('descripcion', $caso->descripcion) }}</textarea>
+                        <x-textarea id="descripcion" name="descripcion" rows="3" class="mt-1.5">{{ old('descripcion', $caso->descripcion) }}</x-textarea>
                         <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
                     </div>
 
@@ -43,11 +36,10 @@
 
                         <div>
                             <x-input-label for="activo" value="Estado" />
-                            <select id="activo" name="activo"
-                                    class="min-h-11 mt-1.5 block w-full rounded-xl border border-field bg-white px-3.5 py-2.5 text-sm text-ink shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200">
+                            <x-select id="activo" name="activo" class="mt-1.5">
                                 <option value="1" @selected(old('activo', $caso->activo ? '1' : '0') == '1')>Activo</option>
                                 <option value="0" @selected(old('activo', $caso->activo ? '1' : '0') == '0')>Inactivo</option>
-                            </select>
+                            </x-select>
                         </div>
                     </div>
 
@@ -55,13 +47,13 @@
                         <x-primary-button>Guardar cambios</x-primary-button>
 
                         <a href="{{ route('admin.casos.index') }}">
-                            <x-secondary-button type="button">Volver</x-secondary-button>
+                            <x-secondary-button type="button">Cancelar</x-secondary-button>
                         </a>
                     </div>
                 </form>
-            </div>
+            </x-admin.card>
 
-            <div class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-8">
+            <x-admin.card class="p-5 sm:p-8">
                 <h3 class="text-headline font-semibold text-ink">Fotos (antes/después)</h3>
                 <p class="mt-1 text-xs text-muted">Imágenes comparativas del caso para la galería pública.</p>
 
@@ -84,7 +76,7 @@
                     @endforelse
                 </div>
 
-                <form method="POST" action="{{ route('admin.casos.imagenes.store', $caso) }}" enctype="multipart/form-data" class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4 border-t border-line pt-5">
+                <form method="POST" action="{{ route('admin.casos.imagenes.store', $caso) }}" data-confirmar="La foto se agregará al caso." data-confirmar-titulo="¿Subir la foto?" data-confirmar-boton="Sí, subir" data-confirmar-tono="normal" enctype="multipart/form-data" class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4 border-t border-line pt-5">
                     @csrf
                     <div class="min-w-0 flex-1">
                         <x-input-label for="archivo" value="Nueva foto (máx. 2MB)" />
@@ -93,7 +85,7 @@
                     </div>
                     <x-primary-button>Subir</x-primary-button>
                 </form>
-            </div>
+            </x-admin.card>
         </div>
     </div>
 </x-app-layout>
