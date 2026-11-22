@@ -31,7 +31,7 @@
                     <x-slot:head>
                         <tr>
                             <th class="px-6 py-3.5">Nombre</th>
-                            <th class="px-6 py-3.5">Posición en el carrusel</th>
+                            <th class="px-6 py-3.5">Orden en la portada</th>
                             <th class="px-6 py-3.5 text-center">Tratamientos</th>
                             <th class="px-6 py-3.5">Estado</th>
                             <th class="px-6 py-3.5 text-right">Acciones</th>
@@ -47,16 +47,22 @@
                                 $esPrimero = $posicion === 1;
                                 $esUltimo = $posicion === $totalServicios;
                             @endphp
-                            {{-- Las flechas intercambian el servicio con su vecino (ServicioController@mover). --}}
+                            {{--
+                                Orden en la portada (22/11/2026, rediseño pedido por el usuario): el número
+                                a secas y dos flechas redondas como los demás botones del panel (antes una
+                                cápsula con borde y una rayita). La flecha que no aplica (subir al primero,
+                                bajar al último) queda oculta en vez de apagada, sin mover las demás.
+                                Las flechas intercambian el servicio con su vecino (ServicioController@mover).
+                            --}}
                             <td class="px-6 py-4 whitespace-nowrap" data-posicion-servicio="{{ $posicion }}">
-                                <div class="flex items-center gap-3">
-                                    <span class="grid h-7 w-7 place-items-center rounded-full bg-brand-50 text-xs font-semibold tabular-nums text-brand-700">{{ $posicion }}</span>
+                                <div class="flex items-center gap-1">
+                                    <span class="w-6 text-sm font-semibold tabular-nums text-ink">{{ $posicion }}</span>
                                     {{-- Con filtro, el vecino de la lista no es el del carrusel: las flechas
                                          moverían junto a uno oculto. Se ordena con la lista completa. --}}
                                     @if ($filtrando)
                                     <x-ayuda etiqueta="Orden con filtro">Para cambiar el orden, quita el filtro: las flechas mueven el servicio junto a su vecino en la lista completa.</x-ayuda>
                                     @else
-                                    <div class="inline-flex items-center rounded-full border border-line bg-white p-0.5 shadow-2xs">
+                                    <span @class(['invisible' => $esPrimero])>
                                     <x-admin.boton-fila :action="route('admin.servicios.mover', [$servicio, 'arriba'])" color="muted" :deshabilitado="$esPrimero"
                                                         :etiqueta="'Subir «'.$servicio->nombre.'» un lugar'"
                                                         :titulo="'¿Subir «'.$servicio->nombre.'» un lugar?'"
@@ -64,7 +70,8 @@
                                                         boton="Sí, subir">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
                                     </x-admin.boton-fila>
-                                    <span class="h-4 w-px bg-line" aria-hidden="true"></span>
+                                    </span>
+                                    <span @class(['invisible' => $esUltimo])>
                                     <x-admin.boton-fila :action="route('admin.servicios.mover', [$servicio, 'abajo'])" color="muted" :deshabilitado="$esUltimo"
                                                         :etiqueta="'Bajar «'.$servicio->nombre.'» un lugar'"
                                                         :titulo="'¿Bajar «'.$servicio->nombre.'» un lugar?'"
@@ -72,7 +79,7 @@
                                                         boton="Sí, bajar">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                                     </x-admin.boton-fila>
-                                    </div>
+                                    </span>
                                     @endif
                                 </div>
                             </td>

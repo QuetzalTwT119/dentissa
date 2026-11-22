@@ -49,7 +49,7 @@ class DetalleBitacora
     /** El mismo dato se llama distinto según dónde se ve en el panel. */
     private const CAMPOS_POR_TABLA = [
         'servicios.activo' => 'Disponible',
-        'servicios.orden' => 'Posición en el carrusel',
+        'servicios.orden' => 'Orden en la portada',
         'users.activo' => 'Cuenta activa',
         'ofertas.activa' => 'Publicada',
     ];

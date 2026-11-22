@@ -89,7 +89,7 @@ class DetalleBitacoraTest extends TestCase
         $filas = collect(DetalleBitacora::filas($this->registro('servicios', null,
             ['icono' => 'tooth', 'orden' => 8, 'activo' => true, 'imagen' => null, 'nombre' => 'prueba', 'descripcion' => 'a'])))
             ->pluck('despues', 'campo')->all();
-        $this->assertSame(['Posición en el carrusel' => '8', 'Disponible' => 'Sí', 'Foto' => 'Sin foto', 'Nombre' => 'prueba', 'Descripción' => 'a'], $filas);
+        $this->assertSame(['Orden en la portada' => '8', 'Disponible' => 'Sí', 'Foto' => 'Sin foto', 'Nombre' => 'prueba', 'Descripción' => 'a'], $filas);
 
         // Captura 4 (abajo): "Campos modificados ["nombre"]".
         $this->assertSame([['campo' => 'Campos que cambiaron', 'antes' => null, 'despues' => 'Nombre, Teléfono']],

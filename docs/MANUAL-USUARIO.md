@@ -384,8 +384,8 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
   muestra en la portada y se puede agendar en línea, en el panel, en el asistente y por Telegram.
   Para ocultarlo (o volver a mostrarlo) usa el interruptor **Disponible** de la lista; es el
   único lugar donde se cambia. Las citas ya agendadas no cambian. Si editas uno oculto, la
-  pantalla te lo recuerda. El orden del carrusel se acomoda con las
-  flechas ↑ ↓ de la lista. La lista se puede buscar por nombre y filtrar por
+  pantalla te lo recuerda. El orden en que salen en la portada se acomoda con
+  las flechas ↑ ↓ de la columna **Orden en la portada**. La lista se puede buscar por nombre y filtrar por
   activos o inactivos; mientras haya un filtro, el número sigue siendo su lugar
   real en el carrusel y, para cambiar el orden, hay que quitar el filtro.
 - **Tratamientos**: el formulario pide **Nombre**, **Duración** (cuánto ocupa en
