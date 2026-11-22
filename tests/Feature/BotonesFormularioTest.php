@@ -30,6 +30,16 @@ class BotonesFormularioTest extends TestCase
         }
     }
 
+    /** 22/11/2026: en los botones de solo ícono, el indicador de envío reemplaza al ícono (antes quedaba apilado). */
+    public function test_el_indicador_de_envio_reemplaza_al_icono(): void
+    {
+        $css = file_get_contents(resource_path('css/app.css'));
+
+        $this->assertStringContainsString('button.place-items-center[aria-busy="true"] > :not(.btn-spinner)', $css);
+        // Las listas ya no se desplazan por dentro de la tarjeta.
+        $this->assertStringNotContainsString('.panel-contenido .tabla-larga.tabla-panel > [x-ref="desplazable"]', $css);
+    }
+
     public function test_guardar_cambios_espera_a_que_algo_cambie(): void
     {
         $js = file_get_contents(resource_path('js/app.js'));

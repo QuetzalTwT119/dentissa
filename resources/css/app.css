@@ -328,6 +328,15 @@
         animation: btn-spin 600ms linear infinite;
     }
 
+    /*
+     * 22/11/2026: en los botones redondos de solo ícono (Editar, Eliminar,
+     * Publicar… centrados con grid) el indicador quedaba apilado encima del
+     * ícono. Mientras se envía, el indicador ocupa el lugar del ícono.
+     */
+    button.place-items-center[aria-busy="true"] > :not(.btn-spinner) {
+        display: none;
+    }
+
     /* ---------- Tarjetas ---------- */
     .card-boutique {
         background-color: #fff;
@@ -1046,10 +1055,9 @@
  * completa. layouts/app mide el alto de la ventana (.panel-marco); el
  * contenido de cada pantalla (.panel-pagina > .panel-contenido) ocupa el
  * espacio que queda bajo el menú y el título.
- *   - Listas: la tarjeta que contiene una tabla (.tabla-panel) o una lista
- *     larga (.lista-panel) se encoge hasta caber; solo su tabla se desplaza
- *     por dentro, con los encabezados fijos, y la barra de filtros y la
- *     paginación quedan a la vista.
+ *   - Listas (22/11/2026): se desplaza .panel-contenido completo, con los
+ *     encabezados de columna fijos; antes solo se desplazaba la tabla y su
+ *     barra quedaba dentro de la tarjeta.
  *   - Formularios: se acomodan a lo ancho para caber; si aun así no caben
  *     (pantallas bajas), se desplaza .panel-contenido y el menú sigue fijo.
  * En celular y tableta el flujo es normal (estas reglas no aplican).
@@ -1115,41 +1123,14 @@
         flex-shrink: 0;
     }
 
-    /* La tarjeta con la tabla (y lo que la envuelve) se encoge; lo demás no. */
-    .panel-contenido > :has(.tabla-panel, .lista-panel),
-    .panel-contenido > :has(.tabla-panel, .lista-panel) :has(.tabla-panel, .lista-panel) {
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 1;
-        min-height: 0;
-    }
+    /*
+     * 22/11/2026: las listas ya no se desplazan por dentro de su tarjeta (la
+     * barra quedaba dentro de la tabla). Se desplaza toda la página
+     * (.panel-contenido), con la barra en la orilla de la ventana, igual que
+     * en Configuración y los formularios. El menú sigue fijo arriba.
+     */
 
-    .panel-contenido > :has(.tabla-panel, .lista-panel) {
-        min-height: 14rem;
-    }
-
-    .panel-contenido .tabla-panel,
-    .panel-contenido .lista-panel {
-        flex: 1 1 auto;
-        /* Nunca menos de ~3 filas: si no caben, se desplaza .panel-contenido. */
-        min-height: 9rem;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-    }
-
-    .panel-contenido .tabla-larga.tabla-panel {
-        display: flex;
-        flex-direction: column;
-        overflow-y: hidden;
-    }
-
-    .panel-contenido .tabla-larga.tabla-panel > [x-ref="desplazable"] {
-        flex: 1 1 auto;
-        min-height: 0;
-        overflow-y: auto;
-    }
-
-    /* Encabezados de columna fijos mientras la tabla se desplaza. */
+    /* Encabezados de columna fijos mientras se baja por la lista. */
     .panel-contenido .lista-panel .fila-cita-cabecera {
         position: sticky;
         top: 0;

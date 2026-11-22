@@ -1353,7 +1353,10 @@ administrador y el asistente gestionan los demás cambios desde el panel
 - **Barra de desplazamiento del panel (22/11/2026).** En PC `.panel-contenido`
   con `max-w-*` ocupa todo el ancho y centra su contenido con relleno lateral
   (`--ancho-contenido`): la barra queda en la orilla de la ventana y no en
-  medio, junto a las tarjetas.
+  medio, junto a las tarjetas. En las listas tampoco se desplaza la tabla por
+  dentro: se desplaza toda la página, con los encabezados de columna fijos.
+  En los botones redondos de solo ícono, mientras se envía, `.btn-spinner`
+  ocupa el lugar del ícono (antes quedaba apilado encima).
 - **Configuración en una sola página (22/11/2026).** `GET admin.configuracion`
   (`ConfiguracionController`) muestra `admin/configuracion/_consultorio` y
   `_horarios`, cada uno con su `<form>`; las rutas `admin.horarios.edit` y
