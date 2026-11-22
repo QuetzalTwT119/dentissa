@@ -94,20 +94,26 @@
                                     --}}
                                     @php $noPublicable = $oferta->estado !== \App\Enums\EstadoOferta::Activa ? $oferta->motivoNoPublicable() : null; @endphp
                                     @if ($noPublicable)
-                                        {{-- "Publicar" apagado con su ⚠ (22/11/2026; antes un ⚠ suelto: no se sabía si era acción o aviso). --}}
-                                        <span class="inline-flex min-h-11 items-center gap-0.5 whitespace-nowrap rounded-full border border-dashed border-line pl-3 text-xs font-semibold text-muted lg:min-h-9" data-no-publicable>
-                                            <x-icon name="check" class="mr-1 opacity-50" />
-                                            <span class="opacity-70">Publicar</span>
-                                            <x-ayuda tono="aviso" etiqueta="No se puede publicar">{{ $noPublicable }}</x-ayuda>
+                                        {{-- Publicar (ojo) apagado con su ⚠, igual que la papelera bloqueada (22/11/2026). --}}
+                                        <span class="grid h-11 w-11 place-items-center lg:h-9 lg:w-9" data-no-publicable>
+                                            <x-ayuda tono="aviso" etiqueta="No se puede publicar">
+                                                <x-slot:icono>
+                                                    <span class="relative grid place-items-center">
+                                                        <x-icon name="eye" class="text-muted opacity-50" />
+                                                        <svg class="absolute -bottom-1 -right-1.5 h-3 w-3 text-amber-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.5 3.3a1.7 1.7 0 0 1 3 0l6.3 11.2A1.7 1.7 0 0 1 16.3 17H3.7a1.7 1.7 0 0 1-1.5-2.5L8.5 3.3ZM10 7a.9.9 0 0 0-.9.9v3.4a.9.9 0 1 0 1.8 0V7.9A.9.9 0 0 0 10 7Zm0 7.6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/></svg>
+                                                    </span>
+                                                </x-slot:icono>
+                                                {{ $noPublicable }}
+                                            </x-ayuda>
                                         </span>
                                     @elseif ($oferta->estado !== \App\Enums\EstadoOferta::Activa)
-                                        <x-admin.boton-fila :action="route('admin.ofertas.publicar', $oferta)" icono="check" color="sage" texto="Publicar"
+                                        <x-admin.boton-fila :action="route('admin.ofertas.publicar', $oferta)" icono="eye" color="sage"
                                                             :etiqueta="'Publicar la oferta '.$oferta->titulo"
                                                             titulo="¿Publicar «{{ $oferta->titulo }}»?"
                                                             mensaje="Revisa título, beneficio, descripción y fechas: se mostrará en la portada hasta «Válida hasta»."
                                                             boton="Sí, publicar" />
                                     @else
-                                        <x-admin.boton-fila :action="route('admin.ofertas.ocultar', $oferta)" icono="eye-off" color="amber" texto="Ocultar"
+                                        <x-admin.boton-fila :action="route('admin.ofertas.ocultar', $oferta)" icono="eye-off" color="amber"
                                                             :etiqueta="'Ocultar la oferta '.$oferta->titulo"
                                                             titulo="¿Ocultar «{{ $oferta->titulo }}»?"
                                                             mensaje="Dejará de verse en la portada. Seguirá aquí para editarla o volver a publicarla."

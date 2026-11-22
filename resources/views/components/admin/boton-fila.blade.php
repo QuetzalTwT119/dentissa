@@ -15,9 +15,11 @@
       - titulo, mensaje, boton: textos del diálogo de confirmación.
       - tono: normal (por omisión) | peligro.
       - color: brand | sage | amber | rose | muted.
-      - texto: palabra visible junto al ícono (22/11/2026). Para acciones que el ícono
-        solo no explica (Publicar, Ocultar, Aprobar, Rechazar…). Editar, eliminar y
-        las flechas se entienden solos y quedan sin texto.
+      Solo ícono, igual que Editar/Eliminar (22/11/2026). Se probó ícono + palabra y
+      la columna de acciones se ensanchaba hasta salirse de la tabla (Testimonios) y
+      mezclaba dos estilos; ahora cada acción usa un ícono que se entiende solo
+      (ojo = publicar, ojo tachado = ocultar, pulgar = aprobar/rechazar, sobre =
+      leído) y su nombre sale al pasar el mouse y en la confirmación.
 --}}
 @props([
     'action',
@@ -30,7 +32,6 @@
     'tono' => 'normal',
     'color' => 'brand',
     'deshabilitado' => false,
-    'texto' => null,
 ])
 
 @php
@@ -52,10 +53,7 @@
     @endif
     <button type="submit" title="{{ $etiqueta }}" aria-label="{{ $etiqueta }}" @disabled($deshabilitado)
             {{ $attributes->class([
-                'rounded-full transition-colors duration-150 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent',
-        // Con texto: píldora con borde (se ve como botón); sin texto: círculo como Editar/Eliminar.
-        'inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap border border-line bg-white px-3 text-xs font-semibold lg:min-h-9' => filled($texto),
-        'grid h-11 w-11 place-items-center lg:h-9 lg:w-9' => blank($texto),
+                'grid h-11 w-11 place-items-center rounded-full transition-colors duration-150 focus:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-transparent lg:h-9 lg:w-9',
                 $colores[$color] ?? $colores['brand'],
             ]) }}>
         @if ($icono)
@@ -63,8 +61,6 @@
         @else
             {{ $slot }}
         @endif
-        @if (filled($texto))
-            <span>{{ $texto }}</span>
-        @endif
+
     </button>
 </form>

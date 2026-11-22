@@ -65,16 +65,16 @@ $estadoClase = [
                             </td>
                             <td class="w-px whitespace-nowrap px-6 py-4 text-right">
                                 <x-admin.acciones-fila :eliminar="route('admin.testimonios.destroy', $testimonio)" que="el testimonio" confirmar-titulo="¿Eliminar este testimonio?">
-                                    {{-- Moderación: ícono + palabra (22/11/2026; solo el ícono no decía qué hacía). --}}
+                                    {{-- Moderación: pulgar arriba/abajo (22/11/2026; antes ✓ y ✕, ambiguos). --}}
                                     @if ($testimonio->estado->value !== 'aprobado')
-                                        <x-admin.boton-fila :action="route('admin.testimonios.aprobar', $testimonio)" icono="check" color="sage" texto="Aprobar"
+                                        <x-admin.boton-fila :action="route('admin.testimonios.aprobar', $testimonio)" icono="thumb-up" color="sage"
                                                             :etiqueta="'Aprobar testimonio de '.$testimonio->paciente?->nombre"
                                                             titulo="¿Aprobar y publicar este testimonio?"
                                                             mensaje="Se mostrará en la portada con el nombre y la inicial del paciente."
                                                             boton="Sí, aprobar" />
                                     @endif
                                     @if ($testimonio->estado->value !== 'rechazado')
-                                        <x-admin.boton-fila :action="route('admin.testimonios.rechazar', $testimonio)" icono="x" color="amber" texto="Rechazar"
+                                        <x-admin.boton-fila :action="route('admin.testimonios.rechazar', $testimonio)" icono="thumb-down" color="amber"
                                                             :etiqueta="'Rechazar testimonio de '.$testimonio->paciente?->nombre"
                                                             titulo="¿Rechazar este testimonio?"
                                                             :mensaje="$testimonio->estado->value === 'aprobado' ? 'Dejará de mostrarse en la portada. Podrás aprobarlo después.' : 'No se mostrará en la portada. Podrás aprobarlo después.'"

@@ -395,6 +395,11 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
   está encendido y se cambia ahí mismo, sin entrar a Editar. Siempre pide
   confirmación y dice qué pasará (por ejemplo, "Dejará de mostrarse en la
   portada"). Tu propia cuenta sale atenuada con ⓘ: no puedes desactivarte.
+- **Íconos de las acciones** (columna Acciones, a la derecha): ✎ editar, 🗑 eliminar,
+  ojo = publicar, ojo tachado = ocultar, pulgar arriba = aprobar, pulgar abajo = rechazar,
+  sobre abierto = marcar leído, sobre cerrado = marcar sin leer. Al pasar el mouse dicen qué
+  hacen y siempre piden confirmación. Si un ícono sale apagado con ⚠, esa acción no se
+  puede hacer; toca el ⚠ para ver por qué. El ⓘ gris solo explica.
 - Las confirmaciones (eliminar, cancelar una cita, desactivar…) usan la ventana
   de Dentissa; se cancelan con **Esc**, con **Cancelar** o tocando fuera.
 - En cada lista, arriba se ve cuántos registros hay y cuántos mostrar por página

@@ -1381,6 +1381,11 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Acciones solo con íconos (H-53, 22/11/2026).** Regla: las acciones de fila son solo
+  ícono (se quitó `texto` de `x-admin.boton-fila`); cada una con un dibujo propio de `x-icon`:
+  `eye`/`eye-off` (publicar/ocultar), `thumb-up`/`thumb-down` (aprobar/rechazar),
+  `mail-open`/`mail` (marcar leído/sin leer); `aria-label`/`title` y el diálogo dan el nombre.
+  `x-ayuda` info vuelve a gris (`text-muted`); el amarillo queda solo para ⚠.
 - **Acciones alineadas a la derecha (H-52, 22/11/2026).** Regla: el grupo de acciones y el
   encabezado "Acciones" van a la derecha (no centrados), para que Editar y Eliminar queden
   en la misma columna aunque el primer botón tenga palabra. Una acción que no se puede hacer
