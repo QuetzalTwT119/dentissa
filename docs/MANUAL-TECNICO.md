@@ -1134,6 +1134,82 @@ Un barrido de 41 pantallas a 375 y 1280 px dejó cuatro reglas, protegidas por
   una sola vez en `layouts/app` y `app.js` intercepta el envío en fase de
   captura. Cada botón actúa en su propio clic: no se usa el evento `close` del
   `<dialog>`, que algunos navegadores no disparan.
+- **Ofertas: "Beneficio para el paciente" (21/11/2026).** El formulario envía
+  `beneficio` (`descuento|precio|gratis`), `unidad` (`porcentaje|monto`, solo
+  con descuento) y `cantidad`; `Oferta::claveDeFormulario()` lo convierte a la
+  clave interna (`porcentaje|monto|precio|gratis`) y `Oferta::columnasDeBeneficio()`
+  lo traduce a las columnas de siempre (`tipo`, `tipo_valor`, `valor_descuento`,
+  `precio_especial`), sin migración. `beneficio()`, `cantidadBeneficio()` y
+  `etiquetaBeneficio()` son la única regla para leerlo: la usan el formulario
+  de edición, la portada, la lista del panel y `/ofertas`. Lo opcional
+  (descripción, tratamiento, cupo, inicio, imagen) va en un `<details
+  data-mas-detalles>` que se abre solo si ya tiene datos o errores. En la
+  portada las ofertas son tarjetas compactas en cuadrícula (4 por fila en PC),
+  sin carrusel.
+- **Ofertas: revisión antes de publicar (21/11/2026).** La columna `activa`
+  (booleano) se reemplazó por `estado` (`App\Enums\EstadoOferta`:
+  `pendiente` = En revisión, `activa` = Publicada, `inactiva` = Oculta) con la
+  migración `2026_11_21_000001_cambiar_activa_por_estado_en_ofertas` (las
+  existentes conservan cómo se veían). `store` siempre guarda `pendiente` y
+  `fecha_inicio` = hoy (sin campos "Empieza" ni "Mostrar"); `update` regresa a
+  `pendiente` una publicada si cambia algo de `CAMPOS_PUBLICOS`. Rutas
+  `PATCH admin.ofertas.publicar` (rechaza vencidas) y `admin.ofertas.ocultar`,
+  ambas auditadas (`oferta.publicada`, `oferta.ocultada`). El público (portada y
+  `/ofertas`) usa solo `Oferta::publicadas()`. Validación: título 5–120,
+  descripción obligatoria 20–300, `fecha_fin` ≥ hoy, y la regla
+  `App\Rules\SinEnlaces` (enlaces, dominios, correos, HTML y caracteres
+  repetidos) en título y descripción; el formulario repite `required`,
+  `minlength`, `maxlength` y `min`. Solo el rol admin entra a estas rutas, así
+  que no hay "creador" por oferta: todo administrador ve todas en el panel.
+- **Ofertas en la cita (21/11/2026).** Migración
+  `2026_11_21_000002_add_id_oferta_to_citas_table` (`citas.id_oferta`, FK
+  `nullOnDelete`). `CrearCitaService` (web y Telegram) llama a
+  `Oferta::aplicableA(idTratamiento, fecha)` (publicada, tratamiento agendable,
+  fecha de la cita ≤ `fecha_fin`, con lugar; la que vence primero) y bloquea la
+  fila con `lockForUpdate()` para no vender el último lugar dos veces. Los
+  lugares se cuentan con citas reales: `scopeConLugaresUsados()`,
+  `lugaresUsados()`, `lugaresQuedan()`; canceladas y no asistidas liberan
+  (`ESTADOS_QUE_LIBERAN`). La columna `cupos_utilizados` ya no se usa.
+  `Tratamiento::scopeAgendables()` (activo + especialidad activa) filtra el
+  selector, la validación (`Rule::in`), `publicadas()` y `publicar()`. La agenda
+  pública recibe `ofertasPorTratamiento` y `?tratamiento=ID`; el personal ve
+  `x-cita-oferta` y la notificación interna agrega "Con oferta «…»". Descuento
+  nuevo solo en % (la unidad `monto` se acepta solo al editar una oferta vieja).
+- **"Guardar cambios" espera cambios (21/11/2026, global en `app.js`).** Todo
+  `<form>` con `_method` PUT/PATCH y al menos un campo editable empieza con sus
+  botones de enviar desactivados (también los de fuera con `form="id"`) y se
+  activan cuando la huella de `FormData` difiere de la inicial; si se regresa al
+  valor original se desactivan otra vez. No aplica a formularios de un solo
+  botón ni si la página volvió con errores; `data-sin-esperar-cambios` lo
+  excluye. El diálogo de confirmación se conserva: el botón evita guardar
+  "nada" y el diálogo evita guardar por accidente.
+- **Un solo botón para regresar (21/11/2026).** Los formularios ya no tienen
+  "Volver al listado" arriba y "Cancelar"/"Volver" abajo: queda "Cancelar"
+  junto a "Guardar" (en Servicios y Tratamientos, en PC ambos van arriba).
+  `BotonesFormularioTest` lo vigila.
+- **Validación de grupos de opciones (22/11/2026).** `x-opcion` acepta
+  `requerido` (atributo `required` en el radio). La validación global de
+  `app.js` pone un solo aviso al final del `<fieldset>` para los radios (antes
+  no se contemplaban: Beneficio no avisaba al guardar vacío) y al elegir uno
+  limpia `aria-invalid` de todo el grupo; `.opcion:has([aria-invalid])` pinta el
+  borde rosa. En Ofertas, "Tratamiento al que aplica" salió de "Más detalles"
+  porque decide si la oferta se aplica al agendar.
+- **Ayuda con ícono global (21/11/2026).** `x-ayuda` (`tono="aviso|info"`,
+  `etiqueta`): símbolo junto a un dato que muestra un globo al pasar el mouse,
+  enfocar con teclado o tocar en celular (el `title` del navegador no funciona
+  en táctil). El globo es `position: fixed` (no lo recortan las tablas que se
+  desplazan), se abre abajo o arriba según el espacio y se cierra con Esc, al
+  tocar fuera o al desplazar. Primer uso: "Tratamiento inactivo" en Ofertas.
+- **Tablas largas: esquina fija (21/11/2026).** El encabezado de la primera
+  columna es `top: 0` + `left: 0` con `z-index: 3` y el color del encabezado;
+  antes tenía `z-index: 1`, otro tono, y al bajar la primera fila se montaba
+  encima. La celda fija toma el tono de la fila al pasar el mouse.
+- **Opción elegible global (21/11/2026).** `x-opcion` (componente) + clase
+  `.opcion` en `resources/css/app.css`: radio oculto dentro de un `<label>`;
+  elegida = `brand-50` de fondo, borde `brand-400`, texto `brand-800`, sin
+  palomita. También aplica a `<button aria-checked|aria-pressed="true">`. Se usa
+  en Beneficio y en la unidad % / $ de Ofertas. Pendiente decidir si unifica
+  los horarios de la agenda (relleno `brand-600`) y las tarjetas de tratamiento.
 - **Todo cambio pide confirmación (21/11/2026).** Cualquier `<form method="POST">`
   del panel lleva `data-confirmar` (tono `normal` si se puede deshacer,
   `peligro` si no). Los botones de fila que cambian algo usan
