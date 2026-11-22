@@ -93,4 +93,29 @@ class AccionesPosiblesTest extends TestCase
         // Botón redondo global (x-admin.boton-fila), no el cuadrado de antes.
         $this->assertStringNotContainsString('class="rounded-xl p-2 transition', $html);
     }
+
+    /** QA del panel (22/11/2026): Galería usaba enlaces de texto propios en lugar de las acciones globales. */
+    public function test_galeria_usa_las_acciones_globales(): void
+    {
+        $imagen = \App\Models\Imagen::create(['titulo' => 'Recepción', 'url' => 'galeria/a.jpg', 'tipo' => \App\Enums\TipoImagen::Galeria, 'orden' => 1, 'activa' => true]);
+
+        $this->actingAs($this->admin)->get(route('admin.galeria.index'))->assertOk()
+            ->assertSee('aria-label="Editar la imagen «Recepción»"', false)
+            ->assertSee('aria-label="Eliminar la imagen «Recepción»"', false)
+            ->assertSee('action="'.route('admin.galeria.destroy', $imagen).'"', false);
+    }
+
+    /** QA del panel: "Ver cambios" de Control de actividades mostraba "null" en los campos vacíos. */
+    public function test_control_de_actividades_no_muestra_null(): void
+    {
+        \App\Models\LogAuditoria::query()->create([
+            'id_usuario' => $this->admin->id, 'accion' => 'oferta.actualizada', 'tabla' => 'ofertas', 'registro_id' => 1,
+            'datos_anteriores' => ['imagen' => null, 'activa' => true], 'datos_nuevos' => ['imagen' => 'ofertas/a.jpg', 'activa' => false],
+            'fecha' => now(),
+        ]);
+
+        $html = $this->actingAs($this->admin)->get(route('admin.auditoria.index'))->assertOk()->getContent();
+        $this->assertDoesNotMatchRegularExpression('~font-mono text-ink font-semibold">null<~', $html);
+        $this->assertStringContainsString('font-mono text-ink font-semibold">—<', $html);
+    }
 }

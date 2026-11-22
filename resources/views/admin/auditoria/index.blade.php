@@ -183,7 +183,7 @@ $etiquetasTabla = [
                                                             @foreach ($datos as $campo => $valor)
                                                                 <div class="grid grid-cols-[minmax(6.5rem,auto)_1fr] gap-2 py-0.5 border-b border-line/40 last:border-b-0">
                                                                     <dt class="font-medium text-ink-soft">{{ ucfirst(str_replace('_', ' ', $campo)) }}</dt>
-                                                                    <dd class="break-words font-mono text-ink font-semibold">{{ is_scalar($valor) ? ($valor === '' ? '—' : $valor) : json_encode($valor, JSON_UNESCAPED_UNICODE) }}</dd>
+                                                                    <dd class="break-words font-mono text-ink font-semibold">{{-- 22/11/2026: vacío = "—" y sí/no (antes se veía "null", "true" o "false"). --}}{{ match (true) { $valor === null, $valor === '' => '—', is_bool($valor) => ($valor ? 'Sí' : 'No'), is_scalar($valor) => $valor, default => json_encode($valor, JSON_UNESCAPED_UNICODE) } }}</dd>
                                                                 </div>
                                                             @endforeach
                                                         </dl>

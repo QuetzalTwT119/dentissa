@@ -44,15 +44,9 @@
                                     </div>
                                 </div>
                                 <div class="p-4 pt-0">
-                                    <div class="flex items-center justify-between border-t border-line/60 pt-3 text-xs font-semibold">
-                                        <a href="{{ route('admin.galeria.edit', $imagen) }}" class="text-brand-600 hover:text-brand-800 transition">Editar</a>
-                                        <form method="POST" action="{{ route('admin.galeria.destroy', $imagen) }}"
-                                              data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar esta imagen de la galería?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="submit" class="text-rose-600 hover:text-rose-800 transition">Eliminar</button>
-                                        </form>
-                                    </div>
+                                    {{-- Acciones globales (22/11/2026; antes enlaces de texto propios). --}}
+                                    <x-admin.acciones-fila class="border-t border-line/60 pt-3" :editar="route('admin.galeria.edit', $imagen)" :eliminar="route('admin.galeria.destroy', $imagen)"
+                                                           que="la imagen" :nombre="$imagen->titulo" confirmar-titulo="¿Eliminar esta imagen de la galería?" />
                                 </div>
                             </div>
                         @empty
