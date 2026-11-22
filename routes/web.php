@@ -245,10 +245,11 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::get('pacientes/{paciente}/historial-pdf', [HistorialClinicoController::class, 'pdf'])->name('pacientes.historial.pdf');
 
     Route::patch('usuarios/{usuario}/activo', [UsuarioController::class, 'toggleActivo'])->name('usuarios.activo.toggle');
-    // Sin destroy() a propósito: historial_clinico.id_doctor tiene cascadeOnDelete
-    // hacia users, así que borrar un usuario borraría en cascada el historial
-    // clínico que registró. "Desactivar" (toggleActivo) es la baja soportada.
-    Route::resource('usuarios', UsuarioController::class)->except(['show', 'destroy']);
+    // Usuarios (22/11/2026, decisión del usuario): solo crear, desactivar y eliminar.
+    // Sin editar: cada quien corrige sus datos y contraseña en Mi perfil.
+    // Eliminar se bloquea si registró consultas: historial_clinico.id_doctor tiene
+    // cascadeOnDelete y se borraría el historial de los pacientes (destroy() lo revisa).
+    Route::resource('usuarios', UsuarioController::class)->only(['index', 'create', 'store', 'destroy']);
 
     Route::get('reportes', [ReporteController::class, 'index'])->name('reportes.index');
     Route::get('reportes/pdf', [ReporteController::class, 'pdf'])->name('reportes.pdf');

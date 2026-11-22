@@ -224,8 +224,7 @@ class ConsistenciaDisenoTest extends TestCase
         $paginas = [
             ...array_map(fn ($ruta) => route($ruta), array_diff(self::FORMULARIOS, ['notificaciones.index'])),
             route('admin.servicios.edit', $servicio),
-            // La cuenta propia lleva a Mi perfil (H-56): se revisa la de otra persona.
-            route('admin.usuarios.edit', User::factory()->create(['rol' => RolUsuario::Asistente])),
+            // Editar usuario ya no existe (22/11/2026): Usuarios solo crea, desactiva y elimina.
         ];
 
         foreach ($paginas as $url) {

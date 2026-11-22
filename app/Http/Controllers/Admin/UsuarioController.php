@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules;
 
 /**
@@ -30,7 +29,8 @@ class UsuarioController extends Controller
             'activo' => ['nullable', 'in:0,1'],
         ]);
 
-        $usuarios = User::when(filled($validated['rol'] ?? null), fn ($q) => $q->where('rol', $validated['rol']))
+        $usuarios = User::withCount('consultasRegistradas')
+            ->when(filled($validated['rol'] ?? null), fn ($q) => $q->where('rol', $validated['rol']))
             ->when(filled($validated['activo'] ?? null), fn ($q) => $q->where('activo', $validated['activo']))
             ->orderBy('nombre')
             ->paginate($this->paginationPageSize($request))
@@ -76,68 +76,31 @@ class UsuarioController extends Controller
         return Redirect::route('admin.usuarios.index')->with('success', "Usuario {$request->input('nombre')} {$request->input('apellido')} creado.");
     }
 
-    public function edit(Request $request, User $usuario): View|RedirectResponse
+    /**
+     * Eliminar (22/11/2026). Nunca la cuenta propia, y nunca a quien registró
+     * consultas: se borrarían en cascada del historial de los pacientes; para
+     * esas cuentas está "Desactivar". La bitácora conserva su nombre.
+     */
+    public function destroy(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse
     {
-        // Tu propia cuenta se edita en Mi perfil (22/11/2026): aquí eran dos caminos
-        // para lo mismo y por aquí se cambió el propio rol sin querer.
-        if ($usuario->is($request->user())) {
-            return Redirect::route('profile.edit')->with('success', 'Tu cuenta se edita aquí, en Mi perfil.');
+        abort_if($usuario->is($request->user()), 422, 'No puedes eliminar tu propia cuenta.');
+
+        $consultas = $usuario->consultasRegistradas()->count();
+        if ($consultas > 0) {
+            return Redirect::route('admin.usuarios.index')->with('error', "No se puede eliminar a {$usuario->nombre} {$usuario->apellido}: registró {$consultas} ".($consultas === 1 ? 'consulta clínica' : 'consultas clínicas').'. Desactívalo para conservarlas.');
         }
 
-        return view('admin.usuarios.edit', [
-            'usuario' => $usuario,
-        ]);
-    }
-
-    public function update(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse
-    {
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:100'],
-            'apellido' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($usuario->id)],
-            'telefono' => ['required', 'string', 'max:20'],
-            'rol' => ['required', Rule::enum(RolUsuario::class)],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-        ]);
-
-        // 22/11/2026: la doctora se quitó a sí misma el rol de administración desde
-        // aquí y se quedó sin acceso a todo el panel (era la única). Igual que
-        // "Desactivar", el rol propio lo cambia OTRO administrador, y nunca se
-        // degrada al último administrador activo.
-        $cambiaRol = $usuario->rol !== RolUsuario::from($validated['rol']);
-        if ($cambiaRol && $usuario->is($request->user())) {
-            throw ValidationException::withMessages(['rol' => 'No puedes cambiar tu propio rol. Otro administrador puede hacerlo.']);
-        }
-        if ($cambiaRol && $usuario->rol === RolUsuario::Admin && $usuario->activo
-            && User::where('rol', RolUsuario::Admin->value)->where('activo', true)->count() <= 1) {
-            throw ValidationException::withMessages(['rol' => 'Es el único administrador activo: la clínica se quedaría sin quien administre el panel. Primero da el rol de administración a otra cuenta.']);
-        }
-
+        $nombre = trim($usuario->nombre.' '.$usuario->apellido);
         $auditoria->registrarCambio(
             $request,
-            'usuario.actualizado',
+            'usuario.eliminado',
             $usuario,
-            ['nombre', 'apellido', 'email', 'telefono', 'rol', 'activo'],
-            function () use ($usuario, $validated) {
-                $usuario->fill([
-                    'nombre' => $validated['nombre'],
-                    'apellido' => $validated['apellido'],
-                    'email' => $validated['email'],
-                    'telefono' => $validated['telefono'],
-                    'rol' => $validated['rol'],
-                ]);
-
-                if (! empty($validated['password'])) {
-                    $usuario->password = Hash::make($validated['password']);
-                }
-
-                $usuario->save();
-
-                return $usuario;
-            },
+            ['nombre', 'apellido', 'email', 'rol'],
+            fn () => $usuario->delete(),
+            eliminado: true,
         );
 
-        return Redirect::route('admin.usuarios.index')->with('success', "Datos de {$usuario->nombre} {$usuario->apellido} guardados.");
+        return Redirect::route('admin.usuarios.index')->with('success', "Usuario {$nombre} eliminado.");
     }
 
     public function toggleActivo(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse

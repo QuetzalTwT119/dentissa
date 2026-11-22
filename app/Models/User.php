@@ -60,6 +60,12 @@ class User extends Authenticatable
         return $this->hasOne(Paciente::class, 'id_usuario');
     }
 
+    /** Consultas clínicas que registró (historial_clinico.id_doctor). Con alguna, no se elimina. */
+    public function consultasRegistradas(): HasMany
+    {
+        return $this->hasMany(HistorialClinico::class, 'id_doctor');
+    }
+
     public function notificacionesSistema(): HasMany
     {
         return $this->hasMany(NotificacionSistema::class);

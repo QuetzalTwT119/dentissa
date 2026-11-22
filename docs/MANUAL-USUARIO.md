@@ -594,21 +594,26 @@ documentos ni datos médicos reales al entorno de desarrollo.
 
 ## 6.1 Cuentas del personal
 
-En **Usuarios**, el administrador puede filtrar las cuentas por rol y estado,
-crear una cuenta para una asistente o administrador, editar sus datos y activar
-o desactivar el acceso. Los pacientes se gestionan desde **Pacientes**, en una
-sección distinta.
+En **Usuarios**, el administrador solo puede hacer tres cosas: **crear** una cuenta
+(Nuevo usuario), **activarla o desactivarla** (interruptor de la columna Estado) y
+**eliminarla** (papelera). También puede filtrar por rol y estado. Los datos y la
+contraseña de cada cuenta los corrige su dueño en **Mi perfil**. Los pacientes se
+gestionan desde **Pacientes**, en una sección distinta.
+
+- **Eliminar** pide confirmación y no se puede deshacer. No se puede eliminar la
+  cuenta propia, ni una cuenta que registró consultas clínicas: borrarla eliminaría
+  esas consultas del historial de los pacientes. En ese caso la papelera sale
+  apagada con ⚠ y lo indicado es **desactivarla**.
+- **Cambiar el rol de alguien:** si la cuenta no tiene consultas, elimínala y créala
+  de nuevo con el rol correcto; si tiene consultas, desactívala y crea una cuenta nueva.
 
 Para cambiar el correo de la cuenta actual, abre **Perfil** desde el menú de
 usuario, edita **Correo electrónico** en **Información personal** y guarda.
 Para crear otra cuenta administrativa, entra a **Gestión → Usuarios → Nuevo
 usuario**, captura los datos, selecciona **Admin**, escribe una contraseña
-segura y guarda. El correo debe ser único. También puedes cambiar el rol de una
-cuenta existente desde **Editar**; conserva tu cuenta actual hasta confirmar
-que puedes iniciar sesión con la nueva. **Tu propio rol no se puede cambiar** (otro
-administrador puede hacerlo), y el sistema no deja quitarle el rol al último
-administrador activo, para que la clínica nunca se quede sin quien administre el panel. Tu
-propia cuenta no se edita en Usuarios sino en **Mi perfil**. Al escribir una contraseña nueva,
+segura y guarda. El correo debe ser único. Nadie puede cambiar su propio rol ni
+eliminar su propia cuenta, así la clínica nunca se queda sin quien administre el
+panel. Al escribir una contraseña nueva,
 el 👁 muestra lo que escribiste y, debajo de **Confirmar**, el sistema te dice al momento si
 las dos coinciden.
 

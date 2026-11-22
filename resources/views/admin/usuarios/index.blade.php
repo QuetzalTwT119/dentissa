@@ -81,8 +81,20 @@ $rolClase = [
                             </td>
                             <td class="px-6 py-4 text-right">
                                 {{-- Activar/desactivar vive en la columna Estado (interruptor global). --}}
-                                {{-- Tu propia cuenta no se edita aquí sino en Mi perfil (22/11/2026). --}}
-                                <x-admin.acciones-fila :editar="$usuario->is(auth()->user()) ? null : route('admin.usuarios.edit', $usuario)" que="el usuario" :nombre="$usuario->nombre.' '.$usuario->apellido" />
+                                {{--
+                                    Solo crear, desactivar (columna Estado) y eliminar (22/11/2026). Sin ✎:
+                                    cada quien edita sus datos en Mi perfil. La papelera sale apagada con su
+                                    motivo en la cuenta propia y en quien registró consultas clínicas.
+                                --}}
+                                @php
+                                    $motivoNoEliminar = match (true) {
+                                        $usuario->is(auth()->user()) => 'Es tu cuenta: no puedes eliminarla.',
+                                        $usuario->consultas_registradas_count > 0 => 'Registró '.$usuario->consultas_registradas_count.' '.($usuario->consultas_registradas_count === 1 ? 'consulta clínica' : 'consultas clínicas').'; eliminarlo las borraría del historial. Desactívalo para conservarlas.',
+                                        default => null,
+                                    };
+                                @endphp
+                                <x-admin.acciones-fila :eliminar="route('admin.usuarios.destroy', $usuario)" :bloqueo-eliminar="$motivoNoEliminar"
+                                                       confirmar-titulo="¿Eliminar a {{ $usuario->nombre }} {{ $usuario->apellido }}?" que="el usuario" :nombre="$usuario->nombre.' '.$usuario->apellido" />
                             </td>
                         </tr>
                     @empty

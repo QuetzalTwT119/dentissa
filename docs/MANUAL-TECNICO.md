@@ -1381,6 +1381,11 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Usuarios: crear, desactivar y eliminar (H-57, 22/11/2026).** `Route::resource('usuarios')->only([index,
+  create, store, destroy])` + `usuarios.activo.toggle`; ya no hay `edit`/`update` (las reglas de rol de
+  H-55 quedan sin camino para romperse). `destroy()` rechaza la cuenta propia (422) y a quien tenga
+  `consultasRegistradas` (`User::hasMany(HistorialClinico, id_doctor)`), porque `historial_clinico.id_doctor`
+  tiene `cascadeOnDelete`. Bitácora: `usuario.eliminado`; `logs_auditoria` conserva el nombre (`actor_nombre`).
 - **Contraseñas y cuenta propia (H-56, 22/11/2026).** `x-campo-contrasena` (input con 👁) y
   `x-contrasena-nueva` (par nueva/confirmar con Alpine `nueva`/`confirmar`, requisitos y aviso en
   vivo; props `prefijo`, `errores`, `requerida`, `etiqueta`, `ayuda`). Usar estas piezas en
