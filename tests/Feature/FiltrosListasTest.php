@@ -40,9 +40,42 @@ class FiltrosListasTest extends TestCase
     {
         // Notificaciones también (22/11/2026: antes usaba pestañas en lugar del menú).
         $this->assertStringNotContainsString('aria-label="Filtrar notificaciones" class="flex', $this->ver('notificaciones.index'));
-        foreach (['notificaciones.index', 'admin.ofertas.index', 'admin.tratamientos.index', 'admin.preguntas-frecuentes.index', 'admin.casos.index', 'admin.galeria.index'] as $ruta) {
+        foreach (['notificaciones.index', 'admin.ofertas.index', 'admin.tratamientos.index', 'admin.preguntas-frecuentes.index', 'admin.casos.index', 'admin.galeria.index', 'admin.servicios.index'] as $ruta) {
             $this->assertStringContainsString('data-filtro-barra', $this->ver($ruta), $ruta);
         }
+    }
+
+    /**
+     * Servicios (22/11/2026): no tenía el filtro global. Con filtro, la posición
+     * es la real del carrusel y las flechas no aparecen (moverían junto a un
+     * servicio oculto).
+     */
+    public function test_servicios_se_filtran_sin_perder_su_posicion_real(): void
+    {
+        Servicio::create(['nombre' => 'Odontología General', 'activo' => true, 'orden' => 1]);
+        Servicio::create(['nombre' => 'Ortodoncia', 'activo' => false, 'orden' => 2]);
+        Servicio::create(['nombre' => 'Estética 100%', 'activo' => true, 'orden' => 3]);
+
+        $html = $this->ver('admin.servicios.index', ['buscar' => 'orto']);
+        $this->assertStringContainsString('Ortodoncia', $html);
+        $this->assertStringNotContainsString('Odontología General', $html);
+        $this->assertStringContainsString('data-posicion-servicio="2"', $html);
+        $this->assertStringContainsString('Para cambiar el orden, quita el filtro', $html);
+        $this->assertStringNotContainsString('Subir «Ortodoncia»', $html);
+
+        $html = $this->ver('admin.servicios.index', ['activo' => '1']);
+        $this->assertStringContainsString('Estética 100%', $html);
+        $this->assertStringNotContainsString('Ortodoncia', $html);
+        $this->assertStringContainsString('data-posicion-servicio="3"', $html);
+
+        $this->assertStringContainsString('Estética 100%', $this->ver('admin.servicios.index', ['buscar' => '%']));
+        $this->assertStringNotContainsString('Ortodoncia', $this->ver('admin.servicios.index', ['buscar' => '%']));
+        $this->assertStringContainsString('No hay servicios con esos criterios', $this->ver('admin.servicios.index', ['buscar' => 'nada así']));
+
+        // Valor inválido: se ignora y sin filtro vuelven las flechas.
+        $html = $this->ver('admin.servicios.index', ['activo' => 'x']);
+        $this->assertStringContainsString('Subir «Ortodoncia»', $html);
+        $this->assertStringContainsString('Odontología General', $html);
     }
 
     public function test_ofertas_se_filtran_por_texto_estado_y_tratamiento(): void

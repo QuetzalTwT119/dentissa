@@ -14,6 +14,12 @@
             <x-admin.card>
 
                 <x-pagination-summary :items="$servicios" label="servicios">
+                    <x-slot:filtros>
+                        <x-filtro.barra :action="route('admin.servicios.index')" :campos="['buscar', 'activo']">
+                            <x-filtro.buscar name="buscar" etiqueta="Buscar servicios" placeholder="Nombre del servicio…" />
+                            <x-filtro.select name="activo" etiqueta="Filtrar por estado" todos="Todos los estados" :opciones="['1' => 'Activos', '0' => 'Inactivos']" />
+                        </x-filtro.barra>
+                    </x-slot:filtros>
                     <x-slot:acciones>
                         <a href="{{ route('admin.servicios.create') }}" class="btn-brand min-h-11 px-5">
                             <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
@@ -36,14 +42,20 @@
                         <tr class="transition hover:bg-cream/60">
                             <td class="px-6 py-4 font-semibold text-ink whitespace-nowrap">{{ $servicio->nombre }}</td>
                             @php
-                                $posicion = $servicios->firstItem() + $loop->index;
+                                // Posición real en el carrusel, aunque la lista esté filtrada.
+                                $posicion = $posiciones[$servicio->id];
                                 $esPrimero = $posicion === 1;
-                                $esUltimo = $posicion === $servicios->total();
+                                $esUltimo = $posicion === $totalServicios;
                             @endphp
                             {{-- Las flechas intercambian el servicio con su vecino (ServicioController@mover). --}}
                             <td class="px-6 py-4 whitespace-nowrap" data-posicion-servicio="{{ $posicion }}">
                                 <div class="flex items-center gap-3">
                                     <span class="grid h-7 w-7 place-items-center rounded-full bg-brand-50 text-xs font-semibold tabular-nums text-brand-700">{{ $posicion }}</span>
+                                    {{-- Con filtro, el vecino de la lista no es el del carrusel: las flechas
+                                         moverían junto a uno oculto. Se ordena con la lista completa. --}}
+                                    @if ($filtrando)
+                                    <x-ayuda etiqueta="Orden con filtro">Para cambiar el orden, quita el filtro: las flechas mueven el servicio junto a su vecino en la lista completa.</x-ayuda>
+                                    @else
                                     <div class="inline-flex items-center rounded-full border border-line bg-white p-0.5 shadow-2xs">
                                     <x-admin.boton-fila :action="route('admin.servicios.mover', [$servicio, 'arriba'])" color="muted" :deshabilitado="$esPrimero"
                                                         :etiqueta="'Subir «'.$servicio->nombre.'» un lugar'"
@@ -61,6 +73,7 @@
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                                     </x-admin.boton-fila>
                                     </div>
+                                    @endif
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-center whitespace-nowrap">
@@ -80,8 +93,8 @@
                     @empty
                         <x-admin.empty-state
                             cols="5"
-                            title="No hay servicios registrados todavía"
-                            description="Comienza agregando las áreas de atención y especialidades que ofrece Dentissa."
+                            :title="$filtrando ? 'No hay servicios con esos criterios' : 'No hay servicios registrados todavía'"
+                            :description="$filtrando ? 'Cambia la búsqueda o el estado para ver otros servicios.' : 'Comienza agregando las áreas de atención y especialidades que ofrece Dentissa.'"
                         />
                     @endforelse
                 </x-admin.table>

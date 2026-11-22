@@ -372,7 +372,9 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
   el nombre, la descripción, la foto (con vista previa de la tarjeta) y **qué
   tratamientos se pueden agendar**. El interruptor **Visible en la portada**
   oculta o muestra la especialidad. El orden del carrusel se acomoda con las
-  flechas ↑ ↓ de la lista.
+  flechas ↑ ↓ de la lista. La lista se puede buscar por nombre y filtrar por
+  activos o inactivos; mientras haya un filtro, el número sigue siendo su lugar
+  real en el carrusel y, para cambiar el orden, hay que quitar el filtro.
 - **Tratamientos**: el formulario pide **Nombre**, **Duración** (cuánto ocupa en
   la agenda) y **Precio** (el paciente lo ve al agendar). Se puede guardar sin
   precio mientras la clínica lo confirma, pero **no se publica** hasta tenerlo. A la

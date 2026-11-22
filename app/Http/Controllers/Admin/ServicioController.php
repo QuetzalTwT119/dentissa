@@ -18,9 +18,27 @@ class ServicioController extends Controller
 {
     public function index(Request $request): View
     {
+        // Filtro global (22/11/2026), igual que Tratamientos. Antes no lo tenía
+        // por ser pocos y ordenarse a mano; ahora el orden se respeta aparte.
+        $filtros = $this->filtros($request, [
+            'buscar' => ['nullable', 'string', 'max:100'],
+            'activo' => ['nullable', 'in:1,0'],
+        ]);
+
+        // Posición REAL en el carrusel (no la de la lista filtrada).
+        $orden = Servicio::orderBy('orden')->orderBy('id')->pluck('id');
+
         return view('admin.servicios.index', [
             // citas_activas: con alguna, no se puede eliminar (22/11/2026, la lista lo dice).
-            'servicios' => Servicio::withCount(['tratamientos', 'citas as citas_activas' => fn ($c) => $c->whereNotIn('estado', [\App\Enums\EstadoCita::Cancelada, \App\Enums\EstadoCita::Completada, \App\Enums\EstadoCita::NoAsistio])])->orderBy('orden')->orderBy('id')->paginate($this->paginationPageSize($request)),
+            'servicios' => Servicio::withCount(['tratamientos', 'citas as citas_activas' => fn ($c) => $c->whereNotIn('estado', [\App\Enums\EstadoCita::Cancelada, \App\Enums\EstadoCita::Completada, \App\Enums\EstadoCita::NoAsistio])])
+                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->whereContiene('nombre', $texto))
+                ->when(isset($filtros['activo']), fn ($q) => $q->where('activo', $filtros['activo'] === '1'))
+                ->orderBy('orden')->orderBy('id')
+                ->paginate($this->paginationPageSize($request))
+                ->withQueryString(),
+            'posiciones' => $orden->flip()->map(fn ($i) => $i + 1)->all(),
+            'totalServicios' => $orden->count(),
+            'filtrando' => filled($filtros['buscar'] ?? null) || isset($filtros['activo']),
         ]);
     }
 

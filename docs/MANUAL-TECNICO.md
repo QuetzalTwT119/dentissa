@@ -1381,6 +1381,9 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Servicios con filtro global (H-45, 22/11/2026).** `buscar` y `activo` como
+  Tratamientos. La vista recibe `posiciones` (id → lugar real en el carrusel) y
+  `totalServicios`; con `filtrando` no se muestran las flechas de `servicios.mover`.
 - **"Auditoría" se llama "Control de actividades" (22/11/2026).** Solo cambia lo
   que ve el usuario (menú, título, mensajes y manual de usuario); el nombre de
   ruta `admin.auditoria.index`, la tabla `logs_auditoria` y `AuditoriaService` siguen igual.
