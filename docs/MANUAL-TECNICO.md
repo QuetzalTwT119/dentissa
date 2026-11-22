@@ -339,6 +339,9 @@ Revisa ambos jobs en la pestaña **Actions** antes de integrar un pull request.
 
 ## 8. Capas principales
 
+El árbol completo de carpetas y el de pantallas por rol están en
+[`docs/ARBOL-DEL-PROYECTO.md`](ARBOL-DEL-PROYECTO.md).
+
 - **Rutas:** definen URLs públicas, autenticadas y administrativas.
 - **Controladores:** validan la entrada y coordinan el caso de uso.
 - **Modelos:** representan usuarios, pacientes, servicios, tratamientos,
@@ -354,10 +357,11 @@ apellido, correo o teléfono. El campo tiene una etiqueta accesible y se adapta
 al ancho disponible; la tabla mantiene su ancho legible y permite
 desplazamiento horizontal en pantallas estrechas.
 
-La edición administrativa permite actualizar nombre, apellido, teléfono, correo,
-identificadores oficiales y tutor/responsable. Nombre y apellido son obligatorios;
-correo es opcional y único entre pacientes. El teléfono opcional valida diez
-dígitos y admite separadores visuales y el prefijo mexicano `+52`. El registro
+La edición administrativa permite actualizar nombre, apellido, teléfono celular y
+correo (desde H-61, 22/11/2026, ya no CURP, RFC, clave de elector ni tutor; lo guardado
+antes se conserva en la base). Nombre, apellido y teléfono son obligatorios; el correo
+es opcional y único entre pacientes. El teléfono valida diez dígitos y admite
+separadores visuales y el prefijo mexicano `+52`. El registro
 de auditoría conserva solo los nombres de los campos modificados, no los valores
 de correo o teléfono.
 
