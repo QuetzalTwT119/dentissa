@@ -183,4 +183,68 @@ class OfertasEnCitasTest extends TestCase
             ->assertSessionHasNoErrors();
         $this->assertSame('−$300', $vieja->fresh()->etiquetaBeneficio());
     }
+
+    /**
+     * QA con 21 ofertas (22/11/2026): con varias ofertas del mismo tratamiento la
+     * agenda solo recibía la que vence primero y, con una fecha posterior, decía
+     * "ya no aplica" aunque al guardar se aplicara otra. Ahora recibe todas.
+     */
+    public function test_la_agenda_recibe_todas_las_ofertas_del_tratamiento_y_coincide_con_lo_que_se_guarda(): void
+    {
+        $this->oferta(['titulo' => 'Limpieza que vence hoy', 'fecha_fin' => now()->toDateString(), 'cupo_total' => 0]);
+        $larga = $this->oferta(['titulo' => 'Limpieza para estudiantes', 'valor_descuento' => 20, 'fecha_fin' => now()->addMonths(2)->toDateString(), 'cupo_total' => 0]);
+
+        $this->get(route('citas.publica.create'))->assertOk()
+            ->assertSee('Limpieza que vence hoy')
+            ->assertSee('Limpieza para estudiantes')
+            ->assertSee('lista.find(o => this.fecha <= o.hasta)', false);
+
+        // Con una cita después de hoy, el servidor aplica la que sigue vigente.
+        $despues = now()->addWeek();
+        while ($despues->isSunday()) {
+            $despues->addDay();
+        }
+        $this->agendar('09:00', $despues)->assertSessionHasNoErrors();
+        $this->assertSame($larga->id, Cita::latest('id')->first()->id_oferta);
+    }
+
+    /** QA: la portada mostraba menos del máximo si una de las primeras estaba agotada, y "ya se ve" no siempre era cierto. */
+    public function test_la_portada_muestra_hasta_12_disponibles_y_el_mensaje_no_promete_de_mas(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        // La que vence primero está agotada: no debe "ocupar" uno de los 12 lugares.
+        $agotada = $this->oferta(['titulo' => 'Agotada', 'cupo_total' => 1, 'fecha_fin' => now()->addDay()->toDateString()]);
+        Cita::create(['id_paciente' => \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'López', 'telefono' => '5550001111'])->id,
+            'id_servicio' => $this->servicio->id, 'id_tratamiento' => $this->tratamiento->id, 'id_oferta' => $agotada->id,
+            'fecha_hora' => $this->fecha->copy()->setTime(9, 0), 'duracion_estimada' => 30, 'estado' => EstadoCita::Confirmada]);
+        foreach (range(1, Oferta::MAXIMO_PORTADA) as $n) {
+            $this->oferta(['titulo' => "Oferta número {$n}", 'cupo_total' => 0, 'fecha_fin' => now()->addDays(10 + $n)->toDateString()]);
+        }
+
+        $html = $this->get('/')->assertOk()->getContent();
+        $this->assertSame(Oferta::MAXIMO_PORTADA, substr_count($html, 'data-oferta-publica'));
+        // Carrusel global (como Especialidades y Testimonios) y descripción completa, sin cortar.
+        $this->assertStringContainsString('data-carrusel-ofertas', $html);
+        $this->assertStringNotContainsString('line-clamp-2 text-sm text-muted', $html);
+        $this->assertStringNotContainsString('>Agotada<', $html);
+
+        // Una más (vence al último) se publica, pero no cabe: el mensaje lo dice.
+        $ultima = $this->oferta(['titulo' => 'La que vence al último', 'cupo_total' => 0, 'fecha_fin' => now()->addYear()->toDateString(), 'estado' => 'pendiente']);
+        $this->actingAs($admin)->patch(route('admin.ofertas.publicar', $ultima))
+            ->assertSessionHas('success', fn ($m) => str_contains($m, 'La portada muestra las '.Oferta::MAXIMO_PORTADA.' que vencen primero'));
+    }
+
+    /** QA: 100 % salía "−100%" en la portada; el tratamiento inactivo no decía por qué. */
+    public function test_cien_por_ciento_es_gratis_y_el_tratamiento_inactivo_se_explica(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $inactivo = Tratamiento::create(['nombre' => 'Carillas', 'duracion_estimada' => 60, 'categoria' => 'Estética', 'activo' => false]);
+        $base = ['titulo' => 'Prueba de oferta', 'descripcion' => 'Válida para pacientes nuevos y de siempre.', 'beneficio' => 'descuento', 'unidad' => 'porcentaje', 'fecha_fin' => now()->addWeek()->toDateString()];
+
+        $this->actingAs($admin)->post(route('admin.ofertas.store'), $base + ['cantidad' => 100])
+            ->assertSessionHasErrors(['cantidad' => 'Un descuento de 100 % es gratis: elige «Gratis».']);
+        $this->actingAs($admin)->post(route('admin.ofertas.store'), $base + ['cantidad' => 10, 'id_tratamiento' => $inactivo->id])
+            ->assertSessionHasErrors(['id_tratamiento' => 'Ese tratamiento ya no se agenda en línea (está inactivo). Elige otro o actívalo en Catálogo.']);
+        $this->assertSame(0, Oferta::count());
+    }
 }

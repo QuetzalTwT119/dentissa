@@ -106,11 +106,14 @@ class CitaPublicaController extends Controller
     }
 
     /**
-     * Oferta publicada y con lugar de cada tratamiento (21/11/2026), para avisar
-     * al paciente al elegirlo. La que vence primero si hay varias. El servidor
-     * vuelve a revisarla al guardar la cita (CrearCitaService).
+     * Ofertas publicadas y con lugar de cada tratamiento, de la que vence
+     * primero a la última, para avisar al paciente al elegirlo. La pantalla
+     * muestra la primera que sigue vigente en la fecha elegida: la misma regla
+     * que Oferta::aplicableA() usa al guardar la cita (22/11/2026; antes se
+     * mandaba solo la primera y, con una fecha posterior, la pantalla decía
+     * "ya no aplica" aunque al guardar se aplicara otra).
      *
-     * @return array<int, array{titulo: string, etiqueta: string, hasta: string, hasta_legible: string}>
+     * @return array<int, list<array{titulo: string, etiqueta: string, hasta: string, hasta_legible: string}>>
      */
     private function ofertasPorTratamiento(): array
     {
@@ -120,13 +123,13 @@ class CitaPublicaController extends Controller
             ->orderBy('fecha_fin')
             ->get()
             ->reject(fn (Oferta $oferta) => $oferta->lugaresQuedan() === 0)
-            ->unique('id_tratamiento')
-            ->mapWithKeys(fn (Oferta $oferta) => [$oferta->id_tratamiento => [
+            ->groupBy('id_tratamiento')
+            ->map(fn ($ofertas) => $ofertas->map(fn (Oferta $oferta) => [
                 'titulo' => $oferta->titulo,
                 'etiqueta' => $oferta->etiquetaBeneficio(),
                 'hasta' => $oferta->fecha_fin->toDateString(),
                 'hasta_legible' => $oferta->fecha_fin->locale('es')->translatedFormat('j \d\e F'),
-            ]])
+            ])->values()->all())
             ->all();
     }
 }

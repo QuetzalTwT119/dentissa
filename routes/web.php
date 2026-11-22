@@ -141,14 +141,7 @@ Route::get('/', function () {
             ->orderBy('id')
             ->get(),
         // Publicadas, con tratamiento agendable y con lugar (las agotadas ya no se anuncian).
-        'ofertas' => Oferta::with('tratamiento:id,nombre')
-            ->publicadas()
-            ->conLugaresUsados()
-            ->orderBy('fecha_fin')
-            ->take(12)
-            ->get()
-            ->reject(fn (Oferta $oferta) => $oferta->lugaresQuedan() === 0)
-            ->values(),
+        'ofertas' => Oferta::paraPortada(),
         'testimonios' => Testimonio::with('paciente:id,nombre,apellido')
             ->where('estado', 'aprobado')
             ->orderByDesc('fecha_publicacion')

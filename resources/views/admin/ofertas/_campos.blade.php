@@ -66,7 +66,7 @@ $abrirDetalles = $errors->hasAny(['cupo_total', 'imagen'])
                 <div class="relative mt-1.5">
                     <span x-show="beneficio === 'precio' || unidad === 'monto'" class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm text-muted" aria-hidden="true">$</span>
                     <x-text-input id="cantidad" name="cantidad" type="number" step="0.01" min="1"
-                                  x-bind:max="beneficio === 'descuento' && unidad === 'porcentaje' ? 100 : 999999"
+                                  x-bind:max="beneficio === 'descuento' && unidad === 'porcentaje' ? 99 : 999999"
                                   class="block w-full" x-bind:class="beneficio === 'precio' || unidad === 'monto' ? 'pl-7' : 'pr-9'" :value="$cantidad" required />
                     <span x-show="beneficio === 'descuento' && unidad === 'porcentaje'" class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm text-muted" aria-hidden="true">%</span>
                 </div>

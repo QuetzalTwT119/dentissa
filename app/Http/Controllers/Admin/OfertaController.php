@@ -111,7 +111,13 @@ class OfertaController extends Controller
 
         $auditoria->registrarCambio($request, 'oferta.publicada', $oferta, ['estado'], fn () => $oferta->update(['estado' => EstadoOferta::Activa]));
 
-        return Redirect::route('admin.ofertas.index')->with('success', "Oferta «{$oferta->titulo}» publicada: ya se ve en la portada.");
+        // La portada muestra solo las que vencen primero (Oferta::MAXIMO_PORTADA):
+        // el mensaje no promete lo que no pasa (22/11/2026).
+        $enPortada = Oferta::paraPortada()->contains('id', $oferta->id);
+
+        return Redirect::route('admin.ofertas.index')->with('success', $enPortada
+            ? "Oferta «{$oferta->titulo}» publicada: ya se ve en la portada."
+            : "Oferta «{$oferta->titulo}» publicada. La portada muestra las ".Oferta::MAXIMO_PORTADA.' que vencen primero; esta aparecerá cuando alguna termine o se oculte.');
     }
 
     public function ocultar(Request $request, Oferta $oferta, AuditoriaService $auditoria): RedirectResponse
@@ -169,12 +175,15 @@ class OfertaController extends Controller
             // Descuento solo en % (21/11/2026); $ solo para conservar una oferta vieja que ya lo usaba.
             'unidad' => ['exclude_unless:beneficio,descuento', 'required', Rule::in($oferta?->beneficio() === 'monto' ? ['porcentaje', 'monto'] : ['porcentaje'])],
             'cantidad' => ['exclude_if:beneficio,gratis', 'required', 'numeric', 'min:1',
-                ...($esPorcentaje ? ['max:100'] : ['max:999999'])],
+                // 100 % es "Gratis": así la portada dice Gratis y no "−100%" (22/11/2026).
+                ...($esPorcentaje ? ['max:99'] : ['max:999999'])],
             'fecha_fin' => ['required', 'date', 'after_or_equal:today'],
             'cupo_total' => ['nullable', 'integer', 'min:0', 'max:9999'],
             'imagen' => ['nullable', 'image', 'max:2048'],
         ], [
             'beneficio.required' => 'Elige el beneficio para el paciente.',
+            'cantidad.max' => $esPorcentaje ? 'Un descuento de 100 % es gratis: elige «Gratis».' : 'La cantidad es demasiado grande.',
+            'id_tratamiento.in' => 'Ese tratamiento ya no se agenda en línea (está inactivo). Elige otro o actívalo en Catálogo.',
             'fecha_fin.after_or_equal' => '«Válida hasta» no puede ser una fecha pasada.',
         ], [
             'titulo' => 'título',
