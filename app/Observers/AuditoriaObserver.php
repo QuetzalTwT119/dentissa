@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\LogAuditoria;
+use App\Support\BitacoraPendiente;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,8 +37,16 @@ class AuditoriaObserver
             return;
         }
 
-        LogAuditoria::query()->create([
-            'id_usuario' => Auth::id(),
+        $usuario = Auth::user();
+
+        // Pendiente: se escribe al terminar la petición solo si este cambio no
+        // tuvo ya su evento con detalle (BitacoraPendiente, 22/11/2026). Ahora
+        // también guarda quién y con qué rol (antes salía "Personal").
+        app(BitacoraPendiente::class)->agregar([
+            'id_usuario' => $usuario->getKey(),
+            'actor_user_id' => $usuario->getKey(),
+            'actor_nombre' => trim($usuario->nombre.' '.$usuario->apellido),
+            'actor_rol' => $usuario->rol?->value,
             'accion' => $accion,
             'tabla' => $model->getTable(),
             'registro_id' => $model->getKey(),

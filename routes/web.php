@@ -214,7 +214,10 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
+    // 22/11/2026: "Auditoría" se llama "Control de actividades"; la dirección de antes redirige.
+    Route::get('control-de-actividades', [AuditoriaController::class, 'index'])->name('auditoria.index');
+    // Conserva los filtros (?accion=…) de un enlace guardado.
+    Route::get('auditoria', fn (\Illuminate\Http\Request $request) => redirect()->route('admin.auditoria.index', $request->query(), 301));
     Route::patch('servicios/{servicio}/tratamientos', [ServicioController::class, 'syncTratamientos'])->name('servicios.tratamientos.sync');
     Route::patch('servicios/{servicio}/mover/{direccion}', [ServicioController::class, 'mover'])
         ->whereIn('direccion', ['arriba', 'abajo'])->name('servicios.mover');

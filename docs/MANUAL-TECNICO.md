@@ -1382,8 +1382,19 @@ administrador y el asistente gestionan los demás cambios desde el panel
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
 - **"Auditoría" se llama "Control de actividades" (22/11/2026).** Solo cambia lo
-  que ve el usuario (menú, título, mensajes y manual de usuario); la ruta
-  `admin.auditoria.index`, la tabla `logs_auditoria` y `AuditoriaService` siguen igual.
+  que ve el usuario (menú, título, mensajes y manual de usuario); el nombre de
+  ruta `admin.auditoria.index`, la tabla `logs_auditoria` y `AuditoriaService` siguen igual.
+  La dirección sí cambió (H-43): `/admin/control-de-actividades`; `/admin/auditoria`
+  redirige con 301 conservando los filtros de la consulta.
+- **Control de actividades sin duplicados y con la hora correcta (H-43, 22/11/2026).**
+  `AuditoriaObserver` ya no escribe al momento: deja su evento genérico en
+  `App\Support\BitacoraPendiente` (singleton `scoped`, uno por petición) y se escribe
+  en `terminating()` solo si ese `tabla#id` no tuvo evento con detalle de
+  `AuditoriaService` (que llama `marcarDetallado()`). El observador ahora guarda
+  también nombre y rol de quien hizo el cambio. `AuditoriaService` pone `fecha = now()`:
+  antes la ponía MySQL en hora universal y se veía 6 horas adelantado. La migración
+  `2026_11_22_000002_corregir_hora_y_duplicados_de_la_bitacora` (solo MySQL) corrige la
+  hora del historial y borra los genéricos duplicados (en local: 374 → 218 registros).
 - **Configuración en una sola página (22/11/2026).** `GET admin.configuracion`
   (`ConfiguracionController`) muestra `admin/configuracion/_consultorio` y
   `_horarios`, cada uno con su `<form>`; las rutas `admin.horarios.edit` y

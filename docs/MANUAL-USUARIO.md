@@ -648,6 +648,11 @@ campos cambiaron, pero no copia sus valores de teléfono o correo. Las consultas
 descargas y acciones de pacientes
 no se consideran cambios del personal.
 
+Cada cambio aparece **una sola vez**, con la hora de México y el nombre y rol
+de quien lo hizo. La dirección de la página es
+`/admin/control-de-actividades`; si tienes guardada la anterior (`/admin/auditoria`),
+te lleva sola a la nueva.
+
 ## 11. Notificaciones internas
 
 Administradores y asistentes pueden abrir **Notificaciones** desde el ícono de

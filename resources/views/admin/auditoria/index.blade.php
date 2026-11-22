@@ -57,6 +57,12 @@ $etiquetasAccion = [
     'mensaje.marco_leido' => 'Mensaje marcado como leído',
     'mensaje.marco_no_leido' => 'Mensaje marcado como no leído',
     'mensaje.eliminado' => 'Mensaje de contacto eliminado',
+    'servicio.reordenado' => 'Servicios reordenados',
+    'tratamiento.estado_cambiado' => 'Tratamiento activado o desactivado',
+    // Eventos sin detalle del observador (cambios que no pasan por AuditoriaService).
+    'creado' => 'Registro creado',
+    'actualizado' => 'Registro actualizado',
+    'eliminado' => 'Registro eliminado',
 ];
 $etiquetasTabla = [
     'citas' => 'Cita',

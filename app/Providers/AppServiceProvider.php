@@ -35,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Una bitácora pendiente por petición; se escribe al terminar (BitacoraPendiente).
+        $this->app->scoped(\App\Support\BitacoraPendiente::class);
+        $this->app->terminating(fn () => $this->app->make(\App\Support\BitacoraPendiente::class)->escribir());
+
         // Destino de los respaldos cifrados. Las pruebas lo cambian por uno en memoria.
         $this->app->bind(DestinoRespaldo::class, GoogleDriveDestino::class);
     }
