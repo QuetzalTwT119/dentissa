@@ -1381,6 +1381,11 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Contraseñas y cuenta propia (H-56, 22/11/2026).** `x-campo-contrasena` (input con 👁) y
+  `x-contrasena-nueva` (par nueva/confirmar con Alpine `nueva`/`confirmar`, requisitos y aviso en
+  vivo; props `prefijo`, `errores`, `requerida`, `etiqueta`, `ayuda`). Usar estas piezas en
+  cualquier formulario nuevo de contraseña. `UsuarioController::edit()` de la cuenta propia
+  redirige a `profile.edit`; la lista no muestra ✎ en esa fila.
 - **Rol propio y último administrador (H-55, 22/11/2026).** `UsuarioController::update()` rechaza
   (`ValidationException` en `rol`) cambiar el rol de la cuenta con sesión y degradar al último
   administrador activo; la vista de la cuenta propia muestra el rol sin `<select>`. Mismo

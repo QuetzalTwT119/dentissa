@@ -60,27 +60,14 @@
                         <x-input-error :messages="$errors->get('rol')" class="mt-2" />
                     </div>
 
-                    <div class="relative py-2">
-                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                            <div class="w-full border-t border-line"></div>
-                        </div>
-                        <div class="relative flex justify-start">
-                            <span class="bg-white pr-3 text-xs font-semibold uppercase tracking-label text-muted">Cambio de contraseña (opcional)</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <x-input-label for="password" value="Nueva contraseña" />
-                        <p class="mb-1 text-xs text-muted">Déjalo en blanco para mantener la contraseña actual.</p>
-                        <x-text-input id="password" name="password" type="password" class="mt-1.5 block w-full" />
-                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                    </div>
-
-                    <div>
-                        <x-input-label for="password_confirmation" value="Confirmar contraseña" />
-                        <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="mt-1.5 block w-full" />
-                        <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-                    </div>
+                    {{--
+                        Contraseña en su propio renglón, de lado a lado (22/11/2026): antes el
+                        título quedaba a la derecha junto a "Rol" y los campos abajo, desalineados.
+                    --}}
+                    <section class="border-t border-line pt-5 sm:col-span-2" aria-labelledby="titulo-contrasena" data-seccion-contrasena>
+                        <h2 id="titulo-contrasena" class="font-sans text-xs font-semibold uppercase tracking-label text-muted">Cambiar contraseña (opcional)</h2>
+                        <x-contrasena-nueva class="mt-3" ayuda="Déjalo en blanco para mantener la contraseña actual." />
+                    </section>
 
                     <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button>Guardar cambios</x-primary-button>

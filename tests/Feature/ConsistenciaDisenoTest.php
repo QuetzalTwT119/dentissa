@@ -224,7 +224,8 @@ class ConsistenciaDisenoTest extends TestCase
         $paginas = [
             ...array_map(fn ($ruta) => route($ruta), array_diff(self::FORMULARIOS, ['notificaciones.index'])),
             route('admin.servicios.edit', $servicio),
-            route('admin.usuarios.edit', $admin),
+            // La cuenta propia lleva a Mi perfil (H-56): se revisa la de otra persona.
+            route('admin.usuarios.edit', User::factory()->create(['rol' => RolUsuario::Asistente])),
         ];
 
         foreach ($paginas as $url) {

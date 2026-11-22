@@ -87,7 +87,7 @@ class AccionesPosiblesTest extends TestCase
         $html = $this->actingAs($this->admin)->get(route('admin.usuarios.index'))->assertOk()->getContent();
 
         $this->assertStringContainsString('data-cuenta-propia', $html);
-        $this->assertStringContainsString('No puedes desactivar tu propia cuenta.', $html);
+        $this->assertStringContainsString('No puedes desactivarla ni cambiar tu rol', $html);
         $this->assertStringNotContainsString('action="'.route('admin.usuarios.activo.toggle', $this->admin).'"', $html);
         $this->assertStringContainsString('action="'.route('admin.usuarios.activo.toggle', $otro).'"', $html);
         // Botón redondo global (x-admin.boton-fila), no el cuadrado de antes.

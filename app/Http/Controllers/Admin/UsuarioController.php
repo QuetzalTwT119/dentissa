@@ -76,8 +76,14 @@ class UsuarioController extends Controller
         return Redirect::route('admin.usuarios.index')->with('success', "Usuario {$request->input('nombre')} {$request->input('apellido')} creado.");
     }
 
-    public function edit(User $usuario): View
+    public function edit(Request $request, User $usuario): View|RedirectResponse
     {
+        // Tu propia cuenta se edita en Mi perfil (22/11/2026): aquí eran dos caminos
+        // para lo mismo y por aquí se cambió el propio rol sin querer.
+        if ($usuario->is($request->user())) {
+            return Redirect::route('profile.edit')->with('success', 'Tu cuenta se edita aquí, en Mi perfil.');
+        }
+
         return view('admin.usuarios.edit', [
             'usuario' => $usuario,
         ]);

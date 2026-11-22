@@ -607,7 +607,10 @@ segura y guarda. El correo debe ser único. También puedes cambiar el rol de un
 cuenta existente desde **Editar**; conserva tu cuenta actual hasta confirmar
 que puedes iniciar sesión con la nueva. **Tu propio rol no se puede cambiar** (otro
 administrador puede hacerlo), y el sistema no deja quitarle el rol al último
-administrador activo, para que la clínica nunca se quede sin quien administre el panel.
+administrador activo, para que la clínica nunca se quede sin quien administre el panel. Tu
+propia cuenta no se edita en Usuarios sino en **Mi perfil**. Al escribir una contraseña nueva,
+el 👁 muestra lo que escribiste y, debajo de **Confirmar**, el sistema te dice al momento si
+las dos coinciden.
 
 ### Seguridad de la cuenta
 

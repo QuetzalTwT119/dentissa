@@ -74,14 +74,15 @@ $rolClase = [
                                                             desactivar="No podrá iniciar sesión hasta que lo vuelvas a activar." activar="Podrá volver a iniciar sesión con su contraseña.">
                                     @if ($usuario->is(auth()->user()))
                                         <x-slot:bloqueo>
-                                            <span data-cuenta-propia><x-ayuda tono="info" etiqueta="Es tu cuenta">No puedes desactivar tu propia cuenta. Otro administrador puede hacerlo.</x-ayuda></span>
+                                            <span data-cuenta-propia><x-ayuda tono="info" etiqueta="Es tu cuenta">No puedes desactivarla ni cambiar tu rol (otro administrador puede hacerlo). Tus datos y tu contraseña se editan en Mi perfil.</x-ayuda></span>
                                         </x-slot:bloqueo>
                                     @endif
                                 </x-admin.interruptor-estado>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 {{-- Activar/desactivar vive en la columna Estado (interruptor global). --}}
-                                <x-admin.acciones-fila :editar="route('admin.usuarios.edit', $usuario)" que="el usuario" :nombre="$usuario->nombre.' '.$usuario->apellido" />
+                                {{-- Tu propia cuenta no se edita aquí sino en Mi perfil (22/11/2026). --}}
+                                <x-admin.acciones-fila :editar="$usuario->is(auth()->user()) ? null : route('admin.usuarios.edit', $usuario)" que="el usuario" :nombre="$usuario->nombre.' '.$usuario->apellido" />
                             </td>
                         </tr>
                     @empty

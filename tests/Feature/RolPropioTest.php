@@ -32,10 +32,13 @@ class RolPropioTest extends TestCase
             ->assertSessionHasErrors(['rol' => 'No puedes cambiar tu propio rol. Otro administrador puede hacerlo.']);
         $this->assertSame(RolUsuario::Admin, $admin->fresh()->rol);
 
-        // En la pantalla no hay menú de rol para la cuenta propia.
-        $this->actingAs($admin)->get(route('admin.usuarios.edit', $admin))->assertOk()
-            ->assertSee('data-rol-propio', false)
-            ->assertDontSee('<select id="rol"', false);
+        // La cuenta propia ya no se edita en Usuarios: lleva a Mi perfil (22/11/2026),
+        // y en la lista no tiene el ✎.
+        $this->actingAs($admin)->get(route('admin.usuarios.edit', $admin))
+            ->assertRedirect(route('profile.edit'))
+            ->assertSessionHas('success', 'Tu cuenta se edita aquí, en Mi perfil.');
+        $this->actingAs($admin)->get(route('admin.usuarios.index'))->assertOk()
+            ->assertDontSee('aria-label="Editar el usuario «'.$admin->nombre.' '.$admin->apellido.'»"', false);
 
         // Guardar sus otros datos sí funciona.
         $this->actingAs($admin)->put(route('admin.usuarios.update', $admin), ['nombre' => 'Melissa'] + $this->datos($admin, 'admin'))
