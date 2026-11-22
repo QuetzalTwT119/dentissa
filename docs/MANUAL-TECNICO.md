@@ -528,6 +528,22 @@ disponible y no envía consultas de prueba a un servicio real.
 
 ## 11. Historial y notificaciones
 
+**Cuestionario de historia clínica (H-63, 22/11/2026).** Tabla `historias_clinicas`, una
+por paciente (`Paciente::historiaClinica()`, `id_paciente` único). Datos generales,
+antecedentes familiares y personales, alergias, medicamentos, embarazo/lactancia (solo
+`sexo = femenino`), antecedentes dentales, hábitos y observaciones. Las listas se guardan
+como JSON con solo las claves marcadas; opciones y nombres en las constantes de
+`App\Models\HistoriaClinica` (agregar una opción no cambia la base). `alertas()` arma el
+aviso rojo (`x-aviso-clinico`): alergias, `RIESGO_PERSONALES`, embarazo y reacción previa a
+la anestesia; sale en el expediente y al crear o editar una consulta.
+`HistoriaClinicaController` (`admin.pacientes.historia.edit/update`, módulo `pacientes` de
+config/permisos.php): el formulario reemplaza la historia completa (campo que no llega =
+vacío) y Control de actividades guarda solo `campos_modificados` (nunca valores de salud).
+El PDF del historial incluye la historia y se puede descargar con historia aunque no haya
+consultas. En la Agenda, una cita **completada** sin consulta muestra "Registrar consulta"
+(abre `historial.create?id_cita=` con la cita y su fecha elegidas). La columna de Pacientes
+se llama "Consultas en expediente". El odontograma queda para una etapa posterior.
+
 Las notificaciones de cita guardan también `id_cita`, lo que permite enlazar
 un aviso con la cita que lo originó sin depender únicamente del texto del
 mensaje.

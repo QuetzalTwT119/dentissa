@@ -224,14 +224,14 @@ class PacienteHistorialTest extends TestCase
         $response
             ->assertOk()
             ->assertSee('Este paciente todavía no tiene consultas registradas.')
-            ->assertSee('El PDF estará disponible cuando registres la primera consulta.')
+            ->assertSee('El PDF estará disponible cuando llenes la historia clínica o registres la primera consulta.')
             ->assertSee('disabled', false)
             ->assertDontSee('href="'.route('admin.pacientes.historial.pdf', $paciente).'"', false);
 
         $this->actingAs($admin)
             ->get(route('admin.pacientes.historial.pdf', $paciente))
             ->assertRedirect(route('admin.pacientes.historial.index', $paciente))
-            ->assertSessionHas('status', 'Aún no hay consultas para generar el PDF.');
+            ->assertSessionHas('status', 'Aún no hay historia clínica ni consultas para generar el PDF.');
     }
 
     public function test_un_asistente_no_puede_acceder_al_modulo_administrativo_de_pacientes(): void

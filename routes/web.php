@@ -4,6 +4,7 @@ use App\Enums\TipoImagen;
 use App\Http\Controllers\Admin\AuditoriaController;
 use App\Http\Controllers\Admin\CasoController;
 use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
+use App\Http\Controllers\Admin\HistoriaClinicaController;
 use App\Http\Controllers\Admin\HistorialClinicoController;
 use App\Http\Controllers\Admin\HorarioController;
 use App\Http\Controllers\Admin\MensajeContactoController as AdminMensajeContactoController;
@@ -235,6 +236,9 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::patch('mensajes/{mensaje}/leido', [AdminMensajeContactoController::class, 'toggleLeido'])->name('mensajes.toggleLeido');
     Route::delete('mensajes/{mensaje}', [AdminMensajeContactoController::class, 'destroy'])->name('mensajes.destroy');
 
+    // Cuestionario de historia clínica (22/11/2026): módulo "pacientes" de config/permisos.php.
+    Route::get('pacientes/{paciente}/historia-clinica', [HistoriaClinicaController::class, 'edit'])->name('pacientes.historia.edit');
+    Route::put('pacientes/{paciente}/historia-clinica', [HistoriaClinicaController::class, 'update'])->name('pacientes.historia.update');
     Route::get('pacientes/{paciente}/historial', [HistorialClinicoController::class, 'index'])->name('pacientes.historial.index');
     Route::get('pacientes/{paciente}/historial/crear', [HistorialClinicoController::class, 'create'])->name('pacientes.historial.create');
     Route::post('pacientes/{paciente}/historial', [HistorialClinicoController::class, 'store'])->name('pacientes.historial.store');

@@ -31,10 +31,12 @@ class HistorialClinicoController extends Controller
         ]);
     }
 
-    public function create(Paciente $paciente): View
+    public function create(Request $request, Paciente $paciente): View
     {
         return view('admin.historial.create', [
             'paciente' => $paciente,
+            // Desde la Agenda ("Registrar consulta"): solo si la cita es de este paciente.
+            'citaElegida' => $request->filled('id_cita') ? $paciente->citas()->find($request->integer('id_cita')) : null,
             'citas' => $paciente->citas()->orderByDesc('fecha_hora')->get(['id', 'fecha_hora']),
         ]);
     }
@@ -153,9 +155,10 @@ class HistorialClinicoController extends Controller
             ->orderByDesc('fecha_consulta')
             ->get();
 
-        if ($consultas->isEmpty()) {
+        // Con historia clínica también hay PDF aunque aún no haya consultas (22/11/2026).
+        if ($consultas->isEmpty() && ! $paciente->historiaClinica) {
             return Redirect::route('admin.pacientes.historial.index', $paciente)
-                ->with('status', 'Aún no hay consultas para generar el PDF.');
+                ->with('status', 'Aún no hay historia clínica ni consultas para generar el PDF.');
         }
 
         $pdf = Pdf::loadView('pdf.historial', [

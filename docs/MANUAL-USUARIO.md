@@ -589,6 +589,19 @@ apoyarse en una respuesta activa, el chat conserva su mensaje de respaldo.
 
 ## 6. Pacientes e historial clínico
 
+**Historia clínica (cuestionario).** Cada paciente tiene una, en su expediente (📋): es la
+primera sección, arriba de las consultas. La primera vez aparece **Llenar cuestionario**;
+después, **Ver o editar**. Incluye datos generales, antecedentes familiares y personales,
+alergias, medicamentos, embarazo y lactancia (solo si el sexo es femenino), antecedentes
+dentales, hábitos y observaciones. **Nada es obligatorio**: se llena lo que se sepa y se
+completa en otra visita. Las alergias y condiciones de riesgo (coagulación, corazón,
+presión alta, diabetes, embarazo…) salen en un **aviso rojo** arriba del expediente y al
+registrar cada consulta, para verlas antes de atender. La historia también sale en el PDF.
+
+**Cita y consulta.** Al completar una cita en la Agenda aparece **Registrar consulta**: abre
+la consulta nueva con esa cita y su fecha ya elegidas. La columna de Pacientes se llama
+"Consultas en expediente" (las notas médicas registradas, no las citas).
+
 Desde `/admin/pacientes`:
 
 1. Buscar por una parte del nombre, correo o teléfono, o seleccionar un paciente de la lista.

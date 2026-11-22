@@ -73,6 +73,7 @@ dentissa/
 │   │   ├── citas-publicas/           Agenda en línea del paciente
 │   │   ├── dashboard.blade.php       Panel de inicio del personal
 │   │   ├── citas/                    Agenda interna (lista y semana)
+│   │   ├── admin/historia-clinica/   Cuestionario de historia clínica del paciente
 │   │   ├── asistente-agenda/         Asistente de agenda
 │   │   ├── admin/                    Una carpeta por sección del panel
 │   │   ├── notificaciones/           Bandeja de avisos
@@ -141,7 +142,8 @@ Panel                                         Módulo               T   D   A
 ├── Gestión ▾
 │   ├── Pacientes  /admin/pacientes            pacientes            ✓   ✓   ✗
 │   │   ├── ✎ Editar paciente
-│   │   └── 📋 Historial clínico: consultas, adjuntos, PDF
+│   │   └── 📋 Historial clínico: historia clínica (cuestionario), consultas,
+│   │       adjuntos, PDF
 │   ├── Usuarios  /admin/usuarios              usuarios             ✓   ✓*  ✗
 │   │   └── Nuevo usuario · Desactivar · Eliminar
 │   ├── Reportes  /admin/reportes (PDF/Excel)  reportes             ✓   ✓   ✗

@@ -44,6 +44,14 @@ class DetalleBitacora
         'variantes' => 'Otras formas de preguntarlo', 'dia_semana' => 'Día', 'abierto' => 'Abre',
         'hora_apertura' => 'Abre a las', 'hora_cierre' => 'Cierra a las', 'capacidad_simultanea' => 'Pacientes a la vez',
         'url' => 'Archivo',
+        // Historia clínica (22/11/2026): solo se registra QUÉ campos cambiaron.
+        'fecha_nacimiento' => 'Fecha de nacimiento', 'sexo' => 'Sexo', 'ocupacion' => 'Ocupación', 'tipo_sangre' => 'Tipo de sangre',
+        'antecedentes_familiares' => 'Antecedentes familiares', 'antecedentes_familiares_notas' => 'Detalles de antecedentes familiares',
+        'antecedentes_personales' => 'Antecedentes personales', 'antecedentes_personales_notas' => 'Detalles de antecedentes personales',
+        'alergias' => 'Alergias', 'alergias_otras' => 'Otras alergias', 'medicamentos_actuales' => 'Medicamentos actuales',
+        'embarazo' => 'Embarazo', 'lactancia' => 'Lactancia', 'antecedentes_dentales' => 'Antecedentes dentales',
+        'ultima_visita_dentista' => 'Última visita al dentista', 'antecedentes_dentales_notas' => 'Detalles dentales',
+        'habitos' => 'Hábitos', 'habitos_notas' => 'Detalles de hábitos', 'observaciones' => 'Observaciones',
     ];
 
     /** El mismo dato se llama distinto según dónde se ve en el panel. */
