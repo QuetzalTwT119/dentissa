@@ -108,7 +108,11 @@ paso a paso" y dos formas de contacto:
   El **pie de página** muestra también el horario de la semana (por ejemplo
   "Lunes a viernes de 8:00 a 18:00 hrs"); los días cerrados no aparecen.
   En **Configuración → Horarios de atención**, "Citas a la vez" es cuántos pacientes se pueden
-  atender a la misma hora (1 si hay un solo sillón o dentista).
+  atender a la misma hora (1 si hay un solo sillón o dentista). Los horarios se ofrecen cada
+  30 minutos y la última cita del día es la que **termina** a la hora de cierre: con cierre a
+  las 18:00, una valoración de 30 min se puede agendar hasta las 17:30 y una limpieza de
+  60 min hasta las 17:00. Los 15 minutos de limpieza de los tratamientos largos o
+  quirúrgicos solo se reservan entre una cita y la siguiente.
 
 Más abajo, **Tratamientos para tu salud y armonía** muestra las especialidades
 activas en una fila de tarjetas con foto:
@@ -251,7 +255,10 @@ El mensaje de WhatsApp trae los mismos tres botones. Al pulsar uno, la cita
 cambia igual que con el correo y el paciente recibe una respuesta en el mismo
 chat: la confirmación o, si pidió reagendar o canceló, el enlace para elegir
 otro horario. Para que funcione, el sistema debe estar en línea y Meta debe
-haber aprobado la plantilla del recordatorio.
+haber aprobado la plantilla del recordatorio. Si el botón ya no se puede aplicar (por
+ejemplo, la cita se borró), el paciente recibe un mensaje que le pide comunicarse con el
+consultorio. Los botones solo funcionan con citas del sistema en línea (Railway): un
+recordatorio de prueba enviado desde una computadora local no cambia la cita local.
 
 El número de WhatsApp de los recordatorios no lo atiende nadie. Si un paciente
 le escribe un mensaje (texto, audio o foto), recibe una respuesta automática

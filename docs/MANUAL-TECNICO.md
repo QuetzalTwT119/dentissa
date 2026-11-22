@@ -1381,6 +1381,15 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Horarios y validación al guardar (H-58, 22/11/2026).** `DisponibilidadService::horariosDisponibles()`
+  ofrece un inicio si `inicio + duración <= cierre` (el margen de limpieza solo entra en `tieneCupo()`, entre
+  citas). `estaDisponible()` ahora también llama a `dentroDelHorario()`: inicio ≥ apertura, fin ≤ cierre y
+  minutos desde la apertura múltiplo de `dentissa.intervalo_minutos`. Toda vía que guarde citas (panel,
+  agenda pública, asistente, Telegram) pasa por ahí.
+- **Botones de WhatsApp no aplicables (H-59).** `WhatsappWebhookController` contesta `textoNoAplicada()`
+  cuando la cita no existe o es de otro teléfono (mismo texto en ambos casos). Recordatorio: el webhook
+  de Meta apunta a una sola instancia (Railway); los botones de un recordatorio enviado desde local llegan
+  allá y no tocan la base local.
 - **Usuarios: crear, desactivar y eliminar (H-57, 22/11/2026).** `Route::resource('usuarios')->only([index,
   create, store, destroy])` + `usuarios.activo.toggle`; ya no hay `edit`/`update` (las reglas de rol de
   H-55 quedan sin camino para romperse). `destroy()` rechaza la cuenta propia (422) y a quien tenga

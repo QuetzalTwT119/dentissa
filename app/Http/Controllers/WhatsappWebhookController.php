@@ -92,6 +92,11 @@ class WhatsappWebhookController extends Controller
             || ! WhatsappService::mismoTelefono($telefono, $cita->paciente?->telefono)) {
             Log::warning('WhatsApp: respuesta de recordatorio rechazada', ['id_cita' => $idCita, 'accion' => $accion]);
 
+            // 22/11/2026: antes no se contestaba nada y el paciente se quedaba sin
+            // saber si su respuesta contó. El texto es el mismo pase lo que pase
+            // (cita borrada o de otro teléfono): no revela de quién es la cita.
+            $whatsapp->enviarTexto($telefono, self::textoNoAplicada());
+
             return;
         }
 
@@ -126,6 +131,12 @@ class WhatsappWebhookController extends Controller
         return 'Hola, este número solo envía los recordatorios de tus citas y no recibe mensajes. '
             ."Para dudas o cambios, llama o escribe al consultorio al {$telefono}. "
             .'Para agendar una cita: '.route('citas.publica.create');
+    }
+
+    public static function textoNoAplicada(): string
+    {
+        return 'No pudimos aplicar tu respuesta: esa cita ya no está registrada con este número. '
+            .'Para confirmar o hacer cambios, llama o escribe al consultorio al '.config('dentissa.contacto.telefono').'.';
     }
 
     private function textoRespuesta(string $resultado, Cita $cita): string
