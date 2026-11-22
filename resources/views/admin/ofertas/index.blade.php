@@ -36,7 +36,7 @@
                             <th class="px-6 py-3.5">Vigencia</th>
                             <th class="px-6 py-3.5 text-center">Cupos</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
+                            <th class="px-6 py-3.5 text-right">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -94,7 +94,10 @@
                                     --}}
                                     @php $noPublicable = $oferta->estado !== \App\Enums\EstadoOferta::Activa ? $oferta->motivoNoPublicable() : null; @endphp
                                     @if ($noPublicable)
-                                        <span class="grid h-11 w-11 place-items-center lg:h-9 lg:w-9" data-no-publicable>
+                                        {{-- "Publicar" apagado con su ⚠ (22/11/2026; antes un ⚠ suelto: no se sabía si era acción o aviso). --}}
+                                        <span class="inline-flex min-h-11 items-center gap-0.5 whitespace-nowrap rounded-full border border-dashed border-line pl-3 text-xs font-semibold text-muted lg:min-h-9" data-no-publicable>
+                                            <x-icon name="check" class="mr-1 opacity-50" />
+                                            <span class="opacity-70">Publicar</span>
                                             <x-ayuda tono="aviso" etiqueta="No se puede publicar">{{ $noPublicable }}</x-ayuda>
                                         </span>
                                     @elseif ($oferta->estado !== \App\Enums\EstadoOferta::Activa)

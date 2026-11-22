@@ -38,4 +38,26 @@ class IconosAccionesTest extends TestCase
             ->assertSee('data-ayuda-info', false)
             ->assertSee('fill-amber-400', false);
     }
+
+    /**
+     * 22/11/2026 (encontrado por el usuario): con "Ocultar" (más ancho) y el grupo
+     * centrado, Editar y Eliminar cambiaban de lugar en cada fila; y el ⚠ suelto no
+     * decía si era acción o aviso.
+     */
+    public function test_acciones_a_la_derecha_y_bloqueos_con_su_accion_apagada(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $tratamiento = \App\Models\Tratamiento::create(['nombre' => 'Ortodoncia', 'duracion_estimada' => 60, 'activo' => false]);
+        \App\Models\Oferta::create(['titulo' => 'Brackets', 'descripcion' => 'Para pacientes nuevos y de siempre.', 'tipo' => 'descuento', 'tipo_valor' => 'porcentaje', 'valor_descuento' => 15,
+            'fecha_inicio' => now()->toDateString(), 'fecha_fin' => now()->addMonth()->toDateString(), 'estado' => 'inactiva', 'id_tratamiento' => $tratamiento->id]);
+
+        $html = $this->actingAs($admin)->get(route('admin.ofertas.index'))->assertOk()->getContent();
+        $this->assertMatchesRegularExpression('~data-no-publicable>.*?<span class="opacity-70">Publicar</span>~s', $html);
+
+        foreach (['admin.ofertas.index', 'admin.servicios.index', 'admin.tratamientos.index', 'admin.usuarios.index'] as $ruta) {
+            $html = $this->actingAs($admin)->get(route($ruta))->assertOk()->getContent();
+            $this->assertStringNotContainsString('lg:justify-center', $html, $ruta);
+            $this->assertStringNotContainsString('lg:text-center">Acciones', $html, $ruta);
+        }
+    }
 }

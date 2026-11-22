@@ -34,7 +34,7 @@
                             <th class="px-6 py-3.5">Posición en el carrusel</th>
                             <th class="px-6 py-3.5 text-center">Tratamientos</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
+                            <th class="px-6 py-3.5 text-right">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -88,7 +88,7 @@
                                                             activar="Se mostrará en la portada y se podrá agendar de nuevo." />
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5 lg:justify-center">
+                                <div class="flex items-center justify-end gap-1.5">
                                     <x-admin.acciones-fila :editar="route('admin.servicios.edit', $servicio)" :eliminar="route('admin.servicios.destroy', $servicio)" :bloqueo-eliminar="$servicio->citas_activas ? 'Tiene '.$servicio->citas_activas.' '.($servicio->citas_activas === 1 ? 'cita activa' : 'citas activas').'. Puedes desactivarlo en lugar de eliminarlo.' : null" que="el servicio" confirmar-titulo="¿Eliminar el servicio «{{ $servicio->nombre }}»?" />
                                 </div>
                             </td>

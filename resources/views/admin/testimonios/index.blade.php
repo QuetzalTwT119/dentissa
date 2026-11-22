@@ -40,7 +40,7 @@ $estadoClase = [
                             <th class="px-6 py-3.5">Calificación</th>
                             <th class="px-6 py-3.5">Comentario</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
+                            <th class="px-6 py-3.5 text-right">Acciones</th>
                         </tr>
                     </x-slot:head>
 

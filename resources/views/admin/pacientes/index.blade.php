@@ -24,7 +24,7 @@
                             <th class="px-6 py-4">Correo</th>
                             <th class="px-6 py-4">Teléfono</th>
                             <th class="px-6 py-4 text-center">Consultas</th>
-                            <th class="px-6 py-4 text-right lg:text-center">Acciones</th>
+                            <th class="px-6 py-4 text-right">Acciones</th>
                         </tr>
                     </x-slot:head>
 

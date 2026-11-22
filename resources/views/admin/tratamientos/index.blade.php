@@ -35,7 +35,7 @@
                             <th class="px-6 py-3.5">Duración</th>
                             <th class="px-6 py-3.5">Precio</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
+                            <th class="px-6 py-3.5 text-right">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -68,7 +68,7 @@
                                 </x-admin.interruptor-estado>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5 lg:justify-center">
+                                <div class="flex items-center justify-end gap-1.5">
                                     <x-admin.acciones-fila :editar="route('admin.tratamientos.edit', $tratamiento)" :eliminar="route('admin.tratamientos.destroy', $tratamiento)" :bloqueo-eliminar="$tratamiento->citas_activas ? 'Tiene '.$tratamiento->citas_activas.' '.($tratamiento->citas_activas === 1 ? 'cita activa' : 'citas activas').'. Puedes desactivarlo en lugar de eliminarlo.' : null" que="el tratamiento" confirmar-titulo="¿Eliminar el tratamiento «{{ $tratamiento->nombre }}»?" />
                                 </div>
                             </td>

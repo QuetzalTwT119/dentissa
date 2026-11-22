@@ -34,7 +34,7 @@
                             <th class="px-6 py-3.5 text-center">Fotos</th>
                             <th class="px-6 py-3.5 text-center">Orden</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
+                            <th class="px-6 py-3.5 text-right">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -53,7 +53,7 @@
                                                             desactivar="Dejará de mostrarse en la portada." activar="Se mostrará en la portada." />
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5 lg:justify-center">
+                                <div class="flex items-center justify-end gap-1.5">
                                     <x-admin.acciones-fila :editar="route('admin.casos.edit', $caso)" :eliminar="route('admin.casos.destroy', $caso)" que="el caso" confirmar-titulo="¿Eliminar el caso «{{ $caso->titulo }}»?" />
                                 </div>
                             </td>

@@ -1381,6 +1381,10 @@ administrador y el asistente gestionan los demás cambios desde el panel
   (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
   Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
   para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Acciones alineadas a la derecha (H-52, 22/11/2026).** Regla: el grupo de acciones y el
+  encabezado "Acciones" van a la derecha (no centrados), para que Editar y Eliminar queden
+  en la misma columna aunque el primer botón tenga palabra. Una acción que no se puede hacer
+  se muestra apagada con su ⚠ (nunca un ⚠ suelto en su lugar): `x-ayuda` acepta el slot `icono`.
 - **Íconos claros y ventana de cambios (H-51, 22/11/2026).** `x-admin.boton-fila` tiene `texto`
   (píldora con ícono + palabra) para acciones que el ícono no explica; regla: editar, eliminar
   y flechas sin texto. Ícono nuevo `eye-off` en `x-icon`. `x-ayuda` tono info: círculo

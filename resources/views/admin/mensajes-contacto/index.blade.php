@@ -31,7 +31,7 @@
                             <th class="px-6 py-3.5">Teléfono</th>
                             <th class="px-6 py-3.5">Mensaje</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
+                            <th class="px-6 py-3.5 text-right">Acciones</th>
                         </tr>
                     </x-slot:head>
 
