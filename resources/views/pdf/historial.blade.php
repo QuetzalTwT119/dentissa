@@ -34,12 +34,17 @@
                 <div class="riesgo"><strong>Antes de atender:</strong> {{ implode(' · ', $historia->alertas()) }}</div>
             @endif
             <div class="campo"><strong>Edad / sexo:</strong> {{ $historia->edad() !== null ? $historia->edad().' años' : '—' }} · {{ $HC::SEXOS[$historia->sexo] ?? '—' }}</div>
-            <div class="campo"><strong>Ocupación:</strong> {{ $historia->ocupacion ?: '—' }}</div>
+            <div class="campo"><strong>Ocupación / estado civil:</strong> {{ $historia->ocupacion ?: '—' }} · {{ $HC::ESTADOS_CIVILES[$historia->estado_civil] ?? '—' }}</div>
+            <div class="campo"><strong>Contacto de emergencia:</strong> {{ collect([$historia->contacto_emergencia_nombre, $historia->contacto_emergencia_parentesco, $historia->contacto_emergencia_telefono])->filter()->implode(' · ') ?: '—' }}</div>
+            <div class="campo"><strong>Médico de cabecera:</strong> {{ collect([$historia->medico_cabecera_nombre, $historia->medico_cabecera_telefono])->filter()->implode(' · ') ?: '—' }}</div>
             <div class="campo"><strong>Tipo de sangre:</strong> {{ $historia->tipo_sangre ?: '—' }}</div>
             <div class="campo"><strong>Ant. familiares:</strong> {{ $lista($historia->antecedentes_familiares, $HC::ANTECEDENTES_FAMILIARES) }} {{ $historia->antecedentes_familiares_notas }}</div>
             <div class="campo"><strong>Ant. personales:</strong> {{ $lista($historia->antecedentes_personales, $HC::ANTECEDENTES_PERSONALES) }} {{ $historia->antecedentes_personales_notas }}</div>
             <div class="campo"><strong>Alergias:</strong> {{ $lista($historia->alergias, $HC::ALERGIAS) }} {{ $historia->alergias_otras }}</div>
             <div class="campo"><strong>Medicamentos:</strong> {{ $historia->medicamentos_actuales ?: 'Ninguno' }}</div>
+            @if (filled($historia->tratamiento_medico_actual))
+                <div class="campo"><strong>Tratamiento médico actual:</strong> {{ $historia->tratamiento_medico_actual }}</div>
+            @endif
             @if ($historia->sexo === 'femenino')
                 <div class="campo"><strong>Embarazo / lactancia:</strong> {{ $historia->embarazo ? 'Sí' : 'No' }} / {{ $historia->lactancia ? 'Sí' : 'No' }}</div>
             @endif
