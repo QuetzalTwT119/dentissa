@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use App\Services\AuditoriaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,6 +27,10 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
+    /**
+     * Datos y foto en un solo "Guardar" (23/11/2026). La foto es opcional;
+     * "quitar_foto" la borra. Cada cambio queda en Control de actividades.
+     */
     public function update(ProfileUpdateRequest $request, AuditoriaService $auditoria): RedirectResponse
     {
         $user = $request->user();
@@ -35,7 +40,7 @@ class ProfileController extends Controller
             $user,
             ['nombre', 'apellido', 'email', 'telefono'],
             function () use ($request, $user) {
-                $user->fill($request->validated());
+                $user->fill($request->safe()->except(['foto_perfil', 'quitar_foto']));
 
                 if ($user->isDirty('email')) {
                     $user->email_verified_at = null;
@@ -46,6 +51,12 @@ class ProfileController extends Controller
                 return $user;
             },
         );
+
+        if ($request->hasFile('foto_perfil')) {
+            $this->guardarFoto($request, $user, $auditoria);
+        } elseif ($request->boolean('quitar_foto')) {
+            $this->quitarFoto($request, $user, $auditoria);
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -62,16 +73,8 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function updatePhoto(Request $request, AuditoriaService $auditoria): RedirectResponse
+    private function guardarFoto(Request $request, User $user, AuditoriaService $auditoria): void
     {
-        $request->validateWithBag('profilePhoto', [
-            'foto_perfil' => [
-                'required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120',
-                'dimensions:max_width=3000,max_height=3000',
-            ],
-        ]);
-
-        $user = $request->user();
         $oldPath = $user->foto_perfil;
         $newPath = $request->file('foto_perfil')->store('profile-photos', 'local');
 
@@ -94,33 +97,30 @@ class ProfileController extends Controller
         }
 
         $this->deleteManagedPhoto($oldPath);
-
-        return Redirect::route('profile.edit')->with('status', 'profile-photo-updated');
     }
 
-    public function deletePhoto(Request $request, AuditoriaService $auditoria): RedirectResponse
+    private function quitarFoto(Request $request, User $user, AuditoriaService $auditoria): void
     {
-        $user = $request->user();
         $oldPath = $user->foto_perfil;
 
-        if ($oldPath) {
-            $auditoria->registrarCambio(
-                $request,
-                'perfil.foto_eliminada',
-                $user,
-                ['foto_perfil'],
-                function () use ($user) {
-                    $user->foto_perfil = null;
-                    $user->save();
-
-                    return $user;
-                },
-            );
-
-            $this->deleteManagedPhoto($oldPath);
+        if (! $oldPath) {
+            return;
         }
 
-        return Redirect::route('profile.edit')->with('status', 'profile-photo-deleted');
+        $auditoria->registrarCambio(
+            $request,
+            'perfil.foto_eliminada',
+            $user,
+            ['foto_perfil'],
+            function () use ($user) {
+                $user->foto_perfil = null;
+                $user->save();
+
+                return $user;
+            },
+        );
+
+        $this->deleteManagedPhoto($oldPath);
     }
 
     private function isManagedPhoto(?string $path): bool

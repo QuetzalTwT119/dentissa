@@ -216,7 +216,10 @@ no estén montados como volumen.
 Las fotos de perfil se guardan en el disco privado de Laravel, dentro de
 `storage/app/private/profile-photos`; no se publica un enlace de `storage`.
 Las rutas de lectura requieren sesión y sirven únicamente la foto de la cuenta
-autenticada. Solo se aceptan JPG, PNG y WebP de hasta 5 MB y 3000 × 3000 px.
+autenticada. Desde el 23/11/2026 la foto viaja en el mismo `PATCH /profile` que los
+datos (`ProfileUpdateRequest`: `foto_perfil` opcional, `quitar_foto` booleano); se
+quitaron `POST/DELETE /profile/photo`. La vista previa es local (`URL.createObjectURL`):
+nada se sube hasta pulsar Guardar. Solo se aceptan JPG, PNG y WebP de hasta 5 MB y 3000 × 3000 px.
 La sustitución y eliminación actualizan el usuario y la bitácora; se limpia el
 archivo anterior solo después de guardar correctamente el cambio.
 

@@ -74,23 +74,40 @@ class ProfileTest extends TestCase
         $this->assertNotNull($user->refresh()->email_verified_at);
     }
 
+    /** Datos del perfil más lo que se mande (23/11/2026: la foto va con "Guardar"). */
+    private function datosPerfil(User $user, array $extra = []): array
+    {
+        return $extra + ['nombre' => $user->nombre, 'apellido' => $user->apellido, 'telefono' => $user->telefono ?? '5512345678', 'email' => $user->email];
+    }
+
     public function test_user_can_upload_a_private_profile_photo(): void
     {
         Storage::fake('local');
         $user = User::factory()->create(['rol' => \App\Enums\RolUsuario::Doctor]);
 
-        $response = $this->actingAs($user)->post('/profile/photo', [
+        $response = $this->actingAs($user)->patch('/profile', $this->datosPerfil($user, [
+            'nombre' => 'Melissa',
             'foto_perfil' => UploadedFile::fake()->image('avatar.png', 500, 500),
-        ]);
+        ]));
 
-        $response->assertSessionHasNoErrors()->assertRedirect('/profile');
+        $response->assertSessionHasNoErrors()->assertRedirect('/profile')->assertSessionHas('status', 'profile-updated');
         $user->refresh();
 
+        // Un solo "Guardar" cambia los datos y la foto.
+        $this->assertSame('Melissa', $user->nombre);
         $this->assertStringStartsWith('profile-photos/', $user->foto_perfil);
         Storage::disk('local')->assertExists($user->foto_perfil);
         $photoResponse = $this->actingAs($user)->get('/profile/photo')->assertOk();
         $this->assertStringContainsString('private', $photoResponse->headers->get('Cache-Control'));
         $this->assertStringContainsString('no-store', $photoResponse->headers->get('Cache-Control'));
+
+        // Cambiarla otra vez borra la anterior.
+        $anterior = $user->foto_perfil;
+        $this->actingAs($user)->patch('/profile', $this->datosPerfil($user, [
+            'foto_perfil' => UploadedFile::fake()->image('otra.jpg', 400, 400),
+        ]))->assertSessionHasNoErrors();
+        Storage::disk('local')->assertMissing($anterior);
+        Storage::disk('local')->assertExists($user->fresh()->foto_perfil);
     }
 
     public function test_profile_photo_upload_rejects_non_images_and_oversized_images(): void
@@ -98,13 +115,13 @@ class ProfileTest extends TestCase
         Storage::fake('local');
         $user = User::factory()->create(['rol' => \App\Enums\RolUsuario::Doctor]);
 
-        $this->actingAs($user)->post('/profile/photo', [
+        $this->actingAs($user)->patch('/profile', $this->datosPerfil($user, [
             'foto_perfil' => UploadedFile::fake()->create('notes.txt', 20, 'text/plain'),
-        ])->assertSessionHasErrorsIn('profilePhoto', 'foto_perfil');
+        ]))->assertSessionHasErrors('foto_perfil');
 
-        $this->actingAs($user)->post('/profile/photo', [
+        $this->actingAs($user)->patch('/profile', $this->datosPerfil($user, [
             'foto_perfil' => UploadedFile::fake()->image('large.jpg')->size(5121),
-        ])->assertSessionHasErrorsIn('profilePhoto', 'foto_perfil');
+        ]))->assertSessionHasErrors('foto_perfil');
 
         $this->assertNull($user->fresh()->foto_perfil);
         $this->assertSame([], Storage::disk('local')->allFiles('profile-photos'));
@@ -117,12 +134,34 @@ class ProfileTest extends TestCase
         $path = UploadedFile::fake()->image('avatar.jpg')->store('profile-photos', 'local');
         $user->update(['foto_perfil' => $path]);
 
-        $this->actingAs($user)->delete('/profile/photo')
+        // Guardar sin "quitar_foto" la deja como estaba.
+        $this->actingAs($user)->patch('/profile', $this->datosPerfil($user))->assertSessionHasNoErrors();
+        $this->assertSame($path, $user->fresh()->foto_perfil);
+
+        $this->actingAs($user)->patch('/profile', $this->datosPerfil($user, ['quitar_foto' => '1']))
             ->assertRedirect('/profile')
-            ->assertSessionHas('status', 'profile-photo-deleted');
+            ->assertSessionHas('status', 'profile-updated');
 
         $this->assertNull($user->fresh()->foto_perfil);
         Storage::disk('local')->assertMissing($path);
+    }
+
+    public function test_la_foto_se_elige_en_informacion_personal_y_se_guarda_con_guardar(): void
+    {
+        $user = User::factory()->create(['rol' => \App\Enums\RolUsuario::SuperAdmin]);
+
+        $this->actingAs($user)->get('/profile')->assertOk()
+            ->assertSee('data-perfil-foto', false)
+            ->assertSee('data-vista-previa', false)
+            ->assertSee('Así se verá en el menú.')
+            ->assertSee('enctype="multipart/form-data"', false)
+            ->assertDontSee('Subir foto')
+            ->assertSee('Doctora titular')
+            ->assertDontSee('SuperAdmin');
+
+        // Ya no hay formularios aparte para la foto.
+        $this->assertFalse(Route::has('profile.photo.update'));
+        $this->assertFalse(Route::has('profile.photo.delete'));
     }
 
     public function test_profile_photo_is_available_only_to_the_authenticated_owner(): void

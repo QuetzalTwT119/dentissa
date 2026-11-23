@@ -58,11 +58,13 @@ desactivación de cuentas se administra desde **Gestión → Usuarios**; el perf
 no ofrece eliminar ni desactivar la propia cuenta, para proteger la continuidad
 de la clínica y sus registros.
 
-En la sección **Foto de perfil** puedes seleccionar una imagen JPG, PNG o WebP
-de hasta 5 MB y pulsar **Subir foto**. La imagen aparece en el resumen del
-perfil y junto al nombre del menú de usuario; **Quitar foto** la elimina y
-restaura las iniciales. Solo la cuenta que inició sesión puede consultar su
-imagen.
+La **foto de perfil** está dentro de **Información personal**, a la derecha (arriba en
+celular). Pulsa **Elegir foto** o **Cambiar foto** y escoge una imagen JPG, PNG o WebP de
+hasta 5 MB: verás una **vista previa** grande y otra pequeña de "así se verá en el menú"
+**antes de guardar**. La foto se guarda con el mismo botón **Guardar** que tus datos.
+**Quitar foto** muestra tus iniciales en la vista previa y se aplica también al pulsar
+**Guardar** (**No quitarla** lo deshace). Solo la cuenta que inició sesión puede ver su
+imagen. El rol aparece con su nombre: Doctora titular, Doctor o Asistente.
 
 El inicio del administrador reúne accesos rápidos para agendar citas,
 consultar pacientes, administrar servicios y
