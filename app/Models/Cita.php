@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'id_paciente', 'id_servicio', 'id_tratamiento', 'id_oferta', 'fecha_hora', 'duracion_estimada',
     'estado', 'motivo', 'observaciones', 'clave_idempotencia', 'confirmada_por', 'fecha_confirmacion',
     'cancelada_por', 'fecha_cancelacion', 'motivo_cancelacion', 'recordatorio_enviado_en', 'asistencia_confirmada_en',
+    'id_cita_nueva',
 ])]
 class Cita extends Model
 {
@@ -28,6 +29,12 @@ class Cita extends Model
             'recordatorio_enviado_en' => 'datetime',
             'asistencia_confirmada_en' => 'datetime',
         ];
+    }
+
+    /** Cita que la reemplazó cuando el paciente reagendó desde el recordatorio (23/11/2026). */
+    public function citaNueva(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'id_cita_nueva');
     }
 
     public function paciente(): BelongsTo

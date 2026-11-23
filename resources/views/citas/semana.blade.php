@@ -163,6 +163,9 @@
                                                 @if ($cita->asistencia_confirmada_en && ! $cita->estado->esInactiva())
                                                     <span class="mt-1 block text-xs font-medium text-sage-700" @if ($empiezaAqui) data-asistencia-confirmada @endif>✓ Confirmó asistencia</span>
                                                 @endif
+                                                @if ($cita->citaNueva && $empiezaAqui)
+                                                    <span class="mt-1 block text-xs font-medium text-brand-700" data-reagendada-a>↻ Reagendada → {{ $cita->citaNueva->fecha_hora->locale('es')->translatedFormat('j M, H:i') }}</span>
+                                                @endif
                                             </a>
                                         </li>
                                     @empty

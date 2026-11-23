@@ -25,7 +25,7 @@ class CrearCitaService
      * @param  array<string, mixed>  $datos
      * @return array{cita: Cita|null, creada: bool}
      */
-    public function crear(array $datos, string $canal, ?string $claveIdempotencia = null, ?Request $request = null): array
+    public function crear(array $datos, string $canal, ?string $claveIdempotencia = null, ?Request $request = null, string $eventoInterno = 'confirmada'): array
     {
         // Web y Telegram piden datos personales y de salud: ningún canal puede
         // guardar una cita sin el consentimiento expreso al aviso de privacidad.
@@ -46,7 +46,7 @@ class CrearCitaService
         $this->reglas->validarFechaFutura($fechaHora);
 
         try {
-            return DB::transaction(function () use ($datos, $canal, $claveIdempotencia, $request, $tratamiento, $fechaHora) {
+            return DB::transaction(function () use ($datos, $canal, $claveIdempotencia, $request, $tratamiento, $fechaHora, $eventoInterno) {
                 if (! $this->disponibilidad->estaDisponible($fechaHora, $tratamiento)) {
                     return ['cita' => null, 'creada' => false];
                 }
@@ -54,12 +54,18 @@ class CrearCitaService
                 $paciente = $this->buscarOCrearPaciente($datos);
 
                 // Evidencia del consentimiento: fecha y versión del aviso aceptado.
-                $paciente->forceFill([
-                    'aviso_privacidad_aceptado_en' => now(),
-                    'aviso_privacidad_version' => config('dentissa.privacidad.version'),
-                ])->save();
+                // Al reagendar con el aviso ya aceptado se conserva la fecha original.
+                if (! ($datos['aviso_previo'] ?? false) || $paciente->aviso_privacidad_aceptado_en === null) {
+                    $paciente->forceFill([
+                        'aviso_privacidad_aceptado_en' => now(),
+                        'aviso_privacidad_version' => config('dentissa.privacidad.version'),
+                    ])->save();
+                }
 
-                $oferta = $this->ofertaConLugar($tratamiento->id, $fechaHora);
+                // Solo la oferta que el paciente eligió (23/11/2026); antes se aplicaba sola.
+                $oferta = filled($datos['id_oferta'] ?? null)
+                    ? $this->ofertaConLugar((int) $datos['id_oferta'], $tratamiento->id, $fechaHora)
+                    : null;
 
                 $cita = Cita::create([
                     'id_paciente' => $paciente->id,
@@ -86,7 +92,7 @@ class CrearCitaService
                 ], request: $request);
                 $this->notificacionesInternas->cambioCita(
                     $cita,
-                    'confirmada',
+                    $eventoInterno,
                 );
 
                 return ['cita' => $cita, 'creada' => true];
@@ -111,14 +117,14 @@ class CrearCitaService
      * Oferta que se aplica a la cita, con su fila bloqueada mientras se guarda:
      * dos pacientes que agendan a la vez no pueden tomar el último lugar.
      */
-    private function ofertaConLugar(int $idTratamiento, Carbon $fechaHora): ?Oferta
+    private function ofertaConLugar(int $idOferta, int $idTratamiento, Carbon $fechaHora): ?Oferta
     {
-        $candidata = Oferta::aplicableA($idTratamiento, $fechaHora);
-        if (! $candidata) {
-            return null;
-        }
-
-        $oferta = Oferta::whereKey($candidata->id)->lockForUpdate()->first();
+        $oferta = Oferta::publicadas()
+            ->whereKey($idOferta)
+            ->where('id_tratamiento', $idTratamiento)
+            ->whereDate('fecha_fin', '>=', $fechaHora->toDateString())
+            ->lockForUpdate()
+            ->first();
 
         return $oferta && $oferta->lugaresQuedan() !== 0 ? $oferta : null;
     }

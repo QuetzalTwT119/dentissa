@@ -49,7 +49,7 @@
                                         <br>{{ $quedan === 1 ? 'Queda 1 lugar' : "Quedan {$quedan} lugares" }}
                                     @endif
                                 </p>
-                                <a href="{{ route('citas.publica.create', array_filter(['tratamiento' => $oferta->id_tratamiento])) }}" class="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand-700 hover:text-brand-800" aria-label="Agendar cita: {{ $oferta->titulo }}">
+                                <a href="{{ route('citas.publica.create', array_filter(['tratamiento' => $oferta->id_tratamiento, 'oferta' => $oferta->id_tratamiento ? $oferta->id : null])) }}" class="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand-700 hover:text-brand-800" aria-label="Agendar cita: {{ $oferta->titulo }}">
                                     Agendar {!! $iconoFlecha !!}
                                 </a>
                             </div>

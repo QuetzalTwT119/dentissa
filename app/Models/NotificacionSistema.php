@@ -63,6 +63,7 @@ class NotificacionSistema extends Model
             'asistencia_confirmada' => 'Respuesta del paciente',
             'cancelada_paciente' => 'Cancelación del paciente',
             'reagendar_paciente' => 'Horario liberado',
+            'reagendada_paciente' => 'Nuevo horario del paciente',
             'respaldo_fallido' => 'Respaldo fallido',
             default => 'Sistema',
         };
@@ -108,7 +109,7 @@ class NotificacionSistema extends Model
     public function insignia(): array
     {
         return match ($this->evento) {
-            'agendada', 'reagendada' => ['calendario', 'nueva'],
+            'agendada', 'reagendada', 'reagendada_paciente' => ['calendario', 'nueva'],
             'confirmada', 'asistencia_confirmada', 'completada', 'iniciada' => ['palomita', 'ok'],
             'cancelada', 'cancelada_paciente', 'no_asistio' => ['tache', 'baja'],
             'reagendar_paciente' => ['ciclo', 'alerta'],

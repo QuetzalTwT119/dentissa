@@ -50,6 +50,9 @@
         @if ($cita->asistencia_confirmada_en && ! $inactiva)
             <span class="mt-1 block text-xs font-medium text-sage-700" data-asistencia-confirmada>✓ Paciente confirmó asistencia</span>
         @endif
+        @if ($cita->citaNueva)
+            <span class="mt-1 block text-xs font-medium text-brand-700" data-reagendada-a>↻ Reagendada por el paciente → {{ $cita->citaNueva->fecha_hora->locale('es')->translatedFormat('j M, H:i') }}</span>
+        @endif
     </div>
 
     <div role="cell" class="fila-cita-acciones">

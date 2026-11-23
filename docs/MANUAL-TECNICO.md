@@ -384,6 +384,23 @@ una transacción para evitar reservas duplicadas.
 anterior y los datos del paciente llenos. Sin firma, alterado o caducado abre la agenda normal
 sin datos. Cancelar sigue mandando la agenda normal.
 
+**Reagendar conectado, solo día y hora (H-68, 23/11/2026).** Columna `citas.id_cita_nueva`
+(la cita vieja apunta a la que la reemplazó). El formulario lleva oculto
+`RespuestaRecordatorioService::tokenReagendar()` (cifrado, 7 días); en `store`,
+`citaAReagendar()` lo acepta solo si la cita vieja está cancelada por "pidió reagendar", sin cita
+nueva y con el mismo celular. Entonces: servicio, tratamiento y datos se toman de la cita vieja
+(se ignora lo que mande el navegador), el aviso de privacidad no se vuelve a pedir si ya estaba
+aceptado (se conserva su fecha), se manda la plantilla `cita_reagendada`, el aviso interno es
+`reagendada_paciente` y "Horario liberado" queda atendido. La agenda muestra
+"↻ Reagendada por el paciente → fecha" y el botón viejo contesta "Esta cita ya se reagendó al…".
+En la agenda en línea el último paso es "Confirmar" (sin campos) y el calendario no tiene "Atrás".
+
+**Oferta solo desde su tarjeta (H-69, 23/11/2026).** `CrearCitaService` ya no usa
+`Oferta::aplicableA()`: guarda `$datos['id_oferta']` solo si es una oferta publicada del mismo
+tratamiento, vigente en la fecha de la cita y con lugar. La tarjeta de la portada enlaza
+`?tratamiento=&oferta=`; la agenda en línea manda `id_oferta` oculto solo si `ofertaAplica`.
+Al reagendar, `store` fuerza `id_oferta` = la de la cita vieja. Telegram no la aplica.
+
 La agenda pública, **Nueva cita** y **Reagendar** comparten un mismo selector:
 el mes a la izquierda y los horarios del día elegido a la derecha (en celular,
 uno debajo del otro). Se eligió en una ronda de prototipos frente a una tira

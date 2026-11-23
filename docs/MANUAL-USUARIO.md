@@ -247,7 +247,7 @@ botones:
 | Botón | Qué pasa |
 |---|---|
 | **Sí, asistiré** | La cita queda confirmada y en la agenda aparece **✓ Paciente confirmó asistencia**. |
-| **Quiero reagendar** | Se libera el horario y el paciente recibe un enlace que abre la agenda en línea **directo en el calendario**, con su tratamiento y sus datos ya llenos: solo elige el nuevo día y la hora. El enlace es personal y dura 7 días. |
+| **Quiero reagendar** | Se libera el horario y el paciente recibe un enlace que abre la agenda en línea **directo en el calendario**, con su mismo tratamiento: **solo elige el nuevo día y la hora** y pulsa **Confirmar cambio de cita** (no vuelve a escribir sus datos ni puede cambiar el tratamiento). Recibe "Tu cita se movió al…", la doctora ve en la campana **Nuevo horario del paciente** y en la Agenda la cita vieja dice **↻ Reagendada por el paciente → nueva fecha**. El enlace es personal, dura 7 días y sirve una sola vez. |
 | **No podré asistir, cancelar cita** | La cita se cancela y el horario queda libre para otro paciente. |
 
 Abrir un botón no cambia nada por sí solo: se abre una página que muestra la
@@ -476,11 +476,14 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
   que cambias algo; si regresas todo como estaba, se vuelve a apagar. Al
   guardar, el sistema sigue pidiendo confirmar. Para salir sin guardar usa
   **Cancelar**, junto a "Guardar".
-- **Ofertas al agendar:** si el paciente elige un tratamiento con oferta
-  publicada, ve la etiqueta (por ejemplo "Oferta −20%"), un aviso con la
-  vigencia y la oferta en el resumen. Si la fecha de su cita es posterior a
-  "Válida hasta", el resumen avisa que ya no aplica. "Agendar" en la tarjeta de
-  la portada abre la agenda con ese tratamiento elegido.
+- **Ofertas al agendar (desde el 23/11/2026):** la oferta **solo se aplica si
+  el paciente entra desde su tarjeta**, pulsando "Agendar" en la portada: la
+  agenda abre con ese tratamiento, la etiqueta (por ejemplo "Oferta −20%"), un
+  aviso con la vigencia y la oferta en el resumen. Si agenda el mismo tratamiento
+  por el camino normal, **no** lleva oferta ni gasta un lugar. Si la fecha de su
+  cita es posterior a "Válida hasta", el resumen avisa que ya no aplica. Al
+  **reagendar** desde el recordatorio se conserva la oferta que ya tenía (si
+  sigue vigente), pero no se gana una nueva.
 - **La doctora aplica el descuento al cobrar:** la cita guarda la oferta. En la
   agenda (lista, semana y detalle) aparece "Oferta −20% · título" y la campana
   dice "Con oferta «…»". El sistema no cobra ni calcula el total.
