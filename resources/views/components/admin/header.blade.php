@@ -3,6 +3,9 @@
     'title',
     'description' => null,
     'subtitle' => null,
+    // Regreso global (23/11/2026): URL y texto del botón "← Volver a …".
+    'volver' => null,
+    'volverTexto' => null,
 ])
 
 @php
@@ -11,8 +14,9 @@
 
 <div {{ $attributes->merge(['class' => 'flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between']) }}>
     <div class="min-w-0">
-        {{-- Migas (23/11/2026): "Pacientes › Historial" en lugar de un botón "Volver" suelto. --}}
-        @if (isset($migas) && $migas->isNotEmpty())
+        @if ($volver)
+            <x-volver :href="$volver" :texto="$volverTexto ?? 'Volver'" />
+        @elseif (isset($migas) && $migas->isNotEmpty())
             <nav aria-label="Ruta" class="text-sm text-muted">{{ $migas }}</nav>
         @elseif ($badge)
             <p class="eyebrow">{{ $badge }}</p>

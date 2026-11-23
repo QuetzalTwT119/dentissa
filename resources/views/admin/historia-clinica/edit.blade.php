@@ -23,17 +23,8 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div class="min-w-0">
-                <nav aria-label="Ruta" class="text-sm text-muted">
-                    @if ($puedeExpediente)
-                        <a href="{{ route('admin.pacientes.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Pacientes</a>
-                        <span aria-hidden="true" class="mx-1.5">›</span>
-                        <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="font-semibold text-brand-700 hover:text-brand-800">Expediente</a>
-                    @else
-                        <a href="{{ route('admin.historias.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Historias clínicas</a>
-                    @endif
-                    <span aria-hidden="true" class="mx-1.5">›</span>
-                    <span>Historia clínica</span>
-                </nav>
+                {{-- La asistente no ve el expediente: regresa a su lista. --}}
+                <x-volver :href="$regreso" :texto="$puedeExpediente ? 'Volver al expediente' : 'Volver a Historias clínicas'" />
                 <h1 class="mt-1 truncate text-title-2 text-ink">Historia clínica — {{ $paciente->nombre_completo }}</h1>
             </div>
             <div class="flex items-center gap-2.5">

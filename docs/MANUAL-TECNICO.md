@@ -602,6 +602,12 @@ seguro médico y número de seguro social no aplica.
   el expediente (resumen, O'Leary e historial de exploraciones) y en el PDF (la última).
   Las consultas ganan `historial_clinico.dientes` (diente(s) tratados).
 
+**Botón global de regreso (H-73, 23/11/2026).** `components/volver.blade.php` ("← Volver a …").
+En `x-admin.header` se usa con `:volver="route(...)" volver-texto="..."`; en encabezados propios,
+`<x-volver :href texto />`. Va en toda pantalla que se abre desde otra (crear/editar,
+expediente, cuestionarios); no en las principales del menú. `ConsistenciaDisenoTest` revisa las
+pantallas hijas y que nadie dibuje la flecha a mano.
+
 Las notificaciones de cita guardan también `id_cita`, lo que permite enlazar
 un aviso con la cita que lo originó sin depender únicamente del texto del
 mensaje.

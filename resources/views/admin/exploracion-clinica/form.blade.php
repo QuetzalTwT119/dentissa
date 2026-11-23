@@ -19,13 +19,7 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div class="min-w-0">
-                <nav aria-label="Ruta" class="text-sm text-muted">
-                    <a href="{{ route('admin.pacientes.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Pacientes</a>
-                    <span aria-hidden="true" class="mx-1.5">›</span>
-                    <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="font-semibold text-brand-700 hover:text-brand-800">Expediente</a>
-                    <span aria-hidden="true" class="mx-1.5">›</span>
-                    <span>Exploración clínica</span>
-                </nav>
+                <x-volver :href="route('admin.pacientes.historial.index', $paciente)" texto="Volver al expediente" />
                 <h1 class="mt-1 truncate text-title-2 text-ink">Exploración clínica — {{ $paciente->nombre_completo }}</h1>
             </div>
             <div class="flex items-center gap-2.5">

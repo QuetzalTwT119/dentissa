@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header
+        <x-admin.header :volver="route('citas.index')" volver-texto="Volver a la Agenda"
             badge="Reasignación de Agenda"
             title="Reagendar cita"
             subtitle="Selecciona una nueva fecha y horario disponible para esta consulta."

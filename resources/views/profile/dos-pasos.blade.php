@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header
+        <x-admin.header :volver="route('profile.edit')" volver-texto="Volver a Mi perfil"
             badge="Seguridad de la cuenta"
             title="Verificación en dos pasos"
             subtitle="Además de tu contraseña, al entrar se pedirá un código de tu celular."
@@ -94,7 +94,6 @@
                 </section>
             @endif
 
-            <a href="{{ route('profile.edit') }}" class="link inline-flex min-h-11 items-center text-sm">← Volver al perfil</a>
         </div>
     </div>
 </x-app-layout>

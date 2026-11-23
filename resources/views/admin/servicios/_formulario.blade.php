@@ -27,11 +27,7 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div class="min-w-0">
-                <nav aria-label="Ruta" class="text-sm text-muted">
-                    <a href="{{ route('admin.servicios.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Servicios</a>
-                    <span aria-hidden="true" class="mx-1.5">›</span>
-                    <span>{{ $esNuevo ? 'Nuevo' : 'Editar' }}</span>
-                </nav>
+                <x-volver :href="route('admin.servicios.index')" texto="Volver a Servicios" />
                 <h1 class="mt-1 truncate text-title-2 text-ink">{{ $esNuevo ? 'Nuevo servicio' : $servicio->nombre }}</h1>
             </div>
             <div class="flex items-center gap-2.5">

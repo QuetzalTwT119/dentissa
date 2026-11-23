@@ -13,18 +13,10 @@ $tipoConsultaLabel = [
         $iconoPdf = '<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>';
     @endphp
     <x-slot name="header">
-        {{-- 23/11/2026: migas en lugar de "Volver a Pacientes"; el PDF arriba (es de todo el
+        {{-- 23/11/2026: "Volver a Pacientes" global arriba del título; el PDF arriba (es de todo el
              expediente) y "Nueva consulta" en la sección Consultas, como las demás secciones. --}}
-        <x-admin.header title="Expediente de {{ $paciente->nombre }} {{ $paciente->apellido }}"
+        <x-admin.header :volver="route('admin.pacientes.index')" volver-texto="Volver a Pacientes" title="Expediente de {{ $paciente->nombre }} {{ $paciente->apellido }}"
                         subtitle="Historia clínica, exploración con odontograma y consultas.">
-            {{-- Regreso visible, pegado al título (antes un botón suelto a la derecha). --}}
-            <x-slot:migas>
-                <a href="{{ route('admin.pacientes.index') }}" data-volver-pacientes
-                   class="-ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-full px-2 font-semibold text-brand-700 transition hover:bg-brand-50 hover:text-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                    Volver a Pacientes
-                </a>
-            </x-slot:migas>
             <x-slot:actions>
                 @if ($hayPdf)
                     <a href="{{ route('admin.pacientes.historial.pdf', $paciente) }}">

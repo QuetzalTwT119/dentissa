@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header
+        <x-admin.header :volver="route('admin.ofertas.index')" volver-texto="Volver a Ofertas"
             title="Nueva oferta"
             subtitle="Creación de paquete promocional o descuento temporal."
         >
