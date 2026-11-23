@@ -119,7 +119,8 @@ class CasillasDesmarcadasTest extends TestCase
         // En la lista sale bloqueado, con el camino para resolverlo.
         $this->actingAs($this->admin)->get(route('admin.tratamientos.index'))
             ->assertSee('data-falta-precio', false)
-            ->assertSee('Falta precio');
+            ->assertSee('Falta precio')
+            ->assertSee('Ponerle precio');
 
         // Se puede GUARDAR sin precio (sigue sin publicarse).
         $this->actingAs($this->admin)

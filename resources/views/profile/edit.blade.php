@@ -23,7 +23,7 @@
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2.5">
                             <h3 class="break-words font-serif text-title-2 text-ink">{{ auth()->user()->nombre }} {{ auth()->user()->apellido }}</h3>
-                            <span class="badge-brand">{{ auth()->user()->rol->name ?? 'Usuario' }}</span>
+                            <span class="badge-brand">{{ auth()->user()->rol?->etiqueta() ?? 'Usuario' }}</span>
                         </div>
                         <div class="mt-2 flex flex-col gap-x-5 gap-y-1 text-sm text-ink-soft sm:flex-row sm:flex-wrap">
                             <span class="inline-flex min-w-0 items-center gap-2 break-all">
@@ -70,15 +70,13 @@
                     </div>
                 </nav>
 
-                <div class="min-w-0 space-y-6 lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
-                    <section class="card-boutique p-5 sm:p-7 lg:p-5" aria-label="Foto de perfil" x-show="seccion === 'info'">
-                        @include('profile.partials.update-profile-photo-form')
-                    </section>
+                {{-- La foto va dentro de Información personal, a la derecha (23/11/2026). --}}
+                <div class="min-w-0 space-y-6">
                     <section id="profile-information" class="card-boutique scroll-mt-28 p-5 sm:p-7 lg:p-5" aria-label="Información personal" x-show="seccion === 'info'">
                         @include('profile.partials.update-profile-information-form')
                     </section>
 
-                    <section id="profile-password" class="card-boutique scroll-mt-28 p-5 sm:p-7 lg:col-span-2" aria-label="Cambiar contraseña" x-show="seccion === 'password'" x-cloak>
+                    <section id="profile-password" class="card-boutique scroll-mt-28 p-5 sm:p-7" aria-label="Cambiar contraseña" x-show="seccion === 'password'" x-cloak>
                         @include('profile.partials.update-password-form')
                     </section>
                 </div>

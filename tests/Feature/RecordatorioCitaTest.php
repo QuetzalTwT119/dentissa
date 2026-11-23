@@ -263,12 +263,40 @@ class RecordatorioCitaTest extends TestCase
         $this->followingRedirects()->post($this->enlace($cita, 'reagendar', 'citas.recordatorio.responder'))
             ->assertOk()
             ->assertSee('Liberamos tu horario.')
-            ->assertSee(route('citas.publica.create'));
+            ->assertSee(route('citas.publica.create').'?expires=', false)
+            ->assertSee('reagendar='.$cita->id, false);
 
         $cita->refresh();
         $this->assertSame(EstadoCita::Cancelada, $cita->estado);
         $this->assertSame(RespuestaRecordatorioService::MOTIVO_REAGENDAR, $cita->motivo_cancelacion);
         $this->assertTrue(NotificacionSistema::where('evento', 'reagendar_paciente')->exists());
+    }
+
+    /** 23/11/2026: el link de reagendar abre en el calendario con el tratamiento y los datos. */
+    public function test_el_enlace_de_reagendar_abre_el_calendario_con_los_datos_llenos(): void
+    {
+        $this->servicio->tratamientos()->attach($this->tratamiento);
+        $cita = $this->cita('2030-01-10 09:00');
+        $paciente = $cita->paciente;
+        $enlace = RespuestaRecordatorioService::enlaceReagendar($cita);
+
+        $this->get($enlace)->assertOk()
+            ->assertSee('data-reagendar-aviso', false)
+            ->assertSee('Cambio de cita: Limpieza Dental.')
+            ->assertSee('paso: 1,', false)
+            ->assertSee($paciente->email)
+            ->assertSee($paciente->telefono);
+
+        // Sin firma, con otro número de cita o caducado: la agenda normal y sin datos.
+        $alterado = str_replace('reagendar='.$cita->id, 'reagendar='.($cita->id + 1), $enlace);
+        foreach ([route('citas.publica.create', ['reagendar' => $cita->id]), $alterado] as $url) {
+            $this->get($url)->assertOk()
+                ->assertDontSee('data-reagendar-aviso', false)
+                ->assertSee('paso: 0,', false)
+                ->assertDontSee($paciente->email);
+        }
+        Carbon::setTestNow(now()->addDays(RespuestaRecordatorioService::DIAS_ENLACE_REAGENDAR)->addMinute());
+        $this->get($enlace)->assertOk()->assertDontSee('data-reagendar-aviso', false)->assertDontSee($paciente->email);
     }
 
     public function test_una_cita_pasada_o_cancelada_ya_no_admite_respuesta(): void

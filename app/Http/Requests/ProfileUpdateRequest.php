@@ -28,6 +28,12 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            // Foto en el mismo formulario (23/11/2026): opcional, se guarda con "Guardar".
+            'foto_perfil' => [
+                'nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120',
+                'dimensions:max_width=3000,max_height=3000',
+            ],
+            'quitar_foto' => ['nullable', 'boolean'],
         ];
     }
 }

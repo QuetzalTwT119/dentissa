@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cita;
 use App\Models\HorarioAtencion;
 use App\Models\Oferta;
 use App\Models\Servicio;
@@ -39,10 +40,33 @@ class CitaPublicaController extends Controller
             }
         }
 
+        // Link "Reagendar" del recordatorio (23/11/2026): solo si la firma es válida,
+        // abre en el calendario con el mismo tratamiento y los datos del paciente.
+        $reagendar = null;
+        if ($request->filled('reagendar') && $request->hasValidSignature()) {
+            $anterior = Cita::with(['paciente', 'tratamiento'])->find((int) $request->query('reagendar'));
+            $servicioAnterior = $anterior ? $servicios->first(fn ($s) => $s->tratamientos->contains('id', $anterior->id_tratamiento)) : null;
+
+            if ($anterior?->paciente && $servicioAnterior) {
+                $servicioInicial = $servicioAnterior->id;
+                $tratamientoInicial = $anterior->id_tratamiento;
+                $reagendar = [
+                    'tratamiento' => $anterior->tratamiento->nombre,
+                    'datos' => [
+                        'nombre' => $anterior->paciente->nombre,
+                        'apellido' => $anterior->paciente->apellido,
+                        'telefono' => $anterior->paciente->telefono,
+                        'email' => $anterior->paciente->email,
+                    ],
+                ];
+            }
+        }
+
         return view('citas-publicas.create', [
             'servicios' => $servicios,
             'servicioInicial' => $servicioInicial,
             'tratamientoInicial' => $tratamientoInicial,
+            'reagendar' => $reagendar,
             'ofertasPorTratamiento' => $this->ofertasPorTratamiento(),
             'horarioRegular' => HorarioAtencion::resumenSemanal(),
         ]);

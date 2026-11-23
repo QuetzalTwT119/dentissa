@@ -62,7 +62,13 @@
                                                             :desactivar="$consecuencia" activar="Los pacientes podrán agendarlo de nuevo.">
                                     @if (! $tratamiento->activo && ! $tratamiento->precioFormateado())
                                         <x-slot:bloqueo>
-                                            <a href="{{ route('admin.tratamientos.edit', $tratamiento) }}" data-falta-precio class="inline-flex min-h-11 items-center text-sm font-semibold text-brand-700 hover:text-brand-800 lg:min-h-0">Falta precio</a>
+                                            {{-- ⚠ como en Ofertas y Usuarios (23/11/2026): falta algo por arreglar. --}}
+                                            <span data-falta-precio>
+                                                <x-ayuda tono="aviso" etiqueta="Falta precio">
+                                                    Sin precio no se puede activar ni agendar.
+                                                    <a href="{{ route('admin.tratamientos.edit', $tratamiento) }}" class="mt-1 block font-semibold text-brand-700 underline hover:text-brand-800">Ponerle precio</a>
+                                                </x-ayuda>
+                                            </span>
                                         </x-slot:bloqueo>
                                     @endif
                                 </x-admin.interruptor-estado>

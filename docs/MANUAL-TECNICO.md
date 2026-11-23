@@ -216,7 +216,10 @@ no estén montados como volumen.
 Las fotos de perfil se guardan en el disco privado de Laravel, dentro de
 `storage/app/private/profile-photos`; no se publica un enlace de `storage`.
 Las rutas de lectura requieren sesión y sirven únicamente la foto de la cuenta
-autenticada. Solo se aceptan JPG, PNG y WebP de hasta 5 MB y 3000 × 3000 px.
+autenticada. Desde el 23/11/2026 la foto viaja en el mismo `PATCH /profile` que los
+datos (`ProfileUpdateRequest`: `foto_perfil` opcional, `quitar_foto` booleano); se
+quitaron `POST/DELETE /profile/photo`. La vista previa es local (`URL.createObjectURL`):
+nada se sube hasta pulsar Guardar. Solo se aceptan JPG, PNG y WebP de hasta 5 MB y 3000 × 3000 px.
 La sustitución y eliminación actualizan el usuario y la bitácora; se limpia el
 archivo anterior solo después de guardar correctamente el cambio.
 
@@ -373,6 +376,13 @@ registradas. Antes de guardar una cita vuelve a validar el horario dentro de
 una transacción para evitar reservas duplicadas.
 
 ### Calendario de disponibilidad (`partials/disponibilidad-picker`)
+
+**Reagendar directo (H-66, 23/11/2026).** El botón Reagendar (WhatsApp y correo) manda
+`RespuestaRecordatorioService::enlaceReagendar()`: `URL::temporarySignedRoute('citas.publica.create',
++7 días, ['reagendar' => id])`. `CitaPublicaController@create` solo lo usa si
+`hasValidSignature()`: abre en el paso 2 (calendario) con el servicio y tratamiento de la cita
+anterior y los datos del paciente llenos. Sin firma, alterado o caducado abre la agenda normal
+sin datos. Cancelar sigue mandando la agenda normal.
 
 La agenda pública, **Nueva cita** y **Reagendar** comparten un mismo selector:
 el mes a la izquierda y los horarios del día elegido a la derecha (en celular,
