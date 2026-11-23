@@ -21,7 +21,7 @@ class DatosConsultorioTest extends TestCase
 
     private function admin(): User
     {
-        return User::factory()->create(['rol' => RolUsuario::Admin]);
+        return User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     private function guardar(User $usuario, array $datos)

@@ -7,6 +7,8 @@
     $estadosConAccionesSecundarias = ['agendada', 'confirmada'];
     $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
     $esPersonal = true;
+    // Cita completada sin su consulta y quien ve expedientes (22/11/2026).
+    $puedeRegistrarConsulta = $cita->exists && $cita->id_paciente && $cita->estado->value === 'completada' && auth()->user()?->puede('pacientes') && ! $cita->historialClinico()->exists();
 @endphp
 <div class="flex w-max max-w-full items-center justify-end gap-2">
     @if ($esPersonal && $cita->estado->value === 'agendada')
@@ -37,6 +39,19 @@
                 Completar
             </button>
         </form>
+    @endif
+
+    {{--
+        Cita completada sin su consulta (22/11/2026): completar la cita no escribe la nota
+        médica; este botón abre "Nueva consulta" con la cita y su fecha ya elegidas.
+        Solo para quien ve expedientes (módulo "pacientes" de config/permisos.php).
+    --}}
+    @if ($puedeRegistrarConsulta)
+        <a href="{{ route('admin.pacientes.historial.create', [$cita->id_paciente, 'id_cita' => $cita->id]) }}" data-registrar-consulta
+           class="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-brand-200 bg-white px-3.5 text-xs font-semibold text-brand-700 shadow-2xs transition hover:border-brand-400 hover:bg-brand-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
+            <x-icon name="expediente" />
+            Registrar consulta
+        </a>
     @endif
 
     @if ($esPersonal && in_array($cita->estado->value, $estadosConAccionesSecundarias, true))
@@ -89,7 +104,7 @@
                 </form>
             </div>
         </details>
-    @elseif ($esPersonal && in_array($cita->estado->value, $estadosTerminales, true))
+    @elseif ($esPersonal && in_array($cita->estado->value, $estadosTerminales, true) && ! $puedeRegistrarConsulta)
         <span class="text-xs text-muted">Sin acciones</span>
     @endif
 </div>

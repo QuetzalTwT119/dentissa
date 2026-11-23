@@ -27,17 +27,26 @@ El enlace se envía a la dirección asociada a esa cuenta de Dentissa. En el
 prototipo, la clínica puede usar Gmail API como canal emisor; eso no cambia el
 destinatario ni requiere que cada usuario conecte su propio Google.
 
-La navegación interna muestra la marca Dentissa, un acceso a **Inicio**, otro a
+La navegación interna muestra la marca (el logotipo con la firma **Dra. Melissa
+López**, igual que en la portada), un acceso a **Inicio**, otro a
 la **Agenda** y otro al **Asistente**. En administración, **Gestión** agrupa
 Pacientes, Usuarios, Reportes, Mensajes y Control de actividades; los
 menús **Catálogo**, **Contenido** y **Configuración** reúnen el resto de las
-secciones. En pantallas angostas, usa el botón de menú para encontrar las
+secciones. El menú completo se ve en computadora, laptop, TV y proyector (desde
+1024 px de ancho; en las más chicas solo se ve el círculo del logotipo y tu foto). En celular y tableta, usa el botón de menú (☰) para encontrar las
 mismas opciones y la campana para abrir una vista rápida de notificaciones.
 En el teléfono, los listados anchos conservan sus
 columnas dentro de un área que puedes desplazar lateralmente; los filtros y
 controles de carga se acomodan en varias filas para facilitar el toque.
-**Control de actividades** solo está disponible para administración; las cuentas de
-asistente no ven esa opción.
+**Roles del personal** (desde el 22/11/2026):
+- **Doctora titular** (la dueña): entra a todo.
+- **Doctor** (doctores asociados): por ahora, lo mismo que la doctora titular,
+  salvo que no puede desactivar, eliminar ni crear una cuenta de Doctora titular.
+- **Asistente**: por ahora **solo el panel de inicio**; no ve el menú de secciones,
+  la campana ni Mi perfil (sí puede cerrar sesión). Para cambiar su contraseña,
+  usa "¿La olvidaste?" en la pantalla de acceso.
+
+El menú solo muestra lo que cada rol puede abrir.
 
 Los listados de registros muestran **20 elementos por página de forma predeterminada**. En el pie del listado puedes elegir **20** o **50** registros por página. Cuando
 hay más resultados, al final aparecen los botones **Anterior**, los números de
@@ -106,7 +115,11 @@ paso a paso" y dos formas de contacto:
   El **pie de página** muestra también el horario de la semana (por ejemplo
   "Lunes a viernes de 8:00 a 18:00 hrs"); los días cerrados no aparecen.
   En **Configuración → Horarios de atención**, "Citas a la vez" es cuántos pacientes se pueden
-  atender a la misma hora (1 si hay un solo sillón o dentista).
+  atender a la misma hora (1 si hay un solo sillón o dentista). Los horarios se ofrecen cada
+  30 minutos y la última cita del día es la que **termina** a la hora de cierre: con cierre a
+  las 18:00, una valoración de 30 min se puede agendar hasta las 17:30 y una limpieza de
+  60 min hasta las 17:00. Los 15 minutos de limpieza de los tratamientos largos o
+  quirúrgicos solo se reservan entre una cita y la siguiente.
 
 Más abajo, **Tratamientos para tu salud y armonía** muestra las especialidades
 activas en una fila de tarjetas con foto:
@@ -249,7 +262,10 @@ El mensaje de WhatsApp trae los mismos tres botones. Al pulsar uno, la cita
 cambia igual que con el correo y el paciente recibe una respuesta en el mismo
 chat: la confirmación o, si pidió reagendar o canceló, el enlace para elegir
 otro horario. Para que funcione, el sistema debe estar en línea y Meta debe
-haber aprobado la plantilla del recordatorio.
+haber aprobado la plantilla del recordatorio. Si el botón ya no se puede aplicar (por
+ejemplo, la cita se borró), el paciente recibe un mensaje que le pide comunicarse con el
+consultorio. Los botones solo funcionan con citas del sistema en línea (Railway): un
+recordatorio de prueba enviado desde una computadora local no cambia la cita local.
 
 El número de WhatsApp de los recordatorios no lo atiende nadie. Si un paciente
 le escribe un mensaje (texto, audio o foto), recibe una respuesta automática
@@ -370,18 +386,35 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 
 - **Servicios** (especialidades del carrusel): en **Editar servicio** se cambia
   el nombre, la descripción, la foto (con vista previa de la tarjeta) y **qué
-  tratamientos se pueden agendar**. El interruptor **Visible en la portada**
-  oculta o muestra la especialidad. El orden del carrusel se acomoda con las
-  flechas ↑ ↓ de la lista.
+  tratamientos se pueden agendar**. **Nuevo servicio** es la misma pantalla, así que al
+  crearlo ya se eligen su foto y sus tratamientos. Un servicio nuevo queda **Disponible**: se
+  muestra en la portada y se puede agendar en línea, en el panel, en el asistente y por Telegram.
+  Para ocultarlo (o volver a mostrarlo) usa el interruptor **Disponible** de la lista; es el
+  único lugar donde se cambia. Las citas ya agendadas no cambian. Si editas uno oculto, la
+  pantalla te lo recuerda. El orden en que salen en la portada se acomoda con
+  las flechas ↑ ↓ de la columna **Orden en la portada**. La lista se puede buscar por nombre y filtrar por
+  activos o inactivos; mientras haya un filtro, el número sigue siendo su lugar
+  real en el carrusel y, para cambiar el orden, hay que quitar el filtro.
 - **Tratamientos**: el formulario pide **Nombre**, **Duración** (cuánto ocupa en
   la agenda) y **Precio** (el paciente lo ve al agendar). Se puede guardar sin
   precio mientras la clínica lo confirma, pero **no se publica** hasta tenerlo. A la
   derecha, **Así lo verá el paciente** muestra la opción tal como aparece en la
   agenda en línea y en qué especialidad está (eso se cambia en el servicio).
 - **Activar o desactivar un tratamiento**: con el interruptor de la columna
-  **Estado** en la lista. Activar es inmediato; desactivar pide confirmación y
+  **Estado** en la lista. Activar y desactivar piden confirmación; desactivar
   avisa si una especialidad se quedaría sin tratamientos (pasaría a "Agenda por
   teléfono"). **Sin precio no se puede activar**: la fila dice "Falta precio".
+- **El mismo interruptor en todas las listas** (Servicios, Tratamientos, Casos,
+  Galería, Preguntas frecuentes y Usuarios): la columna **Estado** muestra si
+  está encendido y se cambia ahí mismo, sin entrar a Editar. Siempre pide
+  confirmación y dice qué pasará (por ejemplo, "Dejará de mostrarse en la
+  portada"). Tu propia cuenta sale atenuada con ⓘ: no puedes desactivarte.
+- **Íconos de las acciones** (columna Acciones, a la derecha): ✎ editar, 🗑 eliminar,
+  ojo = publicar, ojo tachado = ocultar, pulgar arriba = aprobar, pulgar abajo = rechazar,
+  sobre abierto = marcar leído, sobre cerrado = marcar sin leer, 📋 = historial clínico del
+  paciente (también se abre tocando su número de consultas). Al pasar el mouse dicen qué
+  hacen y siempre piden confirmación. Si un ícono sale apagado con ⚠, esa acción no se
+  puede hacer; toca el ⚠ para ver por qué. El ⓘ gris solo explica.
 - Las confirmaciones (eliminar, cancelar una cita, desactivar…) usan la ventana
   de Dentissa; se cancelan con **Esc**, con **Cancelar** o tocando fuera.
 - En cada lista, arriba se ve cuántos registros hay y cuántos mostrar por página
@@ -452,6 +485,12 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 - **Lugares:** cada cita agendada con la oferta ocupa un lugar; cancelar o
   marcar "No asistió" lo libera. Sin lugares, la oferta deja de anunciarse en
   la portada y las citas nuevas ya no la llevan.
+- **Publicada, no se ve** (rosa, con ⚠): está publicada pero no aparece en la
+  portada ni al agendar. El ⚠ dice por qué: venció, su tratamiento está
+  inactivo, ya no tiene lugares o no cabe entre las 24 del carrusel.
+- **Buscar y filtrar:** Ofertas, Tratamientos, Preguntas frecuentes, Casos y
+  Galería tienen arriba el buscador y los filtros de estado (los mismos que
+  Pacientes o Usuarios); se aplican solos y "Limpiar filtros" los quita.
 - **Ocultar:** en una oferta **Publicada**, el botón de encendido la oculta de
   la portada; sigue en la lista como **Oculta** para editarla o publicarla otra
   vez con ✓.
@@ -464,6 +503,10 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 - La clínica **no crea ni edita** testimonios: solo los **aprueba**, **rechaza**
   (se quedan en la lista como "Rechazado", sin publicarse, y se pueden aprobar
   después) o **elimina** (se borran para siempre, por ejemplo si el paciente lo pide).
+- Los testimonios largos muestran unas líneas y el botón **Leer completo**, en la
+  portada y en el panel, para leerlos enteros antes de aprobarlos. El buscador de
+  la lista encuentra por nombre del paciente o por lo que escribió, y se combina
+  con el filtro de estado.
 
 ## 4. Asistente de agenda
 
@@ -546,16 +589,40 @@ apoyarse en una respuesta activa, el chat conserva su mensaje de respaldo.
 
 ## 6. Pacientes e historial clínico
 
+**Historia clínica (cuestionario).** Cada paciente tiene una, en su expediente (📋): es la
+primera sección, arriba de las consultas. La primera vez aparece **Llenar cuestionario**;
+después, **Ver o editar**. Incluye datos generales, antecedentes familiares y personales,
+alergias, medicamentos, embarazo y lactancia (solo si el sexo es femenino), antecedentes
+dentales, hábitos y observaciones. **Nada es obligatorio**: se llena lo que se sepa y se
+completa en otra visita. Las alergias y condiciones de riesgo (coagulación, corazón,
+presión alta, diabetes, embarazo…) salen en un **aviso rojo** arriba del expediente y al
+registrar cada consulta, para verlas antes de atender. La historia también sale en el PDF.
+
+**Cita y consulta.** Al completar una cita en la Agenda aparece **Registrar consulta**: abre
+la consulta nueva con esa cita y su fecha ya elegidas. La columna de Pacientes se llama
+"Consultas en expediente" (las notas médicas registradas, no las citas).
+
+**La asistente** también llena la historia clínica: en su menú aparece **Historias
+clínicas**, una lista de pacientes con buscador que dice si cada uno la tiene **Llena** o
+**Pendiente**, con el botón **Llenar cuestionario** o **Ver o editar**. Ella no ve las
+consultas, las notas privadas, los adjuntos ni el PDF.
+
+**Nueva consulta** va en una sola columna: fecha, tipo y cita arriba, y cada pregunta en su
+propio renglón con espacio para escribir.
+
 Desde `/admin/pacientes`:
 
 1. Buscar por una parte del nombre, correo o teléfono, o seleccionar un paciente de la lista.
-2. Abrir **Editar** para corregir su nombre, apellido, teléfono y correo. Nombre y apellido son obligatorios; teléfono y correo son opcionales. El correo debe ser único y el teléfono debe contener diez dígitos, con código `+52` opcional.
-3. En esa misma pantalla, actualizar si hace falta CURP, RFC, clave de elector o tutor/responsable; son opcionales.
-4. Abrir **Ver historial**.
-5. Pulsar **Nueva consulta**.
-6. Completar los campos indicados como **obligatorios**: fecha, tipo y motivo. Diagnóstico, tratamiento, medicamentos, observaciones y notas privadas son opcionales; la cita relacionada también es opcional cuando aparece.
-7. Guardar la consulta.
-8. Consultar, editar o eliminar las consultas. El PDF se habilita cuando existe al menos una consulta.
+2. Abrir **Editar** (✎) para corregir su nombre, apellido, teléfono celular y correo. Nombre, apellido y **teléfono celular son obligatorios** (por el teléfono se le avisa por WhatsApp y se le reconoce al agendar); el correo es opcional y debe ser único. El teléfono debe tener diez dígitos, con código `+52` opcional.
+3. Abrir el **historial** (📋), o tocar su número de consultas.
+4. Pulsar **Nueva consulta**.
+5. Completar los campos indicados como **obligatorios**: fecha, tipo y motivo. Diagnóstico, tratamiento, medicamentos, observaciones y notas privadas son opcionales; la cita relacionada también es opcional cuando aparece.
+6. Guardar la consulta.
+7. Consultar, editar o eliminar las consultas. El PDF se habilita cuando existe al menos una consulta.
+
+**Cita y consulta no son lo mismo:** la cita es la reservación de la Agenda (día, hora y
+estado); la consulta es la nota médica del expediente. Completar una cita no crea la
+consulta: hay que registrarla en el historial del paciente.
 
 El historial clínico está reservado al administrador. El campo **Notas privadas del doctor**
 es visible para el administrador y no se incluye en el PDF descargable.
@@ -565,18 +632,28 @@ documentos ni datos médicos reales al entorno de desarrollo.
 
 ## 6.1 Cuentas del personal
 
-En **Usuarios**, el administrador puede filtrar las cuentas por rol y estado,
-crear una cuenta para una asistente o administrador, editar sus datos y activar
-o desactivar el acceso. Los pacientes se gestionan desde **Pacientes**, en una
-sección distinta.
+En **Usuarios**, el administrador solo puede hacer tres cosas: **crear** una cuenta
+(Nuevo usuario), **activarla o desactivarla** (interruptor de la columna Estado) y
+**eliminarla** (papelera). También puede filtrar por rol y estado. Los datos y la
+contraseña de cada cuenta los corrige su dueño en **Mi perfil**. Los pacientes se
+gestionan desde **Pacientes**, en una sección distinta.
+
+- **Eliminar** pide confirmación y no se puede deshacer. No se puede eliminar la
+  cuenta propia, ni una cuenta que registró consultas clínicas: borrarla eliminaría
+  esas consultas del historial de los pacientes. En ese caso la papelera sale
+  apagada con ⚠ y lo indicado es **desactivarla**.
+- **Cambiar el rol de alguien:** si la cuenta no tiene consultas, elimínala y créala
+  de nuevo con el rol correcto; si tiene consultas, desactívala y crea una cuenta nueva.
 
 Para cambiar el correo de la cuenta actual, abre **Perfil** desde el menú de
 usuario, edita **Correo electrónico** en **Información personal** y guarda.
 Para crear otra cuenta administrativa, entra a **Gestión → Usuarios → Nuevo
 usuario**, captura los datos, selecciona **Admin**, escribe una contraseña
-segura y guarda. El correo debe ser único. También puedes cambiar el rol de una
-cuenta existente desde **Editar**; conserva tu cuenta actual hasta confirmar
-que puedes iniciar sesión con la nueva.
+segura y guarda. El correo debe ser único. Nadie puede cambiar su propio rol ni
+eliminar su propia cuenta, así la clínica nunca se queda sin quien administre el
+panel. Al escribir una contraseña nueva,
+el 👁 muestra lo que escribiste y, debajo de **Confirmar**, el sistema te dice al momento si
+las dos coinciden.
 
 ### Seguridad de la cuenta
 
@@ -630,8 +707,10 @@ se puede abrir y editar en Excel o LibreOffice Calc.
 
 El administrador puede abrir **Configuración → Control de actividades** para consultar los
 cambios realizados por cuentas del administrador o de las asistentes. La vista
-permite filtrar por fechas, usuario y acción, y mostrar los metadatos anteriores
-y posteriores. Es de solo lectura; las asistentes no tienen acceso. Las
+permite filtrar por fechas, usuario y acción. **Ver cambios** abre una ventana con
+qué se hizo, quién y cuándo, y una tabla con cada dato que cambió, cómo estaba **Antes** y cómo quedó **Después**, en
+palabras (por ejemplo, Estado: Confirmada → En curso). Si algo se creó solo se ve cómo
+quedó, y si se borró, lo que tenía. La ventana se cierra con **Cerrar**, con Esc o tocando fuera. Es de solo lectura; las asistentes no tienen acceso. Las
 solicitudes iniciadas por pacientes desde el portal o Telegram no aparecen en
 la bitácora. Los registros anteriores de esos canales se conservan en la base
 de datos, pero no se muestran como cambios del personal. Se registran cambios
@@ -641,6 +720,11 @@ contraseñas ni notas clínicas; al editar un paciente, la auditoría indica qu�
 campos cambiaron, pero no copia sus valores de teléfono o correo. Las consultas,
 descargas y acciones de pacientes
 no se consideran cambios del personal.
+
+Cada cambio aparece **una sola vez**, con la hora de México y el nombre y rol
+de quien lo hizo. La dirección de la página es
+`/admin/control-de-actividades`; si tienes guardada la anterior (`/admin/auditoria`),
+te lleva sola a la nueva.
 
 ## 11. Notificaciones internas
 

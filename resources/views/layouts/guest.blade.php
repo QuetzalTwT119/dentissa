@@ -31,15 +31,7 @@
                     <img src="/images/dentissa/hero-inicio.jpg" alt="Odontóloga conversando con una paciente en el consultorio" class="absolute inset-0 h-full w-full object-cover object-[62%_center]">
                     <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/90 via-[#2b1a20]/40 to-[#2b1a20]/10"></div>
 
-                    <div class="relative flex w-fit items-center gap-3">
-                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/95 p-1 shadow-lg ring-1 ring-white/50 sm:h-14 sm:w-14">
-                            <img src="/images/brand/logo-rosa-transparente.png" alt="" class="h-full w-full object-contain">
-                        </span>
-                        <div class="leading-tight drop-shadow-soft">
-                            <p class="firma text-xl text-white sm:text-[1.4rem]">Melissa López N.</p>
-                            <p class="mt-1 text-caption font-semibold uppercase tracking-label text-white/90">Odontología integral</p>
-                        </div>
-                    </div>
+                    <x-marca tono="oscuro" tamano="grande" class="relative w-fit" />
 
                     <div class="relative mt-8 hidden max-w-lg sm:block">
                         <p class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-caption font-semibold uppercase tracking-label text-white backdrop-blur-sm">

@@ -34,7 +34,10 @@ class DisponibilidadService
         $horarios = [];
         $candidato = $apertura->copy();
 
-        while ($candidato->copy()->addMinutes($duracionMinutos + $margenMinutos)->lte($cierre)) {
+        // La cita debe TERMINAR antes del cierre; el margen de limpieza solo cuenta
+        // entre una cita y la siguiente (tieneCupo), no después de la última del día
+        // (22/11/2026: antes una extracción de 60 min terminaba a las 16:30 y no a las 17:00).
+        while ($candidato->copy()->addMinutes($duracionMinutos)->lte($cierre)) {
             if ($candidato->isFuture() && $this->tieneCupo($candidato, $duracionMinutos, $margenMinutos, $citasDelDia, $horario->capacidad_simultanea)) {
                 $horarios[] = $candidato->format('H:i');
             }
@@ -99,6 +102,14 @@ class DisponibilidadService
             return false;
         }
 
+        // 22/11/2026: antes solo se revisaba el cupo y el servidor aceptaba citas a
+        // las 22:00 o que terminaban después del cierre. Misma regla que la lista
+        // que ven los pacientes: dentro del horario, terminando antes del cierre y
+        // en los saltos de 30 min contados desde la apertura.
+        if (! $this->dentroDelHorario(Carbon::parse($fechaHora), $horario, $this->duracionMinutos($tratamiento))) {
+            return false;
+        }
+
         $citasDelDia = $this->citasDelDia($fechaHora->format('Y-m-d'), $excludeCitaId, lock: true);
 
         return $this->tieneCupo(
@@ -108,6 +119,18 @@ class DisponibilidadService
             $citasDelDia,
             $horario->capacidad_simultanea,
         );
+    }
+
+    private function dentroDelHorario(Carbon $inicio, HorarioAtencion $horario, int $duracionMinutos): bool
+    {
+        $apertura = $inicio->copy()->setTime($horario->hora_apertura, 0);
+        $cierre = $inicio->copy()->setTime($horario->hora_cierre, 0);
+        $desdeApertura = (int) $apertura->diffInMinutes($inicio, false);
+
+        return $inicio->gte($apertura)
+            && $inicio->copy()->addMinutes($duracionMinutos)->lte($cierre)
+            && $desdeApertura % max((int) config('dentissa.intervalo_minutos'), 1) === 0
+            && (int) $inicio->format('s') === 0;
     }
 
     private function citasDelDia(string $fecha, ?int $excludeCitaId, bool $lock = false): Collection

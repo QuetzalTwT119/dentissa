@@ -46,7 +46,11 @@ class AgendaSemanalTest extends TestCase
     {
         $this->get(route('citas.index', ['vista' => 'semana']))->assertRedirect(route('login'));
 
-        foreach ([RolUsuario::Admin, RolUsuario::Asistente] as $rol) {
+        // 22/11/2026: la asistente ya no tiene la Agenda (config/permisos.php).
+        $this->actingAs(User::factory()->create(['rol' => RolUsuario::Asistente]))
+            ->get(route('citas.index', ['vista' => 'semana']))->assertForbidden();
+
+        foreach ([RolUsuario::SuperAdmin, RolUsuario::Doctor] as $rol) {
             $this->actingAs(User::factory()->create(['rol' => $rol]))
                 ->get(route('citas.index', ['vista' => 'semana']))
                 ->assertOk()
@@ -132,7 +136,7 @@ class AgendaSemanalTest extends TestCase
 
     private function admin(): User
     {
-        return User::factory()->create(['rol' => RolUsuario::Admin]);
+        return User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     private function cita(string $nombre, string $apellido, string $fechaHora, EstadoCita $estado = EstadoCita::Agendada): Cita

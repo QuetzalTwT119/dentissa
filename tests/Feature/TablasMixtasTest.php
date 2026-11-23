@@ -37,7 +37,7 @@ class TablasMixtasTest extends TestCase
 
     private function admin(): User
     {
-        return User::factory()->create(['rol' => RolUsuario::Admin]);
+        return User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     public function test_las_tablas_cortas_se_apilan_y_nunca_se_desplazan_de_lado(): void

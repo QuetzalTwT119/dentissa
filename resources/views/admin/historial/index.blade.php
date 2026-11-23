@@ -31,7 +31,7 @@ $tipoConsultaLabel = [
         <div class="panel-contenido mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-6">
             <div class="flex flex-wrap items-center justify-between gap-4">
                 <div class="flex flex-wrap items-center gap-3 ml-auto">
-                    @if ($consultas->isNotEmpty())
+                    @if ($consultas->isNotEmpty() || $paciente->historiaClinica)
                         <a href="{{ route('admin.pacientes.historial.pdf', $paciente) }}">
                             <x-secondary-button type="button" class="inline-flex items-center gap-2">
                                 <svg class="h-4 w-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -41,7 +41,7 @@ $tipoConsultaLabel = [
                             </x-secondary-button>
                         </a>
                     @else
-                        <x-secondary-button type="button" disabled title="Disponible después de registrar una consulta" class="opacity-50 cursor-not-allowed inline-flex items-center gap-2">
+                        <x-secondary-button type="button" disabled title="Disponible cuando haya historia clínica o una consulta" class="opacity-50 cursor-not-allowed inline-flex items-center gap-2">
                             <svg class="h-4 w-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
@@ -63,6 +63,37 @@ $tipoConsultaLabel = [
                 <x-alert type="info" :message="session('status')" />
             @endif
 
+            {{-- Historia clínica (cuestionario, 22/11/2026): primera sección del expediente. --}}
+            @php $historia = $paciente->historiaClinica; @endphp
+            <section class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="titulo-historia" data-resumen-historia>
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h2 id="titulo-historia" class="text-headline font-semibold text-ink">Historia clínica</h2>
+                        <p class="mt-0.5 text-sm text-muted">
+                            @if ($historia)
+                                Antecedentes, alergias y hábitos del paciente · actualizada {{ $historia->updated_at?->translatedFormat('j M Y') }}
+                            @else
+                                Aún no tiene historia clínica: llénala en la primera visita.
+                            @endif
+                        </p>
+                    </div>
+                    <a href="{{ route('admin.pacientes.historia.edit', $paciente) }}" class="{{ $historia ? 'btn-secondary' : 'btn-brand' }} min-h-11 px-5" data-llenar-historia>
+                        {{ $historia ? 'Ver o editar' : 'Llenar cuestionario' }}
+                    </a>
+                </div>
+
+                @if ($historia)
+                    <x-aviso-clinico :historia="$historia" class="mt-4" />
+                    <dl class="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-4">
+                        <div><dt class="text-muted">Edad</dt><dd class="font-semibold text-ink">{{ $historia->edad() !== null ? $historia->edad().' años' : '—' }}</dd></div>
+                        <div><dt class="text-muted">Sexo</dt><dd class="font-semibold text-ink">{{ \App\Models\HistoriaClinica::SEXOS[$historia->sexo] ?? '—' }}</dd></div>
+                        <div><dt class="text-muted">Tipo de sangre</dt><dd class="font-semibold text-ink">{{ $historia->tipo_sangre ?? '—' }}</dd></div>
+                        <div><dt class="text-muted">Medicamentos</dt><dd class="font-semibold text-ink">{{ filled($historia->medicamentos_actuales) ? \Illuminate\Support\Str::limit($historia->medicamentos_actuales, 40) : 'Ninguno' }}</dd></div>
+                    </dl>
+                @endif
+            </section>
+
+            <h2 class="text-headline font-semibold text-ink">Consultas</h2>
             <x-pagination-summary :items="$consultas" label="consultas" :integrated="false" />
 
             <div class="space-y-4">
@@ -108,7 +139,7 @@ $tipoConsultaLabel = [
                 @empty
                     <div class="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-sm text-muted shadow-soft">
                         <p class="font-semibold text-ink">Este paciente todavía no tiene consultas registradas.</p>
-                        <p class="mt-1">El PDF estará disponible cuando registres la primera consulta.</p>
+                        <p class="mt-1">El PDF estará disponible cuando llenes la historia clínica o registres la primera consulta.</p>
                     </div>
                 @endforelse
             </div>

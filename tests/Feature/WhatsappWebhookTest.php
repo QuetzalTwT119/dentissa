@@ -106,7 +106,25 @@ class WhatsappWebhookTest extends TestCase
         $this->enviar($this->boton('cancelar', desde: '5215599999999'))->assertOk();
 
         $this->assertSame(EstadoCita::Agendada, $this->cita->fresh()->estado);
-        Http::assertNothingSent();
+        // 22/11/2026: ya no se queda callado; contesta sin decir de quién es la cita.
+        Http::assertSentCount(1);
+        Http::assertSent(fn (Request $r) => $r['to'] === '5215599999999'
+            && str_contains($r['text']['body'] ?? '', 'No pudimos aplicar tu respuesta')
+            && ! str_contains($r['text']['body'] ?? '', $this->cita->paciente->nombre));
+    }
+
+    /** 22/11/2026: el botón de una cita que ya no existe (borrada o de otra base) también recibe respuesta. */
+    public function test_el_boton_de_una_cita_que_ya_no_existe_recibe_respuesta(): void
+    {
+        $id = $this->cita->id;
+        $mensaje = $this->boton('confirmar');
+        $this->cita->delete();
+
+        $this->enviar($mensaje)->assertOk();
+
+        Http::assertSentCount(1);
+        Http::assertSent(fn (Request $r) => str_contains($r['text']['body'] ?? '', 'esa cita ya no está registrada con este número'));
+        $this->assertNull(\App\Models\Cita::find($id));
     }
 
     public function test_si_meta_reintenta_el_mismo_mensaje_solo_se_procesa_una_vez(): void

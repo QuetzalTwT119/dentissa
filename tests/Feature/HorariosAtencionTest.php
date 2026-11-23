@@ -45,7 +45,7 @@ class HorariosAtencionTest extends TestCase
     /** 22/11/2026: Horarios es un bloque de Configuración, con su botón al final del bloque. */
     public function test_la_pantalla_es_compacta_con_guardar_e_interruptor(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)->get(route('admin.configuracion'))
             ->assertOk()
@@ -59,7 +59,7 @@ class HorariosAtencionTest extends TestCase
 
     public function test_no_guarda_un_dia_abierto_que_cierra_antes_de_abrir(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         // Índice 1 = lunes: abre a las 18 y "cierra" a las 8.
         $this->actingAs($admin)->from(route('admin.configuracion'))

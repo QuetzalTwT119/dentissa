@@ -20,7 +20,7 @@ class HistorialImagenController extends Controller
     public function show(Request $request, Imagen $imagen): StreamedResponse
     {
         abort_unless($imagen->tipo === TipoImagen::HistorialClinico, 404);
-        abort_unless($request->user()->rol === RolUsuario::Admin, 403);
+        abort_unless($request->user()->puede('pacientes'), 403);
 
         abort_unless(Storage::disk('local')->exists($imagen->url), 404);
 

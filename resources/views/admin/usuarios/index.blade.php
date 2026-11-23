@@ -1,9 +1,9 @@
 @php
-$rolLabel = ['paciente' => 'Paciente', 'asistente' => 'Asistente', 'admin' => 'Admin'];
+// Etiquetas de RolUsuario::etiqueta() (22/11/2026: super_admin, doctor y asistente).
 $rolClase = [
-    'paciente' => 'bg-stone-100 text-stone-700 border border-stone-200/60',
-    'asistente' => 'bg-sky-50 text-sky-700 border border-sky-200/60',
-    'admin' => 'bg-brand-50 text-brand-700 border border-brand-200/60',
+    'super_admin' => 'bg-brand-50 text-brand-700 border border-brand-200/60',
+    'doctor' => 'bg-peach-50 text-brand-800 border border-peach-200',
+    'asistente' => 'bg-sky-50 text-sky-800 border border-sky-200/60',
 ];
 @endphp
 
@@ -29,7 +29,7 @@ $rolClase = [
                 <x-pagination-summary :items="$usuarios" label="usuarios">
                     <x-slot:filtros>
                         <x-filtro.barra :action="route('admin.usuarios.index')" :campos="['rol', 'activo']">
-                            <x-filtro.select name="rol" etiqueta="Filtrar por rol" todos="Todos los roles" :opciones="['asistente' => 'Asistente', 'admin' => 'Admin']" />
+                            <x-filtro.select name="rol" etiqueta="Filtrar por rol" todos="Todos los roles" :opciones="collect(\App\Enums\RolUsuario::cases())->mapWithKeys(fn ($r) => [$r->value => $r->etiqueta()])->all()" />
                             <x-filtro.select name="activo" etiqueta="Filtrar por estado" todos="Todos los estados" :opciones="['1' => 'Activos', '0' => 'Inactivos']" />
                         </x-filtro.barra>
                     </x-slot:filtros>
@@ -48,7 +48,7 @@ $rolClase = [
                             <th class="px-6 py-3.5">Teléfono</th>
                             <th class="px-6 py-3.5">Rol</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
+                            <th class="px-6 py-3.5 text-right">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -64,28 +64,43 @@ $rolClase = [
                             <td class="px-6 py-4 text-ink-soft whitespace-nowrap">{{ $usuario->telefono ?? '—' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <x-chip class="{{ $rolClase[$usuario->rol->value] ?? 'bg-shell text-ink' }}">
-                                    {{ $rolLabel[$usuario->rol->value] ?? $usuario->rol->value }}
+                                    {{ $usuario->rol->etiqueta() }}
                                 </x-chip>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <x-admin.status-badge :active="$usuario->activo" />
+                                {{-- Interruptor global (antes etiqueta + botón aparte en Acciones). La cuenta
+                                     propia sale bloqueada: el servidor no deja desactivarse a uno mismo. --}}
+                                <x-admin.interruptor-estado :action="route('admin.usuarios.activo.toggle', $usuario)" :activo="$usuario->activo" :nombre="$usuario->nombre.' '.$usuario->apellido"
+                                                            desactivar="No podrá iniciar sesión hasta que lo vuelvas a activar." activar="Podrá volver a iniciar sesión con su contraseña.">
+                                    @if ($usuario->is(auth()->user()))
+                                        <x-slot:bloqueo>
+                                            <span data-cuenta-propia><x-ayuda tono="info" etiqueta="Es tu cuenta">No puedes desactivarla ni cambiar tu rol. Tus datos y tu contraseña se editan en Mi perfil.</x-ayuda></span>
+                                        </x-slot:bloqueo>
+                                    @elseif ($usuario->rol === \App\Enums\RolUsuario::SuperAdmin && auth()->user()->rol !== \App\Enums\RolUsuario::SuperAdmin)
+                                        {{-- La cuenta titular solo la cambia otra titular (22/11/2026). --}}
+                                        <x-slot:bloqueo>
+                                            <span data-cuenta-titular><x-ayuda tono="info" etiqueta="Cuenta titular">Solo la doctora titular puede desactivar esta cuenta.</x-ayuda></span>
+                                        </x-slot:bloqueo>
+                                    @endif
+                                </x-admin.interruptor-estado>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5 lg:justify-center">
-                                    <x-admin.acciones-fila :editar="route('admin.usuarios.edit', $usuario)" que="el usuario" />
-                                    <form method="POST" action="{{ route('admin.usuarios.activo.toggle', $usuario) }}"
-                                          data-confirmar="{{ $usuario->activo ? 'No podrá iniciar sesión hasta que lo vuelvas a activar.' : 'Podrá volver a iniciar sesión con su contraseña.' }}"
-                                          data-confirmar-titulo="{{ $usuario->activo ? '¿Desactivar' : '¿Activar' }} a {{ $usuario->nombre }} {{ $usuario->apellido }}?"
-                                          data-confirmar-boton="{{ $usuario->activo ? 'Sí, desactivar' : 'Sí, activar' }}"
-                                          data-confirmar-tono="{{ $usuario->activo ? 'peligro' : 'normal' }}">
-                                        @csrf
-                                        @method('patch')
-                                        <button type="submit" title="{{ $usuario->activo ? 'Desactivar' : 'Activar' }}" aria-label="{{ $usuario->activo ? 'Desactivar usuario' : 'Activar usuario' }}"
-                                                class="rounded-xl p-2 transition {{ $usuario->activo ? 'text-rose-600 hover:bg-rose-50 hover:text-rose-800' : 'text-sage-600 hover:bg-sage-50 hover:text-sage-700' }}">
-                                            <x-icon name="power" />
-                                        </button>
-                                    </form>
-                                </div>
+                                {{-- Activar/desactivar vive en la columna Estado (interruptor global). --}}
+                                {{--
+                                    Solo crear, desactivar (columna Estado) y eliminar (22/11/2026). Sin ✎:
+                                    cada quien edita sus datos en Mi perfil. La papelera sale apagada con su
+                                    motivo en la cuenta propia y en quien registró consultas clínicas.
+                                --}}
+                                @php
+                                    $motivoNoEliminar = match (true) {
+                                        $usuario->is(auth()->user()) => 'Es tu cuenta: no puedes eliminarla.',
+                                        $usuario->rol === \App\Enums\RolUsuario::SuperAdmin && auth()->user()->rol !== \App\Enums\RolUsuario::SuperAdmin => 'Cuenta titular: solo la doctora titular puede eliminarla.',
+                                        $usuario->consultas_registradas_count > 0 => 'Registró '.$usuario->consultas_registradas_count.' '.($usuario->consultas_registradas_count === 1 ? 'consulta clínica' : 'consultas clínicas').'; eliminarlo las borraría del historial. Desactívalo para conservarlas.',
+                                        default => null,
+                                    };
+                                @endphp
+                                <x-admin.acciones-fila :eliminar="route('admin.usuarios.destroy', $usuario)" :bloqueo-eliminar="$motivoNoEliminar"
+                                                       confirmar-titulo="¿Eliminar a {{ $usuario->nombre }} {{ $usuario->apellido }}?" que="el usuario" :nombre="$usuario->nombre.' '.$usuario->apellido" />
                             </td>
                         </tr>
                     @empty

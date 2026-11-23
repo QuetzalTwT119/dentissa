@@ -24,7 +24,7 @@ class AuditoriaAtomicaTest extends TestCase
 
     public function test_la_auditoria_se_guarda_en_la_transaccion_del_modelo(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
@@ -87,7 +87,7 @@ class AuditoriaAtomicaTest extends TestCase
 
     public function test_la_cancelacion_de_cita_se_revierte_si_falla_la_auditoria(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
@@ -126,7 +126,7 @@ class AuditoriaAtomicaTest extends TestCase
 
     public function test_los_datos_oficiales_del_paciente_se_revierten_si_falla_la_auditoria(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
@@ -138,29 +138,23 @@ class AuditoriaAtomicaTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('admin.pacientes.update', $paciente), [
-                'nombre' => $paciente->nombre,
+                'nombre' => 'Nombre que no debe quedar',
                 'apellido' => $paciente->apellido,
-                'telefono' => $paciente->telefono,
+                'telefono' => $paciente->telefono ?? '7551020089',
                 'email' => $paciente->email,
-                'curp' => 'GORP800101HDFRZL09',
-                'rfc' => 'GORP800101AB1',
-                'ine_clave' => 'ABC123456789012345',
-                'tutor_id' => null,
             ])
             ->assertStatus(503)
             ->assertSee('No se guardaron los cambios');
 
         $this->assertDatabaseHas('pacientes', [
             'id' => $paciente->id,
-            'curp' => null,
-            'rfc' => null,
-            'ine_clave' => null,
+            'nombre' => $paciente->nombre,
         ]);
     }
 
     public function test_el_historial_clinico_se_revierte_si_falla_la_auditoria(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',

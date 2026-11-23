@@ -26,7 +26,7 @@ class BarraListasYPagoTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     public function test_la_barra_va_arriba_con_el_boton_de_crear_dentro(): void

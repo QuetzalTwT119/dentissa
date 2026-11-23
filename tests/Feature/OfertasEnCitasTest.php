@@ -70,7 +70,7 @@ class OfertasEnCitasTest extends TestCase
 
     public function test_la_cita_guarda_la_oferta_y_ocupa_un_lugar(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin, 'activo' => true]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
         $oferta = $this->oferta();
 
         $this->agendar()->assertRedirect(route('citas.publica.create'))
@@ -131,7 +131,7 @@ class OfertasEnCitasTest extends TestCase
 
     public function test_solo_se_ligan_ofertas_a_tratamientos_que_se_agendan(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $inactivo = Tratamiento::create(['nombre' => 'Carillas', 'duracion_estimada' => 60, 'categoria' => 'Estética', 'activo' => false]);
         $this->servicio->tratamientos()->attach($inactivo);
 
@@ -161,7 +161,7 @@ class OfertasEnCitasTest extends TestCase
 
     public function test_el_descuento_nuevo_solo_es_en_porcentaje(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $base = ['titulo' => 'Prueba de oferta', 'descripcion' => 'Válida para pacientes nuevos y de siempre.', 'beneficio' => 'descuento', 'cantidad' => 300, 'fecha_fin' => now()->addWeek()->toDateString()];
 
         $this->actingAs($admin)->post(route('admin.ofertas.store'), $base + ['unidad' => 'monto'])->assertSessionHasErrors('unidad');
@@ -211,7 +211,7 @@ class OfertasEnCitasTest extends TestCase
     /** QA: la portada mostraba menos del máximo si una de las primeras estaba agotada, y "ya se ve" no siempre era cierto. */
     public function test_la_portada_muestra_hasta_12_disponibles_y_el_mensaje_no_promete_de_mas(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         // La que vence primero está agotada: no debe "ocupar" uno de los 12 lugares.
         $agotada = $this->oferta(['titulo' => 'Agotada', 'cupo_total' => 1, 'fecha_fin' => now()->addDay()->toDateString()]);
         Cita::create(['id_paciente' => \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'López', 'telefono' => '5550001111'])->id,
@@ -237,7 +237,7 @@ class OfertasEnCitasTest extends TestCase
     /** QA: 100 % salía "−100%" en la portada; el tratamiento inactivo no decía por qué. */
     public function test_cien_por_ciento_es_gratis_y_el_tratamiento_inactivo_se_explica(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $inactivo = Tratamiento::create(['nombre' => 'Carillas', 'duracion_estimada' => 60, 'categoria' => 'Estética', 'activo' => false]);
         $base = ['titulo' => 'Prueba de oferta', 'descripcion' => 'Válida para pacientes nuevos y de siempre.', 'beneficio' => 'descuento', 'unidad' => 'porcentaje', 'fecha_fin' => now()->addWeek()->toDateString()];
 
@@ -246,5 +246,38 @@ class OfertasEnCitasTest extends TestCase
         $this->actingAs($admin)->post(route('admin.ofertas.store'), $base + ['cantidad' => 10, 'id_tratamiento' => $inactivo->id])
             ->assertSessionHasErrors(['id_tratamiento' => 'Ese tratamiento ya no se agenda en línea (está inactivo). Elige otro o actívalo en Catálogo.']);
         $this->assertSame(0, Oferta::count());
+    }
+
+    /**
+     * QA (22/11/2026, encontrado por el usuario): la lista decía "Publicada" de
+     * una oferta cuyo tratamiento estaba inactivo y que no se veía en ningún lado.
+     */
+    public function test_la_lista_dice_cuando_una_publicada_no_se_ve_y_por_que(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
+        $inactivo = Tratamiento::create(['nombre' => 'Ortodoncia', 'duracion_estimada' => 60, 'categoria' => 'Ortodoncia', 'activo' => false]);
+        $this->servicio->tratamientos()->attach($inactivo);
+
+        $visible = $this->oferta(['titulo' => 'Se ve bien', 'cupo_total' => 0]);
+        $this->oferta(['titulo' => 'De tratamiento inactivo', 'id_tratamiento' => $inactivo->id, 'cupo_total' => 0]);
+        $vencida = $this->oferta(['titulo' => 'Ya vencida', 'cupo_total' => 0]);
+        $vencida->forceFill(['fecha_fin' => now()->subDay()->toDateString()])->save();
+
+        $html = $this->actingAs($admin)->get(route('admin.ofertas.index'))->assertOk()->getContent();
+
+        $this->assertSame(2, substr_count($html, 'data-no-visible'));
+        $this->assertStringContainsString('Publicada, no se ve', $html);
+        $this->assertStringContainsString('Su tratamiento está inactivo.', $html);
+        $this->assertStringContainsString('Venció el', $html);
+        // La que sí se ve sigue diciendo "Publicada".
+        $this->assertNull($visible->fresh()->motivoNoVisible([$visible->id]));
+
+        // Sin lugares, o fuera de las que caben en la portada, también se explica.
+        $sinLugar = $this->oferta(['titulo' => 'Sin lugar', 'cupo_total' => 1]);
+        Cita::create(['id_paciente' => \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'López', 'telefono' => '5550002222'])->id,
+            'id_servicio' => $this->servicio->id, 'id_tratamiento' => $this->tratamiento->id, 'id_oferta' => $sinLugar->id,
+            'fecha_hora' => $this->fecha->copy()->setTime(9, 0), 'duracion_estimada' => 30, 'estado' => EstadoCita::Confirmada]);
+        $this->assertStringStartsWith('Ya no le quedan lugares.', $sinLugar->fresh()->motivoNoVisible(Oferta::paraPortada()->pluck('id')->all()));
+        $this->assertStringStartsWith('La portada muestra las', $visible->fresh()->motivoNoVisible([]));
     }
 }

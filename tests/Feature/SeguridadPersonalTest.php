@@ -24,11 +24,12 @@ class SeguridadPersonalTest extends TestCase
     public function test_una_cuenta_desactivada_pierde_la_sesion_al_instante(): void
     {
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente, 'activo' => true]);
-        $this->actingAs($asistente)->get(route('citas.index'))->assertOk();
+        // 22/11/2026: la asistente solo tiene el panel de inicio (config/permisos.php).
+        $this->actingAs($asistente)->get(route('dashboard'))->assertOk();
 
         $asistente->update(['activo' => false]);
 
-        $this->get(route('citas.index'))
+        $this->get(route('dashboard'))
             ->assertRedirect(route('login'))
             ->assertSessionHasErrors(['email' => 'Tu cuenta fue desactivada. Si crees que es un error, habla con el administrador.']);
         $this->assertGuest();
@@ -111,7 +112,7 @@ class SeguridadPersonalTest extends TestCase
 
     public function test_el_personal_activa_la_verificacion_y_recibe_codigos_de_recuperacion(): void
     {
-        $usuario = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $usuario = User::factory()->create(['rol' => RolUsuario::Doctor]);
 
         $this->actingAs($usuario)->get(route('dos-pasos.show'))
             ->assertOk()
@@ -142,7 +143,7 @@ class SeguridadPersonalTest extends TestCase
     public function test_el_administrador_sin_verificacion_solo_puede_activarla(): void
     {
         config(['dentissa.seguridad.dos_pasos_admin_obligatorio' => true]);
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
 
         $this->actingAs($admin)->get(route('admin.pacientes.index'))->assertRedirect(route('dos-pasos.show'));
@@ -151,31 +152,31 @@ class SeguridadPersonalTest extends TestCase
         // Las páginas públicas y cerrar sesión siguen disponibles.
         $this->actingAs($admin)->get('/')->assertOk();
 
-        $this->actingAs($asistente)->get(route('citas.index'))->assertOk();
+        // La asistente no está obligada a usar dos pasos (no ve historiales clínicos).
+        $this->actingAs($asistente)->get(route('dashboard'))->assertOk();
     }
 
-    public function test_el_administrador_no_puede_desactivarla_pero_la_asistente_si(): void
+    public function test_el_administrador_no_puede_desactivarla_y_la_asistente_no_tiene_acceso(): void
     {
         config(['dentissa.seguridad.dos_pasos_admin_obligatorio' => true]);
-        $admin = $this->conDosPasos(User::factory()->create(['rol' => RolUsuario::Admin]));
+        $admin = $this->conDosPasos(User::factory()->create(['rol' => RolUsuario::SuperAdmin]));
         $asistente = $this->conDosPasos(User::factory()->create(['rol' => RolUsuario::Asistente]));
 
         $this->actingAs($admin)->delete(route('dos-pasos.desactivar'), ['current_password' => 'password'])
             ->assertSessionHasErrors('current_password');
         $this->assertTrue($admin->fresh()->tieneDosPasos());
 
-        $this->actingAs($asistente)->delete(route('dos-pasos.desactivar'), ['current_password' => 'incorrecta'])
-            ->assertSessionHasErrors('current_password');
+        // 22/11/2026: la asistente solo tiene el panel de inicio; Mi perfil y dos pasos no.
         $this->actingAs($asistente)->delete(route('dos-pasos.desactivar'), ['current_password' => 'password'])
-            ->assertSessionHasNoErrors();
-        $this->assertFalse($asistente->fresh()->tieneDosPasos());
+            ->assertForbidden();
+        $this->assertTrue($asistente->fresh()->tieneDosPasos());
     }
 
     // ── Verificación en dos pasos: al iniciar sesión ──────────────────────
 
     public function test_con_verificacion_la_contrasena_sola_no_abre_sesion(): void
     {
-        $admin = $this->conDosPasos(User::factory()->create(['rol' => RolUsuario::Admin]));
+        $admin = $this->conDosPasos(User::factory()->create(['rol' => RolUsuario::SuperAdmin]));
 
         $this->post(route('login'), ['email' => $admin->email, 'password' => 'password'])
             ->assertRedirect(route('dos-pasos.reto'));

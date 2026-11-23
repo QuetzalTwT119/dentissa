@@ -27,7 +27,8 @@ $estadoClase = [
 
                 <x-pagination-summary :items="$testimonios" label="testimonios">
                     <x-slot:filtros>
-                        <x-filtro.barra :action="route('admin.testimonios.index')" :campos="['estado']">
+                        <x-filtro.barra :action="route('admin.testimonios.index')" :campos="['buscar', 'estado']">
+                            <x-filtro.buscar name="buscar" etiqueta="Buscar testimonios" placeholder="Paciente o comentario…" />
                             <x-filtro.select name="estado" etiqueta="Filtrar por estado" todos="Todos los testimonios" :opciones="['pendiente' => 'Pendientes', 'aprobado' => 'Aprobados', 'rechazado' => 'Rechazados']" />
                         </x-filtro.barra>
                     </x-slot:filtros>
@@ -39,7 +40,7 @@ $estadoClase = [
                             <th class="px-6 py-3.5">Calificación</th>
                             <th class="px-6 py-3.5">Comentario</th>
                             <th class="px-6 py-3.5">Estado</th>
-                            <th class="px-6 py-3.5 text-right lg:text-center">Acciones</th>
+                            <th class="px-6 py-3.5 text-right">Acciones</th>
                         </tr>
                     </x-slot:head>
 
@@ -53,7 +54,10 @@ $estadoClase = [
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-amber-400 tracking-label font-semibold whitespace-nowrap">{{ str_repeat('★', $testimonio->calificacion) }}</td>
-                            <td class="max-w-[18rem] truncate px-6 py-4 text-ink" title="{{ $testimonio->comentario }}">{{ $testimonio->comentario }}</td>
+                            {{-- Para moderar hay que leerlo entero: 3 líneas y "Leer completo" (antes una línea cortada). --}}
+                            <td class="min-w-[16rem] max-w-[26rem] whitespace-normal px-6 py-4 text-ink">
+                                <x-texto-expandible :texto="$testimonio->comentario" lineas="3" />
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <x-chip class="{{ $estadoClase[$testimonio->estado->value] ?? 'bg-shell text-ink' }}">
                                     {{ $estadoLabel[$testimonio->estado->value] ?? $testimonio->estado->value }}
@@ -61,16 +65,16 @@ $estadoClase = [
                             </td>
                             <td class="w-px whitespace-nowrap px-6 py-4 text-right">
                                 <x-admin.acciones-fila :eliminar="route('admin.testimonios.destroy', $testimonio)" que="el testimonio" confirmar-titulo="¿Eliminar este testimonio?">
-                                    {{-- Moderación: mismos botones redondos que Editar/Eliminar. --}}
+                                    {{-- Moderación: pulgar arriba/abajo (22/11/2026; antes ✓ y ✕, ambiguos). --}}
                                     @if ($testimonio->estado->value !== 'aprobado')
-                                        <x-admin.boton-fila :action="route('admin.testimonios.aprobar', $testimonio)" icono="check" color="sage"
+                                        <x-admin.boton-fila :action="route('admin.testimonios.aprobar', $testimonio)" icono="thumb-up" color="sage"
                                                             :etiqueta="'Aprobar testimonio de '.$testimonio->paciente?->nombre"
                                                             titulo="¿Aprobar y publicar este testimonio?"
                                                             mensaje="Se mostrará en la portada con el nombre y la inicial del paciente."
                                                             boton="Sí, aprobar" />
                                     @endif
                                     @if ($testimonio->estado->value !== 'rechazado')
-                                        <x-admin.boton-fila :action="route('admin.testimonios.rechazar', $testimonio)" icono="x" color="amber"
+                                        <x-admin.boton-fila :action="route('admin.testimonios.rechazar', $testimonio)" icono="thumb-down" color="amber"
                                                             :etiqueta="'Rechazar testimonio de '.$testimonio->paciente?->nombre"
                                                             titulo="¿Rechazar este testimonio?"
                                                             :mensaje="$testimonio->estado->value === 'aprobado' ? 'Dejará de mostrarse en la portada. Podrás aprobarlo después.' : 'No se mostrará en la portada. Podrás aprobarlo después.'"

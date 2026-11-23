@@ -21,7 +21,7 @@ class OrdenServiciosTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     private function nombresEnOrden(): array
@@ -73,7 +73,7 @@ class OrdenServiciosTest extends TestCase
         $this->actingAs($this->admin)
             ->get(route('admin.servicios.index'))
             ->assertOk()
-            ->assertSee('Posición en el carrusel')
+            ->assertSee('Orden en la portada')
             ->assertSee('data-posicion-servicio="1"', false)
             ->assertSee('Subir «Odontología Estética» un lugar')
             ->assertSee('Bajar «Odontología General» un lugar');

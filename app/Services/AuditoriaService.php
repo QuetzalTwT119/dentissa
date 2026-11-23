@@ -76,7 +76,7 @@ class AuditoriaService
 
         // La bitácora sirve para rendición de cuentas del personal, no para
         // registrar solicitudes hechas por pacientes o integraciones externas.
-        if (! $usuario || ! in_array($usuario->rol, [RolUsuario::Admin, RolUsuario::Asistente], true)) {
+        if (! $usuario || ! $usuario->rol instanceof RolUsuario) {
             return;
         }
 
@@ -108,7 +108,13 @@ class AuditoriaService
                 'datos_nuevos' => $datosNuevos ?: null,
                 'ip' => $request?->ip(),
                 'user_agent' => $request?->userAgent(),
+                // 22/11/2026: hora de la aplicación. Antes la ponía la base de datos
+                // (hora universal) y Control de actividades salía 6 horas adelantado.
+                'fecha' => now(),
             ]);
+
+            // Este cambio ya tiene evento con detalle: el genérico del observador sobra.
+            app(\App\Support\BitacoraPendiente::class)->marcarDetallado($modelo->getTable(), $modelo->getKey());
         } catch (Throwable $e) {
             Log::error('No se pudo escribir la auditoría de Dentissa', [
                 'accion' => $accion,

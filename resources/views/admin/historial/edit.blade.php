@@ -9,8 +9,10 @@
 
     <div class="panel-pagina py-8 sm:py-10">
         <div class="panel-contenido mx-auto max-w-5xl space-y-6 px-4 sm:px-6 lg:px-8">
+            {{-- Alergias y riesgos antes de escribir la consulta (22/11/2026). --}}
+            <x-aviso-clinico :historia="$paciente->historiaClinica" class="mb-6" />
             <x-admin.card class="p-5 sm:p-8">
-                <form method="POST" action="{{ route('admin.pacientes.historial.update', [$paciente, $historial]) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del registro?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="formulario-panel space-y-6">
+                <form method="POST" action="{{ route('admin.pacientes.historial.update', [$paciente, $historial]) }}" data-confirmar="Los cambios se aplicarán de inmediato." data-confirmar-titulo="¿Guardar los cambios del registro?" data-confirmar-boton="Sí, guardar" data-confirmar-tono="normal" class="formulario-panel formulario-una-columna space-y-6">
                     @csrf
                     @method('put')
 

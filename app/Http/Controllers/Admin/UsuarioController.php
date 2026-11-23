@@ -24,26 +24,49 @@ class UsuarioController extends Controller
 {
     public function index(Request $request): View
     {
-        $validated = $request->validate([
+        $validated = $this->filtros($request, [
             'rol' => ['nullable', Rule::enum(RolUsuario::class)],
             'activo' => ['nullable', 'in:0,1'],
         ]);
 
-        $usuarios = User::when($request->filled('rol'), fn ($q) => $q->where('rol', $validated['rol']))
-            ->when($request->filled('activo'), fn ($q) => $q->where('activo', $validated['activo']))
+        $usuarios = User::withCount('consultasRegistradas')
+            ->when(filled($validated['rol'] ?? null), fn ($q) => $q->where('rol', $validated['rol']))
+            ->when(filled($validated['activo'] ?? null), fn ($q) => $q->where('activo', $validated['activo']))
             ->orderBy('nombre')
             ->paginate($this->paginationPageSize($request))
             ->withQueryString();
 
         return view('admin.usuarios.index', [
             'usuarios' => $usuarios,
-            'filtros' => $request->only(['rol', 'activo']),
+            'filtros' => $validated,
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('admin.usuarios.create');
+        return view('admin.usuarios.create', [
+            'rolesAsignables' => $this->rolesAsignables($request->user()),
+        ]);
+    }
+
+    /**
+     * Roles que puede dar quien crea la cuenta (22/11/2026). Solo la doctora
+     * titular (super_admin) crea otra cuenta super_admin: así nadie con menos
+     * permisos se los puede dar a sí mismo o a otra cuenta.
+     *
+     * @return list<RolUsuario>
+     */
+    private function rolesAsignables(User $quien): array
+    {
+        return $quien->rol === RolUsuario::SuperAdmin
+            ? [RolUsuario::Asistente, RolUsuario::Doctor, RolUsuario::SuperAdmin]
+            : [RolUsuario::Asistente, RolUsuario::Doctor];
+    }
+
+    /** La cuenta super_admin solo la desactiva o elimina otra super_admin. */
+    private function protegerSuperAdmin(Request $request, User $usuario): void
+    {
+        abort_if($usuario->rol === RolUsuario::SuperAdmin && $request->user()->rol !== RolUsuario::SuperAdmin, 403);
     }
 
     public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
@@ -53,7 +76,7 @@ class UsuarioController extends Controller
             'apellido' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'telefono' => ['required', 'string', 'max:20'],
-            'rol' => ['required', Rule::enum(RolUsuario::class)],
+            'rol' => ['required', Rule::in(array_map(fn (RolUsuario $r) => $r->value, $this->rolesAsignables($request->user())))],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -75,54 +98,38 @@ class UsuarioController extends Controller
         return Redirect::route('admin.usuarios.index')->with('success', "Usuario {$request->input('nombre')} {$request->input('apellido')} creado.");
     }
 
-    public function edit(User $usuario): View
+    /**
+     * Eliminar (22/11/2026). Nunca la cuenta propia, y nunca a quien registró
+     * consultas: se borrarían en cascada del historial de los pacientes; para
+     * esas cuentas está "Desactivar". La bitácora conserva su nombre.
+     */
+    public function destroy(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse
     {
-        return view('admin.usuarios.edit', [
-            'usuario' => $usuario,
-        ]);
-    }
+        abort_if($usuario->is($request->user()), 422, 'No puedes eliminar tu propia cuenta.');
+        $this->protegerSuperAdmin($request, $usuario);
 
-    public function update(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse
-    {
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:100'],
-            'apellido' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($usuario->id)],
-            'telefono' => ['required', 'string', 'max:20'],
-            'rol' => ['required', Rule::enum(RolUsuario::class)],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-        ]);
+        $consultas = $usuario->consultasRegistradas()->count();
+        if ($consultas > 0) {
+            return Redirect::route('admin.usuarios.index')->with('error', "No se puede eliminar a {$usuario->nombre} {$usuario->apellido}: registró {$consultas} ".($consultas === 1 ? 'consulta clínica' : 'consultas clínicas').'. Desactívalo para conservarlas.');
+        }
 
+        $nombre = trim($usuario->nombre.' '.$usuario->apellido);
         $auditoria->registrarCambio(
             $request,
-            'usuario.actualizado',
+            'usuario.eliminado',
             $usuario,
-            ['nombre', 'apellido', 'email', 'telefono', 'rol', 'activo'],
-            function () use ($usuario, $validated) {
-                $usuario->fill([
-                    'nombre' => $validated['nombre'],
-                    'apellido' => $validated['apellido'],
-                    'email' => $validated['email'],
-                    'telefono' => $validated['telefono'],
-                    'rol' => $validated['rol'],
-                ]);
-
-                if (! empty($validated['password'])) {
-                    $usuario->password = Hash::make($validated['password']);
-                }
-
-                $usuario->save();
-
-                return $usuario;
-            },
+            ['nombre', 'apellido', 'email', 'rol'],
+            fn () => $usuario->delete(),
+            eliminado: true,
         );
 
-        return Redirect::route('admin.usuarios.index')->with('success', "Datos de {$usuario->nombre} {$usuario->apellido} guardados.");
+        return Redirect::route('admin.usuarios.index')->with('success', "Usuario {$nombre} eliminado.");
     }
 
     public function toggleActivo(Request $request, User $usuario, AuditoriaService $auditoria): RedirectResponse
     {
         abort_if($usuario->id === $request->user()->id, 422, 'No puedes desactivar tu propia cuenta.');
+        $this->protegerSuperAdmin($request, $usuario);
 
         $auditoria->registrarCambio(
             $request,

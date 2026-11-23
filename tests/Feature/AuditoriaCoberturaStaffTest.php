@@ -17,7 +17,7 @@ class AuditoriaCoberturaStaffTest extends TestCase
         $admin = User::factory()->create([
             'nombre' => 'Melissa',
             'apellido' => 'Admin',
-            'rol' => RolUsuario::Admin,
+            'rol' => RolUsuario::SuperAdmin,
         ]);
 
         $this->actingAs($admin)
@@ -37,7 +37,7 @@ class AuditoriaCoberturaStaffTest extends TestCase
 
         $this->assertSame($admin->id, $evento->actor_user_id);
         $this->assertSame('Melissa Admin', $evento->actor_nombre);
-        $this->assertSame(RolUsuario::Admin->value, $evento->actor_rol);
+        $this->assertSame(RolUsuario::SuperAdmin->value, $evento->actor_rol);
         $this->assertSame($usuario->id, $evento->registro_id);
         $this->assertSame('asistente', $evento->datos_nuevos['rol']);
         $this->assertArrayNotHasKey('password', $evento->datos_nuevos);
@@ -49,7 +49,7 @@ class AuditoriaCoberturaStaffTest extends TestCase
         $asistente = User::factory()->create([
             'nombre' => 'Ana',
             'apellido' => 'Inicial',
-            'rol' => RolUsuario::Asistente,
+            'rol' => RolUsuario::Doctor, // 22/11/2026: la asistente ya no tiene Mi perfil
         ]);
 
         $this->actingAs($asistente)
@@ -64,7 +64,7 @@ class AuditoriaCoberturaStaffTest extends TestCase
         $evento = LogAuditoria::where('accion', 'perfil.actualizado')->firstOrFail();
 
         $this->assertSame($asistente->id, $evento->actor_user_id);
-        $this->assertSame('asistente', $evento->actor_rol);
+        $this->assertSame('doctor', $evento->actor_rol);
         $this->assertSame('Inicial', $evento->datos_anteriores['apellido']);
         $this->assertSame('Actualizada', $evento->datos_nuevos['apellido']);
         $this->assertArrayNotHasKey('password', $evento->datos_nuevos);

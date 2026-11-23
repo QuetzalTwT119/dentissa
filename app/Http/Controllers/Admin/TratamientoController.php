@@ -16,12 +16,26 @@ class TratamientoController extends Controller
 {
     public function index(Request $request): View
     {
+        // Filtros globales (x-filtro.barra, 22/11/2026). Buscar = texto libre.
+        $filtros = $this->filtros($request, [
+            'buscar' => ['nullable', 'string', 'max:100'],
+            'activo' => ['nullable', 'in:1,0'],
+            'servicio' => ['nullable', 'integer'],
+        ]);
+
         return view('admin.tratamientos.index', [
+            // citas_activas: con alguna, no se puede eliminar (22/11/2026, la lista lo dice).
             'tratamientos' => Tratamiento::query()
+                ->withCount(['citas as citas_activas' => fn ($c) => $c->whereNotIn('estado', [\App\Enums\EstadoCita::Cancelada, \App\Enums\EstadoCita::Completada, \App\Enums\EstadoCita::NoAsistio])])
                 ->with(['servicios' => fn ($q) => $q->select('servicios.id', 'servicios.nombre', 'servicios.activo')
                     ->withCount(['tratamientos as tratamientos_activos_count' => fn ($t) => $t->where('tratamientos.activo', true)])])
+                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->whereContiene('nombre', $texto))
+                ->when(isset($filtros['activo']), fn ($q) => $q->where('activo', $filtros['activo'] === '1'))
+                ->when($filtros['servicio'] ?? null, fn ($q, $id) => $q->whereHas('servicios', fn ($s) => $s->whereKey($id)))
                 ->orderBy('nombre')
-                ->paginate($this->paginationPageSize($request)),
+                ->paginate($this->paginationPageSize($request))
+                ->withQueryString(),
+            'serviciosFiltro' => \App\Models\Servicio::orderBy('orden')->orderBy('id')->pluck('nombre', 'id')->all(),
         ]);
     }
 

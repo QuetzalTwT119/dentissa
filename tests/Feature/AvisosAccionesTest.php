@@ -25,7 +25,7 @@ class AvisosAccionesTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     public function test_crear_guardar_y_eliminar_un_tratamiento_avisan_que_paso(): void

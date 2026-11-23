@@ -44,23 +44,16 @@
                     <div>
                         <x-input-label for="rol" value="Rol" />
                         <x-select id="rol" name="rol" class="mt-1.5">
-                            <option value="asistente" @selected(old('rol', 'asistente') === 'asistente')>Asistente</option>
-                            <option value="admin" @selected(old('rol') === 'admin')>Admin</option>
+                            {{-- Roles del mapa de permisos (22/11/2026); super_admin solo lo da otra super_admin. --}}
+                            @foreach ($rolesAsignables as $rol)
+                                <option value="{{ $rol->value }}" @selected(old('rol', 'asistente') === $rol->value)>{{ $rol->etiqueta() }}</option>
+                            @endforeach
                         </x-select>
                         <x-input-error :messages="$errors->get('rol')" class="mt-2" />
                     </div>
 
-                    <div>
-                        <x-input-label :required="true" for="password" value="Contraseña" />
-                        <x-text-input id="password" name="password" type="password" class="mt-1.5 block w-full" required />
-                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                    </div>
-
-                    <div>
-                        <x-input-label :required="true" for="password_confirmation" value="Confirmar contraseña" />
-                        <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="mt-1.5 block w-full" required />
-                        <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-                    </div>
+                    {{-- Mismo par global que Editar y Mi perfil: 👁 para ver y aviso de si coinciden. --}}
+                    <x-contrasena-nueva class="sm:col-span-2" :requerida="true" etiqueta="Contraseña" />
 
                     <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button>Guardar</x-primary-button>

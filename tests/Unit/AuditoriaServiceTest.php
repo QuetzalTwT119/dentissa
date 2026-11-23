@@ -44,7 +44,7 @@ class AuditoriaServiceTest extends TestCase
             'nombre' => 'Admin',
             'apellido' => 'QA',
             'email' => 'admin-auditoria@example.test',
-            'rol' => RolUsuario::Admin,
+            'rol' => RolUsuario::SuperAdmin,
         ]));
 
         try {

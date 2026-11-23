@@ -13,7 +13,7 @@ class DashboardVisualTest extends TestCase
 
     public function test_admin_sees_the_branded_dashboard_and_its_main_actions(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
 
         $this->actingAs($admin)
             ->get(route('dashboard'))
@@ -23,7 +23,9 @@ class DashboardVisualTest extends TestCase
             ->assertSee('Agendar cita')
             ->assertSee('Pacientes')
             ->assertSee('Gestión')
-            ->assertSee('logo-rosa-transparente.png');
+            // Marca global (22/11/2026): la misma firma que la portada.
+            ->assertSee('data-marca', false)
+            ->assertSee('Dra. Melissa López');
     }
 
     public function test_assistant_dashboard_speaks_to_the_staff_not_to_patients(): void
@@ -33,9 +35,12 @@ class DashboardVisualTest extends TestCase
         $this->actingAs($asistente)
             ->get(route('dashboard'))
             ->assertOk()
-            ->assertSee('Panel de asistencia')
+            // 22/11/2026: la asistente solo tiene el panel de inicio; sin botones a secciones cerradas.
             ->assertSee('Tu espacio de trabajo')
-            ->assertSee('Ver agenda')
+            ->assertSee('data-solo-inicio', false)
+            ->assertDontSee('Ver agenda')
+            ->assertDontSee(route('citas.index'), false)
+            ->assertDontSee(route('profile.edit'), false)
             ->assertDontSee('Portal de Paciente')
             ->assertDontSee('Ver mis citas');
     }

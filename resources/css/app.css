@@ -1177,6 +1177,19 @@
         padding: 1rem 1.5rem !important;
     }
 
+    /*
+     * Cuestionarios (p. ej. Nueva/Editar consulta, 22/11/2026): una pregunta por
+     * renglón, con aire entre ellas. La fila de datos cortos conserva sus columnas.
+     */
+    .formulario-panel.formulario-una-columna {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+    }
+
+    .formulario-panel.formulario-una-columna > [class*="sm:grid-cols-2"] {
+        display: grid;
+    }
+
     /* Formularios con muchos campos cortos (p. ej. Ofertas): 3 columnas. */
     .formulario-panel.formulario-3 {
         grid-template-columns: repeat(3, minmax(0, 1fr));

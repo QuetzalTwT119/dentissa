@@ -141,6 +141,50 @@ class Oferta extends Model
             ->values();
     }
 
+    /**
+     * Por qué una oferta PUBLICADA no se ve en la portada ni al agendar; null si
+     * sí se ve (22/11/2026: la lista decía "Publicada" aunque su tratamiento
+     * estuviera inactivo y no apareciera en ningún lado). $enPortada: ids que
+     * muestra la portada (Oferta::paraPortada()), calculado una vez por lista.
+     */
+    public function motivoNoVisible(array $enPortada): ?string
+    {
+        if ($this->estado !== EstadoOferta::Activa) {
+            return null;
+        }
+
+        $tratamiento = $this->tratamiento;
+        $agendable = ! $tratamiento || ($tratamiento->activo && ($tratamiento->servicios_activos
+            ?? $tratamiento->servicios()->where('activo', true)->count()) > 0);
+
+        return match (true) {
+            $this->fecha_fin->lt(today()) => 'Venció el '.$this->fecha_fin->locale('es')->translatedFormat('j \d\e F').'. Cambia «Válida hasta» para volver a mostrarla.',
+            $this->fecha_inicio->gt(today()) => 'Empieza el '.$this->fecha_inicio->locale('es')->translatedFormat('j \d\e F').'.',
+            ! $agendable => 'Su tratamiento está inactivo. Actívalo en Catálogo o elige otro al editarla.',
+            $this->lugaresQuedan() === 0 => 'Ya no le quedan lugares. Sube «Lugares disponibles» para volver a mostrarla.',
+            ! in_array($this->id, $enPortada, true) => 'La portada muestra las '.self::MAXIMO_PORTADA.' que vencen primero; aparecerá cuando alguna termine o se oculte.',
+            default => null,
+        };
+    }
+
+    /**
+     * Por qué NO se puede publicar; null si sí (22/11/2026). Una sola regla para
+     * el botón ✓ de la lista y para OfertaController::publicar(): antes la lista
+     * ofrecía ✓ en ofertas que el servidor después rechazaba.
+     */
+    public function motivoNoPublicable(): ?string
+    {
+        if ($this->fecha_fin->lt(today())) {
+            return 'Ya venció. Cambia «Válida hasta» antes de publicarla.';
+        }
+
+        if ($this->id_tratamiento && ! Tratamiento::agendables()->whereKey($this->id_tratamiento)->exists()) {
+            return 'Su tratamiento está inactivo. Actívalo en Catálogo o cambia el tratamiento antes de publicarla.';
+        }
+
+        return null;
+    }
+
     /** Citas que ocupan un lugar: todas menos canceladas e inasistencias (esas lo liberan). */
     public const ESTADOS_QUE_LIBERAN = [EstadoCita::Cancelada, EstadoCita::NoAsistio];
 

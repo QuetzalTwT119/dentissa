@@ -30,7 +30,7 @@ class ListaCitasPorDiaTest extends TestCase
 
         // Miércoles 9 de enero de 2030, 10:00.
         Carbon::setTestNow(Carbon::parse('2030-01-09 10:00:00', 'America/Mexico_City'));
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
     }
 
     protected function tearDown(): void

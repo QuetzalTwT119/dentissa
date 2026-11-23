@@ -119,7 +119,7 @@ class DisponibilidadMesTest extends TestCase
     {
         $this->crearCita('2030-01-10 08:00', 600);
         $cita = $this->crearCita('2030-01-10 08:00', 600);
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $asistente = User::factory()->create(['rol' => RolUsuario::Doctor]); // Personal con Agenda (22/11/2026: la asistente ya no la tiene).
 
         $dias = $this->actingAs($asistente)
             ->getJson($this->ruta(['mes' => '2030-01', 'exclude_cita_id' => $cita->id]))
@@ -132,7 +132,7 @@ class DisponibilidadMesTest extends TestCase
     public function test_reagendar_usa_el_calendario_sin_contar_la_cita_que_se_mueve(): void
     {
         $cita = $this->crearCita('2030-01-10 10:00', 60);
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $asistente = User::factory()->create(['rol' => RolUsuario::Doctor]); // Personal con Agenda (22/11/2026: la asistente ya no la tiene).
 
         $this->actingAs($asistente)
             ->get(route('citas.edit', $cita))

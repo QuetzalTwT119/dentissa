@@ -33,7 +33,7 @@ class OcupacionSemanalTest extends TestCase
         parent::setUp();
         Carbon::setTestNow('2030-01-09 10:00:00'); // miércoles
 
-        $this->admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $this->admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $this->servicio = Servicio::create(['nombre' => 'Odontología General', 'orden' => 1, 'activo' => true]);
         $this->tratamiento = Tratamiento::create(['nombre' => 'Limpieza Dental', 'duracion_estimada' => 60, 'activo' => true]);
     }

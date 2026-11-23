@@ -12,7 +12,7 @@ class AuditoriaController extends Controller
 {
     public function index(Request $request): View
     {
-        $filtros = $request->validate([
+        $filtros = $this->filtros($request, [
             'accion' => ['nullable', 'string', 'max:50'],
             // Se acepta también el ID de una cuenta eliminada, cuyo registro
             // permanece en actor_user_id aunque ya no exista en users.

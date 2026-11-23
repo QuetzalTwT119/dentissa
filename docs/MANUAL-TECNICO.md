@@ -339,6 +339,9 @@ Revisa ambos jobs en la pestaña **Actions** antes de integrar un pull request.
 
 ## 8. Capas principales
 
+El árbol completo de carpetas y el de pantallas por rol están en
+[`docs/ARBOL-DEL-PROYECTO.md`](ARBOL-DEL-PROYECTO.md).
+
 - **Rutas:** definen URLs públicas, autenticadas y administrativas.
 - **Controladores:** validan la entrada y coordinan el caso de uso.
 - **Modelos:** representan usuarios, pacientes, servicios, tratamientos,
@@ -354,10 +357,11 @@ apellido, correo o teléfono. El campo tiene una etiqueta accesible y se adapta
 al ancho disponible; la tabla mantiene su ancho legible y permite
 desplazamiento horizontal en pantallas estrechas.
 
-La edición administrativa permite actualizar nombre, apellido, teléfono, correo,
-identificadores oficiales y tutor/responsable. Nombre y apellido son obligatorios;
-correo es opcional y único entre pacientes. El teléfono opcional valida diez
-dígitos y admite separadores visuales y el prefijo mexicano `+52`. El registro
+La edición administrativa permite actualizar nombre, apellido, teléfono celular y
+correo (desde H-61, 22/11/2026, ya no CURP, RFC, clave de elector ni tutor; lo guardado
+antes se conserva en la base). Nombre, apellido y teléfono son obligatorios; el correo
+es opcional y único entre pacientes. El teléfono valida diez dígitos y admite
+separadores visuales y el prefijo mexicano `+52`. El registro
 de auditoría conserva solo los nombres de los campos modificados, no los valores
 de correo o teléfono.
 
@@ -524,6 +528,32 @@ disponible y no envía consultas de prueba a un servicio real.
 
 ## 11. Historial y notificaciones
 
+**Cuestionario de historia clínica (H-63, 22/11/2026).** Tabla `historias_clinicas`, una
+por paciente (`Paciente::historiaClinica()`, `id_paciente` único). Datos generales,
+antecedentes familiares y personales, alergias, medicamentos, embarazo/lactancia (solo
+`sexo = femenino`), antecedentes dentales, hábitos y observaciones. Las listas se guardan
+como JSON con solo las claves marcadas; opciones y nombres en las constantes de
+`App\Models\HistoriaClinica` (agregar una opción no cambia la base). `alertas()` arma el
+aviso rojo (`x-aviso-clinico`): alergias, `RIESGO_PERSONALES`, embarazo y reacción previa a
+la anestesia; sale en el expediente y al crear o editar una consulta.
+`HistoriaClinicaController` (`admin.pacientes.historia.edit/update`, módulo `pacientes` de
+config/permisos.php): el formulario reemplaza la historia completa (campo que no llega =
+vacío) y Control de actividades guarda solo `campos_modificados` (nunca valores de salud).
+El PDF del historial incluye la historia y se puede descargar con historia aunque no haya
+consultas. En la Agenda, una cita **completada** sin consulta muestra "Registrar consulta"
+(abre `historial.create?id_cita=` con la cita y su fecha elegidas). La columna de Pacientes
+se llama "Consultas en expediente". El odontograma queda para una etapa posterior.
+
+**Acceso de la asistente (H-64, 22/11/2026).** Módulo propio `historia_clinica`
+(`admin.historias.*`, `admin.pacientes.historia.*`), declarado **antes** de `pacientes` en
+config/permisos.php porque `Permisos::moduloDeRuta()` devuelve el primero que coincide.
+Lo tienen las tres cuentas; la asistente queda con `['inicio', 'historia_clinica']`.
+Para ella hay una lista propia, `/admin/historias-clinicas` (`HistoriaClinicaController@index`,
+buscar por nombre o teléfono, estado Llena/Pendiente) y un enlace "Historias clínicas" en el
+menú solo si no tiene `pacientes`. `HistoriaClinicaController::urlRegreso()` decide el regreso
+(expediente o lista). Consultas, notas privadas, adjuntos y PDF siguen en `pacientes`.
+Nueva/Editar consulta usan `.formulario-panel.formulario-una-columna` (una pregunta por renglón).
+
 Las notificaciones de cita guardan también `id_cita`, lo que permite enlazar
 un aviso con la cita que lo originó sin depender únicamente del texto del
 mensaje.
@@ -652,18 +682,41 @@ los metadatos definidos por los emisores de auditoría. Las entradas históricas
 de canales externos creadas antes de limitar el alcance permanecen en la base,
 pero no se muestran en esta vista.
 
-## 13. Autorización por rol
+## 13. Autorización por rol (RBAC, 22/11/2026)
 
-Las rutas autenticadas de agenda usan `auth`; las rutas bajo `/admin` añaden el
-middleware `role:admin`. El endpoint de PDF del historial vuelve a la ficha con
-un aviso cuando el historial aún no tiene consultas; las notas `notas_doctor`
-no se renderizan en ese PDF. `CitaPolicy` permite las operaciones internas de cita
-al personal con rol `admin` o `asistente`, mientras que los adjuntos del
-historial clínico están reservados a `admin`. La prueba
-`PermisosPorRolTest` verifica que el asistente reciba 403 en 12 páginas
-administrativas y al intentar modificar horarios, y que un visitante sea
-redirigido al login. Las 3 pruebas (15 aserciones) y la suite completa pasaron
-en SQLite en memoria y en MySQL 8.4 con el schema aislado `dentissa_test`.
+**Tres roles** (`App\Enums\RolUsuario`): `super_admin` (la doctora dueña, "Doctora
+titular"), `doctor` (doctores asociados) y `asistente`. Antes eran `admin` y
+`asistente`; la migración `2026_11_22_000003_roles_super_admin_doctor_asistente`
+cambia `users.rol` de `enum` a `string(20)` y pasa las cuentas `admin` a `super_admin`.
+
+**Un solo mapa de permisos: `config/permisos.php`.**
+- `modulos`: cada módulo agrupa nombres de ruta (con comodines): `inicio`, `cuenta`
+  (Mi perfil y dos pasos), `notificaciones`, `agenda`, `pacientes`, `usuarios`,
+  `reportes`, `mensajes`, `control_actividades`, `catalogo`, `contenido`, `configuracion`.
+- `roles`: `super_admin` → `*`; `doctor` → todos los módulos (igual que el antiguo
+  admin, temporal); `asistente` → solo `inicio`.
+- Para quitarle algo a `doctor` o darle algo a `asistente`, se edita su lista; no hay
+  que tocar rutas, menús ni controladores.
+
+**Quién lo lee:** el middleware `permiso` (`App\Http\Middleware\VerificarPermiso`,
+sustituye a `role:admin`) en el panel de inicio, en el grupo autenticado y en
+`/admin`: busca el módulo de la ruta actual (`App\Support\Permisos::moduloDeRuta()`)
+y niega con 403 si el rol no lo tiene. **Una ruta protegida sin módulo se niega a
+todos** (falla cerrado); `PermisosPorModuloTest` revisa que no quede ninguna.
+`User::puede($modulo)` lo usan el menú (`layouts/navigation`), el panel de inicio,
+`CitaPolicy` (módulo `agenda`), `HistorialImagenController` (`pacientes`), el canal
+en vivo (`notificaciones`) y `User::debeUsarDosPasos()` (quien tiene `pacientes`).
+`Permisos::valoresCon($modulo)` decide a quién llegan los avisos internos
+(`notificaciones`) y las alertas del sistema (`configuracion`).
+
+**Protección de la cuenta titular:** solo una `super_admin` crea otra `super_admin`
+y desactiva o elimina una cuenta `super_admin` (`UsuarioController::rolesAsignables()`
+y `protegerSuperAdmin()`). No da permisos nuevos a nadie: evita que un `doctor`
+(que conserva Usuarios) bloquee o borre a la dueña.
+
+El PDF del historial vuelve a la ficha con un aviso cuando aún no hay consultas; las
+notas `notas_doctor` no se renderizan en ese PDF. Pruebas: `PermisosPorModuloTest`
+(mapa completo, matriz de los 3 roles, menú, cuenta titular) y `PermisosPorRolTest`.
 
 ## 14. Respaldos y recuperación
 
@@ -1366,9 +1419,117 @@ administrador y el asistente gestionan los demás cambios desde el panel
   `CitaPublicaController::ofertasPorTratamiento()` manda TODAS las ofertas de
   cada tratamiento y la agenda toma la primera vigente en la fecha elegida,
   igual que `Oferta::aplicableA()`. Descuento máximo 99 % (100 % = Gratis).
+  `Oferta::motivoNoVisible()` explica en la lista por qué una Publicada no se ve.
+- **Acciones posibles (22/11/2026).** Ningún botón de fila ofrece algo que el
+  servidor rechace: `Oferta::motivoNoPublicable()` (lista y `publicar()`),
+  `x-admin.acciones-fila` con `bloqueo-eliminar` (Servicios y Tratamientos con
+  `citas_activas`) y la cuenta propia en Usuarios. En su lugar, `x-ayuda` ⚠ con el
+  motivo (`AccionesPosiblesTest`).
+- **Filtros sin sorpresas (22/11/2026).** Las listas leen sus filtros con
+  `Controller::filtros($request, $reglas)`: un valor inválido se ignora (antes
+  `$request->validate()` regresaba a la página anterior). Las búsquedas usan
+  `whereContiene()` / `orWhereContiene()` (macro en `AppServiceProvider`): `%`,
+  `_` y `!` se escapan con `ESCAPE '!'`, igual en MySQL y SQLite.
+- **Filtro global en todas las listas que crecen (22/11/2026).** `x-filtro.barra`
+  (buscar + estado, y tratamiento o especialidad donde aplica) en Ofertas,
+  Tratamientos, Preguntas frecuentes, Casos y Galería, con `withQueryString()`
+  para conservar el filtro al cambiar de página (`FiltrosListasTest`).
+- **Horarios y validación al guardar (H-58, 22/11/2026).** `DisponibilidadService::horariosDisponibles()`
+  ofrece un inicio si `inicio + duración <= cierre` (el margen de limpieza solo entra en `tieneCupo()`, entre
+  citas). `estaDisponible()` ahora también llama a `dentroDelHorario()`: inicio ≥ apertura, fin ≤ cierre y
+  minutos desde la apertura múltiplo de `dentissa.intervalo_minutos`. Toda vía que guarde citas (panel,
+  agenda pública, asistente, Telegram) pasa por ahí.
+- **Botones de WhatsApp no aplicables (H-59).** `WhatsappWebhookController` contesta `textoNoAplicada()`
+  cuando la cita no existe o es de otro teléfono (mismo texto en ambos casos). Recordatorio: el webhook
+  de Meta apunta a una sola instancia (Railway); los botones de un recordatorio enviado desde local llegan
+  allá y no tocan la base local.
+- **Usuarios: crear, desactivar y eliminar (H-57, 22/11/2026).** `Route::resource('usuarios')->only([index,
+  create, store, destroy])` + `usuarios.activo.toggle`; ya no hay `edit`/`update` (las reglas de rol de
+  H-55 quedan sin camino para romperse). `destroy()` rechaza la cuenta propia (422) y a quien tenga
+  `consultasRegistradas` (`User::hasMany(HistorialClinico, id_doctor)`), porque `historial_clinico.id_doctor`
+  tiene `cascadeOnDelete`. Bitácora: `usuario.eliminado`; `logs_auditoria` conserva el nombre (`actor_nombre`).
+- **Contraseñas y cuenta propia (H-56, 22/11/2026).** `x-campo-contrasena` (input con 👁) y
+  `x-contrasena-nueva` (par nueva/confirmar con Alpine `nueva`/`confirmar`, requisitos y aviso en
+  vivo; props `prefijo`, `errores`, `requerida`, `etiqueta`, `ayuda`). Usar estas piezas en
+  cualquier formulario nuevo de contraseña. `UsuarioController::edit()` de la cuenta propia
+  redirige a `profile.edit`; la lista no muestra ✎ en esa fila.
+- **Rol propio y último administrador (H-55, 22/11/2026).** `UsuarioController::update()` rechaza
+  (`ValidationException` en `rol`) cambiar el rol de la cuenta con sesión y degradar al último
+  administrador activo; la vista de la cuenta propia muestra el rol sin `<select>`. Mismo
+  criterio que `toggleActivo` (no desactivarse a uno mismo).
+- **Historial como ícono (H-54).** `x-icon` `expediente`; el enlace va en el slot de
+  `x-admin.acciones-fila` y la cifra de Consultas también lleva al historial.
+- **Acciones solo con íconos (H-53, 22/11/2026).** Regla: las acciones de fila son solo
+  ícono (se quitó `texto` de `x-admin.boton-fila`); cada una con un dibujo propio de `x-icon`:
+  `eye`/`eye-off` (publicar/ocultar), `thumb-up`/`thumb-down` (aprobar/rechazar),
+  `mail-open`/`mail` (marcar leído/sin leer); `aria-label`/`title` y el diálogo dan el nombre.
+  `x-ayuda` info vuelve a gris (`text-muted`); el amarillo queda solo para ⚠.
+- **Acciones alineadas a la derecha (H-52, 22/11/2026).** Regla: el grupo de acciones y el
+  encabezado "Acciones" van a la derecha (no centrados), para que Editar y Eliminar queden
+  en la misma columna aunque el primer botón tenga palabra. Una acción que no se puede hacer
+  se muestra apagada con su ⚠ (nunca un ⚠ suelto en su lugar): `x-ayuda` acepta el slot `icono`.
+- **Íconos claros y ventana de cambios (H-51, 22/11/2026).** `x-admin.boton-fila` tiene `texto`
+  (píldora con ícono + palabra) para acciones que el ícono no explica; regla: editar, eliminar
+  y flechas sin texto. Ícono nuevo `eye-off` en `x-icon`. `x-ayuda` tono info: círculo
+  `fill-amber-400` con la "i" `fill-amber-950`. "Ver cambios" usa `x-modal`
+  (`$dispatch('open-modal', 'cambios-{id}')`); las ventanas se dibujan después de la
+  tabla para que la tabla que se desliza de lado no las descoloque.
+- **"Disponible" solo en la lista (H-50, 22/11/2026).** `ServicioController::validated()` ya no
+  acepta `activo` ni `icono`: `store()` crea con `activo = true` y `update()` no lo toca; solo
+  `estado()` (interruptor de la lista) lo cambia. `_formulario` avisa si el servicio está oculto.
+- **"Ver cambios" legible (H-49, 22/11/2026).** `App\Support\DetalleBitacora::filas($registro)`
+  devuelve `[campo, antes, despues]` en palabras: con antes y después solo lo que cambió;
+  oculta campos internos (`icono`, `id`, marcas de tiempo); nombres por tabla
+  (`servicios.activo` = "Disponible"); ids → nombres con una consulta por tipo y página
+  (`reiniciar()` al inicio de la vista). La vista abre el detalle como `<tr colspan=5>`
+  debajo del evento (Alpine `abiertos` en la tarjeta), con la caja fija a la izquierda
+  (`sticky`) para leerse en celular sin deslizar la tabla. Al agregar un campo nuevo a la
+  bitácora, darle nombre en `DetalleBitacora::CAMPOS` y, si es una lista de opciones, en `VALORES`.
+- **Servicio: un formulario y un nombre (H-48, 22/11/2026).** `create` y `edit` incluyen
+  `admin/servicios/_formulario` (`$esNuevo = ! $servicio->exists`); `create()` manda
+  `new Servicio(['activo' => true])` y los tratamientos agendables (`tratamientosAgendables()`),
+  y `store()` también sincroniza `tratamiento_ids`. El campo `icono` ya no se pide (la portada
+  usa la foto). `servicios.activo` se muestra como "Disponible / No disponible": oculta el
+  servicio en portada, agenda pública, Nueva cita del panel, asistente y Telegram.
+- **Menú del panel desde 1024 px y marca única (H-47, 22/11/2026).** `layouts/navigation`
+  muestra el menú completo con `lg:` (antes `2xl:`, 1536 px); entre `lg` y `xl` reduce
+  el relleno de los enlaces (`px-3 xl:px-4`, también en `x-nav-link` y `x-nav-dropdown`) y
+  esconde el nombre del usuario (`sr-only xl:not-sr-only`) y la firma de la marca solo en ese rango (`lg:sr-only xl:not-sr-only`) (siguen
+  para lectores de pantalla). `x-marca` (`href`, `tono` claro/oscuro, `tamano`,
+  `textoDesde`) es el logotipo con firma en portada, agenda pública, inicio de sesión y
+  panel; usa `images/9.jpg` (31 KB; el PNG pesaba 150 KB). Regla: el sistema se usa en
+  celular, tableta, laptop, PC, TV y proyector; revisar 375, 768, 1024, 1280, 1366 y 1920 px.
+- **Interruptor de estado global (H-46, 22/11/2026).** `x-admin.interruptor-estado`
+  (`action`, `activo`, `nombre`, `activar`/`desactivar` para el diálogo, `textoActivo`/
+  `textoInactivo`, slot `bloqueo`). Rutas `PATCH …/{modelo}/estado` en servicios, casos,
+  galería y preguntas frecuentes, con el trait `Concerns\AlternaEstado` (`alternarCampo()`:
+  invierte el campo con `AuditoriaService::registrarCambio` y regresa con mensaje).
+  Tratamientos (`tratamientos.estado`) y Usuarios (`usuarios.activo.toggle`) conservan
+  sus reglas (precio, cuenta propia) y usan el mismo componente.
+- **Servicios con filtro global (H-45, 22/11/2026).** `buscar` y `activo` como
+  Tratamientos. La vista recibe `posiciones` (id → lugar real en el carrusel) y
+  `totalServicios`; con `filtrando` no se muestran las flechas de `servicios.mover`.
 - **"Auditoría" se llama "Control de actividades" (22/11/2026).** Solo cambia lo
-  que ve el usuario (menú, título, mensajes y manual de usuario); la ruta
-  `admin.auditoria.index`, la tabla `logs_auditoria` y `AuditoriaService` siguen igual.
+  que ve el usuario (menú, título, mensajes y manual de usuario); el nombre de
+  ruta `admin.auditoria.index`, la tabla `logs_auditoria` y `AuditoriaService` siguen igual.
+  La dirección sí cambió (H-43): `/admin/control-de-actividades`; `/admin/auditoria`
+  redirige con 301 conservando los filtros de la consulta.
+- **Control de actividades sin duplicados y con la hora correcta (H-43, 22/11/2026).**
+  `AuditoriaObserver` ya no escribe al momento: deja su evento genérico en
+  `App\Support\BitacoraPendiente` (singleton `scoped`, uno por petición) y se escribe
+  en `terminating()` solo si ese `tabla#id` no tuvo evento con detalle de
+  `AuditoriaService` (que llama `marcarDetallado()`). El observador ahora guarda
+  también nombre y rol de quien hizo el cambio. `AuditoriaService` pone `fecha = now()`:
+  antes la ponía MySQL en hora universal y se veía 6 horas adelantado. La migración
+  `2026_11_22_000002_corregir_hora_y_duplicados_de_la_bitacora` (solo MySQL) corrige la
+  hora del historial y borra los genéricos duplicados (en local: 374 → 218 registros).
+- **Texto largo con "Leer completo" (H-44, 22/11/2026).** `x-texto-expandible`
+  (`texto`, `lineas` 2–5, `comillas`) recorta con `line-clamp` y respeta saltos de línea;
+  en `init()` mide si hay texto oculto y solo entonces muestra el botón. Se usa en
+  los testimonios de la portada y del panel. Testimonios del panel tiene `buscar`
+  (paciente por palabra en nombre o apellido, o comentario) con `whereContiene`.
+  Nota de pruebas: el navegador integrado puede pausar `requestAnimationFrame`;
+  `x-show` espera un cuadro para mostrar, así que hay que forzar el dibujado.
 - **Configuración en una sola página (22/11/2026).** `GET admin.configuracion`
   (`ConfiguracionController`) muestra `admin/configuracion/_consultorio` y
   `_horarios`, cada uno con su `<form>`; las rutas `admin.horarios.edit` y

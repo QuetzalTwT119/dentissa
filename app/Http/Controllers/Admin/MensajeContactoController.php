@@ -13,18 +13,18 @@ class MensajeContactoController extends Controller
 {
     public function index(Request $request): View
     {
-        $validated = $request->validate([
+        $validated = $this->filtros($request, [
             'leido' => ['nullable', 'in:0,1'],
         ]);
 
         $mensajes = MensajeContacto::when(
-            $request->filled('leido'),
+            filled($validated['leido'] ?? null),
             fn ($q) => $q->where('leido', $validated['leido'])
         )->orderByDesc('created_at')->paginate($this->paginationPageSize($request))->withQueryString();
 
         return view('admin.mensajes-contacto.index', [
             'mensajes' => $mensajes,
-            'filtros' => $request->only('leido'),
+            'filtros' => $validated,
         ]);
     }
 

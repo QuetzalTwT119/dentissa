@@ -13,6 +13,9 @@
         .campo { margin-bottom: 4px; }
         .campo strong { display: inline-block; width: 140px; }
         .vacio { color: #9ca3af; text-align: center; padding: 20px; }
+        .historia { border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; margin-bottom: 18px; }
+        .historia h2 { font-size: 13px; color: #d75078; margin: 0 0 6px; }
+        .riesgo { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -21,6 +24,32 @@
         Paciente: {{ $paciente->nombre }} {{ $paciente->apellido }}
         &middot; Generado el {{ now()->format('d/m/Y H:i') }}
     </p>
+
+    {{-- Historia clínica (cuestionario, 22/11/2026). --}}
+    @if ($historia = $paciente->historiaClinica)
+        @php $HC = \App\Models\HistoriaClinica::class; $lista = fn ($claves, $cat) => implode(', ', $HC::nombres($claves, $cat)) ?: 'Ninguno'; @endphp
+        <div class="historia">
+            <h2>Historia clínica</h2>
+            @if ($historia->alertas())
+                <div class="riesgo"><strong>Antes de atender:</strong> {{ implode(' · ', $historia->alertas()) }}</div>
+            @endif
+            <div class="campo"><strong>Edad / sexo:</strong> {{ $historia->edad() !== null ? $historia->edad().' años' : '—' }} · {{ $HC::SEXOS[$historia->sexo] ?? '—' }}</div>
+            <div class="campo"><strong>Ocupación:</strong> {{ $historia->ocupacion ?: '—' }}</div>
+            <div class="campo"><strong>Tipo de sangre:</strong> {{ $historia->tipo_sangre ?: '—' }}</div>
+            <div class="campo"><strong>Ant. familiares:</strong> {{ $lista($historia->antecedentes_familiares, $HC::ANTECEDENTES_FAMILIARES) }} {{ $historia->antecedentes_familiares_notas }}</div>
+            <div class="campo"><strong>Ant. personales:</strong> {{ $lista($historia->antecedentes_personales, $HC::ANTECEDENTES_PERSONALES) }} {{ $historia->antecedentes_personales_notas }}</div>
+            <div class="campo"><strong>Alergias:</strong> {{ $lista($historia->alergias, $HC::ALERGIAS) }} {{ $historia->alergias_otras }}</div>
+            <div class="campo"><strong>Medicamentos:</strong> {{ $historia->medicamentos_actuales ?: 'Ninguno' }}</div>
+            @if ($historia->sexo === 'femenino')
+                <div class="campo"><strong>Embarazo / lactancia:</strong> {{ $historia->embarazo ? 'Sí' : 'No' }} / {{ $historia->lactancia ? 'Sí' : 'No' }}</div>
+            @endif
+            <div class="campo"><strong>Ant. dentales:</strong> {{ $lista($historia->antecedentes_dentales, $HC::ANTECEDENTES_DENTALES) }} {{ $historia->ultima_visita_dentista ? '· Última visita: '.$historia->ultima_visita_dentista : '' }} {{ $historia->antecedentes_dentales_notas }}</div>
+            <div class="campo"><strong>Hábitos:</strong> {{ $lista($historia->habitos, $HC::HABITOS) }} {{ $historia->habitos_notas }}</div>
+            @if (filled($historia->observaciones))
+                <div class="campo"><strong>Observaciones:</strong> {{ $historia->observaciones }}</div>
+            @endif
+        </div>
+    @endif
 
     @forelse ($consultas as $consulta)
         <div class="consulta">

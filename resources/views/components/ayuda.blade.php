@@ -9,7 +9,11 @@
 
     Props:
       - etiqueta: nombre corto para lectores de pantalla (y el título del globo).
-      - tono: aviso (ámbar, algo que revisar) | info (gris, solo explica).
+      - Slot "icono" (22/11/2026): dibujo propio en lugar de ⚠/ⓘ, p. ej. la papelera
+        apagada de "No se puede eliminar" (antes un ⚠ suelto en su lugar, ambiguo).
+      - tono: aviso (⚠ ámbar, algo que revisar) | info (ⓘ gris, solo explica). Se probó
+        el ⓘ amarillo (22/11/2026) y se regresó: amarillo ya significa "revisa esto" (⚠)
+        y junto a un interruptor parecía una advertencia.
 --}}
 @props(['etiqueta', 'tono' => 'info'])
 
@@ -45,10 +49,12 @@
             x-on:focus="abrir()" x-on:blur="cerrar()"
             x-on:click.prevent="abierto ? cerrar() : abrir()"
             x-on:click.outside="cerrar()">
-        @if ($tono === 'aviso')
+        @if (isset($icono) && $icono->isNotEmpty())
+            {{ $icono }}
+        @elseif ($tono === 'aviso')
             <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8.5 3.3a1.7 1.7 0 0 1 3 0l6.3 11.2A1.7 1.7 0 0 1 16.3 17H3.7a1.7 1.7 0 0 1-1.5-2.5L8.5 3.3ZM10 7a.9.9 0 0 0-.9.9v3.4a.9.9 0 1 0 1.8 0V7.9A.9.9 0 0 0 10 7Zm0 7.6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/></svg>
         @else
-            <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a1 1 0 0 0 0 2v3a1 1 0 0 0 1 1h1a1 1 0 1 0 0-2v-3a1 1 0 0 0-1-1H9Z" clip-rule="evenodd"/></svg>
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-ayuda-info><path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a1 1 0 0 0 0 2v3a1 1 0 0 0 1 1h1a1 1 0 1 0 0-2v-3a1 1 0 0 0-1-1H9Z" clip-rule="evenodd"/></svg>
         @endif
     </button>
     <span x-show="abierto" x-cloak role="tooltip" x-bind:style="estilo"

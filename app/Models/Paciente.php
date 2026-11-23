@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'id_usuario', 'nombre', 'apellido', 'telefono', 'email',
@@ -58,6 +59,12 @@ class Paciente extends Model
     public function testimonios(): HasMany
     {
         return $this->hasMany(Testimonio::class, 'id_paciente');
+    }
+
+    /** Cuestionario de historia clínica (una por paciente, 22/11/2026). */
+    public function historiaClinica(): HasOne
+    {
+        return $this->hasOne(HistoriaClinica::class, 'id_paciente');
     }
 
     public function historialClinico(): HasMany

@@ -76,7 +76,7 @@ class DiagnosticoTest extends TestCase
 
     public function test_avisa_si_un_administrador_no_ha_activado_la_verificacion(): void
     {
-        User::factory()->create(['rol' => RolUsuario::Admin, 'activo' => true]);
+        User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
 
         $detalles = array_column(app(DiagnosticoService::class)->ejecutar(), 'detalle');
 

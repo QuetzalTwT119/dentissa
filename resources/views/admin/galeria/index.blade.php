@@ -13,6 +13,12 @@
             <x-admin.card>
 
                 <x-pagination-summary :items="$imagenes" label="imágenes">
+                    <x-slot:filtros>
+                        <x-filtro.barra :action="route('admin.galeria.index')" :campos="['buscar', 'activa']">
+                            <x-filtro.buscar name="buscar" etiqueta="Buscar imágenes" placeholder="Título de la imagen…" />
+                            <x-filtro.select name="activa" etiqueta="Filtrar por estado" todos="Todos los estados" :opciones="['1' => 'Activas', '0' => 'Inactivas']" />
+                        </x-filtro.barra>
+                    </x-slot:filtros>
                     <x-slot:acciones>
                         <a href="{{ route('admin.galeria.create') }}" class="btn-brand min-h-11 px-5">
                             <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
@@ -33,20 +39,16 @@
                                         <h3 class="truncate text-sm font-semibold text-ink">{{ $imagen->titulo ?: 'Sin título' }}</h3>
                                         <div class="mt-1.5 flex items-center justify-between text-xs text-muted">
                                             <span>Orden: <strong class="text-ink">{{ $imagen->orden }}</strong></span>
-                                            <x-admin.status-badge :active="$imagen->activa" />
+                                            <x-admin.interruptor-estado :action="route('admin.galeria.estado', $imagen)" :activo="$imagen->activa" :nombre="$imagen->titulo ?: 'Foto'"
+                                                                        textoActivo="Activa" textoInactivo="Inactiva"
+                                                                        desactivar="Dejará de mostrarse en la galería." activar="Se mostrará en la galería." />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="p-4 pt-0">
-                                    <div class="flex items-center justify-between border-t border-line/60 pt-3 text-xs font-semibold">
-                                        <a href="{{ route('admin.galeria.edit', $imagen) }}" class="text-brand-600 hover:text-brand-800 transition">Editar</a>
-                                        <form method="POST" action="{{ route('admin.galeria.destroy', $imagen) }}"
-                                              data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Eliminar esta imagen de la galería?" data-confirmar-boton="Sí, eliminar" data-confirmar-tono="peligro">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="submit" class="text-rose-600 hover:text-rose-800 transition">Eliminar</button>
-                                        </form>
-                                    </div>
+                                    {{-- Acciones globales (22/11/2026; antes enlaces de texto propios). --}}
+                                    <x-admin.acciones-fila class="border-t border-line/60 pt-3" :editar="route('admin.galeria.edit', $imagen)" :eliminar="route('admin.galeria.destroy', $imagen)"
+                                                           que="la imagen" :nombre="$imagen->titulo" confirmar-titulo="¿Eliminar esta imagen de la galería?" />
                                 </div>
                             </div>
                         @empty

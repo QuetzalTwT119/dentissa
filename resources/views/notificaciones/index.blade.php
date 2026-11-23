@@ -44,30 +44,19 @@
                 </article>
             </section>
 
-            <section class="overflow-hidden rounded-2xl border border-line bg-white shadow-soft" aria-label="Filtros de notificaciones">
-                <nav class="flex gap-1 overflow-x-auto border-b border-line px-4 pt-3" aria-label="Filtrar notificaciones">
-                    @foreach ([
-                        'todas' => ['label' => 'Todas', 'count' => $total],
-                        'pendientes' => ['label' => 'Pendientes', 'count' => $noLeidas],
-                        'leidas' => ['label' => 'Leídas', 'count' => $leidas],
-                    ] as $estado => $filtro)
-                        <a href="{{ route('notificaciones.index', ['estado' => $estado]) }}" @class([
-                            'inline-flex shrink-0 items-center gap-2 rounded-t-xl border-b-2 px-4 py-3 text-xs font-semibold uppercase tracking-label transition',
-                            'border-brand-600 text-brand-700 bg-brand-50/50' => $estadoActual === $estado,
-                            'border-transparent text-ink-soft hover:border-line hover:text-ink' => $estadoActual !== $estado,
-                        ]) @if ($estadoActual === $estado) aria-current="page" @endif>
-                            {{ $filtro['label'] }}
-                            <span @class([
-                                'rounded-full px-2 py-0.5 text-caption font-semibold',
-                                'bg-brand-600 text-white' => $estadoActual === $estado,
-                                'bg-cream text-muted border border-line' => $estadoActual !== $estado,
-                            ])>{{ $filtro['count'] }}</span>
-                        </a>
-                    @endforeach
-                </nav>
-            </section>
-
-            <x-pagination-summary :items="$notificaciones" label="notificaciones" :integrated="false" />
+            {{--
+                22/11/2026: el filtro es el global (menú, como en las demás listas);
+                antes eran pestañas Todas / Pendientes / Leídas. Las cifras siguen
+                en las tarjetas de arriba y dentro del menú.
+            --}}
+            <x-pagination-summary :items="$notificaciones" label="notificaciones" :integrated="false">
+                <x-slot:filtros>
+                    <x-filtro.barra :action="route('notificaciones.index')" :campos="['estado']">
+                        <x-filtro.select name="estado" etiqueta="Filtrar notificaciones" :todos="'Todas ('.$total.')'"
+                                         :opciones="['pendientes' => 'Pendientes ('.$noLeidas.')', 'leidas' => 'Leídas ('.$leidas.')']" />
+                    </x-filtro.barra>
+                </x-slot:filtros>
+            </x-pagination-summary>
 
             <section class="lista-panel space-y-6" aria-label="Lista de notificaciones" aria-live="polite">
                 @if ($notificaciones->isNotEmpty())

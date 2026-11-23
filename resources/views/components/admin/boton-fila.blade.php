@@ -15,6 +15,11 @@
       - titulo, mensaje, boton: textos del diálogo de confirmación.
       - tono: normal (por omisión) | peligro.
       - color: brand | sage | amber | rose | muted.
+      Solo ícono, igual que Editar/Eliminar (22/11/2026). Se probó ícono + palabra y
+      la columna de acciones se ensanchaba hasta salirse de la tabla (Testimonios) y
+      mezclaba dos estilos; ahora cada acción usa un ícono que se entiende solo
+      (ojo = publicar, ojo tachado = ocultar, pulgar = aprobar/rechazar, sobre =
+      leído) y su nombre sale al pasar el mouse y en la confirmación.
 --}}
 @props([
     'action',
@@ -56,5 +61,6 @@
         @else
             {{ $slot }}
         @endif
+
     </button>
 </form>

@@ -32,7 +32,10 @@
                                 <div class="text-sm tracking-label text-amber-500" aria-label="{{ $estrellas }} de 5 estrellas">{{ str_repeat('★', $estrellas) }}<span class="text-line">{{ str_repeat('★', 5 - $estrellas) }}</span></div>
                                 <svg class="h-5 w-5 text-peach-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.6 6C6.5 7.3 4.5 10 4.5 13.4V18h6v-6H7.6c.2-1.9 1.4-3.4 3.2-4.2L9.6 6zm9 0c-3.1 1.3-5.1 4-5.1 7.4V18h6v-6h-2.9c.2-1.9 1.4-3.4 3.2-4.2L18.6 6z"/></svg>
                             </div>
-                            <blockquote class="mt-3 flex-1 text-callout italic leading-relaxed text-ink line-clamp-5" title="{{ $testimonio->comentario }}">“{{ $testimonio->comentario }}”</blockquote>
+                            {{-- Largo: "Leer completo" en lugar de cortarlo (antes solo se leía con el mouse). --}}
+                            <blockquote class="mt-3 flex-1 text-callout italic leading-relaxed text-ink">
+                                <x-texto-expandible :texto="$testimonio->comentario" lineas="5" comillas />
+                            </blockquote>
                             <figcaption class="mt-4 flex items-center gap-3 border-t border-line/80 pt-4">
                                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-peach-100 to-brand-100 text-xs font-semibold text-brand-800" aria-hidden="true">{{ $iniciales }}</span>
                                 <span class="min-w-0">

@@ -37,7 +37,7 @@ class DemoPresentacionSeeder extends Seeder
         }
 
         DB::transaction(function () use ($admin, $asistente): void {
-            $this->guardarCuenta($admin, RolUsuario::Admin, 'Admin', 'Demostración');
+            $this->guardarCuenta($admin, RolUsuario::SuperAdmin, 'Admin', 'Demostración');
             $this->guardarCuenta($asistente, RolUsuario::Asistente, 'Asistente', 'Demostración');
 
             $this->call(ServiciosTratamientosSeeder::class);

@@ -142,7 +142,7 @@ class RespaldoTest extends TestCase
 
     public function test_si_el_respaldo_falla_avisa_al_administrador(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin, 'activo' => true]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente, 'activo' => true]);
         config(['dentissa.respaldos.clave' => null]);
 

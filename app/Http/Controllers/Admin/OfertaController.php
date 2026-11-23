@@ -28,13 +28,27 @@ class OfertaController extends Controller
 
     public function index(Request $request): View
     {
+        // Filtros globales (x-filtro.barra, 22/11/2026). Buscar = texto libre.
+        $filtros = $this->filtros($request, [
+            'buscar' => ['nullable', 'string', 'max:100'],
+            'estado' => ['nullable', Rule::enum(EstadoOferta::class)],
+            'tratamiento' => ['nullable', 'integer'],
+        ]);
+
         return view('admin.ofertas.index', [
             // Primero las que esperan revisión.
             'ofertas' => Oferta::with(['tratamiento' => fn ($q) => $q->select('id', 'nombre', 'activo')->withCount(['servicios as servicios_activos' => fn ($s) => $s->where('activo', true)])])
+                ->when($filtros['buscar'] ?? null, fn ($q, $texto) => $q->whereContiene('titulo', $texto))
+                ->when($filtros['estado'] ?? null, fn ($q, $estado) => $q->where('estado', $estado))
+                ->when($filtros['tratamiento'] ?? null, fn ($q, $id) => $q->where('id_tratamiento', $id))
                 ->conLugaresUsados()
                 ->orderByRaw("CASE estado WHEN 'pendiente' THEN 0 WHEN 'activa' THEN 1 ELSE 2 END")
                 ->orderByDesc('fecha_inicio')
-                ->paginate($this->paginationPageSize($request)),
+                ->paginate($this->paginationPageSize($request))
+                ->withQueryString(),
+            'tratamientosFiltro' => Tratamiento::whereIn('id', Oferta::whereNotNull('id_tratamiento')->select('id_tratamiento'))->orderBy('nombre')->pluck('nombre', 'id')->all(),
+            // Para decir si una "Publicada" de verdad se ve (Oferta::motivoNoVisible()).
+            'enPortada' => Oferta::paraPortada()->pluck('id')->all(),
         ]);
     }
 
@@ -98,15 +112,10 @@ class OfertaController extends Controller
 
     public function publicar(Request $request, Oferta $oferta, AuditoriaService $auditoria): RedirectResponse
     {
-        // Ligada a un tratamiento que ya no se agenda en línea: no se publica (no se podría usar).
-        if ($oferta->id_tratamiento && ! Tratamiento::agendables()->whereKey($oferta->id_tratamiento)->exists()) {
+        // Misma regla que decide si la lista muestra ✓ (Oferta::motivoNoPublicable()).
+        if ($motivo = $oferta->motivoNoPublicable()) {
             return Redirect::route('admin.ofertas.index')
-                ->with('error', "La oferta «{$oferta->titulo}» es de un tratamiento inactivo. Actívalo en Catálogo o cambia el tratamiento antes de publicarla.");
-        }
-
-        if ($oferta->fecha_fin->lt(today())) {
-            return Redirect::route('admin.ofertas.index')
-                ->with('error', "La oferta «{$oferta->titulo}» ya venció. Cambia «Válida hasta» antes de publicarla.");
+                ->with('error', "La oferta «{$oferta->titulo}» no se puede publicar: {$motivo}");
         }
 
         $auditoria->registrarCambio($request, 'oferta.publicada', $oferta, ['estado'], fn () => $oferta->update(['estado' => EstadoOferta::Activa]));

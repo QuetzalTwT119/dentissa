@@ -15,7 +15,7 @@ class ProfileTest extends TestCase
 
     public function test_profile_page_is_displayed(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['rol' => \App\Enums\RolUsuario::Doctor]);
 
         $response = $this
             ->actingAs($user)
@@ -30,7 +30,7 @@ class ProfileTest extends TestCase
 
     public function test_profile_information_can_be_updated(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['rol' => \App\Enums\RolUsuario::Doctor]);
 
         $response = $this
             ->actingAs($user)
@@ -56,7 +56,7 @@ class ProfileTest extends TestCase
 
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['rol' => \App\Enums\RolUsuario::Doctor]);
 
         $response = $this
             ->actingAs($user)
@@ -77,7 +77,7 @@ class ProfileTest extends TestCase
     public function test_user_can_upload_a_private_profile_photo(): void
     {
         Storage::fake('local');
-        $user = User::factory()->create();
+        $user = User::factory()->create(['rol' => \App\Enums\RolUsuario::Doctor]);
 
         $response = $this->actingAs($user)->post('/profile/photo', [
             'foto_perfil' => UploadedFile::fake()->image('avatar.png', 500, 500),
@@ -96,7 +96,7 @@ class ProfileTest extends TestCase
     public function test_profile_photo_upload_rejects_non_images_and_oversized_images(): void
     {
         Storage::fake('local');
-        $user = User::factory()->create();
+        $user = User::factory()->create(['rol' => \App\Enums\RolUsuario::Doctor]);
 
         $this->actingAs($user)->post('/profile/photo', [
             'foto_perfil' => UploadedFile::fake()->create('notes.txt', 20, 'text/plain'),
@@ -113,7 +113,7 @@ class ProfileTest extends TestCase
     public function test_user_can_remove_their_profile_photo(): void
     {
         Storage::fake('local');
-        $user = User::factory()->create();
+        $user = User::factory()->create(['rol' => \App\Enums\RolUsuario::Doctor]);
         $path = UploadedFile::fake()->image('avatar.jpg')->store('profile-photos', 'local');
         $user->update(['foto_perfil' => $path]);
 
@@ -129,11 +129,12 @@ class ProfileTest extends TestCase
     {
         Storage::fake('local');
         $owner = User::factory()->create([
+            'rol' => \App\Enums\RolUsuario::Doctor,
             'foto_perfil' => UploadedFile::fake()->image('avatar.jpg')->store('profile-photos', 'local'),
         ]);
 
         $this->get('/profile/photo')->assertRedirect('/login');
-        $this->actingAs(User::factory()->create())->get('/profile/photo')->assertNotFound();
+        $this->actingAs(User::factory()->create(['rol' => \App\Enums\RolUsuario::Doctor]))->get('/profile/photo')->assertNotFound();
         $this->actingAs($owner)->get('/profile/photo')->assertOk();
     }
 }

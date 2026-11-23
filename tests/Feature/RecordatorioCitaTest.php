@@ -154,7 +154,7 @@ class RecordatorioCitaTest extends TestCase
         $cita = $this->cita('2030-01-10 09:00');
         $cita->update(['recordatorio_enviado_en' => now(), 'asistencia_confirmada_en' => now()]);
 
-        $this->actingAs(User::factory()->create(['rol' => RolUsuario::Admin]))
+        $this->actingAs(User::factory()->create(['rol' => RolUsuario::SuperAdmin]))
             ->put(route('citas.update', $cita), ['fecha' => '2030-01-10', 'hora' => '10:00'])
             ->assertSessionHasNoErrors();
 
@@ -205,7 +205,7 @@ class RecordatorioCitaTest extends TestCase
 
     public function test_confirmar_marca_la_asistencia_y_avisa_al_personal_una_vez(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin, 'activo' => true]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
         $cita = $this->cita('2030-01-10 09:00', EstadoCita::Agendada);
 
         $this->followingRedirects()->post($this->enlace($cita, 'confirmar', 'citas.recordatorio.responder'))
@@ -222,7 +222,7 @@ class RecordatorioCitaTest extends TestCase
 
     public function test_la_agenda_muestra_que_el_paciente_confirmo_su_asistencia(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $confirmada = $this->cita('2030-01-10 09:00');
         $this->cita('2030-01-10 09:30');
         $this->post($this->enlace($confirmada, 'confirmar', 'citas.recordatorio.responder'));
@@ -241,7 +241,7 @@ class RecordatorioCitaTest extends TestCase
 
     public function test_cancelar_libera_el_horario_y_avisa_al_personal(): void
     {
-        $admin = User::factory()->create(['rol' => RolUsuario::Admin, 'activo' => true]);
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
         $cita = $this->cita('2030-01-10 09:00');
 
         $this->followingRedirects()->post($this->enlace($cita, 'cancelar', 'citas.recordatorio.responder'))
@@ -257,7 +257,7 @@ class RecordatorioCitaTest extends TestCase
 
     public function test_reagendar_libera_el_horario_y_lleva_a_la_agenda_en_linea(): void
     {
-        User::factory()->create(['rol' => RolUsuario::Admin, 'activo' => true]);
+        User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
         $cita = $this->cita('2030-01-10 09:00');
 
         $this->followingRedirects()->post($this->enlace($cita, 'reagendar', 'citas.recordatorio.responder'))

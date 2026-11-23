@@ -4,6 +4,7 @@ use App\Enums\TipoImagen;
 use App\Http\Controllers\Admin\AuditoriaController;
 use App\Http\Controllers\Admin\CasoController;
 use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
+use App\Http\Controllers\Admin\HistoriaClinicaController;
 use App\Http\Controllers\Admin\HistorialClinicoController;
 use App\Http\Controllers\Admin\HorarioController;
 use App\Http\Controllers\Admin\MensajeContactoController as AdminMensajeContactoController;
@@ -164,23 +165,24 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified', 'no-cache'])->name('dashboard');
+})->middleware(['auth', 'verified', 'no-cache', 'permiso'])->name('dashboard');
 
-Route::middleware(['auth', 'no-cache'])->group(function () {
+// Panel: cada ruta pasa por "permiso" (módulo según config/permisos.php, 22/11/2026).
+Route::middleware(['auth', 'no-cache', 'permiso'])->group(function () {
     Route::get('/notificaciones', [NotificacionSistemaController::class, 'index'])
-        ->middleware('role:admin,asistente')->name('notificaciones.index');
+        ->name('notificaciones.index');
     Route::get('/notificaciones/actualizaciones', [NotificacionSistemaController::class, 'actualizaciones'])
-        ->middleware('role:admin,asistente')->name('notificaciones.actualizaciones');
+        ->name('notificaciones.actualizaciones');
     Route::patch('/notificaciones/{notificacion}/leida', [NotificacionSistemaController::class, 'marcarLeida'])
-        ->middleware('role:admin,asistente')->name('notificaciones.leida');
+        ->name('notificaciones.leida');
     Route::patch('/notificaciones/{notificacion}/atendida', [NotificacionSistemaController::class, 'marcarAtendida'])
-        ->middleware('role:admin,asistente')->name('notificaciones.atendida');
+        ->name('notificaciones.atendida');
     Route::patch('/notificaciones/{notificacion}/pendiente', [NotificacionSistemaController::class, 'marcarPendiente'])
-        ->middleware('role:admin,asistente')->name('notificaciones.pendiente');
+        ->name('notificaciones.pendiente');
     Route::patch('/notificaciones/leidas', [NotificacionSistemaController::class, 'marcarTodasLeidas'])
-        ->middleware('role:admin,asistente')->name('notificaciones.leidas');
+        ->name('notificaciones.leidas');
     Route::patch('/notificaciones/vistas', [NotificacionSistemaController::class, 'marcarTodasVistas'])
-        ->middleware('role:admin,asistente')->name('notificaciones.vistas');
+        ->name('notificaciones.vistas');
     Route::get('/asistente-agenda', [AsistenteAgendaController::class, 'create'])->name('asistente-agenda.create');
     Route::post('/asistente-agenda/proponer', [AsistenteAgendaController::class, 'proponer'])->name('asistente-agenda.proponer');
 
@@ -213,11 +215,15 @@ Route::middleware(['auth', 'no-cache'])->group(function () {
     Route::get('/galeria', [GaleriaController::class, 'index'])->name('galeria.index');
 });
 
-Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
+Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin.')->group(function () {
+    // 22/11/2026: "Auditoría" se llama "Control de actividades"; la dirección de antes redirige.
+    Route::get('control-de-actividades', [AuditoriaController::class, 'index'])->name('auditoria.index');
+    // Conserva los filtros (?accion=…) de un enlace guardado.
+    Route::get('auditoria', fn (\Illuminate\Http\Request $request) => redirect()->route('admin.auditoria.index', $request->query(), 301))->name('auditoria.anterior');
     Route::patch('servicios/{servicio}/tratamientos', [ServicioController::class, 'syncTratamientos'])->name('servicios.tratamientos.sync');
     Route::patch('servicios/{servicio}/mover/{direccion}', [ServicioController::class, 'mover'])
         ->whereIn('direccion', ['arriba', 'abajo'])->name('servicios.mover');
+    Route::patch('servicios/{servicio}/estado', [ServicioController::class, 'estado'])->name('servicios.estado');
     Route::resource('servicios', ServicioController::class)->except('show');
     Route::patch('tratamientos/{tratamiento}/estado', [TratamientoController::class, 'alternarEstado'])->name('tratamientos.estado');
     Route::resource('tratamientos', TratamientoController::class)->except('show');
@@ -230,6 +236,10 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::patch('mensajes/{mensaje}/leido', [AdminMensajeContactoController::class, 'toggleLeido'])->name('mensajes.toggleLeido');
     Route::delete('mensajes/{mensaje}', [AdminMensajeContactoController::class, 'destroy'])->name('mensajes.destroy');
 
+    // Cuestionario de historia clínica (22/11/2026): módulo "pacientes" de config/permisos.php.
+    Route::get('historias-clinicas', [HistoriaClinicaController::class, 'index'])->name('historias.index');
+    Route::get('pacientes/{paciente}/historia-clinica', [HistoriaClinicaController::class, 'edit'])->name('pacientes.historia.edit');
+    Route::put('pacientes/{paciente}/historia-clinica', [HistoriaClinicaController::class, 'update'])->name('pacientes.historia.update');
     Route::get('pacientes/{paciente}/historial', [HistorialClinicoController::class, 'index'])->name('pacientes.historial.index');
     Route::get('pacientes/{paciente}/historial/crear', [HistorialClinicoController::class, 'create'])->name('pacientes.historial.create');
     Route::post('pacientes/{paciente}/historial', [HistorialClinicoController::class, 'store'])->name('pacientes.historial.store');
@@ -241,10 +251,11 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::get('pacientes/{paciente}/historial-pdf', [HistorialClinicoController::class, 'pdf'])->name('pacientes.historial.pdf');
 
     Route::patch('usuarios/{usuario}/activo', [UsuarioController::class, 'toggleActivo'])->name('usuarios.activo.toggle');
-    // Sin destroy() a propósito: historial_clinico.id_doctor tiene cascadeOnDelete
-    // hacia users, así que borrar un usuario borraría en cascada el historial
-    // clínico que registró. "Desactivar" (toggleActivo) es la baja soportada.
-    Route::resource('usuarios', UsuarioController::class)->except(['show', 'destroy']);
+    // Usuarios (22/11/2026, decisión del usuario): solo crear, desactivar y eliminar.
+    // Sin editar: cada quien corrige sus datos y contraseña en Mi perfil.
+    // Eliminar se bloquea si registró consultas: historial_clinico.id_doctor tiene
+    // cascadeOnDelete y se borraría el historial de los pacientes (destroy() lo revisa).
+    Route::resource('usuarios', UsuarioController::class)->only(['index', 'create', 'store', 'destroy']);
 
     Route::get('reportes', [ReporteController::class, 'index'])->name('reportes.index');
     Route::get('reportes/pdf', [ReporteController::class, 'pdf'])->name('reportes.pdf');
@@ -265,6 +276,7 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::get('galeria/{imagen}/editar', [AdminGaleriaController::class, 'edit'])->name('galeria.edit');
     Route::put('galeria/{imagen}', [AdminGaleriaController::class, 'update'])->name('galeria.update');
     Route::delete('galeria/{imagen}', [AdminGaleriaController::class, 'destroy'])->name('galeria.destroy');
+    Route::patch('galeria/{imagen}/estado', [AdminGaleriaController::class, 'estado'])->name('galeria.estado');
 
     // Configuración: una sola página (22/11/2026). Las direcciones de antes llevan a su bloque.
     Route::get('configuracion', [ConfiguracionController::class, 'index'])->name('configuracion');
@@ -273,10 +285,12 @@ Route::middleware(['auth', 'role:admin', 'no-cache'])->prefix('admin')->name('ad
     Route::redirect('consultorio', '/admin/configuracion#consultorio')->name('consultorio.edit');
     Route::put('consultorio', [DatosConsultorioController::class, 'update'])->name('consultorio.update');
 
+    Route::patch('casos/{caso}/estado', [CasoController::class, 'estado'])->name('casos.estado');
     Route::resource('casos', CasoController::class)->except('show');
     Route::post('casos/{caso}/imagenes', [CasoController::class, 'storeImagen'])->name('casos.imagenes.store');
     Route::delete('casos/{caso}/imagenes/{imagen}', [CasoController::class, 'destroyImagen'])->name('casos.imagenes.destroy');
 
+    Route::patch('preguntas-frecuentes/{preguntas_frecuente}/estado', [PreguntaFrecuenteController::class, 'estado'])->name('preguntas-frecuentes.estado');
     Route::resource('preguntas-frecuentes', PreguntaFrecuenteController::class)->except('show');
 });
 
