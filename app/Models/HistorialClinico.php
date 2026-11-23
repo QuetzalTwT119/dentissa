@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'id_paciente', 'id_cita', 'id_doctor', 'fecha_consulta', 'motivo_consulta',
-    'diagnostico', 'tratamiento_realizado', 'medicamentos_recetados', 'observaciones',
+    'diagnostico', 'tratamiento_realizado', 'dientes', 'medicamentos_recetados', 'observaciones',
     'notas_doctor', 'tipo_consulta',
 ])]
 class HistorialClinico extends Model

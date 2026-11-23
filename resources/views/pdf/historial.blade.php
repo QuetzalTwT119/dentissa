@@ -56,6 +56,37 @@
         </div>
     @endif
 
+    {{-- Última exploración clínica con odontograma (23/11/2026). --}}
+    @if ($exploracion ?? null)
+        @php
+            $EX = \App\Models\ExploracionClinica::class;
+            $estructuras = collect($exploracion->estomatologico ?? [])->map(fn ($e, $k) => ($EX::ESTRUCTURAS[$k] ?? $k).': '.($e['hallazgo'] ?: 'normal'))->implode(' · ');
+            $encias = collect($exploracion->periodontal ?? [])->map(fn ($d, $k) => ($EX::PERIODONTAL[$k] ?? $k).' ('.$d.')')->implode(' · ');
+            $dientesPorEstado = collect($exploracion->odontograma ?? [])->groupBy(fn ($e) => $e, preserveKeys: true)
+                ->map(fn ($grupo, $e) => ($EX::ESTADOS_DIENTE[$e][0] ?? $e).': '.$grupo->keys()->implode(', '))->implode(' · ');
+        @endphp
+        <div class="historia">
+            <h2>Exploración clínica · {{ $exploracion->fecha->format('d/m/Y') }}{{ $exploracion->doctor ? ' · '.$exploracion->doctor->nombre.' '.$exploracion->doctor->apellido : '' }}</h2>
+            <div class="campo"><strong>Examen de la boca:</strong> {{ $estructuras ?: '—' }}</div>
+            <div class="campo"><strong>ATM:</strong> {{ $exploracion->atm ?: '—' }}</div>
+            <div class="campo"><strong>Encías:</strong> {{ $encias ?: 'Sin hallazgos' }}</div>
+            <div class="campo"><strong>Higiene / O'Leary:</strong> {{ $EX::HIGIENE[$exploracion->higiene_oral] ?? '—' }} · {{ $exploracion->indiceOleary() !== null ? $exploracion->indiceOleary().' %' : '—' }}</div>
+            @foreach ($exploracion->pulpares ?? [] as $fila)
+                <div class="campo"><strong>Pulpa, diente {{ $fila['diente'] ?? '—' }}:</strong> {{ $fila['signos'] }} {{ filled($fila['diagnostico'] ?? null) ? '· '.$fila['diagnostico'] : '' }}</div>
+            @endforeach
+            @foreach ($exploracion->radiografica ?? [] as $fila)
+                <div class="campo"><strong>Radiografía, diente {{ $fila['diente'] ?? '—' }}:</strong> {{ $fila['hallazgo'] }}</div>
+            @endforeach
+            <div class="campo"><strong>Odontograma:</strong> {{ $dientesPorEstado ?: 'Sin marcar' }}</div>
+            @if (filled($exploracion->otros_hallazgos))
+                <div class="campo"><strong>Otros hallazgos:</strong> {{ $exploracion->otros_hallazgos }}</div>
+            @endif
+            @if (filled($exploracion->diagnosticos))
+                <div class="campo"><strong>Diagnósticos:</strong> {{ $exploracion->diagnosticos }}</div>
+            @endif
+        </div>
+    @endif
+
     @forelse ($consultas as $consulta)
         <div class="consulta">
             <h2>
@@ -68,7 +99,7 @@
                 <div class="campo"><strong>Diagnóstico:</strong> {{ $consulta->diagnostico }}</div>
             @endif
             @if ($consulta->tratamiento_realizado)
-                <div class="campo"><strong>Tratamiento realizado:</strong> {{ $consulta->tratamiento_realizado }}</div>
+                <div class="campo"><strong>Tratamiento realizado:</strong> {{ $consulta->tratamiento_realizado }}{{ $consulta->dientes ? ' · Diente(s): '.$consulta->dientes : '' }}</div>
             @endif
             @if ($consulta->medicamentos_recetados)
                 <div class="campo"><strong>Medicamentos:</strong> {{ $consulta->medicamentos_recetados }}</div>

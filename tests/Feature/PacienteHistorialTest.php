@@ -224,7 +224,9 @@ class PacienteHistorialTest extends TestCase
         $response
             ->assertOk()
             ->assertSee('Este paciente todavía no tiene consultas registradas.')
-            ->assertSee('El PDF estará disponible cuando llenes la historia clínica o registres la primera consulta.')
+            ->assertSee('Registra la primera con «Nueva consulta», o desde la Agenda al completar su cita.')
+            ->assertSee('data-nueva-consulta', false)
+            ->assertSee('data-volver-pacientes', false)
             ->assertSee('disabled', false)
             ->assertDontSee('href="'.route('admin.pacientes.historial.pdf', $paciente).'"', false);
 

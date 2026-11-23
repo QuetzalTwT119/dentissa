@@ -345,7 +345,7 @@ class ConsistenciaDisenoTest extends TestCase
         $encabezados = $panel->filter(fn ($c, $r) => str_contains($c, '<x-slot name="header">') && ! str_contains($c, '<x-admin.header')
             && ! str_contains($r, 'servicios/_formulario') && ! str_contains($r, 'tratamientos/')
             // Cuestionario de historia clínica: migas + título propio (22/11/2026).
-            && ! str_contains($r, 'historia-clinica/'))->keys()->all();
+            && ! str_contains($r, 'historia-clinica/') && ! str_contains($r, 'exploracion-clinica/'))->keys()->all();
         $this->assertSame([], $encabezados, 'Encabezados hechos a mano');
 
         // Campos largos y listas de formulario: x-textarea / x-select.

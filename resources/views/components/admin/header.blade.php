@@ -10,8 +10,11 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between']) }}>
-    <div>
-        @if ($badge)
+    <div class="min-w-0">
+        {{-- Migas (23/11/2026): "Pacientes › Historial" en lugar de un botón "Volver" suelto. --}}
+        @if (isset($migas) && $migas->isNotEmpty())
+            <nav aria-label="Ruta" class="text-sm text-muted">{{ $migas }}</nav>
+        @elseif ($badge)
             <p class="eyebrow">{{ $badge }}</p>
         @endif
         <h1 class="mt-1.5 text-title-2 text-ink">

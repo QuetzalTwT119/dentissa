@@ -70,6 +70,13 @@ $valor = function (string $campo, $default = '') use ($historial) {
     <x-input-error :messages="$errors->get('tratamiento_realizado')" class="mt-2" />
 </div>
 
+{{-- En qué diente(s) se trabajó (23/11/2026, formato de historia clínica). --}}
+<div class="sm:max-w-sm">
+    <x-input-label for="dientes" value="Diente(s) tratados (opcional)" />
+    <x-text-input id="dientes" name="dientes" class="mt-1.5 block w-full" maxlength="100" placeholder="Por ejemplo: 16, 17" :value="$valor('dientes')" />
+    <x-input-error :messages="$errors->get('dientes')" class="mt-2" />
+</div>
+
 <div>
     <x-input-label for="medicamentos_recetados" value="Medicamentos recetados (opcional)" />
     <x-textarea id="medicamentos_recetados" name="medicamentos_recetados" rows="3" class="mt-1.5">{{ $valor('medicamentos_recetados') }}</x-textarea>

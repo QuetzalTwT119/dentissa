@@ -8,57 +8,38 @@ $tipoConsultaLabel = [
 @endphp
 
 <x-app-layout>
+    @php
+        $hayPdf = $consultas->isNotEmpty() || $paciente->historiaClinica || $paciente->exploracionesClinicas()->exists();
+        $iconoPdf = '<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>';
+    @endphp
     <x-slot name="header">
-        <x-admin.header
-            badge="Historial Clínico"
-            title="Historial de {{ $paciente->nombre }} {{ $paciente->apellido }}"
-            subtitle="Expediente clínico dental cronológico y adjuntos radiográficos."
-        >
-            <x-slot:actions>
-                <a href="{{ route('admin.pacientes.index') }}">
-                    <x-secondary-button class="inline-flex items-center gap-1.5">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Volver a Pacientes
-                    </x-secondary-button>
+        {{-- 23/11/2026: migas en lugar de "Volver a Pacientes"; el PDF arriba (es de todo el
+             expediente) y "Nueva consulta" en la sección Consultas, como las demás secciones. --}}
+        <x-admin.header title="Expediente de {{ $paciente->nombre }} {{ $paciente->apellido }}"
+                        subtitle="Historia clínica, exploración con odontograma y consultas.">
+            {{-- Regreso visible, pegado al título (antes un botón suelto a la derecha). --}}
+            <x-slot:migas>
+                <a href="{{ route('admin.pacientes.index') }}" data-volver-pacientes
+                   class="-ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-full px-2 font-semibold text-brand-700 transition hover:bg-brand-50 hover:text-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    Volver a Pacientes
                 </a>
+            </x-slot:migas>
+            <x-slot:actions>
+                @if ($hayPdf)
+                    <a href="{{ route('admin.pacientes.historial.pdf', $paciente) }}">
+                        <x-secondary-button type="button" class="inline-flex items-center gap-2">{!! $iconoPdf !!} Descargar PDF</x-secondary-button>
+                    </a>
+                @else
+                    <x-secondary-button type="button" disabled title="Disponible cuando haya historia clínica, exploración o una consulta" class="inline-flex cursor-not-allowed items-center gap-2 opacity-50">{!! $iconoPdf !!} Descargar PDF</x-secondary-button>
+                @endif
             </x-slot:actions>
         </x-admin.header>
     </x-slot>
 
     <div class="panel-pagina py-8 sm:py-10">
-        <div class="panel-contenido mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 space-y-6">
-            <div class="flex flex-wrap items-center justify-between gap-4">
-                <div class="flex flex-wrap items-center gap-3 ml-auto">
-                    @if ($consultas->isNotEmpty() || $paciente->historiaClinica)
-                        <a href="{{ route('admin.pacientes.historial.pdf', $paciente) }}">
-                            <x-secondary-button type="button" class="inline-flex items-center gap-2">
-                                <svg class="h-4 w-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                Descargar PDF
-                            </x-secondary-button>
-                        </a>
-                    @else
-                        <x-secondary-button type="button" disabled title="Disponible cuando haya historia clínica o una consulta" class="opacity-50 cursor-not-allowed inline-flex items-center gap-2">
-                            <svg class="h-4 w-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Descargar PDF
-                        </x-secondary-button>
-                    @endif
-                    <a href="{{ route('admin.pacientes.historial.create', $paciente) }}">
-                        <x-primary-button class="inline-flex items-center gap-2">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            Nueva consulta
-                        </x-primary-button>
-                    </a>
-                </div>
-            </div>
-
+        {{-- Mismo ancho que el encabezado: título, PDF y tarjetas alineados. --}}
+        <div class="panel-contenido mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
             @if (session('status'))
                 <x-alert type="info" :message="session('status')" />
             @endif
@@ -93,7 +74,70 @@ $tipoConsultaLabel = [
                 @endif
             </section>
 
-            <h2 class="text-headline font-semibold text-ink">Consultas</h2>
+            {{-- Exploración clínica y odontograma (23/11/2026). --}}
+            @php
+                $exploraciones = $paciente->exploracionesClinicas()->with('doctor')->get();
+                $ultima = $exploraciones->first();
+            @endphp
+            <section class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="titulo-exploracion" data-resumen-exploracion>
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h2 id="titulo-exploracion" class="text-headline font-semibold text-ink">Exploración clínica y odontograma</h2>
+                        <p class="mt-0.5 text-sm text-muted">
+                            @if ($ultima)
+                                Última: {{ $ultima->fecha->translatedFormat('j M Y') }}{{ $ultima->doctor ? ' · '.$ultima->doctor->nombre.' '.$ultima->doctor->apellido : '' }}
+                            @else
+                                Aún no tiene exploración: examen de la boca, encías, higiene y odontograma.
+                            @endif
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        @if ($ultima)
+                            <a href="{{ route('admin.pacientes.exploracion.edit', [$paciente, $ultima]) }}" class="btn-secondary min-h-11 px-5">Ver o editar</a>
+                        @endif
+                        <a href="{{ route('admin.pacientes.exploracion.create', $paciente) }}" class="{{ $ultima ? 'btn-secondary' : 'btn-brand' }} min-h-11 px-5" data-nueva-exploracion>
+                            {{ $ultima ? 'Nueva exploración' : 'Hacer exploración' }}
+                        </a>
+                    </div>
+                </div>
+
+                @if ($ultima)
+                    @php
+                        $nombresEstado = collect(\App\Models\ExploracionClinica::ESTADOS_DIENTE)->map(fn ($e) => $e[0]);
+                        $resumen = collect($ultima->resumenOdontograma())->map(fn ($n, $e) => ($nombresEstado[$e] ?? $e).': '.$n)->implode(' · ');
+                    @endphp
+                    <dl class="mt-4 grid grid-cols-1 gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
+                        <div><dt class="text-muted">Higiene oral</dt><dd class="font-semibold text-ink">{{ \App\Models\ExploracionClinica::HIGIENE[$ultima->higiene_oral] ?? '—' }}</dd></div>
+                        <div><dt class="text-muted">Índice de O'Leary</dt><dd @class(['font-semibold', 'text-sage-700' => $ultima->indiceOleary() !== null && $ultima->indiceOleary() <= 20, 'text-rose-700' => $ultima->indiceOleary() > 20, 'text-ink' => $ultima->indiceOleary() === null])>{{ $ultima->indiceOleary() !== null ? $ultima->indiceOleary().' %' : '—' }}</dd></div>
+                        <div><dt class="text-muted">Odontograma</dt><dd class="font-semibold text-ink">{{ $resumen ?: 'Sin marcar' }}</dd></div>
+                    </dl>
+                    @if (filled($ultima->diagnosticos))
+                        <p class="mt-3 text-sm text-ink-soft"><span class="font-semibold text-ink">Diagnósticos:</span> {{ \Illuminate\Support\Str::limit($ultima->diagnosticos, 160) }}</p>
+                    @endif
+
+                    @if ($exploraciones->count() > 1)
+                        {{-- Historial del índice de placa, como en el formato en papel. --}}
+                        <details class="mt-4 rounded-2xl border border-line" data-exploraciones-anteriores>
+                            <summary class="flex min-h-11 cursor-pointer items-center px-4 text-sm font-semibold text-ink">Exploraciones anteriores ({{ $exploraciones->count() - 1 }})</summary>
+                            <ul class="divide-y divide-line border-t border-line">
+                                @foreach ($exploraciones->skip(1) as $anterior)
+                                    <li class="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-sm">
+                                        <span class="text-ink">{{ $anterior->fecha->translatedFormat('j M Y') }} · O'Leary {{ $anterior->indiceOleary() !== null ? $anterior->indiceOleary().' %' : '—' }}</span>
+                                        <a href="{{ route('admin.pacientes.exploracion.edit', [$paciente, $anterior]) }}" class="link inline-flex min-h-11 items-center">Ver</a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </details>
+                    @endif
+                @endif
+            </section>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <h2 class="text-headline font-semibold text-ink">Consultas</h2>
+                <a href="{{ route('admin.pacientes.historial.create', $paciente) }}" class="{{ $consultas->isEmpty() ? 'btn-brand' : 'btn-secondary' }} min-h-11 px-5" data-nueva-consulta>
+                    Nueva consulta
+                </a>
+            </div>
             <x-pagination-summary :items="$consultas" label="consultas" :integrated="false" />
 
             <div class="space-y-4">
@@ -139,7 +183,7 @@ $tipoConsultaLabel = [
                 @empty
                     <div class="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-sm text-muted shadow-soft">
                         <p class="font-semibold text-ink">Este paciente todavía no tiene consultas registradas.</p>
-                        <p class="mt-1">El PDF estará disponible cuando llenes la historia clínica o registres la primera consulta.</p>
+                        <p class="mt-1">Registra la primera con «Nueva consulta», o desde la Agenda al completar su cita.</p>
                     </div>
                 @endforelse
             </div>

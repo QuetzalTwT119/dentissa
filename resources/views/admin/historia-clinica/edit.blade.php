@@ -27,7 +27,7 @@
                     @if ($puedeExpediente)
                         <a href="{{ route('admin.pacientes.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Pacientes</a>
                         <span aria-hidden="true" class="mx-1.5">›</span>
-                        <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="font-semibold text-brand-700 hover:text-brand-800">Historial</a>
+                        <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="font-semibold text-brand-700 hover:text-brand-800">Expediente</a>
                     @else
                         <a href="{{ route('admin.historias.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Historias clínicas</a>
                     @endif

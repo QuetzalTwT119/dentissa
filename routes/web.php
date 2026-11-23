@@ -4,6 +4,7 @@ use App\Enums\TipoImagen;
 use App\Http\Controllers\Admin\AuditoriaController;
 use App\Http\Controllers\Admin\CasoController;
 use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
+use App\Http\Controllers\Admin\ExploracionClinicaController;
 use App\Http\Controllers\Admin\HistoriaClinicaController;
 use App\Http\Controllers\Admin\HistorialClinicoController;
 use App\Http\Controllers\Admin\HorarioController;
@@ -238,6 +239,11 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::get('historias-clinicas', [HistoriaClinicaController::class, 'index'])->name('historias.index');
     Route::get('pacientes/{paciente}/historia-clinica', [HistoriaClinicaController::class, 'edit'])->name('pacientes.historia.edit');
     Route::put('pacientes/{paciente}/historia-clinica', [HistoriaClinicaController::class, 'update'])->name('pacientes.historia.update');
+    // Exploración clínica y odontograma (23/11/2026): solo quien ve el expediente.
+    Route::get('pacientes/{paciente}/exploracion/crear', [ExploracionClinicaController::class, 'create'])->name('pacientes.exploracion.create');
+    Route::post('pacientes/{paciente}/exploracion', [ExploracionClinicaController::class, 'store'])->name('pacientes.exploracion.store');
+    Route::get('pacientes/{paciente}/exploracion/{exploracion}/editar', [ExploracionClinicaController::class, 'edit'])->name('pacientes.exploracion.edit');
+    Route::put('pacientes/{paciente}/exploracion/{exploracion}', [ExploracionClinicaController::class, 'update'])->name('pacientes.exploracion.update');
     Route::get('pacientes/{paciente}/historial', [HistorialClinicoController::class, 'index'])->name('pacientes.historial.index');
     Route::get('pacientes/{paciente}/historial/crear', [HistorialClinicoController::class, 'create'])->name('pacientes.historial.create');
     Route::post('pacientes/{paciente}/historial', [HistorialClinicoController::class, 'store'])->name('pacientes.historial.store');
