@@ -60,6 +60,7 @@ class NotificacionInternaService
             'asistencia_confirmada' => ['Paciente confirmó asistencia', 'El paciente confirmó que asistirá a su cita del'],
             'cancelada_paciente' => ['Paciente canceló su cita', 'El paciente canceló desde el recordatorio su cita del'],
             'reagendar_paciente' => ['Paciente pidió reagendar', 'El paciente pidió reagendar y liberó el horario del'],
+            'reagendada_paciente' => ['Paciente eligió su nuevo horario', 'El paciente reagendó su cita desde el recordatorio; su nuevo horario es el'],
         ];
 
         if (! isset($etiquetas[$evento])) {

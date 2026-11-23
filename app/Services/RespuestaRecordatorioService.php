@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\EstadoCita;
 use App\Models\Cita;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 
@@ -32,6 +33,50 @@ class RespuestaRecordatorioService
      * tratamiento y los datos del paciente ya llenos (23/11/2026). Va firmado y
      * caduca: nadie puede cambiar el número de cita para ver datos de otro.
      */
+    /**
+     * Viaja oculto en el formulario de la agenda en línea: al guardar, la cita
+     * nueva se conecta con la vieja y el paciente recibe "tu cita se movió".
+     */
+    public static function tokenReagendar(Cita $cita): string
+    {
+        return Crypt::encryptString(json_encode([
+            'cita' => $cita->id,
+            'hasta' => now()->addDays(self::DIAS_ENLACE_REAGENDAR)->timestamp,
+        ]));
+    }
+
+    /**
+     * Cita vieja que se puede conectar: token válido y vigente, cancelada porque
+     * el paciente pidió reagendar, todavía sin cita nueva y del mismo celular.
+     */
+    public static function citaAReagendar(?string $token, string $telefono): ?Cita
+    {
+        if (blank($token)) {
+            return null;
+        }
+
+        try {
+            $datos = json_decode(Crypt::decryptString($token), true, flags: JSON_THROW_ON_ERROR);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        if (! is_array($datos) || ($datos['hasta'] ?? 0) < now()->timestamp) {
+            return null;
+        }
+
+        $cita = Cita::with('paciente')->find((int) ($datos['cita'] ?? 0));
+
+        $mismoCelular = fn (?string $a) => preg_replace('/\D/', '', (string) $a) === preg_replace('/\D/', '', $telefono);
+
+        return $cita
+            && $cita->estado === EstadoCita::Cancelada
+            && $cita->motivo_cancelacion === self::MOTIVO_REAGENDAR
+            && $cita->id_cita_nueva === null
+            && $mismoCelular($cita->paciente?->telefono)
+            ? $cita : null;
+    }
+
     public static function enlaceReagendar(Cita $cita): string
     {
         return URL::temporarySignedRoute(

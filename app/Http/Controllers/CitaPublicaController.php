@@ -6,6 +6,8 @@ use App\Models\Cita;
 use App\Models\HorarioAtencion;
 use App\Models\Oferta;
 use App\Models\Servicio;
+use App\Services\RespuestaRecordatorioService;
+use App\Models\NotificacionSistema;
 use App\Services\CrearCitaService;
 use App\Services\NotificacionService;
 use Illuminate\Contracts\View\View;
@@ -40,6 +42,14 @@ class CitaPublicaController extends Controller
             }
         }
 
+        // ?oferta=ID (23/11/2026): la oferta solo se aplica si el paciente entró
+        // desde su tarjeta en la portada; agendar el tratamiento por el camino
+        // normal ya no la aplica.
+        $ofertaInicial = null;
+        if ($tratamientoInicial && ($idOferta = (int) $request->query('oferta'))) {
+            $ofertaInicial = Oferta::publicadas()->whereKey($idOferta)->where('id_tratamiento', $tratamientoInicial)->value('id');
+        }
+
         // Link "Reagendar" del recordatorio (23/11/2026): solo si la firma es válida,
         // abre en el calendario con el mismo tratamiento y los datos del paciente.
         $reagendar = null;
@@ -50,8 +60,16 @@ class CitaPublicaController extends Controller
             if ($anterior?->paciente && $servicioAnterior) {
                 $servicioInicial = $servicioAnterior->id;
                 $tratamientoInicial = $anterior->id_tratamiento;
+                // Conserva la oferta de la cita original (si sigue vigente); no gana una nueva.
+                $ofertaInicial = $anterior->id_oferta;
                 $reagendar = [
                     'tratamiento' => $anterior->tratamiento->nombre,
+                    'token' => RespuestaRecordatorioService::tokenReagendar($anterior),
+                    // Al reagendar solo se cambian día y hora (23/11/2026): los datos no
+                    // se vuelven a escribir. El aviso solo si nunca lo aceptó (paciente
+                    // registrado por el personal).
+                    'sin_datos' => true,
+                    'pide_aviso' => $anterior->paciente->aviso_privacidad_aceptado_en === null,
                     'datos' => [
                         'nombre' => $anterior->paciente->nombre,
                         'apellido' => $anterior->paciente->apellido,
@@ -66,6 +84,7 @@ class CitaPublicaController extends Controller
             'servicios' => $servicios,
             'servicioInicial' => $servicioInicial,
             'tratamientoInicial' => $tratamientoInicial,
+            'ofertaInicial' => $ofertaInicial,
             'reagendar' => $reagendar,
             'ofertasPorTratamiento' => $this->ofertasPorTratamiento(),
             'horarioRegular' => HorarioAtencion::resumenSemanal(),
@@ -78,6 +97,25 @@ class CitaPublicaController extends Controller
         // solo se quitan los espacios: cualquier otro carácter sigue siendo inválido.
         if ($request->has('telefono')) {
             $request->merge(['telefono' => preg_replace('/\s+/', '', (string) $request->input('telefono'))]);
+        }
+
+        // Viene del link "Reagendar" del recordatorio (23/11/2026): la cita nueva
+        // se conecta con la vieja y el paciente recibe "tu cita se movió". Si ya
+        // aceptó el aviso de privacidad, no se le vuelve a pedir.
+        $anterior = RespuestaRecordatorioService::citaAReagendar($request->input('reagendar'), (string) $request->input('telefono'));
+        $avisoPrevio = $anterior !== null && $anterior->paciente?->aviso_privacidad_aceptado_en !== null;
+        if ($anterior) {
+            // Solo se cambian día y hora: lo demás sale de la cita vieja aunque el
+            // formulario mande otra cosa.
+            $request->merge([
+                'id_servicio' => $anterior->id_servicio,
+                'id_tratamiento' => $anterior->id_tratamiento,
+                'nombre' => $anterior->paciente->nombre,
+                'apellido' => $anterior->paciente->apellido,
+                'telefono' => preg_replace('/\D/', '', (string) $anterior->paciente->telefono),
+                'email' => $anterior->paciente->email,
+                'id_oferta' => $anterior->id_oferta,
+            ]);
         }
 
         $validated = $request->validate([
@@ -96,21 +134,36 @@ class CitaPublicaController extends Controller
             // Opcional: hay pacientes sin correo; el celular sí es obligatorio (WhatsApp).
             'email' => ['nullable', 'email', 'max:100'],
             'motivo' => ['nullable', 'string', 'max:1000'],
-            'acepta_aviso' => ['accepted'],
+            // Solo si entró desde la oferta (o la conserva al reagendar).
+            'id_oferta' => ['nullable', 'integer'],
+            'acepta_aviso' => [$avisoPrevio ? 'nullable' : 'accepted'],
         ], [
             'telefono.regex' => 'Ingresa exactamente 10 dígitos numéricos de México.',
             'acepta_aviso.accepted' => 'Para agendar necesitamos que aceptes el aviso de privacidad.',
         ]);
 
-        $resultado = $crearCita->crear(['acepta_aviso' => true] + $validated, 'publico', request: $request);
+        $resultado = $crearCita->crear(['acepta_aviso' => true, 'aviso_previo' => $avisoPrevio] + $validated, 'publico', request: $request,
+            eventoInterno: $anterior ? 'reagendada_paciente' : 'confirmada');
         $cita = $resultado['cita'];
 
         if (! $cita) {
             return back()->withErrors(['hora' => 'Ese horario ya no está disponible. Por favor elige otro.']);
         }
 
+        $reagendada = false;
+        if ($resultado['creada'] && $anterior) {
+            $reagendada = Cita::whereKey($anterior->id)->whereNull('id_cita_nueva')->update(['id_cita_nueva' => $cita->id]) === 1;
+        }
+
         if ($resultado['creada']) {
-            $notificaciones->citaConfirmada($cita->load(['paciente', 'tratamiento']));
+            if ($reagendada) {
+                // El aviso "Horario liberado" ya quedó resuelto: el paciente eligió.
+                NotificacionSistema::where('id_cita', $anterior->id)->where('evento', 'reagendar_paciente')
+                    ->whereNull('atendida_en')->update(['atendida_en' => now()]);
+                $notificaciones->citaReagendada($cita->load(['paciente', 'tratamiento']));
+            } else {
+                $notificaciones->citaConfirmada($cita->load(['paciente', 'tratamiento']));
+            }
         }
 
         $cita->loadMissing('tratamiento');
@@ -119,7 +172,7 @@ class CitaPublicaController extends Controller
         $cita->loadMissing('oferta');
 
         return Redirect::route('citas.publica.create')
-            ->with('success', 'Tu cita quedó confirmada. Te esperamos.')
+            ->with('success', $reagendada ? 'Tu cita quedó reagendada. Te esperamos en el nuevo horario.' : 'Tu cita quedó confirmada. Te esperamos.')
             ->with('cita_resumen', [
                 'tratamiento' => $cita->tratamiento?->nombre,
                 'oferta' => $cita->oferta ? "{$cita->oferta->titulo} ({$cita->oferta->etiquetaBeneficio()})" : null,
@@ -149,6 +202,7 @@ class CitaPublicaController extends Controller
             ->reject(fn (Oferta $oferta) => $oferta->lugaresQuedan() === 0)
             ->groupBy('id_tratamiento')
             ->map(fn ($ofertas) => $ofertas->map(fn (Oferta $oferta) => [
+                'id' => $oferta->id,
                 'titulo' => $oferta->titulo,
                 'etiqueta' => $oferta->etiquetaBeneficio(),
                 'hasta' => $oferta->fecha_fin->toDateString(),

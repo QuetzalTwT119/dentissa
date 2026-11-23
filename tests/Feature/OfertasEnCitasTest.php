@@ -54,9 +54,10 @@ class OfertasEnCitasTest extends TestCase
         ]);
     }
 
-    private function agendar(string $hora = '09:00', ?Carbon $fecha = null, string $telefono = '5555555555')
+    /** 23/11/2026: la oferta solo se aplica si el paciente entró desde ella (id_oferta). */
+    private function agendar(string $hora = '09:00', ?Carbon $fecha = null, string $telefono = '5555555555', ?int $idOferta = null)
     {
-        return $this->post(route('citas.publica.store'), [
+        return $this->post(route('citas.publica.store'), array_filter([
             'id_servicio' => $this->servicio->id,
             'id_tratamiento' => $this->tratamiento->id,
             'fecha' => ($fecha ?? $this->fecha)->toDateString(),
@@ -65,7 +66,30 @@ class OfertasEnCitasTest extends TestCase
             'apellido' => 'Martínez',
             'telefono' => $telefono,
             'acepta_aviso' => '1',
-        ]);
+            'id_oferta' => $idOferta,
+        ]));
+    }
+
+    public function test_sin_entrar_desde_la_oferta_la_cita_no_la_lleva(): void
+    {
+        $oferta = $this->oferta();
+
+        // La agenda normal no anuncia la oferta; desde la tarjeta sí.
+        $this->get(route('citas.publica.create', ['tratamiento' => $this->tratamiento->id]))->assertOk()
+            ->assertSee("idOferta: ''", false);
+        $this->get(route('citas.publica.create', ['tratamiento' => $this->tratamiento->id, 'oferta' => $oferta->id]))->assertOk()
+            ->assertSee("idOferta: {$oferta->id}", false);
+
+        // Una oferta de otro tratamiento no se cuela.
+        $otro = Tratamiento::create(['nombre' => 'Blanqueamiento', 'duracion_estimada' => 30, 'activo' => true]);
+        $this->servicio->tratamientos()->attach($otro);
+        $this->get(route('citas.publica.create', ['tratamiento' => $otro->id, 'oferta' => $oferta->id]))->assertOk()
+            ->assertSee("idOferta: ''", false);
+
+        // Mismo tratamiento por el camino normal: sin oferta y sin gastar lugar.
+        $this->agendar()->assertSessionHasNoErrors();
+        $this->assertNull(Cita::latest('id')->first()->id_oferta);
+        $this->assertSame(2, $oferta->fresh()->lugaresQuedan());
     }
 
     public function test_la_cita_guarda_la_oferta_y_ocupa_un_lugar(): void
@@ -73,7 +97,7 @@ class OfertasEnCitasTest extends TestCase
         $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
         $oferta = $this->oferta();
 
-        $this->agendar()->assertRedirect(route('citas.publica.create'))
+        $this->agendar(idOferta: $oferta->id)->assertRedirect(route('citas.publica.create'))
             ->assertSessionHas('cita_resumen.oferta', 'Limpieza de fin de año (−20%)');
 
         $cita = Cita::firstOrFail();
@@ -96,11 +120,11 @@ class OfertasEnCitasTest extends TestCase
     {
         $oferta = $this->oferta(['cupo_total' => 1, 'fecha_fin' => $this->fecha->toDateString()]);
 
-        $this->agendar('09:00')->assertSessionHasNoErrors();
+        $this->agendar('09:00', idOferta: $oferta->id)->assertSessionHasNoErrors();
         $this->assertSame($oferta->id, Cita::latest('id')->first()->id_oferta);
 
         // Agotada: la siguiente cita ya no la lleva y la portada deja de anunciarla.
-        $this->agendar('10:00', telefono: '5555555556')->assertSessionHasNoErrors();
+        $this->agendar('10:00', telefono: '5555555556', idOferta: $oferta->id)->assertSessionHasNoErrors();
         $this->assertNull(Cita::latest('id')->first()->id_oferta);
         $this->get('/')->assertDontSee('data-oferta-publica', false);
 
@@ -110,17 +134,18 @@ class OfertasEnCitasTest extends TestCase
         while ($despues->isSunday()) {
             $despues->addDay();
         }
-        $this->agendar('11:00', $despues, '5555555557')->assertSessionHasNoErrors();
+        $this->agendar('11:00', $despues, '5555555557', $oferta->id)->assertSessionHasNoErrors();
         $this->assertNull(Cita::latest('id')->first()->id_oferta);
     }
 
     public function test_la_agenda_en_linea_avisa_y_abre_con_el_tratamiento_de_la_oferta(): void
     {
-        $this->oferta();
+        $oferta = $this->oferta();
 
-        $this->get('/')->assertSee(route('citas.publica.create', ['tratamiento' => $this->tratamiento->id]), false);
+        $enlace = route('citas.publica.create', ['tratamiento' => $this->tratamiento->id, 'oferta' => $oferta->id]);
+        $this->get('/')->assertSee($enlace); // en el HTML el & va como &amp;
 
-        $this->get(route('citas.publica.create', ['tratamiento' => $this->tratamiento->id]))->assertOk()
+        $this->get($enlace)->assertOk()
             ->assertSee('data-aviso-oferta', false)
             ->assertSee('data-etiqueta-oferta', false)
             ->assertSee('Limpieza de fin de año')
@@ -197,15 +222,20 @@ class OfertasEnCitasTest extends TestCase
         $this->get(route('citas.publica.create'))->assertOk()
             ->assertSee('Limpieza que vence hoy')
             ->assertSee('Limpieza para estudiantes')
-            ->assertSee('lista.find(o => this.fecha <= o.hasta)', false);
+            ->assertSee('lista.find(o => o.id === Number(this.idOferta))', false);
 
-        // Con una cita después de hoy, el servidor aplica la que sigue vigente.
+        // 23/11/2026: se aplica la oferta elegida si la cita cae en su vigencia.
         $despues = now()->addWeek();
         while ($despues->isSunday()) {
             $despues->addDay();
         }
-        $this->agendar('09:00', $despues)->assertSessionHasNoErrors();
+        $this->agendar('09:00', $despues, idOferta: $larga->id)->assertSessionHasNoErrors();
         $this->assertSame($larga->id, Cita::latest('id')->first()->id_oferta);
+
+        // La que vence hoy no se aplica a una cita de la otra semana.
+        $corta = Oferta::where('titulo', 'Limpieza que vence hoy')->value('id');
+        $this->agendar('10:00', $despues, '5555555558', $corta)->assertSessionHasNoErrors();
+        $this->assertNull(Cita::latest('id')->first()->id_oferta);
     }
 
     /** QA: la portada mostraba menos del máximo si una de las primeras estaba agotada, y "ya se ve" no siempre era cierto. */

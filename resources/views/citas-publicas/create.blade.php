@@ -39,7 +39,7 @@
                         </svg>
                     </div>
                     <p class="conf-titulo mt-6 firma text-2xl text-brand-600">Melissa López N.</p>
-                    <h1 class="conf-titulo mt-3 text-title-2 text-ink">¡Listo! Tu cita quedó confirmada. Te esperamos.</h1>
+                    <h1 class="conf-titulo mt-3 text-title-2 text-ink">¡Listo! {{ session('success') }}</h1>
                     @if ($resumen = session('cita_resumen'))
                         <dl class="conf-resumen mt-6 divide-y divide-line/80 rounded-2xl border border-line bg-cream text-left text-sm">
                             <div class="px-5 py-3.5">
@@ -90,23 +90,27 @@
             <main class="pt-6 pb-28 sm:pb-16 sm:pt-6 lg:h-[calc(100dvh-4.0625rem)] lg:py-5"
                  x-data="{
                     paso: {{ $errors->any() ? 3 : ($reagendar ?? null ? 1 : 0) }},
-                    pasos: ['Tipo de atención', 'Día', 'Hora', 'Datos'],
+                    pasos: ['Tipo de atención', 'Día', 'Hora', {{ Js::from(($reagendar['sin_datos'] ?? false) ? 'Confirmar' : 'Datos') }}],
                     encabezados: [
                         { etiqueta: 'Selección clínica', titulo: '¿Qué tipo de atención necesitas?', texto: 'Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.' },
                         { etiqueta: 'Calendario', titulo: '¿Qué día te queda mejor?', texto: 'Los días con punto tienen lugar. La agenda se confirma en tiempo real con el consultorio.' },
                         { etiqueta: 'Horario', titulo: '¿A qué hora?', texto: 'Estas son las horas libres del día que elegiste.' },
+                        @if ($reagendar['sin_datos'] ?? false)
+                        { etiqueta: 'Confirmar', titulo: 'Confirma tu cambio de cita', texto: 'Revisa el nuevo día y la hora. Tus datos son los mismos de tu cita anterior.' },
+                        @else
                         { etiqueta: 'Datos de contacto', titulo: 'Datos para agendar', texto: 'Los usamos para confirmar tu cita médica y enviarte recordatorios.' },
+                        @endif
                     ],
                     servicios: @js($servicios),
                     idServicio: @js(old('id_servicio', $servicioInicial ?? '')),
                     idTratamiento: @js(old('id_tratamiento', $tratamientoInicial ?? '')),
-                    // Oferta vigente de cada tratamiento (21/11/2026): se avisa al elegirlo.
+                    // Ofertas vigentes por tratamiento (21/11/2026). Desde el 23/11/2026 solo
+                    // cuenta la que el paciente eligió en la portada (o conserva al reagendar).
                     ofertas: @js((object) ($ofertasPorTratamiento ?? [])),
-                    // Varias por tratamiento, de la que vence primero a la última: la primera
-                    // vigente en la fecha elegida (misma regla que el servidor al guardar).
+                    idOferta: @js(old('id_oferta', $ofertaInicial ?? '')),
                     get ofertaTratamiento() {
                         const lista = this.ofertas[Number(this.idTratamiento)] ?? [];
-                        return (this.fecha ? lista.find(o => this.fecha <= o.hasta) : null) ?? lista[0] ?? null;
+                        return lista.find(o => o.id === Number(this.idOferta)) ?? null;
                     },
                     // Aplica si la cita es dentro de la vigencia (sin fecha elegida todavía, se muestra).
                     get ofertaAplica() {
@@ -265,8 +269,8 @@
                                                         </span>
                                                         <span class="min-w-0">
                                                             <span class="block text-callout font-semibold text-ink" x-text="tratamiento.nombre"></span>
-                                                            <span x-show="ofertas[tratamiento.id]" class="mt-1 inline-flex rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-800 ring-1 ring-inset ring-brand-200" data-etiqueta-oferta
-                                                                  x-text="ofertas[tratamiento.id] ? `Oferta ${ofertas[tratamiento.id][0].etiqueta}` : ''"></span>
+                                                            <span x-show="(ofertas[tratamiento.id] ?? []).some(o => o.id === Number(idOferta))" class="mt-1 inline-flex rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-800 ring-1 ring-inset ring-brand-200" data-etiqueta-oferta
+                                                                  x-text="(ofertas[tratamiento.id] ?? []).some(o => o.id === Number(idOferta)) ? `Oferta ${ofertas[tratamiento.id].find(o => o.id === Number(idOferta)).etiqueta}` : ''"></span>
                                                             <span class="mt-0.5 block text-footnote text-muted sm:hidden" x-text="[formatoDuracion(tratamiento.duracion_estimada), formatoPrecio(tratamiento.precio_referencia)].filter(Boolean).join(' · ')"></span>
                                                         </span>
                                                     </span>
@@ -323,7 +327,10 @@
                                 </div>
 
                                 <div class="{{ $claseBarra }}">
+                                    {{-- Al reagendar no se regresa a elegir tratamiento: solo cambian día y hora. --}}
+                                    @unless ($reagendar ?? null)
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
+                                    @endunless
                                     {{-- El aviso va en la barra (no en un renglón aparte) para no obligar a desplazarse. --}}
                                     <p x-show="!fecha" class="hidden self-center text-footnote text-muted sm:ml-auto sm:block" aria-live="polite">Elige un día para continuar.</p>
                                     <button type="button" :disabled="!fecha" @click="siguiente()" class="{{ $claseSiguiente }}">Elegir hora</button>
@@ -339,7 +346,7 @@
                                 <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Cambiar día</button>
                                     <p x-show="!hora" class="hidden self-center text-footnote text-muted sm:ml-auto sm:block" aria-live="polite">Elige un horario para continuar.</p>
-                                    <button type="button" :disabled="!hora" @click="siguiente()" class="{{ $claseSiguiente }}">Continuar a mis datos</button>
+                                    <button type="button" :disabled="!hora" @click="siguiente()" class="{{ $claseSiguiente }}">{{ ($reagendar ?? null) ? 'Continuar' : 'Continuar a mis datos' }}</button>
                                 </div>
                             </div>
                         </template>
@@ -358,7 +365,7 @@
                                     'apellido' => old('apellido', $reagendar['datos']['apellido'] ?? ''),
                                     'telefono' => old('telefono', $reagendar['datos']['telefono'] ?? ''),
                                     'email' => old('email', $reagendar['datos']['email'] ?? ''),
-                                    'aviso' => (bool) old('acepta_aviso'),
+                                    'aviso' => (bool) old('acepta_aviso') || (($reagendar['sin_datos'] ?? false) && ! $reagendar['pide_aviso']),
                                     'errores' => (object) $erroresServidor,
                                 ];
                                 // Palomita verde dentro del campo cuando el dato ya está bien.
@@ -369,6 +376,9 @@
                                   x-on:submit="enviar($event)"
                                   x-init="$nextTick(() => $el.querySelector('[aria-invalid=true]')?.focus())">
                                 @csrf
+                                @if ($reagendar['token'] ?? null)
+                                    <input type="hidden" name="reagendar" value="{{ $reagendar['token'] }}">
+                                @endif
 
                                 {{-- Recordatorio de la cita que se está agendando; "Cambiar" regresa a fecha y hora. --}}
                                 <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 rounded-2xl border border-line bg-cream px-4 py-3 text-sm text-ink-soft">
@@ -390,7 +400,20 @@
                                 <input type="hidden" name="id_tratamiento" :value="idTratamiento">
                                 <input type="hidden" name="fecha" :value="fecha">
                                 <input type="hidden" name="hora" :value="hora">
+                                <input type="hidden" name="id_oferta" :value="ofertaAplica ? ofertaTratamiento.id : ''">
 
+                                @if ($reagendar['sin_datos'] ?? false)
+                                    {{-- Reagendar (23/11/2026): los datos no se vuelven a escribir; van ocultos. --}}
+                                    @foreach (['nombre', 'apellido', 'telefono', 'email'] as $campo)
+                                        <input type="hidden" name="{{ $campo }}" value="{{ $reagendar['datos'][$campo] ?? '' }}">
+                                    @endforeach
+                                    <div class="rounded-2xl border border-line bg-white px-4 py-3 text-sm text-ink-soft" data-datos-reagendar>
+                                        <p class="text-xs font-semibold uppercase tracking-label text-muted">Tus datos</p>
+                                        <p class="mt-1 font-semibold text-ink">{{ $reagendar['datos']['nombre'] }} {{ $reagendar['datos']['apellido'] }}</p>
+                                        <p class="tabular-nums" x-text="valores.telefono"></p>
+                                        <p class="mt-2 text-footnote text-muted">¿Cambió tu número? Llama al consultorio al <a class="link" href="{{ config('dentissa.contacto.telefono_enlace') }}">{{ config('dentissa.contacto.telefono') }}</a>.</p>
+                                    </div>
+                                @else
                                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                                     @foreach ([
                                         ['nombre', 'Nombre', 'text', 'given-name', 'text', 'Ej. Ana', 100],
@@ -419,10 +442,13 @@
                                         </div>
                                     @endforeach
                                 </div>
+                                @endif
 
                                 {{-- "Motivo de la visita" se quitó (20/11/2026): se platica en la consulta. El servidor lo sigue aceptando como opcional. --}}
 
-                                {{-- Consentimiento expreso: el motivo puede contener datos de salud. --}}
+                                {{-- Consentimiento expreso: el motivo puede contener datos de salud. Al reagendar
+                                     solo se pide si el paciente nunca lo aceptó. --}}
+                                @if (! ($reagendar['sin_datos'] ?? false) || $reagendar['pide_aviso'])
                                 <div>
                                     <label for="acepta_aviso" class="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border bg-cream/60 px-4 py-3 text-callout text-ink-soft transition-colors"
                                            :class="errores.aviso ? 'border-rose-400' : 'border-line'">
@@ -439,6 +465,7 @@
                                     <p id="acepta_aviso-error" role="alert" class="{{ $claseError }}" x-show="errores.aviso" x-text="errores.aviso"
                                        @unless ($errors->has('acepta_aviso')) style="display: none" @endunless>{{ $errors->first('acepta_aviso') }}</p>
                                 </div>
+                                @endif
 
                                 @error('hora')
                                     <x-alert type="error" :message="$message" />
@@ -450,7 +477,7 @@
 
                                 <div class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
-                                    <button type="submit" class="{{ $claseSiguiente }}" data-loading-text="Agendando…"><span data-loading-label>Agendar cita</span></button>
+                                    <button type="submit" class="{{ $claseSiguiente }}" data-loading-text="Agendando…"><span data-loading-label>{{ ($reagendar['sin_datos'] ?? false) ? 'Confirmar cambio de cita' : 'Agendar cita' }}</span></button>
                                 </div>
                             </form>
                         </template>
