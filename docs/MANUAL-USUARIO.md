@@ -247,7 +247,7 @@ botones:
 | Botón | Qué pasa |
 |---|---|
 | **Sí, asistiré** | La cita queda confirmada y en la agenda aparece **✓ Paciente confirmó asistencia**. |
-| **Quiero reagendar** | Se libera el horario y el paciente pasa a la agenda en línea para elegir otro día y hora. |
+| **Quiero reagendar** | Se libera el horario y el paciente recibe un enlace que abre la agenda en línea **directo en el calendario**, con su tratamiento y sus datos ya llenos: solo elige el nuevo día y la hora. El enlace es personal y dura 7 días. |
 | **No podré asistir, cancelar cita** | La cita se cancela y el horario queda libre para otro paciente. |
 
 Abrir un botón no cambia nada por sí solo: se abre una página que muestra la

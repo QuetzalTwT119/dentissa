@@ -377,6 +377,13 @@ una transacción para evitar reservas duplicadas.
 
 ### Calendario de disponibilidad (`partials/disponibilidad-picker`)
 
+**Reagendar directo (H-66, 23/11/2026).** El botón Reagendar (WhatsApp y correo) manda
+`RespuestaRecordatorioService::enlaceReagendar()`: `URL::temporarySignedRoute('citas.publica.create',
++7 días, ['reagendar' => id])`. `CitaPublicaController@create` solo lo usa si
+`hasValidSignature()`: abre en el paso 2 (calendario) con el servicio y tratamiento de la cita
+anterior y los datos del paciente llenos. Sin firma, alterado o caducado abre la agenda normal
+sin datos. Cancelar sigue mandando la agenda normal.
+
 La agenda pública, **Nueva cita** y **Reagendar** comparten un mismo selector:
 el mes a la izquierda y los horarios del día elegido a la derecha (en celular,
 uno debajo del otro). Se eligió en una ronda de prototipos frente a una tira

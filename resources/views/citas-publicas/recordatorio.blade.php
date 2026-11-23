@@ -72,7 +72,7 @@
                 @if ($resultado && $resultado !== Respuesta::NO_DISPONIBLE)
                     <p class="mt-5 text-callout text-muted">{{ $resultados[$resultado][1] }}</p>
                     @if (in_array($resultado, [Respuesta::REAGENDAR, Respuesta::CANCELAR], true))
-                        <a href="{{ route('citas.publica.create') }}" class="btn-brand mt-8 w-full py-3">
+                        <a href="{{ $resultado === Respuesta::REAGENDAR ? Respuesta::enlaceReagendar($cita) : route('citas.publica.create') }}" class="btn-brand mt-8 w-full py-3" data-elegir-horario>
                             Elegir un nuevo horario
                         </a>
                     @else

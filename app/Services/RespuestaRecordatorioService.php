@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\EstadoCita;
 use App\Models\Cita;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 
 /**
  * Aplica la respuesta del paciente al recordatorio de su cita.
@@ -22,6 +23,23 @@ class RespuestaRecordatorioService
     public const REAGENDAR = 'reagendar';
 
     public const ACCIONES = [self::CONFIRMAR, self::CANCELAR, self::REAGENDAR];
+
+    /** Días que dura el link para elegir otro horario. */
+    public const DIAS_ENLACE_REAGENDAR = 7;
+
+    /**
+     * Link a la agenda en línea que abre directo en el calendario, con el mismo
+     * tratamiento y los datos del paciente ya llenos (23/11/2026). Va firmado y
+     * caduca: nadie puede cambiar el número de cita para ver datos de otro.
+     */
+    public static function enlaceReagendar(Cita $cita): string
+    {
+        return URL::temporarySignedRoute(
+            'citas.publica.create',
+            now()->addDays(self::DIAS_ENLACE_REAGENDAR),
+            ['reagendar' => $cita->id],
+        );
+    }
 
     /** La cita ya pasó, se canceló o se atendió: la respuesta ya no aplica. */
     public const NO_DISPONIBLE = 'no_disponible';

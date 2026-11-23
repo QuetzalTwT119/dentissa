@@ -89,7 +89,7 @@
 
             <main class="pt-6 pb-28 sm:pb-16 sm:pt-6 lg:h-[calc(100dvh-4.0625rem)] lg:py-5"
                  x-data="{
-                    paso: {{ $errors->any() ? 3 : 0 }},
+                    paso: {{ $errors->any() ? 3 : ($reagendar ?? null ? 1 : 0) }},
                     pasos: ['Tipo de atención', 'Día', 'Hora', 'Datos'],
                     encabezados: [
                         { etiqueta: 'Selección clínica', titulo: '¿Qué tipo de atención necesitas?', texto: 'Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.' },
@@ -181,6 +181,13 @@
 
                         <!-- Encabezado del paso actual (uno solo para los 5 pasos) -->
                         <div class="border-b border-line/80 bg-gradient-to-b from-peach-50 to-white px-5 pb-6 pt-6 sm:px-8 sm:pt-8 lg:shrink-0 lg:pb-4 lg:pt-5">
+                            @if ($reagendar ?? null)
+                                {{-- Llegó desde "Reagendar" del recordatorio (23/11/2026). --}}
+                                <p class="mb-4 rounded-2xl border border-sage-200 bg-sage-50 px-4 py-3 text-footnote text-sage-800 lg:mb-3" role="status" data-reagendar-aviso>
+                                    <span class="font-semibold">Cambio de cita: {{ $reagendar['tratamiento'] }}.</span>
+                                    Solo elige el nuevo día y la hora; tus datos ya están llenos.
+                                </p>
+                            @endif
                             <p class="eyebrow flex-wrap gap-x-2 gap-y-1">
                                 <span class="whitespace-nowrap" x-text="`Paso ${paso + 1} de ${pasos.length}`">Paso 1 de 5</span>
                                 <span aria-hidden="true">·</span>
@@ -347,10 +354,10 @@
                                     ->all();
                                 $camposConError = count($erroresServidor);
                                 $datosIniciales = [
-                                    'nombre' => old('nombre', ''),
-                                    'apellido' => old('apellido', ''),
-                                    'telefono' => old('telefono', ''),
-                                    'email' => old('email', ''),
+                                    'nombre' => old('nombre', $reagendar['datos']['nombre'] ?? ''),
+                                    'apellido' => old('apellido', $reagendar['datos']['apellido'] ?? ''),
+                                    'telefono' => old('telefono', $reagendar['datos']['telefono'] ?? ''),
+                                    'email' => old('email', $reagendar['datos']['email'] ?? ''),
                                     'aviso' => (bool) old('acepta_aviso'),
                                     'errores' => (object) $erroresServidor,
                                 ];
@@ -395,7 +402,7 @@
                                             <label for="{{ $campo }}" class="{{ $claseEtiqueta }}">{{ $etiqueta }} @if ($campo === 'email')<span class="font-normal text-muted">(opcional)</span>@else<span class="text-brand-600" aria-hidden="true">*</span>@endif</label>
                                             <div class="relative">
                                                 <input id="{{ $campo }}" enterkeyhint="next" type="{{ $tipo }}" name="{{ $campo }}" autocomplete="{{ $autocompletar }}" inputmode="{{ $teclado }}" maxlength="{{ $maximo }}" @required($campo !== 'email')
-                                                       placeholder="{{ $ejemplo }}" value="{{ old($campo) }}"
+                                                       placeholder="{{ $ejemplo }}" value="{{ old($campo, $reagendar['datos'][$campo] ?? '') }}"
                                                        @if ($campo === 'telefono')
                                                            :value="valores.telefono" x-on:input="escribirTelefono($event)"
                                                        @else

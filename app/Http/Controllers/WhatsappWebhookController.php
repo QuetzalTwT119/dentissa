@@ -146,7 +146,7 @@ class WhatsappWebhookController extends Controller
         return match ($resultado) {
             RespuestaRecordatorioService::CONFIRMAR => "¡Gracias! Registramos que asistirás a tu cita del {$fecha}. Te esperamos.",
             RespuestaRecordatorioService::CANCELAR => "Tu cita del {$fecha} fue cancelada. Gracias por avisarnos. Cuando quieras volver, agenda aquí: ".route('citas.publica.create'),
-            RespuestaRecordatorioService::REAGENDAR => 'Liberamos tu horario. Elige el nuevo día y hora aquí: '.route('citas.publica.create'),
+            RespuestaRecordatorioService::REAGENDAR => 'Liberamos tu horario. Elige el nuevo día y hora aquí (tu tratamiento y tus datos ya están listos): '.RespuestaRecordatorioService::enlaceReagendar($cita),
             default => 'Esta cita ya no admite cambios. Si necesitas ayuda, llama al consultorio al '.config('dentissa.contacto.telefono').'.',
         };
     }

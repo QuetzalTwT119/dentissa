@@ -84,7 +84,10 @@ class WhatsappWebhookTest extends TestCase
 
         $this->assertSame(EstadoCita::Cancelada, $this->cita->fresh()->estado);
         $this->assertSame(RespuestaRecordatorioService::MOTIVO_REAGENDAR, $this->cita->fresh()->motivo_cancelacion);
-        Http::assertSent(fn (Request $r) => str_contains($r['text']['body'] ?? '', route('citas.publica.create')));
+        // 23/11/2026: link firmado que abre la agenda en el calendario con esta cita.
+        Http::assertSent(fn (Request $r) => str_contains($r['text']['body'] ?? '', route('citas.publica.create').'?')
+            && str_contains($r['text']['body'], 'reagendar='.$this->cita->id)
+            && str_contains($r['text']['body'], 'signature='));
     }
 
     public function test_un_mensaje_sin_firma_o_con_firma_falsa_se_rechaza(): void
