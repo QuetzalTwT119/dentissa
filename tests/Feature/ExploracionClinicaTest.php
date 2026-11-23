@@ -77,8 +77,9 @@ class ExploracionClinicaTest extends TestCase
 
         $ex = ExploracionClinica::sole();
         $this->assertSame($this->doctora->id, $ex->id_doctor);
-        $this->assertSame(['labios', 'lengua'], array_keys($ex->estomatologico));
-        $this->assertSame(['sangrado' => '16, 17', 'calculo' => 'todos'], $ex->periodontal);
+        // MySQL reordena las claves de los JSON: se compara sin importar el orden.
+        $this->assertEqualsCanonicalizing(['labios', 'lengua'], array_keys($ex->estomatologico));
+        $this->assertEquals(['sangrado' => '16, 17', 'calculo' => 'todos'], $ex->periodontal);
         $this->assertCount(1, $ex->pulpares);
         $this->assertSame(25.0, $ex->indiceOleary());
         $this->assertSame(['16' => 'cariado', '26' => 'obturado', '36' => 'necesita_endodoncia'], $ex->odontograma);

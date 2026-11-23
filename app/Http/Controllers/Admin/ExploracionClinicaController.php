@@ -64,6 +64,23 @@ class ExploracionClinicaController extends Controller
             ->with('success', 'Exploración clínica actualizada.');
     }
 
+    /** Ordena las claves de un arreglo (y sus hijos) para compararlo sin importar el orden. */
+    private static function normalizar(mixed $valor): mixed
+    {
+        if ($valor instanceof \DateTimeInterface) {
+            return $valor->format('Y-m-d');
+        }
+        if (! is_array($valor)) {
+            return $valor;
+        }
+        $valor = array_map(fn ($v) => self::normalizar($v), $valor);
+        if (! array_is_list($valor)) {
+            ksort($valor);
+        }
+
+        return $valor;
+    }
+
     private function guardar(Request $request, ExploracionClinica $exploracion, AuditoriaService $auditoria, string $accion): void
     {
         $dientes = ExploracionClinica::dientesValidos();
@@ -133,7 +150,13 @@ class ExploracionClinicaController extends Controller
             'odontograma' => $odontograma,
             'diagnosticos' => $datos['diagnosticos'] ?? null,
         ]);
-        $cambiados = array_values(array_diff(array_keys($exploracion->getDirty()), ['id_doctor', 'id_paciente']));
+        // MySQL reordena las claves de los JSON al guardarlos: Eloquent vería "cambiado" un
+        // examen idéntico. Se compara sin importar el orden (23/11/2026, visto en test-mysql).
+        $cambiados = collect(array_keys($exploracion->getDirty()))
+            ->reject(fn ($campo) => in_array($campo, ['id_doctor', 'id_paciente'], true))
+            ->reject(fn ($campo) => $exploracion->exists
+                && self::normalizar($exploracion->getOriginal($campo)) == self::normalizar($exploracion->getAttribute($campo)))
+            ->values()->all();
         $exploracion->save();
 
         $auditoria->registrar($accion, $exploracion, datosNuevos: [
