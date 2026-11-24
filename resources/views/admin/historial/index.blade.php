@@ -160,6 +160,14 @@ $tipoConsultaLabel = [
                             </div>
 
                             <div class="flex shrink-0 items-center gap-2 pt-2 sm:pt-0 border-t border-line/60 sm:border-0">
+                                {{-- Receta en PDF (24/11/2026): solo si hay medicamentos recetados. --}}
+                                @if (filled($consulta->medicamentos_recetados))
+                                    <a href="{{ route('admin.pacientes.historial.receta', [$paciente, $consulta]) }}" target="_blank" rel="noopener" data-receta
+                                       class="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
+                                        <x-icon name="expediente" />
+                                        Receta
+                                    </a>
+                                @endif
                                 <a href="{{ route('admin.pacientes.historial.edit', [$paciente, $consulta]) }}" class="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
                                     Editar
                                 </a>

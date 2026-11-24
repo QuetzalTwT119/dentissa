@@ -257,6 +257,7 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::post('pacientes/{paciente}/historial/{historial}/imagenes', [HistorialClinicoController::class, 'storeImagen'])->name('pacientes.historial.imagenes.store');
     Route::delete('pacientes/{paciente}/historial/{historial}/imagenes/{imagen}', [HistorialClinicoController::class, 'destroyImagen'])->name('pacientes.historial.imagenes.destroy');
     Route::get('pacientes/{paciente}/historial-pdf', [HistorialClinicoController::class, 'pdf'])->name('pacientes.historial.pdf');
+    Route::get('pacientes/{paciente}/historial/{historial}/receta', [HistorialClinicoController::class, 'receta'])->name('pacientes.historial.receta');
 
     Route::patch('usuarios/{usuario}/activo', [UsuarioController::class, 'toggleActivo'])->name('usuarios.activo.toggle');
     // Usuarios (22/11/2026, decisión del usuario): solo crear, desactivar y eliminar.

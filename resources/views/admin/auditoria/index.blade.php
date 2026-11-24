@@ -19,6 +19,7 @@ $etiquetasAccion = [
     'paciente.datos_oficiales_actualizados' => 'Datos oficiales del paciente actualizados',
     'paciente.datos_actualizados' => 'Datos del paciente actualizados',
     'paciente.registrado' => 'Paciente registrado sin cita',
+    'receta.generada' => 'Receta impresa',
     'usuario.creado' => 'Usuario creado',
     'usuario.actualizado' => 'Usuario actualizado',
     'usuario.activado' => 'Cuenta activada',

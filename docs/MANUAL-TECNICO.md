@@ -700,6 +700,8 @@ como opcionales; la cita relacionada solo se muestra si hay citas disponibles.
 
 **Registrar paciente sin cita (H-83, 24/11/2026).** `admin.pacientes.create/store` (módulo `pacientes`). Guarda el celular normalizado a 10 dígitos (igual que la agenda en línea) y rechaza uno ya registrado (ofrece abrir ese expediente) y un correo repetido. Exige `acepta_aviso` y llena `aviso_privacidad_aceptado_en`/`_version` con `forceFill`. Bitácora: `paciente.registrado`. Redirige al expediente. Pruebas: `PacienteNuevoTest`.
 
+**Receta en PDF (H-84, 24/11/2026).** `users.cedula_profesional` y `users.especialidad` (Mi perfil, solo con el módulo `pacientes`). `HistorialClinicoController@receta` (`admin.pacientes.historial.receta`): exige medicamentos y cédula de `id_doctor`, toma edad y alergias de la historia clínica, registra `receta.generada` y devuelve `pdf.receta` en tamaño carta con `stream()` (se abre en el navegador para imprimir). Pruebas: `RecetaPdfTest`.
+
 ## 12. Auditoría de operaciones sensibles
 
 `AuditoriaService` centraliza el registro de acciones relevantes del personal

@@ -682,6 +682,7 @@ propio renglón con espacio para escribir.
 
 Desde `/admin/pacientes`:
 
+- **Receta en PDF** (desde el 24/11/2026): en el expediente, cada consulta con **medicamentos recetados** muestra **Receta**. Se abre lista para imprimir, con tu nombre, **cédula profesional**, especialidad, fecha, nombre y edad del paciente, sus **alergias**, el diagnóstico, los medicamentos y la línea de firma; al pie, la dirección y el teléfono del consultorio. La cédula se escribe una sola vez en **Mi perfil** (solo la ve quien atiende consultas); sin ella el sistema avisa en lugar de imprimir. Cada receta impresa queda en Control de actividades.
 - **Nuevo paciente** (desde el 24/11/2026): registra a alguien que llegó sin cita, o para llenarle la historia clínica antes. Pide nombre, apellido, celular (obligatorios), correo (opcional) y confirmar que **aceptó el aviso de privacidad**. Si el celular ya está registrado, avisa de quién es y ofrece **Abrir su expediente** en lugar de duplicarlo. Al guardar se abre su expediente. Cuando después agende en línea con ese celular, el sistema lo reconoce.
 
 1. Buscar por una parte del nombre, correo o teléfono, o seleccionar un paciente de la lista.
