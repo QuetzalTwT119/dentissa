@@ -94,10 +94,10 @@ class PortadaPublicaTest extends TestCase
     /** 24/11/2026: Galería y Preguntas frecuentes del panel salen en la portada (antes no). */
     public function test_galeria_y_preguntas_del_panel_salen_en_la_portada(): void
     {
-        // Sin fotos ni preguntas: las 2 fotos de fábrica y sin sección de preguntas.
+        // Sin fotos ni preguntas: las 2 ilustraciones de fábrica y sin sección de preguntas.
         $html = $this->get('/')->assertOk()->assertDontSee('data-preguntas', false)->getContent();
         $this->assertSame(2, substr_count($html, 'data-foto-galeria'));
-        $this->assertStringContainsString('/images/6.jpg', $html);
+        $this->assertStringContainsString('/images/ilustraciones/sala-espera.svg', $html);
 
         foreach (['Sala de espera', 'Sillón dental', 'Recepción'] as $i => $titulo) {
             \App\Models\Imagen::create(['titulo' => $titulo, 'descripcion' => 'Foto '.$i, 'url' => "galeria/foto{$i}.jpg", 'tipo' => \App\Enums\TipoImagen::Galeria, 'orden' => $i, 'activa' => true]);
@@ -116,7 +116,7 @@ class PortadaPublicaTest extends TestCase
             ->getContent();
         $this->assertSame(3, substr_count($html, 'data-foto-galeria'));
         $this->assertStringContainsString('storage/galeria/foto0.jpg', $html);
-        $this->assertStringNotContainsString('/images/6.jpg', $html);
+        $this->assertStringNotContainsString('/images/ilustraciones/sala-espera.svg', $html);
         // Impar: la última ocupa todo el ancho.
         $this->assertStringContainsString('md:col-span-5', $html);
     }

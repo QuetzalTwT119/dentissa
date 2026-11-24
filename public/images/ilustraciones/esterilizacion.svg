@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" role="img" aria-labelledby="t">
+  <title id="t">Ilustración: instrumental dental dentro de su bolsa de esterilización sellada</title>
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fdf5f2"/>
+      <stop offset="1" stop-color="#f7d4cb"/>
+    </linearGradient>
+    <linearGradient id="bolsa" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#fbe1e8" stop-opacity=".9"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#9aa3ad"/>
+      <stop offset=".5" stop-color="#e9edf1"/>
+      <stop offset="1" stop-color="#8c95a0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="800" fill="url(#fondo)"/>
+  <circle cx="400" cy="300" r="250" fill="#fbe9e4"/>
+  <circle cx="400" cy="300" r="250" fill="none" stroke="#f2b0a6" stroke-width="3" stroke-dasharray="4 14" stroke-linecap="round"/>
+
+  <!-- Bolsa de esterilización, ligeramente inclinada -->
+  <g transform="rotate(-8 400 300)">
+    <rect x="270" y="90" width="260" height="420" rx="18" fill="url(#bolsa)" stroke="#f6c2d1" stroke-width="4"/>
+    <!-- Sello superior en zigzag -->
+    <path d="M270 140 H530 V108 Q530 90 512 90 H288 Q270 90 270 108 Z" fill="#f6c2d1"/>
+    <path d="M270 140 l13 -10 l13 10 l13 -10 l13 10 l13 -10 l13 10 l13 -10 l13 10 l13 -10 l13 10 l13 -10 l13 10 l13 -10 l13 10 l13 -10 l13 10 l13 -10 l13 10 l13 -10 l13 10" fill="none" stroke="#ef9bb5" stroke-width="4" stroke-linejoin="round"/>
+    <!-- Indicador de esterilización (ya cambió de color) -->
+    <rect x="300" y="158" width="88" height="22" rx="11" fill="#4e8d72"/>
+    <path d="M318 169 l7 7 l13 -14" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="400" y="164" width="100" height="10" rx="5" fill="#f2b0a6"/>
+
+    <!-- Espejo -->
+    <rect x="328" y="270" width="12" height="210" rx="6" fill="url(#metal)"/>
+    <circle cx="334" cy="238" r="38" fill="url(#metal)"/>
+    <circle cx="334" cy="238" r="29" fill="#eaf2f7"/>
+    <path d="M318 226 q10 -12 26 -8" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+    <!-- Explorador -->
+    <rect x="394" y="250" width="12" height="230" rx="6" fill="url(#metal)"/>
+    <path d="M400 252 V214 q0 -20 -16 -26" fill="none" stroke="#9aa3ad" stroke-width="6" stroke-linecap="round"/>
+    <!-- Pinza -->
+    <path d="M456 480 L462 250 q2 -18 8 -24" fill="none" stroke="#9aa3ad" stroke-width="10" stroke-linecap="round"/>
+    <path d="M470 480 L466 250 q-1 -18 6 -26" fill="none" stroke="#c3c9cf" stroke-width="8" stroke-linecap="round"/>
+
+    <!-- Brillo del plástico -->
+    <path d="M292 200 V470" stroke="#ffffff" stroke-width="10" stroke-linecap="round" opacity=".7"/>
+  </g>
+
+  <!-- Destellos de limpio -->
+  <g fill="#ffffff">
+    <path d="M598 150 l8 22 l22 8 l-22 8 l-8 22 l-8 -22 l-22 -8 l22 -8 Z"/>
+    <path d="M196 240 l6 16 l16 6 l-16 6 l-6 16 l-6 -16 l-16 -6 l16 -6 Z"/>
+    <path d="M612 400 l5 13 l13 5 l-13 5 l-5 13 l-5 -13 l-13 -5 l13 -5 Z" opacity=".8"/>
+  </g>
+</svg>

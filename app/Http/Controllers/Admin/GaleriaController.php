@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\TipoImagen;
 use App\Http\Controllers\Concerns\AlternaEstado;
 use App\Http\Controllers\Controller;
+use App\Models\DatosConsultorio;
 use App\Models\Imagen;
 use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
@@ -31,6 +32,7 @@ class GaleriaController extends Controller
                 ->orderBy('orden')
                 ->paginate($this->paginationPageSize($request))
                 ->withQueryString(),
+            'fotoInicio' => DatosConsultorio::fotoInicio(),
         ]);
     }
 

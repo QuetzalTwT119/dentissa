@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="t">
+  <title id="t">Ilustración: sala de espera tranquila con un sillón, una planta y un reloj</title>
+  <defs>
+    <linearGradient id="pared" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fdf5f2"/>
+      <stop offset="1" stop-color="#fbe9e4"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="760" fill="url(#pared)"/>
+  <rect y="480" width="1200" height="280" fill="#f7d4cb"/>
+  <rect y="480" width="1200" height="6" fill="#f2b0a6"/>
+
+  <!-- Subido 80 px: abajo va el texto de la tarjeta. -->
+  <g transform="translate(0 -80)">
+
+  <!-- Ventana grande -->
+  <rect x="660" y="90" width="400" height="330" rx="26" fill="#ffffff" stroke="#ffffff" stroke-width="14"/>
+  <rect x="674" y="104" width="372" height="302" rx="16" fill="#eef6f1"/>
+  <path d="M860 104 V406" stroke="#ffffff" stroke-width="12"/>
+  <circle cx="740" cy="380" r="60" fill="#d9ebe1"/>
+  <circle cx="980" cy="370" r="74" fill="#c5dfd0"/>
+  <circle cx="900" cy="396" r="40" fill="#d9ebe1"/>
+
+  <!-- Reloj: citas con hora exacta -->
+  <g transform="translate(420 200)">
+    <circle r="78" fill="#ffffff" stroke="#f6c2d1" stroke-width="8"/>
+    <g stroke="#ef9bb5" stroke-width="6" stroke-linecap="round">
+      <path d="M0 -62 V-50 M62 0 H50 M0 62 V50 M-62 0 H-50"/>
+    </g>
+    <path d="M0 0 V-40 M0 0 L28 16" stroke="#a12a54" stroke-width="8" stroke-linecap="round"/>
+    <circle r="8" fill="#a12a54"/>
+  </g>
+
+  <!-- Planta alta -->
+  <g transform="translate(150 560)">
+    <path d="M40 -60 C10 -160 30 -260 70 -310 C80 -230 76 -140 56 -60 Z" fill="#4e8d72"/>
+    <path d="M56 -60 C100 -150 150 -190 200 -200 C170 -140 120 -90 56 -60 Z" fill="#3f7660"/>
+    <path d="M44 -60 C10 -110 -40 -130 -80 -120 C-50 -90 -10 -66 44 -60 Z" fill="#335f4e"/>
+    <path d="M-10 -60 H120 L104 0 H6 Z" fill="#ffffff" stroke="#f6c2d1" stroke-width="5"/>
+  </g>
+
+  <!-- Sillón de espera -->
+  <g transform="translate(470 360)">
+    <ellipse cx="170" cy="216" rx="200" ry="16" fill="#6d213c" opacity=".1"/>
+    <path d="M30 60 Q30 20 70 20 H270 Q310 20 310 60 V150 H30 Z" fill="#d75078"/>
+    <rect x="0" y="80" width="60" height="110" rx="24" fill="#c13866"/>
+    <rect x="280" y="80" width="60" height="110" rx="24" fill="#c13866"/>
+    <rect x="50" y="128" width="240" height="58" rx="18" fill="#ef9bb5"/>
+    <rect x="70" y="40" width="200" height="8" rx="4" fill="#ffffff" opacity=".3"/>
+    <rect x="30" y="190" width="14" height="24" rx="4" fill="#a12a54"/>
+    <rect x="296" y="190" width="14" height="24" rx="4" fill="#a12a54"/>
+    <!-- Cojín con el logo -->
+    <rect x="120" y="70" width="100" height="70" rx="20" fill="#fbe1e8"/>
+    <circle cx="170" cy="105" r="20" fill="none" stroke="#d75078" stroke-width="4"/>
+  </g>
+
+  <!-- Mesita con revista y agua -->
+  <g transform="translate(900 470)">
+    <rect x="-80" y="0" width="160" height="14" rx="7" fill="#ffffff" stroke="#f6c2d1" stroke-width="3"/>
+    <rect x="-8" y="14" width="16" height="76" fill="#e9dcd7"/>
+    <rect x="-60" y="-12" width="70" height="12" rx="3" fill="#f2b0a6"/>
+    <path d="M30 -46 H56 L52 0 H34 Z" fill="#eaf2f7" stroke="#c3c9cf" stroke-width="3"/>
+  </g>
+  </g>
+</svg>
