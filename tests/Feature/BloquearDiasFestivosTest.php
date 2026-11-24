@@ -85,8 +85,25 @@ class BloquearDiasFestivosTest extends TestCase
         $this->assertTrue(BloqueoAgenda::delDia('2026-12-24')->exists(), 'Una cita cancelada no lo impide');
 
         $aviso = NotificacionSistema::where('user_id', $admin->id)->where('evento', 'festivos_con_citas')->sole();
-        $this->assertStringContainsString('Virgen de Guadalupe', $aviso->mensaje);
-        $this->assertStringContainsString('1 cita activa', $aviso->mensaje);
+        $this->assertStringContainsString('12 dic', $aviso->mensaje);
+        $this->assertStringContainsString('(1 cita)', $aviso->mensaje);
+    }
+
+    public function test_el_aviso_cabe_en_la_campana_aunque_muchos_festivos_tengan_citas(): void
+    {
+        // notificaciones_sistema.mensaje es VARCHAR(255): en MySQL un texto más
+        // largo no se guarda y la doctora nunca vería el aviso.
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
+        $paciente = Paciente::create(['nombre' => 'Ana', 'apellido' => 'Ruiz', 'telefono' => '5511112222']);
+        foreach (array_keys(\App\Support\DiasFestivos::delAnio(2027)) as $fecha) {
+            Cita::create(['id_paciente' => $paciente->id, 'id_tratamiento' => $this->tratamiento->id, 'fecha_hora' => $fecha.' 10:30', 'duracion_estimada' => 30, 'estado' => 'agendada']);
+        }
+
+        $this->artisan('dentissa:bloquear-festivos', ['anios' => [2027], '--avisar' => true])->assertSuccessful();
+
+        $aviso = NotificacionSistema::where('user_id', $admin->id)->where('evento', 'festivos_con_citas')->sole();
+        $this->assertLessThanOrEqual(255, mb_strlen($aviso->mensaje));
+        $this->assertSame(0, BloqueoAgenda::count());
     }
 
     public function test_sin_avisar_no_manda_nada_a_la_campana(): void

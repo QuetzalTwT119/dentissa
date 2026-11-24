@@ -11,6 +11,7 @@ use App\Support\DiasFestivos;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * Bloquea los días festivos (App\Support\DiasFestivos) para que no se ofrezcan
@@ -74,7 +75,8 @@ class BloquearDiasFestivos extends Command
 
                 $citas = $this->citasActivas($fecha);
                 if ($citas > 0) {
-                    $conCitas[] = $etiqueta.' ('.$citas.' '.($citas === 1 ? 'cita activa' : 'citas activas').')';
+                    // Corto: el aviso de la campana guarda hasta 255 caracteres.
+                    $conCitas[] = Carbon::parse($fecha)->locale('es')->translatedFormat('j M Y').' ('.$citas.' '.($citas === 1 ? 'cita' : 'citas').')';
                     $this->warn("Sin bloquear: {$etiqueta}. Tiene {$citas} ".($citas === 1 ? 'cita activa' : 'citas activas').'.');
 
                     continue;
@@ -102,9 +104,14 @@ class BloquearDiasFestivos extends Command
             $notificaciones->alertaSistema(
                 'festivos_con_citas',
                 'Festivos sin bloquear por tener citas',
-                "Estos días festivos tienen citas activas y siguen abiertos en la agenda:\n- "
-                    .implode("\n- ", $conCitas)
-                    ."\n\nReagenda o cancela esas citas y el bloqueo se pondrá solo el próximo mes. Si sí vas a trabajar ese día, no hagas nada.",
+                // notificaciones_sistema.mensaje es VARCHAR(255): MySQL rechaza
+                // un texto más largo (SQLite no, por eso solo falló en test-mysql).
+                Str::limit(
+                    'Siguen abiertos por tener citas activas: '.implode(', ', $conCitas)
+                        .'. Reagéndalas y se bloquearán el día 1, o déjalos si vas a trabajar.',
+                    254, // + «…» = 255
+                    '…',
+                ),
             );
         }
 
