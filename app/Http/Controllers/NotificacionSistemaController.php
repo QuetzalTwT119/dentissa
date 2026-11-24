@@ -20,6 +20,8 @@ class NotificacionSistemaController extends Controller
         $notificaciones = (clone $consulta)
             ->when(($filtros['estado'] ?? 'todas') === 'pendientes', fn ($query) => $query->whereNull('leida_en'))
             ->when(($filtros['estado'] ?? 'todas') === 'leidas', fn ($query) => $query->whereNotNull('leida_en'))
+            // La acción de cada aviso ("Ver en la agenda") necesita su cita.
+            ->with('cita')
             ->latest()
             ->paginate($this->paginationPageSize($request))
             ->withQueryString();
@@ -120,11 +122,17 @@ class NotificacionSistemaController extends Controller
         $marcadas = $request->user()->notificacionesSistema()
             ->whereNull('leida_en')
             ->update(['leida_en' => now()]);
+        // 25/11/2026: leer también es ver; antes la campana seguía con su número
+        // aunque la lista dijera 0 pendientes (igual que marcarLeida()).
+        $request->user()->notificacionesSistema()
+            ->whereNull('vista_en')
+            ->update(['vista_en' => now()]);
 
         if ($request->expectsJson()) {
             return response()->json([
                 'marcadas' => $marcadas,
                 'no_leidas' => 0,
+                'no_vistas' => 0,
             ]);
         }
 

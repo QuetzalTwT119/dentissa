@@ -867,10 +867,12 @@ de la página actual; **Ver todas las notificaciones** abre la bandeja completa.
 La vista rápida tiene dos partes:
 
 - **Por atender**: lo que necesita que alguien haga algo (un paciente canceló o
-  pidió reagendar, una inasistencia, un respaldo que falló). Cada aviso trae
-  **Ver en la agenda** (abre el día de esa cita), **Llamar** (marca al paciente
-  desde el celular) y **Ya lo atendí**, que lo pasa a informativas cuando ya lo
-  resolviste. Si no hay nada, verás "No hay nada pendiente".
+  pidió reagendar, una inasistencia, un respaldo que falló, un **testimonio por
+  aprobar** o un **festivo que no se bloqueó por tener citas**). Cada aviso trae
+  su botón: **Ver en la agenda** (abre el día de esa cita), **Revisar testimonios**
+  o **Ver bloqueos**; además **Llamar** (marca al paciente desde el celular) y
+  **Ya lo atendí**, que lo pasa a informativas cuando ya lo resolviste. Si no hay
+  nada, verás "No hay nada pendiente".
 - **Informativas**: confirmaciones, citas nuevas y cambios. Están plegadas;
   tócalas para abrirlas.
 

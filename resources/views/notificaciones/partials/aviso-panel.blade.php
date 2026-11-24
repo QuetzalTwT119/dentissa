@@ -53,7 +53,7 @@
         </div>
     </article>
 @else
-    <a data-notification-preview="{{ $notificacion->id }}" data-notification-read-url="{{ route('notificaciones.leida', $notificacion, false) }}" href="{{ $notificacion->url ?: route('citas.index', [], false) }}" class="relative flex gap-3 px-4 py-3 transition hover:bg-cream focus:bg-cream focus:outline-none {{ $notificacion->leida_en ? 'aviso-leido' : '' }}">
+    <a data-notification-preview="{{ $notificacion->id }}" data-notification-read-url="{{ route('notificaciones.leida', $notificacion, false) }}" href="{{ $notificacion->accionPrincipal()[1] }}" class="relative flex gap-3 px-4 py-3 transition hover:bg-cream focus:bg-cream focus:outline-none {{ $notificacion->leida_en ? 'aviso-leido' : '' }}">
         <span data-notification-preview-dot class="absolute left-1.5 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full {{ $notificacion->leida_en ? 'hidden' : 'bg-brand-600' }}" aria-hidden="true"></span>
         {!! $figura !!}
         <span class="min-w-0 flex-1">

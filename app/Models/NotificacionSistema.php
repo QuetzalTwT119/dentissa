@@ -6,17 +6,37 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 #[Fillable(['user_id', 'id_cita', 'evento', 'titulo', 'mensaje', 'url', 'leida_en', 'vista_en', 'atendida_en'])]
 class NotificacionSistema extends Model
 {
     protected $table = 'notificaciones_sistema';
 
-    /** Eventos que piden que alguien del equipo haga algo (llamar, reacomodar, revisar). */
-    public const EVENTOS_PRIORITARIOS = ['cancelada', 'no_asistio', 'cancelada_paciente', 'reagendar_paciente', 'respaldo_fallido'];
+    /**
+     * Eventos que piden que alguien del equipo haga algo (llamar, reacomodar, revisar).
+     * 25/11/2026: también un testimonio por aprobar y un festivo que no se bloqueó por tener citas.
+     */
+    public const EVENTOS_PRIORITARIOS = ['cancelada', 'no_asistio', 'cancelada_paciente', 'reagendar_paciente', 'respaldo_fallido', 'testimonio_nuevo', 'festivos_con_citas'];
 
     /** Cantidad de tonos de avatar definidos en app.css (.avatar-tono-0 … -5). */
     private const TONOS_AVATAR = 6;
+
+    /** Largo de las columnas (VARCHAR): MySQL rechaza un texto más largo y el aviso se perdía. */
+    public const LARGO_TITULO = 120;
+
+    public const LARGO_MENSAJE = 255;
+
+    protected static function booted(): void
+    {
+        // 25/11/2026: un respaldo fallido con un error largo de Google Drive no
+        // llegaba a la campana ("Data too long" en MySQL; SQLite no lo nota).
+        // Se recorta aquí para que ningún aviso se pierda por largo.
+        static::saving(function (self $notificacion): void {
+            $notificacion->titulo = Str::limit((string) $notificacion->titulo, self::LARGO_TITULO - 1, '…');
+            $notificacion->mensaje = Str::limit((string) $notificacion->mensaje, self::LARGO_MENSAJE - 1, '…');
+        });
+    }
 
     protected function casts(): array
     {
@@ -65,6 +85,8 @@ class NotificacionSistema extends Model
             'reagendar_paciente' => 'Horario liberado',
             'reagendada_paciente' => 'Nuevo horario del paciente',
             'respaldo_fallido' => 'Respaldo fallido',
+            'testimonio_nuevo' => 'Testimonio por aprobar',
+            'festivos_con_citas' => 'Festivo con citas',
             default => 'Sistema',
         };
     }
@@ -114,6 +136,8 @@ class NotificacionSistema extends Model
             'cancelada', 'cancelada_paciente', 'no_asistio' => ['tache', 'baja'],
             'reagendar_paciente' => ['ciclo', 'alerta'],
             'respaldo_fallido' => ['alerta', 'baja'],
+            'testimonio_nuevo' => ['palomita', 'nueva'],
+            'festivos_con_citas' => ['calendario', 'alerta'],
             default => ['nube', 'sistema'],
         };
     }
@@ -126,7 +150,12 @@ class NotificacionSistema extends Model
         return $telefono !== '' ? $telefono : null;
     }
 
-    /** Acción principal de un aviso por atender: [texto, url]. */
+    /**
+     * A dónde lleva el aviso: [texto, url]. La usan la campana, la página de
+     * notificaciones y el aviso emergente (25/11/2026: antes la página decía
+     * "Ver cita" en todos, aunque fueran de un testimonio o de un respaldo).
+     * Se decide por el evento y no por la url guardada, así sirve con avisos viejos.
+     */
     public function accionPrincipal(): array
     {
         if ($this->cita) {
@@ -134,7 +163,17 @@ class NotificacionSistema extends Model
             return ['Ver en la agenda', route('citas.index', ['fecha' => $this->cita->fecha_hora->toDateString()], false)];
         }
 
-        return ['Ver detalle', $this->url ?: route('notificaciones.index', [], false)];
+        return match ($this->evento) {
+            'testimonio_nuevo' => ['Revisar testimonios', route('admin.testimonios.index', [], false)],
+            'festivos_con_citas' => ['Ver bloqueos', route('admin.configuracion', [], false).'#bloqueos'],
+            default => ['Ver detalle', $this->url ?: route('notificaciones.index', [], false)],
+        };
+    }
+
+    /** La acción lleva a otra pantalla (no a la lista de notificaciones, donde ya se está). */
+    public function accionLlevaAOtraPantalla(): bool
+    {
+        return parse_url($this->accionPrincipal()[1], PHP_URL_PATH) !== route('notificaciones.index', [], false);
     }
 
     /** Fragmento HTML del panel de la campana; lo reutiliza la actualización en vivo. */
@@ -152,7 +191,7 @@ class NotificacionSistema extends Model
             'id' => $this->id,
             'titulo' => $this->titulo,
             'mensaje' => $this->mensaje,
-            'url' => $this->url ?: route('notificaciones.index', [], false),
+            'url' => $this->accionPrincipal()[1],
             'leida_url' => route('notificaciones.leida', $this, false),
             'creada' => $this->created_at->toIso8601String(),
             'por_atender' => $this->requiereAccion(),
