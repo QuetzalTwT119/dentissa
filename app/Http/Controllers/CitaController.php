@@ -72,6 +72,13 @@ class CitaController extends Controller
             'semanaAnterior' => $dia->copy()->subWeek()->toDateString(),
             'semanaSiguiente' => $dia->copy()->addWeek()->toDateString(),
             'filtros' => $filtros,
+            // QA 24/11/2026: citas que se quedaron «En curso» de días anteriores
+            // (nadie presionó Completar). La agenda avisa para cerrarlas.
+            'enCursoOlvidadas' => Cita::with('paciente:id,nombre,apellido')
+                ->where('estado', EstadoCita::EnCurso)
+                ->whereDate('fecha_hora', '<', Carbon::today())
+                ->orderBy('fecha_hora')
+                ->get(['id', 'id_paciente', 'fecha_hora']),
         ]);
     }
 
@@ -399,11 +406,42 @@ class CitaController extends Controller
             return back()->withErrors(['estado' => 'Solo se pueden iniciar citas confirmadas.']);
         }
 
-        DB::transaction(function () use ($cita, $request, $auditoria) {
+        // QA 24/11/2026: se podían iniciar citas de otros días, ya terminadas, y
+        // varias a la vez aunque la doctora atiende a un paciente a la vez.
+        if (! $cita->fecha_hora->isToday()) {
+            return back()->withErrors(['estado' => 'Una cita solo se inicia el día que le toca ('
+                .$cita->fecha_hora->locale('es')->translatedFormat('j \d\e F').').']);
+        }
+        if ($cita->yaTermino()) {
+            return back()->withErrors(['estado' => 'El horario de esta cita ya terminó: márcala como «Atendida» o «No asistió».']);
+        }
+
+        $ocupada = DB::transaction(function () use ($cita, $request, $auditoria) {
+            $capacidad = max(1, (int) (HorarioAtencion::where('dia_semana', $cita->fecha_hora->dayOfWeek)->value('capacidad_simultanea') ?? 1));
+            $enCurso = Cita::with('paciente')
+                ->where('estado', EstadoCita::EnCurso)
+                ->whereDate('fecha_hora', $cita->fecha_hora->toDateString())
+                ->whereKeyNot($cita->getKey())
+                ->orderBy('fecha_hora')
+                ->lockForUpdate()
+                ->get();
+
+            if ($enCurso->count() >= $capacidad) {
+                return $enCurso->first();
+            }
+
             $datosAnteriores = $this->datosAuditoria($cita);
             $cita->update(['estado' => EstadoCita::EnCurso]);
             $auditoria->registrar('cita.iniciada', $cita, $datosAnteriores, $this->datosAuditoria($cita), $request);
+
+            return null;
         });
+
+        if ($ocupada) {
+            $quien = trim(($ocupada->paciente?->nombre ?? '').' '.($ocupada->paciente?->apellido ?? '')) ?: 'otro paciente';
+
+            return back()->withErrors(['estado' => "Primero completa la cita de {$quien} ({$ocupada->fecha_hora->format('H:i')}), que sigue en curso."]);
+        }
         $notificacionesInternas->cambioCita($cita, 'iniciada', $request->user()->id);
 
         return $this->volverALaAgenda($cita, 'Cita iniciada correctamente.');
@@ -413,8 +451,9 @@ class CitaController extends Controller
     {
         Gate::authorize('noShow', $cita);
 
-        if ($cita->estado !== EstadoCita::Confirmada) {
-            return back()->withErrors(['estado' => 'Solo se pueden marcar como no asistidas las citas confirmadas.']);
+        // QA 24/11/2026: también una agendada que nunca se confirmó y ya pasó.
+        if (! in_array($cita->estado, [EstadoCita::Agendada, EstadoCita::Confirmada], true)) {
+            return back()->withErrors(['estado' => 'Solo se pueden marcar como no asistidas las citas agendadas o confirmadas.']);
         }
 
         if ($cita->fecha_hora->isFuture()) {
@@ -435,8 +474,15 @@ class CitaController extends Controller
     {
         Gate::authorize('complete', $cita);
 
-        if ($cita->estado !== EstadoCita::EnCurso) {
-            return back()->withErrors(['estado' => 'Solo se pueden completar citas en curso.']);
+        // QA 24/11/2026: si nadie presionó «Iniciar», una cita cuya hora ya llegó
+        // se marca «Atendida» en un paso (antes había que iniciarla y completarla).
+        $atendidaDirecto = in_array($cita->estado, [EstadoCita::Agendada, EstadoCita::Confirmada], true)
+            && ! $cita->fecha_hora->isFuture();
+
+        if ($cita->estado !== EstadoCita::EnCurso && ! $atendidaDirecto) {
+            return back()->withErrors(['estado' => $cita->fecha_hora->isFuture()
+                ? 'Una cita solo se marca como atendida cuando llega su hora.'
+                : 'Solo se pueden completar citas en curso.']);
         }
 
         DB::transaction(function () use ($cita, $request, $auditoria) {
@@ -446,7 +492,7 @@ class CitaController extends Controller
         });
         $notificacionesInternas->cambioCita($cita, 'completada', $request->user()->id);
 
-        return $this->volverALaAgenda($cita, 'Cita completada correctamente.');
+        return $this->volverALaAgenda($cita, $atendidaDirecto ? 'Cita marcada como atendida.' : 'Cita completada correctamente.');
     }
 
     /** @return array<string, string> */

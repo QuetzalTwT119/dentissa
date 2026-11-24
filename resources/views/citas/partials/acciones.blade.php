@@ -13,7 +13,30 @@
     $puedeRegistrarConsulta = $cita->exists && $cita->id_paciente && $cita->estado->value === 'completada' && auth()->user()?->puede('pacientes') && ! $cita->historialClinico()->exists();
 @endphp
 <div class="flex w-max max-w-full items-center justify-end gap-2">
-    @if ($esPersonal && $cita->estado->value === 'agendada')
+    {{--
+        QA 24/11/2026: si ya pasó la hora de fin y nadie la atendió en el sistema,
+        ya no tiene sentido «Iniciar» ni «Confirmar»: se pregunta directo si fue.
+    --}}
+    @if ($esPersonal && $cita->exists && $cita->yaTermino())
+        <form method="POST" action="{{ route('citas.complete', $cita) }}" data-cita-atendida data-confirmar="La cita quedará como atendida." data-confirmar-titulo="¿El paciente sí vino?" data-confirmar-boton="Sí, fue atendido" data-confirmar-tono="normal">
+            @csrf
+            @method('patch')
+            <button type="submit"
+                    class="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-sage-600 px-3.5 text-xs font-semibold text-white shadow-2xs transition hover:bg-sage-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2">
+                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 5.29a1 1 0 01.006 1.414l-7.25 7.3a1 1 0 01-1.42 0l-3.75-3.775a1 1 0 111.42-1.408l3.04 3.06 6.54-6.585a1 1 0 011.414-.006z" clip-rule="evenodd" /></svg>
+                Atendida
+            </button>
+        </form>
+        <form method="POST" action="{{ route('citas.no-show', $cita) }}" data-cita-no-asistio
+              data-confirmar="Quedará en el historial del paciente como inasistencia." data-confirmar-titulo="¿El paciente no vino?" data-confirmar-boton="Sí, no asistió" data-confirmar-tono="peligro">
+            @csrf
+            @method('patch')
+            <button type="submit"
+                    class="inline-flex h-[42px] items-center justify-center whitespace-nowrap rounded-full border border-amber-200 bg-white px-3.5 text-xs font-semibold text-amber-800 shadow-2xs transition hover:bg-amber-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2">
+                No asistió
+            </button>
+        </form>
+    @elseif ($esPersonal && $cita->estado->value === 'agendada')
         <form method="POST" action="{{ route('citas.confirm', $cita) }}" data-confirmar="Se avisará al paciente que su cita quedó confirmada." data-confirmar-titulo="¿Confirmar la cita?" data-confirmar-boton="Sí, confirmar" data-confirmar-tono="normal">
             @csrf
             @method('patch')
@@ -22,7 +45,8 @@
                 Confirmar
             </button>
         </form>
-    @elseif ($esPersonal && $cita->estado->value === 'confirmada')
+    @elseif ($esPersonal && $cita->estado->value === 'confirmada' && $cita->sePuedeIniciar())
+        {{-- Solo el día de la cita (QA 24/11/2026: salía también en días futuros). --}}
         <form method="POST" action="{{ route('citas.start', $cita) }}" data-confirmar="La cita pasará a «En curso»." data-confirmar-titulo="¿Iniciar la cita?" data-confirmar-boton="Sí, iniciar" data-confirmar-tono="normal">
             @csrf
             @method('patch')
@@ -76,8 +100,9 @@
             </summary>
             <div x-data="{}" x-init="$nextTick(() => { const detail = $el.closest('details'); detail?.addEventListener('toggle', () => { if (!detail.open) return; const trigger = detail.querySelector('summary').getBoundingClientRect(); const scrollArea = detail.closest('.overflow-x-auto')?.getBoundingClientRect(); const top = scrollArea?.top ?? 0; const bottom = scrollArea?.bottom ?? window.innerHeight; const roomBelow = bottom - trigger.bottom; const roomAbove = trigger.top - top; $el.classList.toggle('bottom-full', roomBelow < 220 && roomAbove > roomBelow); $el.classList.toggle('top-full', !(roomBelow < 220 && roomAbove > roomBelow)); $el.classList.toggle('mb-2', roomBelow < 220 && roomAbove > roomBelow); $el.classList.toggle('mt-2', !(roomBelow < 220 && roomAbove > roomBelow)); }); })" class="menu-acciones absolute right-0 top-full z-30 mt-2 flex min-w-48 flex-col rounded-2xl border border-line bg-white p-1.5 shadow-lift">
                 <p class="px-3 pb-2 pt-1 text-caption font-semibold uppercase tracking-label text-muted">Gestionar cita</p>
-                {{-- Misma regla que CitaController@noShow: solo después de la hora de la cita. --}}
-                @if ($cita->estado->value === 'confirmada' && ! $cita->fecha_hora->isFuture())
+                {{-- Misma regla que CitaController@noShow: solo después de la hora de la cita.
+                     Si ya terminó, el botón está a la vista y no se repite aquí. --}}
+                @if (in_array($cita->estado->value, ['agendada', 'confirmada'], true) && ! $cita->fecha_hora->isFuture() && ! $cita->yaTermino())
                     <form method="POST" action="{{ route('citas.no-show', $cita) }}"
                           data-confirmar="Esta acción no se puede deshacer." data-confirmar-titulo="¿Marcar esta cita como no asistida?" data-confirmar-boton="Sí, marcar" data-confirmar-tono="peligro">
                         @csrf

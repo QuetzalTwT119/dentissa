@@ -84,8 +84,8 @@ class ListaCitasPorDiaTest extends TestCase
         $this->actingAs($this->admin)->get(route('citas.index'))
             ->assertOk()
             ->assertSee('data-citas-plegadas', false)
-            ->assertSee('2 ya atendidas o canceladas')
-            ->assertSee('1 completada, 1 cancelada')
+            ->assertSee('1 atendida · 1 cancelada')
+            ->assertDontSee('ya atendidas o canceladas')
             ->assertSee('Ya Atendida')   // sigue en la página, dentro del plegable
             ->assertSee('Por Atender');
 
@@ -138,7 +138,7 @@ class ListaCitasPorDiaTest extends TestCase
 
         $html = $this->actingAs($this->admin)->get(route('citas.index'))->assertOk()
             ->getContent();
-        $this->assertMatchesRegularExpression('#0 citas activas\s*·\s*2 canceladas#u', $html);
+        $this->assertMatchesRegularExpression('#0 por atender\s*·\s*2 canceladas#u', $html);
         $this->assertMatchesRegularExpression('#Hoy 9\s*</span>\s*<span[^>]*>\s*2 canceladas#u', $html);
     }
 

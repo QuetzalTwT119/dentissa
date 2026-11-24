@@ -327,9 +327,13 @@ A la derecha del título de `/citas` hay un selector **Lista | Semana**:
     cuántas faltan **por confirmar** (en ámbar). Toca una pestaña para ver ese
     día; las flechas **‹ ›** (o "Semana anterior / siguiente" en el celular)
     cambian de semana e **Ir a hoy** regresa al día actual.
-  - El conteo dice cuántas citas siguen **activas** y, aparte, cuántas se
-    cancelaron ("0 citas activas · 4 canceladas"); un día con solo canceladas
-    lo indica en su pestaña en lugar de "0 citas".
+  - El conteo dice cuántas citas quedan **por atender** y, aparte, cuántas ya se
+    **atendieron**, se cancelaron o no asistieron ("1 por atender · 2 atendidas ·
+    1 cancelada"); un día con solo canceladas lo indica en su pestaña en lugar de
+    "0 citas". Las ya cerradas se pliegan en un renglón ("2 atendidas · 1
+    cancelada") con **Mostrar**.
+  - Si una cita quedó **En curso** de un día anterior (nadie presionó
+    **Completar**), arriba sale un aviso ámbar con el día: ábrelo y complétala.
   - Al confirmar, iniciar, completar, cancelar o marcar "no asistió" te quedas
     en el **mismo día** (y vista) donde estabas; al crear o reagendar una cita
     la agenda se abre en el día de esa cita.
@@ -394,9 +398,14 @@ Reserva pública, Telegram o interna → Confirmada → En curso → Completada
 Cita histórica pendiente → Agendada → Confirmada o Cancelada
 ```
 
-Una cita no se puede completar directamente desde **Agendada** o
-**Confirmada**. Primero se debe pulsar **Iniciar** cuando comienza la
-atención. La agenda muestra una acción principal según el estado y agrupa
+**Iniciar** aparece solo el **día de la cita** y mientras no haya terminado su
+horario. Como la doctora atiende a un paciente a la vez, no deja iniciar otra
+cita mientras una siga **En curso**: primero se completa la anterior (con
+"Pacientes a la vez" en 2, deja dos).
+Si ya pasó la hora de fin de una cita y nadie la atendió en el sistema, ya no
+sale **Iniciar**: salen **Atendida** (la marca completada en un paso) y **No
+asistió**, a la vista. Antes de su hora no se puede marcar ninguna de las dos.
+La agenda muestra una acción principal según el estado y agrupa
 opciones secundarias en el botón **Acciones**. El menú muestra sus opciones con
 iconos y separa visualmente la cancelación. Las acciones disponibles dependen
 del estado actual de la cita: **Acciones** aparece solo en citas agendadas o
@@ -406,7 +415,8 @@ curso** muestra únicamente **Completar**, y los estados finales muestran **Sin
 acciones**.
 La inasistencia no se puede registrar antes de la fecha y hora programadas; por
 eso **Marcar inasistencia** solo aparece en **Más acciones** de una cita
-confirmada cuando ya pasó su hora.
+agendada o confirmada cuando ya empezó su hora (y como botón **No asistió** a la
+vista cuando ya terminó).
 Antes de marcarla, el sistema pide confirmación porque el cambio no se puede
 deshacer; cancelar también solicita un motivo opcional y confirmación.
 Después de una acción válida, la agenda muestra el estado actualizado y un

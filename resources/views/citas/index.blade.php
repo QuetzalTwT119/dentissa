@@ -55,7 +55,9 @@
                         $pendientes = $citasDelDia->reject(fn ($cita) => in_array($cita->estado->value, $terminales, true));
                         $hechas = $citasDelDia->filter(fn ($cita) => in_array($cita->estado->value, $terminales, true));
                         $enCurso = $citasDelDia->first(fn ($cita) => $cita->estado->value === 'en_curso');
-                        $activas = $citasDelDia->reject(fn ($cita) => $cita->estado->esInactiva())->count();
+                        // QA 24/11/2026: las completadas ya no cuentan como "activas".
+                        $activas = $citasDelDia->filter(fn ($cita) => $cita->estado->esPorAtender())->count();
+                        $atendidasDia = $citasDelDia->where('estado', \App\Enums\EstadoCita::Completada)->count();
                         $porConfirmar = $citasDelDia->where('estado', \App\Enums\EstadoCita::Agendada)->count();
                         $canceladasDia = $citasDelDia->where('estado', \App\Enums\EstadoCita::Cancelada)->count();
                         $noAsistioDia = $citasDelDia->where('estado', \App\Enums\EstadoCita::NoAsistio)->count();
@@ -63,9 +65,28 @@
                         $partesHechas = collect(['completada', 'no_asistio', 'cancelada'])
                             ->map(fn ($estado) => [$estado, $hechas->filter(fn ($cita) => $cita->estado->value === $estado)->count()])
                             ->filter(fn ($par) => $par[1] > 0)
-                            ->map(fn ($par) => $par[1].' '.mb_strtolower($estadoLabel[$par[0]]).($par[1] > 1 && $par[0] !== 'no_asistio' ? 's' : ''))
-                            ->join(', ');
+                            ->map(fn ($par) => $par[1].' '.match ($par[0]) {
+                                'completada' => $par[1] === 1 ? 'atendida' : 'atendidas',
+                                'cancelada' => $par[1] === 1 ? 'cancelada' : 'canceladas',
+                                'no_asistio' => $par[1] === 1 ? 'no asistió' : 'no asistieron',
+                            })
+                            ->join(' · ');
                     @endphp
+
+                    {{-- QA 24/11/2026: citas «En curso» de días anteriores que nadie completó. --}}
+                    @if (($enCursoOlvidadas ?? collect())->isNotEmpty())
+                        <div role="status" data-en-curso-olvidadas class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                            <p class="font-semibold">
+                                {{ $enCursoOlvidadas->count() === 1 ? 'Una cita quedó' : $enCursoOlvidadas->count().' citas quedaron' }} «En curso» de días anteriores.
+                            </p>
+                            <p class="mt-1">
+                                Ábrela y presiona <strong>Completar</strong> para que el día cuente bien:
+                                @foreach ($enCursoOlvidadas->groupBy(fn ($cita) => $cita->fecha_hora->toDateString()) as $fecha => $grupo)
+                                    <a href="{{ route('citas.index', ['fecha' => $fecha]) }}" class="font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-700">{{ \Illuminate\Support\Carbon::parse($fecha)->locale('es')->translatedFormat('D j M') }} ({{ $grupo->count() }})</a>@if (! $loop->last), @endif
+                                @endforeach
+                            </p>
+                        </div>
+                    @endif
 
                     <!-- Pestañas: un día a la vez -->
                     <div class="flex items-center gap-2">
@@ -114,7 +135,10 @@
                         <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                             <h2 class="font-serif text-title-3 text-ink">{{ $tituloDia($dia) }}</h2>
                             <p class="text-footnote text-muted">
-                                {{ $activas }} {{ $activas === 1 ? 'cita activa' : 'citas activas' }}
+                                {{ $activas }} por atender
+                                @if ($atendidasDia > 0)
+                                    · {{ $atendidasDia }} {{ $atendidasDia === 1 ? 'atendida' : 'atendidas' }}
+                                @endif
                                 @if ($canceladasDia > 0)
                                     · {{ $canceladasDia }} {{ $canceladasDia === 1 ? 'cancelada' : 'canceladas' }}
                                 @endif
@@ -152,10 +176,8 @@
                         @if ($hechas->isNotEmpty() && $pendientes->isNotEmpty())
                             <details class="group border-b border-line/70" data-citas-plegadas>
                                 <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 bg-shell/30 px-4 text-sm text-ink-soft transition-colors hover:bg-shell/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-400 lg:px-5 [&::-webkit-details-marker]:hidden">
-                                    <span>
-                                        {{ $hechas->count() }} ya {{ $hechas->count() === 1 ? 'atendida o cancelada' : 'atendidas o canceladas' }}
-                                        <span class="text-muted">({{ $partesHechas }})</span>
-                                    </span>
+                                    {{-- QA 24/11/2026: antes "4 ya atendidas o canceladas (4 canceladas)". --}}
+                                    <span>{{ $partesHechas }}</span>
                                     <span class="shrink-0 font-semibold text-brand-700"><span class="group-open:hidden">Mostrar</span><span class="hidden group-open:inline">Ocultar</span></span>
                                 </summary>
                                 @foreach ($hechas as $cita)
