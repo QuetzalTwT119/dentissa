@@ -26,7 +26,25 @@ class ImagenesPublicasTest extends TestCase
             ->assertOk()
             ->assertSee('Tratamientos diseñados para tu salud y armonía')
             ->assertSee('Valoración Integral')
-            ->assertSee('/images/3.jpg');
+            ->assertSee('/images/ilustraciones/esterilizacion.svg');
+    }
+
+    /** 25/11/2026: sin fotos de marca ni de "boutique" (el consultorio no vende productos). */
+    public function test_la_portada_usa_ilustraciones_y_no_las_fotos_de_marca(): void
+    {
+        foreach (['esterilizacion', 'consultorio', 'sala-espera', 'recordatorio'] as $nombre) {
+            $this->assertFileExists(public_path("images/ilustraciones/{$nombre}.svg"));
+        }
+
+        $html = $this->get('/')->assertOk()
+            ->assertSee('/images/ilustraciones/consultorio.svg')
+            ->assertDontSee('Boutique')
+            ->assertDontSee('Uniforme')
+            ->getContent();
+
+        foreach (['2', '3', '4', '6'] as $foto) {
+            $this->assertStringNotContainsString("/images/{$foto}.jpg", $html);
+        }
     }
 
     public function test_la_portada_y_la_agenda_describen_los_tratamientos_reales_de_la_clinica(): void

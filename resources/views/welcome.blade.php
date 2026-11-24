@@ -176,8 +176,9 @@
         --}}
         <section id="inicio" aria-labelledby="titulo-inicio" class="relative overflow-hidden lg:flex lg:min-h-[min(46rem,calc(100dvh-4.5rem))] lg:items-center">
             <div class="relative aspect-[4/3] sm:aspect-[16/9] lg:absolute lg:inset-y-0 lg:left-[44%] lg:right-0 lg:aspect-auto">
-                <img src="{{ asset('images/dentissa/hero-inicio.jpg') }}"
-                     alt="La doctora conversa con una paciente sentada en el sillón dental del consultorio"
+                {{-- 25/11/2026: la de fábrica es de catálogo; la doctora sube la real en Contenido → Galería. --}}
+                <img src="{{ ($fotoInicio ?? null) ? asset('storage/'.$fotoInicio) : asset('images/dentissa/hero-inicio.jpg') }}"
+                     alt="{{ ($fotoInicio ?? null) ? 'El consultorio de la Dra. Melissa López' : 'Una dentista conversa con su paciente en el sillón dental' }}"
                      width="1376" height="768" fetchpriority="high"
                      class="absolute inset-0 h-full w-full object-cover object-[70%_40%] lg:object-[72%_40%]">
                 <div aria-hidden="true" class="absolute inset-0 hidden bg-[linear-gradient(90deg,rgb(var(--c-cream))_0%,rgb(var(--c-cream)/0.7)_12%,rgb(var(--c-cream)/0)_32%)] lg:block"></div>
@@ -347,9 +348,9 @@
                     </article>
                 @endforeach
 
-                <!-- Tarjeta fotográfica: instrumental -->
+                <!-- Tarjeta ilustrada: instrumental esterilizado (25/11/2026: antes una foto de marca) -->
                 <article class="group relative flex min-h-[320px] flex-col justify-end overflow-hidden rounded-[1.75rem] p-6 text-white shadow-soft sm:p-7">
-                    <img src="{{ asset('images/3.jpg') }}" alt="Instrumental Dental de Precisión" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
+                    <img src="{{ asset('images/ilustraciones/esterilizacion.svg') }}" alt="" class="absolute inset-0 h-full w-full object-cover" loading="lazy" data-ilustracion>
                     <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/90 via-[#2b1a20]/40 to-transparent"></div>
 
                     <div class="relative">
@@ -372,7 +373,8 @@
                 <figure class="relative mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none">
                     <div aria-hidden="true" class="absolute -inset-3 -z-0 rotate-[-2.5deg] rounded-[2.5rem] bg-peach-100"></div>
                     <div class="relative aspect-[4/5] overflow-hidden rounded-[2.25rem] shadow-lift">
-                        <img src="{{ asset('images/4.jpg') }}" alt="Uniforme Dra. Melissa López N." class="h-full w-full object-cover" loading="lazy">
+                        {{-- 25/11/2026: ilustración del consultorio (antes una foto del uniforme de marca). --}}
+                        <img src="{{ asset('images/ilustraciones/consultorio.svg') }}" alt="" class="h-full w-full object-cover" loading="lazy" data-ilustracion>
                         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/85 via-transparent to-transparent"></div>
                         <figcaption class="absolute inset-x-0 bottom-0 p-6 text-white">
                             <span class="text-caption font-semibold uppercase tracking-label text-peach-200">Directora Médica</span>
@@ -423,9 +425,9 @@
         <section id="galeria" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
-                    <p class="eyebrow">Ambiente Boutique</p>
+                    <p class="eyebrow">El consultorio</p>
                     <h2 class="mt-4 text-title-1 text-ink">
-                        Cada detalle pensado para que te sientas en casa
+                        Pensado para que te atiendas con calma
                     </h2>
                 </div>
             </div>
@@ -433,8 +435,12 @@
             <div class="mt-12 grid grid-cols-1 gap-5 md:grid-cols-5">
                 @php
                     // 24/11/2026: las fotos de Contenido → Galería (antes se cargaban y no se
-                    // mostraban). Sin fotos activas, quedan las dos de fábrica. Filas de
-                    // 3 + 2 columnas que se alternan (2 + 3) para que no se vea una cuadrícula rígida.
+                    // mostraban). Filas de 3 + 2 columnas que se alternan (2 + 3) para que no
+                    // se vea una cuadrícula rígida.
+                    // 25/11/2026: sin fotos activas ya no salen tazas ni logos ("boutique": el
+                    // consultorio no vende productos), sino dos ilustraciones con lo que de
+                    // verdad hace el sistema: cuántos pacientes a la vez y el recordatorio.
+                    $unoALaVez = ($pacientesALaVez ?? 1) === 1;
                     $fotosGaleria = ($galeria ?? collect())->isNotEmpty()
                         ? $galeria->values()->map(fn ($foto, $i) => [
                             asset('storage/'.$foto->url), $foto->titulo ?: 'Consultorio Dentissa', 'Nuestro consultorio',
@@ -442,8 +448,16 @@
                             in_array($i % 4, [0, 3], true) ? 'md:col-span-3' : 'md:col-span-2',
                         ])
                         : collect([
-                            [asset('images/6.jpg'), 'Detalles del consultorio', 'Espacios Diseñados para Ti', 'Calidez y Hospitalidad', 'Disfruta de una sala relajante y una atención pensada para tu total tranquilidad.', 'md:col-span-3'],
-                            [asset('images/2.jpg'), 'Identidad de marca Dentissa', 'Armonía & Estética', 'Paleta de Marca Relajante', 'Colores rosa y durazno cálidos que transmiten serenidad, confianza y bienestar.', 'md:col-span-2'],
+                            [asset('images/ilustraciones/sala-espera.svg'), '', 'Sin esperas largas',
+                                $unoALaVez ? 'Un paciente a la vez' : 'Citas con hora exacta',
+                                $unoALaVez
+                                    ? 'La doctora te atiende en persona y no junta citas: tu horario es solo tuyo.'
+                                    : 'Cada cita tiene su hora y su duración, para que no esperes de más.',
+                                'md:col-span-3'],
+                            [asset('images/ilustraciones/recordatorio.svg'), '', 'Recordatorio por WhatsApp',
+                                'Te avisamos un día antes',
+                                'El día hábil anterior a tu cita te llega un mensaje para confirmar o reagendar con un toque.',
+                                'md:col-span-2'],
                         ]);
                     // Un número impar deja la última sola: que ocupe todo el ancho.
                     if ($fotosGaleria->count() % 2 === 1 && $fotosGaleria->count() > 1) {
