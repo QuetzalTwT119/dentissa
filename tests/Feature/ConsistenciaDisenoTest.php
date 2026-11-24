@@ -282,30 +282,38 @@ class ConsistenciaDisenoTest extends TestCase
     }
 
     /**
-     * 23/11/2026: toda pantalla que se abre desde otra (crear, editar, cuestionarios)
-     * tiene el mismo botón global "← Volver a …" (components/volver) arriba del título.
+     * 23/11/2026: el botón global "← Volver a …" (components/volver) va solo en las
+     * pantallas que se abren desde otra y NO tienen "Cancelar". 24/11/2026: en los
+     * formularios "Cancelar" ya regresa, así que ahí no se repite.
      */
     public function test_las_pantallas_hijas_tienen_el_boton_global_de_volver(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $paciente = \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'Prueba', 'telefono' => '5512345678']);
 
+        // Sin "Cancelar": llevan Volver.
         foreach ([
-            route('admin.usuarios.create') => 'Volver a Usuarios',
-            route('admin.ofertas.create') => 'Volver a Ofertas',
-            route('admin.preguntas-frecuentes.create') => 'Volver a Preguntas frecuentes',
-            route('admin.casos.create') => 'Volver a Casos',
-            route('admin.servicios.create') => 'Volver a Servicios',
-            route('admin.tratamientos.create') => 'Volver a Tratamientos',
-            route('citas.create') => 'Volver a la Agenda',
             route('dos-pasos.show') => 'Volver a Mi perfil',
-            route('admin.pacientes.edit', $paciente) => 'Volver a Pacientes',
             route('admin.pacientes.historial.index', $paciente) => 'Volver a Pacientes',
-            route('admin.pacientes.historial.create', $paciente) => 'Volver al expediente',
-            route('admin.pacientes.historia.edit', $paciente) => 'Volver al expediente',
-            route('admin.pacientes.exploracion.create', $paciente) => 'Volver al expediente',
         ] as $url => $texto) {
             $this->actingAs($admin)->get($url)->assertOk()->assertSee('data-volver', false)->assertSee($texto);
+        }
+
+        // Formularios con "Cancelar": no repiten el regreso.
+        foreach ([
+            route('admin.usuarios.create'),
+            route('admin.ofertas.create'),
+            route('admin.preguntas-frecuentes.create'),
+            route('admin.casos.create'),
+            route('admin.servicios.create'),
+            route('admin.tratamientos.create'),
+            route('citas.create'),
+            route('admin.pacientes.edit', $paciente),
+            route('admin.pacientes.historial.create', $paciente),
+            route('admin.pacientes.historia.edit', $paciente),
+            route('admin.pacientes.exploracion.create', $paciente),
+        ] as $url) {
+            $this->actingAs($admin)->get($url)->assertOk()->assertSee('Cancelar')->assertDontSee('data-volver', false);
         }
 
         // El componente es uno solo; nadie dibuja su propia flecha de regreso.

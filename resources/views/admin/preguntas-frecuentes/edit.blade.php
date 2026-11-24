@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header :volver="route('admin.preguntas-frecuentes.index')" volver-texto="Volver a Preguntas frecuentes"
+        <x-admin.header
             title="Editar pregunta frecuente"
             subtitle="Modificación de respuesta y variantes de lenguaje natural."
         >

@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header :volver="route('admin.pacientes.historial.index', $paciente)" volver-texto="Volver al expediente"
+        <x-admin.header
             title="Editar consulta — {{ $paciente->nombre }} {{ $paciente->apellido }}"
             subtitle="Modificación de notas clínicas y gestión de adjuntos."
         >

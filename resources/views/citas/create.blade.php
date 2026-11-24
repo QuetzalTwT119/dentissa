@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header :volver="route('citas.index')" volver-texto="Volver a la Agenda"
+        <x-admin.header
             badge="Gestión de Agenda"
             title="Agendar cita en consultorio"
             subtitle="Registro directo de consulta médica para pacientes registrados."

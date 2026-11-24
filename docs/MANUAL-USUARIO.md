@@ -73,6 +73,10 @@ sencillo con accesos a sus citas y al asistente de agenda. El sitio también
 puede instalarse como aplicación compatible; si se pierde la conexión, muestra
 una pantalla para reintentar al volver a estar en línea.
 
+Para regresar: en los formularios usa **Cancelar** (vuelve a la pantalla anterior sin
+guardar). Las pantallas que no tienen Cancelar, como el expediente del paciente,
+muestran arriba del título el enlace **← Volver a …**.
+
 ### Demostración escolar en Railway
 
 Para la presentación, el administrador y su ayudante usarán cuentas ficticias

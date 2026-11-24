@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header :volver="route('admin.galeria.index')" volver-texto="Volver a Galería"
+        <x-admin.header
             title="Editar imagen"
             subtitle="Actualización de foto, título y visibilidad."
         >
