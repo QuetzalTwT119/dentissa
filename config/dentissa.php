@@ -17,6 +17,9 @@ return [
     'modulos' => [
         'galeria' => (bool) env('DENTISSA_MODULO_GALERIA', false),
         'casos' => (bool) env('DENTISSA_MODULO_CASOS', false),
+        // Pagos e ingresos (24/11/2026): hecho pero oculto por decisión del usuario
+        // ("no se va a ocupar"). Apagado, nadie tiene el módulo "pagos" (Permisos).
+        'pagos' => (bool) env('DENTISSA_MODULO_PAGOS', false),
     ],
 
 

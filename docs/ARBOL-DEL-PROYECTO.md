@@ -153,7 +153,7 @@ Panel                                         Módulo               T   D   A
 │   ├── Usuarios  /admin/usuarios              usuarios             ✓   ✓*  ✗
 │   │   └── Nuevo usuario · Desactivar · Eliminar
 │   ├── Reportes  /admin/reportes (PDF/Excel)  reportes             ✓   ✓   ✗
-│   ├── Pagos e ingresos  /admin/pagos         pagos                ✓   ✓   ✗
+│   ├── (Pagos e ingresos  /admin/pagos: oculto, DENTISSA_MODULO_PAGOS)
 │   ├── Mensajes  /admin/mensajes              mensajes             ✓   ✓   ✗
 │   └── Control de actividades                 control_actividades  ✓   ✓   ✗
 │       /admin/control-de-actividades

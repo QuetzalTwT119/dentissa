@@ -772,6 +772,10 @@ funciona, revisa que la hora de tu celular esté en automático.
 
 ## 6.2 Pagos e ingresos
 
+> **Oculto.** El 24/11/2026 se decidió no usarlo por ahora: no aparece en el menú, el
+> expediente ni la Agenda. Lo que sigue describe cómo funciona si se enciende
+> (`DENTISSA_MODULO_PAGOS=true`).
+
 Desde el 24/11/2026 se registra lo que cada paciente paga en el consultorio (solo el
 registro: el cobro sigue siendo en persona; no hay pago en línea ni factura).
 

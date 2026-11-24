@@ -31,6 +31,8 @@ class PagosTest extends TestCase
     {
         parent::setUp();
         Carbon::setTestNow('2026-11-24 12:00:00');
+        // Oculto por omisión (24/11/2026); aquí se prueba encendido.
+        config(['dentissa.modulos.pagos' => true]);
         $this->doctora = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $this->paciente = Paciente::create(['nombre' => 'Ana', 'apellido' => 'Ruiz', 'telefono' => '5511112222']);
         $this->limpieza = Tratamiento::create(['nombre' => 'Limpieza', 'duracion_estimada' => 30, 'activo' => true, 'precio_referencia' => 600]);
@@ -131,6 +133,18 @@ class PagosTest extends TestCase
         $this->actingAs($this->doctora)->from(route('admin.pagos.index'))->delete(route('admin.pagos.destroy', $pago))->assertRedirect(route('admin.pagos.index'));
         $this->assertSame(0, Pago::count());
         $this->assertTrue(LogAuditoria::where('accion', 'pago.eliminado')->exists());
+    }
+
+    public function test_apagado_no_aparece_en_ningun_lado(): void
+    {
+        config(['dentissa.modulos.pagos' => false]);
+        $this->cita();
+
+        $this->actingAs($this->doctora)->get(route('dashboard'))->assertDontSee(route('admin.pagos.index'), false);
+        $this->actingAs($this->doctora)->get(route('admin.pacientes.historial.index', $this->paciente))->assertOk()->assertDontSee('data-pagos-paciente', false);
+        $this->actingAs($this->doctora)->get(route('citas.index', ['estado' => 'completada', 'fecha' => '2026-11-24']))->assertDontSee('data-registrar-pago', false);
+        $this->actingAs($this->doctora)->get(route('admin.pagos.index'))->assertForbidden();
+        $this->assertFalse($this->doctora->puede('pagos'));
     }
 
     public function test_menu_y_permisos(): void

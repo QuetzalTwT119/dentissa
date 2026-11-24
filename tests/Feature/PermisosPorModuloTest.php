@@ -17,6 +17,13 @@ class PermisosPorModuloTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Pagos está oculto por omisión (24/11/2026); aquí se revisa con todo encendido.
+        config(['dentissa.modulos.pagos' => true]);
+    }
+
     /** Páginas GET representativas de cada módulo (sin parámetros). */
     private const PAGINAS = [
         'inicio' => 'dashboard',
