@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000" viewBox="0 0 800 1000" role="img" aria-labelledby="t">
+  <title id="t">Ilustración: sillón dental con lámpara junto a una ventana, en un consultorio luminoso</title>
+  <defs>
+    <linearGradient id="pared" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fdf5f2"/>
+      <stop offset="1" stop-color="#fbe9e4"/>
+    </linearGradient>
+    <linearGradient id="vidrio" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#eef6f1"/>
+    </linearGradient>
+    <radialGradient id="luz" cx=".5" cy="0" r="1">
+      <stop offset="0" stop-color="#fffdf5" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#fffdf5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="1000" fill="url(#pared)"/>
+  <!-- Piso -->
+  <rect y="700" width="800" height="300" fill="#f7d4cb"/>
+  <rect y="700" width="800" height="6" fill="#f2b0a6"/>
+
+  <!-- Ventana en arco con vista a jardín -->
+  <path d="M470 600 V250 A130 130 0 0 1 730 250 V600 Z" fill="url(#vidrio)" stroke="#ffffff" stroke-width="14"/>
+  <path d="M600 120 V600 M470 380 H730" stroke="#ffffff" stroke-width="10"/>
+  <circle cx="530" cy="540" r="46" fill="#d9ebe1"/>
+  <circle cx="575" cy="555" r="34" fill="#c5dfd0"/>
+  <circle cx="680" cy="530" r="52" fill="#d9ebe1"/>
+
+  <!-- Logo de la marca en la pared -->
+  <g transform="translate(200 250)" fill="none" stroke="#ef9bb5" stroke-width="5">
+    <circle r="82"/>
+    <circle r="70"/>
+    <path d="M0 -38 C-22 -52 -46 -38 -44 -10 C-42 12 -35 26 -30 54 C-26 70 -13 72 -9 56 L-4 32 Q0 26 4 32 L9 56 C13 72 26 70 30 54 C35 26 42 12 44 -10 C46 -38 22 -52 0 -38 Z" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Planta -->
+  <g transform="translate(95 560)">
+    <path d="M30 0 C0 -60 10 -120 40 -150 C42 -100 40 -50 30 0 Z" fill="#4e8d72"/>
+    <path d="M38 0 C70 -50 100 -80 130 -90 C110 -50 80 -20 38 0 Z" fill="#3f7660"/>
+    <path d="M34 0 C10 -30 -20 -40 -50 -38 C-30 -15 0 -2 34 0 Z" fill="#335f4e"/>
+    <path d="M-10 0 H90 L78 120 Q76 140 56 140 H24 Q4 140 2 120 Z" fill="#ffffff" stroke="#f6c2d1" stroke-width="4"/>
+  </g>
+
+  <!-- Lámpara del sillón -->
+  <rect x="650" y="0" width="14" height="250" fill="#e9dcd7"/>
+  <path d="M657 250 L560 310 L470 300" fill="none" stroke="#e9dcd7" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <ellipse cx="450" cy="318" rx="62" ry="24" fill="#ffffff" stroke="#f6c2d1" stroke-width="5"/>
+  <path d="M398 330 L340 600 H560 L502 330 Z" fill="url(#luz)"/>
+
+  <!-- Sillón dental -->
+  <g transform="translate(150 430)">
+    <ellipse cx="270" cy="372" rx="230" ry="20" fill="#6d213c" opacity=".1"/>
+    <rect x="236" y="270" width="56" height="96" rx="12" fill="#e9dcd7"/>
+    <rect x="160" y="356" width="210" height="20" rx="10" fill="#d9c7c1"/>
+    <!-- Respaldo reclinado -->
+    <path d="M118 236 L40 96 Q32 80 48 72 L74 62 Q90 56 98 72 L172 222 Z" fill="#c13866"/>
+    <rect x="18" y="28" width="86" height="36" rx="18" fill="#c13866" transform="rotate(-62 61 46)"/>
+    <!-- Asiento -->
+    <path d="M110 226 H360 Q384 226 384 250 V268 Q384 292 360 292 H134 Q110 292 110 268 Z" fill="#d75078"/>
+    <!-- Apoyapiernas -->
+    <path d="M360 236 L488 288 Q506 296 500 312 L492 330 Q485 346 468 339 L350 290 Z" fill="#d75078"/>
+    <path d="M130 238 H360" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+    <!-- Descansabrazos -->
+    <rect x="186" y="200" width="124" height="16" rx="8" fill="#ffffff" stroke="#f6c2d1" stroke-width="3"/>
+    <rect x="240" y="212" width="14" height="18" fill="#e9dcd7"/>
+  </g>
+
+  <!-- Charola con instrumental -->
+  <g transform="translate(540 600)">
+    <rect x="-6" y="0" width="12" height="100" fill="#e9dcd7"/>
+    <rect x="-70" y="-14" width="140" height="16" rx="8" fill="#ffffff" stroke="#f6c2d1" stroke-width="3"/>
+    <path d="M-48 -18 V-46 M-24 -18 V-52 M0 -18 V-44" stroke="#9aa3ad" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="-48" cy="-52" r="9" fill="#e9edf1" stroke="#9aa3ad" stroke-width="3"/>
+  </g>
+</svg>

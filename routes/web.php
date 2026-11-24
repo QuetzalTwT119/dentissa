@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CasoController;
 use App\Http\Controllers\Admin\ConsentimientoController;
 use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
 use App\Http\Controllers\Admin\ExploracionClinicaController;
+use App\Http\Controllers\Admin\FotoInicioController;
 use App\Http\Controllers\Admin\HistoriaClinicaController;
 use App\Http\Controllers\Admin\HistorialClinicoController;
 use App\Http\Controllers\Admin\HorarioController;
@@ -39,6 +40,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RespuestaRecordatorioController;
 use App\Http\Controllers\WhatsappWebhookController;
 use App\Models\Caso;
+use App\Models\DatosConsultorio;
 use App\Models\HorarioAtencion;
 use App\Models\Imagen;
 use App\Models\Oferta;
@@ -165,6 +167,10 @@ Route::get('/', function () {
             ->get(),
         'faqs' => PreguntaFrecuente::where('activa', true)->orderBy('orden')->orderBy('id')->get(),
         'contacto' => config('dentissa.contacto'),
+        // 25/11/2026: foto real del inicio (Contenido → Galería) y cuántos pacientes
+        // se atienden a la vez, para que la portada diga lo que de verdad pasa.
+        'fotoInicio' => DatosConsultorio::fotoInicio(),
+        'pacientesALaVez' => (int) (HorarioAtencion::where('abierto', true)->max('capacidad_simultanea') ?: 1),
     ]);
 });
 
@@ -299,6 +305,9 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::patch('ofertas/{oferta}/publicar', [AdminOfertaController::class, 'publicar'])->name('ofertas.publicar');
     Route::patch('ofertas/{oferta}/ocultar', [AdminOfertaController::class, 'ocultar'])->name('ofertas.ocultar');
 
+    // Foto de inicio de la portada (25/11/2026): antes de galeria/{imagen} para que no la tome como una imagen.
+    Route::post('galeria/foto-inicio', [FotoInicioController::class, 'store'])->name('galeria.foto-inicio.store');
+    Route::delete('galeria/foto-inicio', [FotoInicioController::class, 'destroy'])->name('galeria.foto-inicio.destroy');
     Route::get('galeria', [AdminGaleriaController::class, 'index'])->name('galeria.index');
     Route::get('galeria/crear', [AdminGaleriaController::class, 'create'])->name('galeria.create');
     Route::post('galeria', [AdminGaleriaController::class, 'store'])->name('galeria.store');
