@@ -120,6 +120,33 @@ class HistoriaClinicaTest extends TestCase
         }
     }
 
+    /** 23/11/2026: lo que faltaba frente al formato de historia clínica odontológica. */
+    public function test_guarda_contacto_de_emergencia_medico_y_tratamiento_actual(): void
+    {
+        $this->actingAs($this->doctora)->get(route('admin.pacientes.historia.edit', $this->paciente))->assertOk()
+            ->assertSee('Contacto de emergencia y médico')
+            ->assertSee('Gastritis o úlcera')
+            ->assertSee('Cirugías previas')
+            ->assertSee('¿Está en tratamiento médico? ¿De qué?');
+
+        $this->actingAs($this->doctora)->put(route('admin.pacientes.historia.update', $this->paciente), $this->datos([
+            'estado_civil' => 'casado',
+            'tratamiento_medico_actual' => 'Control de presión',
+            'contacto_emergencia_nombre' => 'Luis Martínez', 'contacto_emergencia_parentesco' => 'Esposo', 'contacto_emergencia_telefono' => '755 111 2233',
+            'medico_cabecera_nombre' => 'Dr. Pérez', 'medico_cabecera_telefono' => '7551234567',
+            'antecedentes_personales' => ['gastritis', 'cirugias'],
+        ]))->assertSessionHasNoErrors();
+
+        $historia = $this->paciente->fresh()->historiaClinica;
+        $this->assertSame('casado', $historia->estado_civil);
+        $this->assertSame('Esposo', $historia->contacto_emergencia_parentesco);
+        $this->assertSame(['gastritis', 'cirugias'], $historia->antecedentes_personales);
+
+        $this->actingAs($this->doctora)->put(route('admin.pacientes.historia.update', $this->paciente), $this->datos([
+            'estado_civil' => 'inventado', 'contacto_emergencia_telefono' => 'llamar a Luis',
+        ]))->assertSessionHasErrors(['estado_civil', 'contacto_emergencia_telefono']);
+    }
+
     public function test_valores_invalidos_se_rechazan(): void
     {
         $this->actingAs($this->doctora)->from(route('admin.pacientes.historia.edit', $this->paciente))

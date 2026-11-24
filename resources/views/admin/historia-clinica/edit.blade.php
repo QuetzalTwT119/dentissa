@@ -23,17 +23,8 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div class="min-w-0">
-                <nav aria-label="Ruta" class="text-sm text-muted">
-                    @if ($puedeExpediente)
-                        <a href="{{ route('admin.pacientes.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Pacientes</a>
-                        <span aria-hidden="true" class="mx-1.5">›</span>
-                        <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" class="font-semibold text-brand-700 hover:text-brand-800">Historial</a>
-                    @else
-                        <a href="{{ route('admin.historias.index') }}" class="font-semibold text-brand-700 hover:text-brand-800">Historias clínicas</a>
-                    @endif
-                    <span aria-hidden="true" class="mx-1.5">›</span>
-                    <span>Historia clínica</span>
-                </nav>
+                {{-- La asistente no ve el expediente: regresa a su lista. --}}
+                <x-volver :href="$regreso" :texto="$puedeExpediente ? 'Volver al expediente' : 'Volver a Historias clínicas'" />
                 <h1 class="mt-1 truncate text-title-2 text-ink">Historia clínica — {{ $paciente->nombre_completo }}</h1>
             </div>
             <div class="flex items-center gap-2.5">
@@ -89,6 +80,16 @@
                         <x-input-error :messages="$errors->get('ocupacion')" class="mt-2" />
                     </div>
                     <div>
+                        <x-input-label for="estado_civil" value="Estado civil" />
+                        <x-select id="estado_civil" name="estado_civil" class="mt-1.5">
+                            <option value="">Sin indicar</option>
+                            @foreach (HistoriaClinica::ESTADOS_CIVILES as $valor => $nombre)
+                                <option value="{{ $valor }}" @selected(old('estado_civil', $historia->estado_civil) === $valor)>{{ $nombre }}</option>
+                            @endforeach
+                        </x-select>
+                        <x-input-error :messages="$errors->get('estado_civil')" class="mt-2" />
+                    </div>
+                    <div>
                         <x-input-label for="tipo_sangre" value="Tipo de sangre" />
                         <x-select id="tipo_sangre" name="tipo_sangre" class="mt-1.5">
                             <option value="">No lo sabe</option>
@@ -98,6 +99,28 @@
                         </x-select>
                         <x-input-error :messages="$errors->get('tipo_sangre')" class="mt-2" />
                     </div>
+                </div>
+            </section>
+
+            {{-- Contacto de emergencia y médico de cabecera (23/11/2026). --}}
+            <section class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="hc-contactos" data-seccion="contactos">
+                <h2 id="hc-contactos" class="text-headline font-semibold text-ink">Contacto de emergencia y médico</h2>
+                <p class="mt-0.5 text-sm text-muted">A quién llamar si algo pasa durante la consulta.</p>
+                <div class="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                    @foreach ([
+                        ['contacto_emergencia_nombre', 'Contacto de emergencia', 'text', 150, 'Nombre completo'],
+                        ['contacto_emergencia_parentesco', 'Parentesco', 'text', 50, 'Por ejemplo: mamá, esposo'],
+                        ['contacto_emergencia_telefono', 'Teléfono del contacto', 'tel', 20, '755 123 4567'],
+                        ['medico_cabecera_nombre', 'Médico de cabecera', 'text', 150, 'Nombre del médico'],
+                        ['medico_cabecera_telefono', 'Teléfono del médico', 'tel', 20, '755 123 4567'],
+                    ] as [$campoDato, $etiquetaDato, $tipoDato, $maximoDato, $ejemploDato])
+                        <div @class(['sm:col-span-2' => $campoDato === 'medico_cabecera_nombre'])>
+                            <x-input-label :for="$campoDato" :value="$etiquetaDato" />
+                            <x-text-input :id="$campoDato" :name="$campoDato" :type="$tipoDato" class="mt-1.5 block w-full" :maxlength="$maximoDato" :placeholder="$ejemploDato"
+                                          :value="old($campoDato, $historia->{$campoDato})" />
+                            <x-input-error :messages="$errors->get($campoDato)" class="mt-2" />
+                        </div>
+                    @endforeach
                 </div>
             </section>
 
@@ -135,6 +158,12 @@
                         <h2 id="hc-medicamentos" class="text-headline font-semibold text-ink">Medicamentos que toma actualmente</h2>
                         <x-textarea id="medicamentos_actuales" name="medicamentos_actuales" rows="2" class="mt-3" aria-labelledby="hc-medicamentos">{{ old('medicamentos_actuales', $historia->medicamentos_actuales) }}</x-textarea>
                         <x-input-error :messages="$errors->get('medicamentos_actuales')" class="mt-2" />
+
+                        <div class="mt-4">
+                            <x-input-label for="tratamiento_medico_actual" value="¿Está en tratamiento médico? ¿De qué?" />
+                            <x-textarea id="tratamiento_medico_actual" name="tratamiento_medico_actual" rows="2" class="mt-1.5" placeholder="Por ejemplo: control de presión con su médico familiar">{{ old('tratamiento_medico_actual', $historia->tratamiento_medico_actual) }}</x-textarea>
+                            <x-input-error :messages="$errors->get('tratamiento_medico_actual')" class="mt-2" />
+                        </div>
 
                         <div x-show="sexo === 'femenino'" x-cloak class="mt-5 border-t border-line pt-4" data-embarazo>
                             <p class="text-sm font-semibold text-ink">Solo mujeres</p>

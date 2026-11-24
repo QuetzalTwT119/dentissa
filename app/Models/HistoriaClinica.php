@@ -15,13 +15,15 @@ use Illuminate\Support\Carbon;
  * RIESGO_* marca lo que sale en el aviso rojo antes de atender.
  */
 #[Fillable([
-    'id_paciente', 'fecha_nacimiento', 'sexo', 'ocupacion', 'tipo_sangre',
+    'id_paciente', 'fecha_nacimiento', 'sexo', 'ocupacion', 'estado_civil', 'tipo_sangre',
     'antecedentes_familiares', 'antecedentes_familiares_notas',
     'antecedentes_personales', 'antecedentes_personales_notas',
-    'alergias', 'alergias_otras', 'medicamentos_actuales',
+    'alergias', 'alergias_otras', 'medicamentos_actuales', 'tratamiento_medico_actual',
     'embarazo', 'lactancia',
     'antecedentes_dentales', 'ultima_visita_dentista', 'antecedentes_dentales_notas',
     'habitos', 'habitos_notas', 'observaciones', 'actualizado_por',
+    'contacto_emergencia_nombre', 'contacto_emergencia_parentesco', 'contacto_emergencia_telefono',
+    'medico_cabecera_nombre', 'medico_cabecera_telefono',
 ])]
 class HistoriaClinica extends Model
 {
@@ -30,6 +32,11 @@ class HistoriaClinica extends Model
     public const SEXOS = ['femenino' => 'Femenino', 'masculino' => 'Masculino', 'otro' => 'Otro'];
 
     public const TIPOS_SANGRE = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
+
+    public const ESTADOS_CIVILES = [
+        'soltero' => 'Soltero(a)', 'casado' => 'Casado(a)', 'union_libre' => 'Unión libre',
+        'divorciado' => 'Divorciado(a)', 'viudo' => 'Viudo(a)',
+    ];
 
     public const ANTECEDENTES_FAMILIARES = [
         'diabetes' => 'Diabetes',
@@ -51,6 +58,10 @@ class HistoriaClinica extends Model
         'vih' => 'VIH',
         'enfermedad_renal' => 'Enfermedad de los riñones',
         'cancer' => 'Cáncer o quimioterapia',
+        // 23/11/2026, del formato de historia clínica odontológica.
+        'respiratoria' => 'Otra enfermedad respiratoria',
+        'gastritis' => 'Gastritis o úlcera',
+        'cirugias' => 'Cirugías previas',
     ];
 
     public const ALERGIAS = [

@@ -281,6 +281,40 @@ class ConsistenciaDisenoTest extends TestCase
         }
     }
 
+    /**
+     * 23/11/2026: toda pantalla que se abre desde otra (crear, editar, cuestionarios)
+     * tiene el mismo botón global "← Volver a …" (components/volver) arriba del título.
+     */
+    public function test_las_pantallas_hijas_tienen_el_boton_global_de_volver(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
+        $paciente = \App\Models\Paciente::create(['nombre' => 'Ana', 'apellido' => 'Prueba', 'telefono' => '5512345678']);
+
+        foreach ([
+            route('admin.usuarios.create') => 'Volver a Usuarios',
+            route('admin.ofertas.create') => 'Volver a Ofertas',
+            route('admin.preguntas-frecuentes.create') => 'Volver a Preguntas frecuentes',
+            route('admin.casos.create') => 'Volver a Casos',
+            route('admin.servicios.create') => 'Volver a Servicios',
+            route('admin.tratamientos.create') => 'Volver a Tratamientos',
+            route('citas.create') => 'Volver a la Agenda',
+            route('dos-pasos.show') => 'Volver a Mi perfil',
+            route('admin.pacientes.edit', $paciente) => 'Volver a Pacientes',
+            route('admin.pacientes.historial.index', $paciente) => 'Volver a Pacientes',
+            route('admin.pacientes.historial.create', $paciente) => 'Volver al expediente',
+            route('admin.pacientes.historia.edit', $paciente) => 'Volver al expediente',
+            route('admin.pacientes.exploracion.create', $paciente) => 'Volver al expediente',
+        ] as $url => $texto) {
+            $this->actingAs($admin)->get($url)->assertOk()->assertSee('data-volver', false)->assertSee($texto);
+        }
+
+        // El componente es uno solo; nadie dibuja su propia flecha de regreso.
+        $flechas = collect(File::allFiles(resource_path('views/admin')))
+            ->filter(fn ($f) => str_contains($f->getContents(), 'M10 19l-7-7m0 0l7-7m-7 7h18'))
+            ->map(fn ($f) => $f->getRelativePathname())->values()->all();
+        $this->assertSame([], $flechas, 'Flechas de regreso hechas a mano');
+    }
+
     public function test_los_formularios_del_panel_van_en_columnas(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
@@ -345,7 +379,7 @@ class ConsistenciaDisenoTest extends TestCase
         $encabezados = $panel->filter(fn ($c, $r) => str_contains($c, '<x-slot name="header">') && ! str_contains($c, '<x-admin.header')
             && ! str_contains($r, 'servicios/_formulario') && ! str_contains($r, 'tratamientos/')
             // Cuestionario de historia clínica: migas + título propio (22/11/2026).
-            && ! str_contains($r, 'historia-clinica/'))->keys()->all();
+            && ! str_contains($r, 'historia-clinica/') && ! str_contains($r, 'exploracion-clinica/'))->keys()->all();
         $this->assertSame([], $encabezados, 'Encabezados hechos a mano');
 
         // Campos largos y listas de formulario: x-textarea / x-select.

@@ -581,6 +581,33 @@ menú solo si no tiene `pacientes`. `HistoriaClinicaController::urlRegreso()` de
 (expediente o lista). Consultas, notas privadas, adjuntos y PDF siguen en `pacientes`.
 Nueva/Editar consulta usan `.formulario-panel.formulario-una-columna` (una pregunta por renglón).
 
+**Historia clínica completa (H-70 y H-71, 23/11/2026).** Se tomó como base el formato de
+historia clínica odontológica que entregó el usuario (Colombia), adaptado a México; del
+formulario en inglés solo el contacto de emergencia y el médico de cabecera. Lo de EPS,
+seguro médico y número de seguro social no aplica.
+
+- **H-70, cuestionario** (`historias_clinicas`): `estado_civil`, `tratamiento_medico_actual`,
+  `contacto_emergencia_*`, `medico_cabecera_*`; antecedentes personales `respiratoria`,
+  `gastritis` y `cirugias` (constantes de `HistoriaClinica`).
+- **H-71, exploración clínica** (`exploraciones_clinicas`, varias por paciente,
+  `Paciente::exploracionesClinicas()` de la más reciente a la más antigua):
+  `estomatologico` (JSON por estructura: normal/hallazgo), `atm`, `periodontal` (JSON:
+  hallazgo → dientes), `higiene_oral`, `oleary_dientes` y `oleary_superficies_placa`
+  (`indiceOleary()` = placa ÷ (dientes × 4) × 100; 20 % o menos es aceptable), `pulpares` y
+  `radiografica` (renglones por diente), `otros_hallazgos`, `odontograma` (JSON diente FDI →
+  estado; `ESTADOS_DIENTE`, rojo = por tratar y azul = hecho) y `diagnosticos`.
+  `ExploracionClinicaController` (`admin.pacientes.exploracion.*`, módulo `pacientes`: la
+  asistente no la ve) descarta renglones vacíos y dientes inexistentes; una nueva parte del
+  odontograma de la anterior. Control de actividades solo guarda `campos_modificados`. Sale en
+  el expediente (resumen, O'Leary e historial de exploraciones) y en el PDF (la última).
+  Las consultas ganan `historial_clinico.dientes` (diente(s) tratados).
+
+**Botón global de regreso (H-73, 23/11/2026).** `components/volver.blade.php` ("← Volver a …").
+En `x-admin.header` se usa con `:volver="route(...)" volver-texto="..."`; en encabezados propios,
+`<x-volver :href texto />`. Va en toda pantalla que se abre desde otra (crear/editar,
+expediente, cuestionarios); no en las principales del menú. `ConsistenciaDisenoTest` revisa las
+pantallas hijas y que nadie dibuje la flecha a mano.
+
 Las notificaciones de cita guardan también `id_cita`, lo que permite enlazar
 un aviso con la cita que lo originó sin depender únicamente del texto del
 mensaje.

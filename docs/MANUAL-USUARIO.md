@@ -603,6 +603,31 @@ completa en otra visita. Las alergias y condiciones de riesgo (coagulación, cor
 presión alta, diabetes, embarazo…) salen en un **aviso rojo** arriba del expediente y al
 registrar cada consulta, para verlas antes de atender. La historia también sale en el PDF.
 
+El cuestionario también pide **estado civil**, **contacto de emergencia** (nombre, parentesco
+y teléfono), **médico de cabecera**, si está **en tratamiento médico** y, entre los
+antecedentes, gastritis, otras enfermedades respiratorias y cirugías previas.
+
+**Exploración clínica y odontograma (solo doctora y doctores).** En el expediente, debajo de
+la historia clínica, está **Hacer exploración** (la primera) o **Nueva exploración** (los
+controles). Incluye:
+
+- **Examen de la boca:** labios, lengua, paladar, encías, ganglios… marca "Normal" o escribe
+  el hallazgo.
+- **ATM** (mandíbula) y **encías**: escribe en qué dientes hay sangrado, inflamación, sarro…
+- **Higiene oral** e **índice de O'Leary**: escribe los dientes presentes y las superficies con
+  placa; el porcentaje se calcula solo (verde si es 20 % o menos).
+- **Problemas de la pulpa** e **interpretación radiográfica**, un renglón por diente
+  (**+ Agregar diente**).
+- **Odontograma:** elige un estado (Cariado, Obturado, Extracción indicada…) y toca los
+  dientes; tocar otra vez con el mismo estado lo quita. **Rojo** = por tratar, **azul** = ya
+  está o ya se hizo. Los dientes de leche están en su propia sección. Una exploración nueva
+  trae el odontograma de la anterior para cambiar solo lo nuevo.
+- **Otros hallazgos** y **diagnósticos definitivos.**
+
+El expediente muestra el resumen de la última (higiene, O'Leary y dientes por estado) y la
+lista de exploraciones anteriores; la última sale en el PDF. Cada consulta tiene ahora el
+campo **Diente(s) tratados**.
+
 **Cita y consulta.** Al completar una cita en la Agenda aparece **Registrar consulta**: abre
 la consulta nueva con esa cita y su fecha ya elegidas. La columna de Pacientes se llama
 "Consultas en expediente" (las notas médicas registradas, no las citas).

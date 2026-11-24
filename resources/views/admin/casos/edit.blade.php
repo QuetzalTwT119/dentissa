@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header
+        <x-admin.header :volver="route('admin.casos.index')" volver-texto="Volver a Casos"
             title="Editar caso — {{ $caso->titulo }}"
             subtitle="Gestión de información y fotografías del caso clínico."
         >

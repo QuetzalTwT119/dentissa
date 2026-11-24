@@ -155,8 +155,9 @@ class HistorialClinicoController extends Controller
             ->orderByDesc('fecha_consulta')
             ->get();
 
-        // Con historia clínica también hay PDF aunque aún no haya consultas (22/11/2026).
-        if ($consultas->isEmpty() && ! $paciente->historiaClinica) {
+        // Con historia clínica o exploración también hay PDF aunque aún no haya consultas.
+        $exploracion = $paciente->exploracionesClinicas()->with('doctor:id,nombre,apellido')->first();
+        if ($consultas->isEmpty() && ! $paciente->historiaClinica && ! $exploracion) {
             return Redirect::route('admin.pacientes.historial.index', $paciente)
                 ->with('status', 'Aún no hay historia clínica ni consultas para generar el PDF.');
         }
@@ -164,6 +165,7 @@ class HistorialClinicoController extends Controller
         $pdf = Pdf::loadView('pdf.historial', [
             'paciente' => $paciente,
             'consultas' => $consultas,
+            'exploracion' => $exploracion,
         ]);
 
         return $pdf->download("historial-{$paciente->id}.pdf");
@@ -194,6 +196,7 @@ class HistorialClinicoController extends Controller
             'motivo_consulta' => ['required', 'string'],
             'diagnostico' => ['nullable', 'string'],
             'tratamiento_realizado' => ['nullable', 'string'],
+            'dientes' => ['nullable', 'string', 'max:100'],
             'medicamentos_recetados' => ['nullable', 'string'],
             'observaciones' => ['nullable', 'string'],
             'notas_doctor' => ['nullable', 'string'],

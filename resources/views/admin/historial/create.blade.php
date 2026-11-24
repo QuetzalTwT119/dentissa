@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header
+        <x-admin.header :volver="route('admin.pacientes.historial.index', $paciente)" volver-texto="Volver al expediente"
             title="Nueva consulta — {{ $paciente->nombre }} {{ $paciente->apellido }}"
             subtitle="Registro de atención médica, diagnóstico y prescripción."
         >

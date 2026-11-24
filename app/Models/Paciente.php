@@ -67,6 +67,12 @@ class Paciente extends Model
         return $this->hasOne(HistoriaClinica::class, 'id_paciente');
     }
 
+    /** Exploraciones clínicas con odontograma (23/11/2026); la más reciente primero. */
+    public function exploracionesClinicas(): HasMany
+    {
+        return $this->hasMany(ExploracionClinica::class, 'id_paciente')->latest('fecha')->latest('id');
+    }
+
     public function historialClinico(): HasMany
     {
         return $this->hasMany(HistorialClinico::class, 'id_paciente');
