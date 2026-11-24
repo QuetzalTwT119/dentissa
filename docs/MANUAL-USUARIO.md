@@ -138,8 +138,17 @@ La portada también muestra:
   que subas es "Antes" y la segunda "Después". Solo salen los casos activos con foto.
 - En cada oferta, **Pedir info** abre WhatsApp con el nombre de la oferta ya escrito.
 - Un **botón verde de WhatsApp** fijo abajo a la derecha, encima del asistente.
-- **Instalaciones** usa las fotos activas de **Contenido → Galería**, en su orden (si no
-  hay ninguna, se ven dos fotos de fábrica).
+- **Instalaciones** («El consultorio») usa las fotos activas de **Contenido → Galería**, en
+  su orden. Si no hay ninguna, se ven dos ilustraciones con lo que de verdad hace el
+  consultorio: «Un paciente a la vez» (o «Citas con hora exacta» si en Horarios se atiende a
+  más de uno) y «Te avisamos un día antes» (el recordatorio por WhatsApp).
+- **Foto de inicio** (desde el 25/11/2026): la foto grande del inicio es de catálogo; no es
+  la doctora ni el consultorio. En **Contenido → Galería → Foto de inicio de la portada**
+  se sube una foto real (JPG, PNG o WebP de hasta 5 MB, horizontal) y se ve de inmediato.
+  **Quitar y usar la de fábrica** regresa a la original.
+- La tarjeta de **La clínica** y la del instrumental en Tratamientos usan ilustraciones del
+  consultorio; ya no hay fotos de tazas, uniformes ni textos de «boutique», porque el
+  consultorio no vende productos.
 - **Preguntas frecuentes**: las activas de **Contenido → Preguntas frecuentes**; al tocar
   una pregunta se abre su respuesta. Antes de publicar, revisa que no quede ninguna de prueba.
   En **Configuración → Horarios de atención**, **Pacientes a la vez** (un solo campo para todos los días, al final del bloque) es cuántos pacientes se pueden
@@ -868,10 +877,12 @@ de la página actual; **Ver todas las notificaciones** abre la bandeja completa.
 La vista rápida tiene dos partes:
 
 - **Por atender**: lo que necesita que alguien haga algo (un paciente canceló o
-  pidió reagendar, una inasistencia, un respaldo que falló). Cada aviso trae
-  **Ver en la agenda** (abre el día de esa cita), **Llamar** (marca al paciente
-  desde el celular) y **Ya lo atendí**, que lo pasa a informativas cuando ya lo
-  resolviste. Si no hay nada, verás "No hay nada pendiente".
+  pidió reagendar, una inasistencia, un respaldo que falló, un **testimonio por
+  aprobar** o un **festivo que no se bloqueó por tener citas**). Cada aviso trae
+  su botón: **Ver en la agenda** (abre el día de esa cita), **Revisar testimonios**
+  o **Ver bloqueos**; además **Llamar** (marca al paciente desde el celular) y
+  **Ya lo atendí**, que lo pasa a informativas cuando ya lo resolviste. Si no hay
+  nada, verás "No hay nada pendiente".
 - **Informativas**: confirmaciones, citas nuevas y cambios. Están plegadas;
   tócalas para abrirlas.
 

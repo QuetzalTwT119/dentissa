@@ -19,7 +19,7 @@ use Throwable;
  * No incluye el número del bot de WhatsApp: ese vive en Meta y se configura
  * con DENTISSA_WHATSAPP_PHONE_ID.
  */
-#[Fillable(['telefono', 'whatsapp', 'correo', 'direccion', 'mision', 'vision'])]
+#[Fillable(['telefono', 'whatsapp', 'correo', 'direccion', 'mision', 'vision', 'foto_inicio'])]
 class DatosConsultorio extends Model
 {
     protected $table = 'datos_consultorio';
@@ -44,7 +44,20 @@ class DatosConsultorio extends Model
      */
     public static function guardados(): array
     {
-        return Cache::rememberForever(self::CACHE, fn () => self::query()->first()?->only(['telefono', 'whatsapp', 'correo', 'direccion', 'mision', 'vision']) ?? []);
+        return Cache::rememberForever(self::CACHE, fn () => self::query()->first()?->only(['telefono', 'whatsapp', 'correo', 'direccion', 'mision', 'vision', 'foto_inicio']) ?? []);
+    }
+
+    /**
+     * Foto grande del inicio que subió la doctora en Contenido → Galería
+     * (ruta en el disco "public"), o null para usar la de fábrica.
+     */
+    public static function fotoInicio(): ?string
+    {
+        try {
+            return self::guardados()['foto_inicio'] ?? null;
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**

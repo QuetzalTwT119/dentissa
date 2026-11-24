@@ -628,7 +628,7 @@ seguro médico y número de seguro social no aplica.
 
 **Agenda tras una acción (H-75, 24/11/2026).** `CitaController::volverALaAgenda()` redirige a `url()->previous()` solo si es `/citas` o `/citas?…` (conserva día, vista y filtros); si no, a `/citas?fecha=` del día de la cita. `store` y `update` (reagendar) van al día de la cita. `pestanasDeLaSemana()` agrega `canceladas` y `noAsistio`.
 
-**Lógica de la agenda (H-94, QA en producción 24/11/2026).** `EstadoCita::esPorAtender()` (agendada,
+**Lógica de la agenda (H-96, QA en producción 24/11/2026).** `EstadoCita::esPorAtender()` (agendada,
 confirmada, en curso) reemplaza a `! esInactiva()` en el conteo del día: las completadas salen como
 "atendidas". `Cita::fin()`, `yaTermino()` (agendada/confirmada con su fin ya pasado) y `sePuedeIniciar()`
 (confirmada, de hoy y sin terminar) deciden los botones de `citas/partials/acciones`. `start()` rechaza
@@ -643,7 +643,9 @@ cuya hora ya llegó («Atendida» en un paso) y `noShow()` acepta agendadas. `in
 
 **Portada: casos, WhatsApp y misión/visión (H-79, 24/11/2026).** `partials/portada-casos.blade.php` usa `$casos` de la ruta `/` (antes se enviaba y no se dibujaba): primera imagen = Antes, segunda = Después. `partials/portada-whatsapp-flotante.blade.php` (fijo, `bottom-24`, encima del asistente). Ofertas con enlace `wa.me/…?text=` por oferta. Migración `2026_11_24_000001`: `datos_consultorio.mision` y `vision` (400), aplicadas a `dentissa.contacto` como los demás datos. Orden de secciones: servicios, nosotros, galería, promociones, casos, testimonios, primera-visita, preguntas, ubicación, agendar.
 
-**Galería y preguntas (H-80, 24/11/2026).** `welcome.blade.php` arma "Instalaciones" con `$galeria` (Imagen tipo galería activa, máx. 8; `asset('storage/…')`) y cae a `images/6.jpg` y `2.jpg` si no hay. `partials/portada-preguntas.blade.php` muestra `$faqs` activas con `<details>` (sin JavaScript).
+**Galería y preguntas (H-80, 24/11/2026).** `welcome.blade.php` arma "Instalaciones" con `$galeria` (Imagen tipo galería activa, máx. 8; `asset('storage/…')`) y, si no hay, cae a dos ilustraciones (H-94).
+
+**Ilustraciones y foto de inicio (H-94, 25/11/2026).** Las fotos de marca (`public/images/1–8.jpg`: tazas, uniforme, instrumental con logo) se borraron: el consultorio no vende productos. En su lugar hay SVG dibujados a mano en `public/images/ilustraciones/` con la paleta de la marca (`consultorio`, `esterilizacion`, `sala-espera`, `recordatorio`); el dibujo va en la mitad de arriba porque abajo va el texto de la tarjeta. La tarjeta de "Instalaciones" dice «Un paciente a la vez» solo si `max(capacidad_simultanea)` de los días abiertos es 1 (`$pacientesALaVez`). La foto grande del inicio se puede reemplazar: `datos_consultorio.foto_inicio` (ruta en el disco `public`, carpeta `portada/`), `DatosConsultorio::fotoInicio()` (en caché) y `FotoInicioController` (`admin.galeria.foto-inicio.store/destroy`, módulo de Contenido por `admin.galeria.*`; jpg/png/webp hasta 5 MB; borra el archivo anterior; bitácora `portada.foto_inicio_cambiada/quitada`). Pruebas: `FotoInicioPortadaTest`, `ImagenesPublicasTest`, `PortadaPublicaTest`. `partials/portada-preguntas.blade.php` muestra `$faqs` activas con `<details>` (sin JavaScript).
 En `x-admin.header` se usa con `:volver="route(...)" volver-texto="..."`; en encabezados propios,
 `<x-volver :href texto />`. Va en toda pantalla que se abre desde otra (crear/editar,
 expediente, cuestionarios); no en las principales del menú. `ConsistenciaDisenoTest` revisa las
@@ -687,6 +689,30 @@ hasta cinco avisos (scopes `porAtender()` e `informativas()`).
   (`por_atender`) tanto en el evento de Reverb como en el sondeo, y el navegador
   lo inserta con un `<template>`: la carga inicial y la llegada en vivo se ven
   idénticas sin duplicar marcado en JavaScript.
+
+**QA de notificaciones (H-95, 25/11/2026).** Errores encontrados y corregidos:
+
+- **Avisos perdidos por largo:** `titulo` es VARCHAR(120) y `mensaje` VARCHAR(255).
+  Un respaldo fallido con un error largo de Google Drive, o un aviso de cita con
+  una oferta de título largo, daba «Data too long» en MySQL y el aviso no se
+  guardaba (SQLite no lo nota). `NotificacionSistema::booted()` los recorta con
+  «…» al guardar (`LARGO_TITULO`, `LARGO_MENSAJE`).
+- **«Marcar todas como leídas»** ahora también pone `vista_en`: antes la lista
+  decía 0 pendientes y la campana seguía con su número.
+- **Acción de cada aviso:** `accionPrincipal()` decide por evento (cita → agenda
+  del día; `testimonio_nuevo` → Contenido → Testimonios; `festivos_con_citas` →
+  Configuración `#bloqueos`; lo demás → la url guardada). La usan la campana, la
+  lista (antes decía «Ver cita» en todos) y el aviso emergente; en la lista se
+  oculta si llevaría a la misma lista (`accionLlevaAOtraPantalla()`).
+- **Prioritarios:** se agregan `testimonio_nuevo` y `festivos_con_citas` con
+  etiqueta e insignia propias. La migración `2026_11_25_000002` da por atendidos
+  los avisos viejos de esos tipos que ya estaban leídos.
+- **Aviso en vivo después de guardar:** `NotificacionInternaService::transmitir()`
+  usa `DB::afterCommit()`. `CrearCitaService` llama a `cambioCita()` dentro de su
+  transacción; si la cita no se guardaba, la campana mostraba un aviso fantasma.
+  Además, un error al guardar el aviso de una persona ya no deja sin aviso a las demás.
+
+Pruebas: `NotificacionesQaTest` (6, todas fallan con el código anterior).
 - Las clases `avatar-tono-N` y `aviso-tono-*` se escriben fuera de `@layer` en
   `app.css`: se arman en PHP y Tailwind eliminaría las que no ve escritas.
 

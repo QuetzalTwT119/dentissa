@@ -110,12 +110,15 @@
                             </div>
 
                             <div class="flex shrink-0 flex-wrap items-center gap-2 pl-[3.25rem] sm:pl-0">
-                                <a href="{{ $notificacion->url ?: route('citas.index') }}" class="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold uppercase tracking-label text-brand-600 transition hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-400">
-                                    Ver cita
-                                    <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M5 10a.75.75 0 0 1 .75-.75h7.69L10.22 6.03a.75.75 0 1 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 1 1-1.06-1.06l3.22-3.22H5.75A.75.75 0 0 1 5 10Z" clip-rule="evenodd" />
-                                    </svg>
-                                </a>
+                                {{-- 25/11/2026: la acción depende del aviso (antes decía "Ver cita" en todos). --}}
+                                @if ($notificacion->accionLlevaAOtraPantalla())
+                                    <a href="{{ $notificacion->accionPrincipal()[1] }}" class="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold uppercase tracking-label text-brand-600 transition hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-400">
+                                        {{ $notificacion->accionPrincipal()[0] }}
+                                        <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M5 10a.75.75 0 0 1 .75-.75h7.69L10.22 6.03a.75.75 0 1 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 1 1-1.06-1.06l3.22-3.22H5.75A.75.75 0 0 1 5 10Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </a>
+                                @endif
 
                                 @if ($pendiente)
                                     <form method="POST" action="{{ route('notificaciones.leida', $notificacion) }}" data-confirmar="Puedes regresarla a pendiente cuando quieras." data-confirmar-titulo="¿Marcar como leída?" data-confirmar-boton="Sí, leída" data-confirmar-tono="normal">

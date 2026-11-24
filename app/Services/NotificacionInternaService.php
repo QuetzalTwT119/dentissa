@@ -8,6 +8,7 @@ use App\Events\NotificacionSistemaCreada;
 use App\Models\Cita;
 use App\Models\NotificacionSistema;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Throwable;
@@ -33,7 +34,7 @@ class NotificacionInternaService
                     'mensaje' => $mensaje,
                     'url' => route('notificaciones.index', [], false),
                 ]);
-                event(new NotificacionSistemaCreada($notificacion));
+                $this->transmitir($notificacion);
             } catch (Throwable $e) {
                 Log::warning('No se pudo guardar una alerta del sistema', ['evento' => $evento, 'error' => $e->getMessage()]);
             }
@@ -79,8 +80,9 @@ class NotificacionInternaService
             ->when($actorId, fn ($query) => $query->whereKeyNot($actorId))
             ->pluck('id');
 
-        try {
-            foreach ($destinatarios as $userId) {
+        // 25/11/2026: un error con una persona ya no deja sin aviso a las demás.
+        foreach ($destinatarios as $userId) {
+            try {
                 $notificacion = NotificacionSistema::create([
                     'user_id' => $userId,
                     'id_cita' => $cita->id,
@@ -91,22 +93,39 @@ class NotificacionInternaService
                     // IP local o un dominio de producción distinto.
                     'url' => route('citas.index', [], false),
                 ]);
+            } catch (Throwable $exception) {
+                Log::warning('No se pudo guardar una notificación interna de cita', [
+                    'id_cita' => $cita->id,
+                    'evento' => $evento,
+                    'error' => $exception->getMessage(),
+                ]);
 
-                try {
-                    event(new NotificacionSistemaCreada($notificacion));
-                } catch (Throwable $exception) {
-                    Log::warning('No se pudo transmitir una notificación interna en tiempo real', [
-                        'id_notificacion' => $notificacion->id,
-                        'error' => $exception->getMessage(),
-                    ]);
-                }
+                continue;
             }
-        } catch (Throwable $exception) {
-            Log::warning('No se pudo guardar una notificación interna de cita', [
-                'id_cita' => $cita->id,
-                'evento' => $evento,
-                'error' => $exception->getMessage(),
-            ]);
+
+            $this->transmitir($notificacion);
         }
+    }
+
+    /**
+     * Manda el aviso a la campana en vivo cuando la transacción termina bien.
+     *
+     * 25/11/2026: CrearCitaService llama a cambioCita() dentro de su transacción.
+     * Antes el aviso salía en ese momento; si la cita no llegaba a guardarse (por
+     * ejemplo, un doble toque en Telegram), la campana mostraba un aviso que ya no
+     * existía. Sin transacción abierta, sale de inmediato.
+     */
+    private function transmitir(NotificacionSistema $notificacion): void
+    {
+        DB::afterCommit(function () use ($notificacion): void {
+            try {
+                event(new NotificacionSistemaCreada($notificacion));
+            } catch (Throwable $exception) {
+                Log::warning('No se pudo transmitir una notificación interna en tiempo real', [
+                    'id_notificacion' => $notificacion->id,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        });
     }
 }
