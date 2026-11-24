@@ -25,7 +25,6 @@ class HorariosAtencionTest extends TestCase
             'abierto' => $h->abierto ? '1' : null,
             'hora_apertura' => $h->hora_apertura,
             'hora_cierre' => $h->hora_cierre,
-            'capacidad_simultanea' => $h->capacidad_simultanea,
         ], $cambios[$i] ?? []))->map(fn ($d) => array_filter($d, fn ($v) => $v !== null))->all();
     }
 
@@ -52,7 +51,9 @@ class HorariosAtencionTest extends TestCase
             ->assertSee('id="form-horarios"', false)
             ->assertSee('Guardar horarios')
             ->assertSee('role="switch"', false)
-            ->assertSee('Citas a la vez')
+            ->assertSee('Pacientes a la vez')
+            ->assertSee('data-pacientes-a-la-vez', false)
+            ->assertDontSee('dias[0][capacidad_simultanea]', false)
             ->assertDontSee('Capacidad simultánea')
             ->assertDontSee('<table', false);
     }
@@ -63,15 +64,32 @@ class HorariosAtencionTest extends TestCase
 
         // Índice 1 = lunes: abre a las 18 y "cierra" a las 8.
         $this->actingAs($admin)->from(route('admin.configuracion'))
-            ->put(route('admin.horarios.update'), ['dias' => $this->dias([1 => ['hora_apertura' => 18, 'hora_cierre' => 8]])])
+            ->put(route('admin.horarios.update'), ['dias' => $this->dias([1 => ['hora_apertura' => 18, 'hora_cierre' => 8]]), 'capacidad_simultanea' => 1])
             ->assertSessionHasErrors('dias.1.hora_cierre');
 
         $this->assertSame(8, HorarioAtencion::where('dia_semana', 1)->value('hora_apertura'));
 
         // Un día cerrado puede quedarse con cualquier hora (no se usa).
         $this->actingAs($admin)
-            ->put(route('admin.horarios.update'), ['dias' => $this->dias([0 => ['hora_apertura' => 18, 'hora_cierre' => 8]])])
+            ->put(route('admin.horarios.update'), ['dias' => $this->dias([0 => ['hora_apertura' => 18, 'hora_cierre' => 8]]), 'capacidad_simultanea' => 1])
             ->assertSessionHasNoErrors()
             ->assertRedirect(route('admin.configuracion').'#horarios');
+    }
+    /** 24/11/2026: "Pacientes a la vez" es uno solo y se guarda en los 7 días. */
+    public function test_pacientes_a_la_vez_es_global(): void
+    {
+        $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
+
+        $this->actingAs($admin)->put(route('admin.horarios.update'), ['dias' => $this->dias(), 'capacidad_simultanea' => 1])
+            ->assertSessionHasNoErrors();
+        $this->assertSame([1], HorarioAtencion::pluck('capacidad_simultanea')->unique()->values()->all());
+
+        $this->actingAs($admin)->from(route('admin.configuracion'))
+            ->put(route('admin.horarios.update'), ['dias' => $this->dias(), 'capacidad_simultanea' => 0])
+            ->assertSessionHasErrors('capacidad_simultanea');
+        $this->actingAs($admin)->from(route('admin.configuracion'))
+            ->put(route('admin.horarios.update'), ['dias' => $this->dias()])
+            ->assertSessionHasErrors('capacidad_simultanea');
+        $this->assertSame([1], HorarioAtencion::pluck('capacidad_simultanea')->unique()->values()->all());
     }
 }

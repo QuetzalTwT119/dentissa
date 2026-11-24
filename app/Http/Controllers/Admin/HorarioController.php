@@ -23,7 +23,11 @@ class HorarioController extends Controller
             'dias.*.abierto' => ['boolean'],
             'dias.*.hora_apertura' => ['required', 'integer', 'between:0,23'],
             'dias.*.hora_cierre' => ['required', 'integer', 'between:0,23'],
-            'dias.*.capacidad_simultanea' => ['required', 'integer', 'min:1'],
+            // 24/11/2026: un solo valor para todo el consultorio (antes uno por día).
+            'capacidad_simultanea' => ['required', 'integer', 'between:1,20'],
+        ], [
+            'capacidad_simultanea.required' => 'Indica cuántos pacientes se atienden a la vez.',
+            'capacidad_simultanea.between' => 'Pacientes a la vez debe ser entre 1 y 20.',
         ]);
 
         foreach ($validated['dias'] as $indice => $dia) {
@@ -46,7 +50,7 @@ class HorarioController extends Controller
                         'abierto' => $dia['abierto'] ?? false,
                         'hora_apertura' => $dia['hora_apertura'],
                         'hora_cierre' => $dia['hora_cierre'],
-                        'capacidad_simultanea' => $dia['capacidad_simultanea'],
+                        'capacidad_simultanea' => $validated['capacidad_simultanea'],
                     ]),
                 );
             }

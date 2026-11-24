@@ -120,7 +120,7 @@ paso a paso" y dos formas de contacto:
   administrador cambia el horario, la portada lo refleja sin más pasos.
   El **pie de página** muestra también el horario de la semana (por ejemplo
   "Lunes a viernes de 8:00 a 18:00 hrs"); los días cerrados no aparecen.
-  En **Configuración → Horarios de atención**, "Citas a la vez" es cuántos pacientes se pueden
+  En **Configuración → Horarios de atención**, **Pacientes a la vez** (un solo campo para todos los días, al final del bloque) es cuántos pacientes se pueden
   atender a la misma hora (1 si hay un solo sillón o dentista; el consultorio usa 1). Los campos de número solo se escriben, sin flechas. Los horarios se ofrecen cada
   30 minutos y la última cita del día es la que **termina** a la hora de cierre: con cierre a
   las 18:00, una valoración de 30 min se puede agendar hasta las 17:30 y una limpieza de
@@ -481,7 +481,7 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
     página del recordatorio y la respuesta automática del bot. Úsalo si se
     pierde o cambia el celular. Pide confirmación y queda en Control de actividades. El
     número del bot de WhatsApp no se cambia aquí (se configura en Meta).
-  - **Horarios de atención:** los días, las horas y las citas a la vez.
+  - **Horarios de atención:** los días, las horas y cuántos pacientes se atienden a la vez (un solo valor).
 - **Guardar cambios** (en cualquier pantalla de editar) aparece apagado hasta
   que cambias algo; si regresas todo como estaba, se vuelve a apagar. Al
   guardar, el sistema sigue pidiendo confirmar. Para salir sin guardar usa
