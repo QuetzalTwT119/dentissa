@@ -198,7 +198,8 @@
 
                 <div class="hero-entra mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 [animation-delay:150ms]">
                     <a href="{{ route('citas.publica.create') }}" class="btn-brand group px-7 py-3.5 text-callout">
-                        <span>Agendar mi valoración</span>
+                        {{-- Mismo destino que "Agendar Cita" de arriba (24/11/2026, antes "Agendar mi valoración"). --}}
+                        <span>Agendar mi cita</span>
                         <span class="transition-transform duration-200 ease-out group-hover:translate-x-0.5">{!! $iconoFlecha !!}</span>
                     </a>
                     <a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-11 flex-col justify-center rounded-lg text-footnote text-muted transition-colors hover:text-brand-700">
