@@ -397,8 +397,8 @@ class CitaReglasTest extends TestCase
 
         $this->assertTrue(Gate::forUser($admin)->allows('create', Cita::class));
         $this->assertTrue(Gate::forUser($doctor)->allows('create', Cita::class));
-        // 22/11/2026: la asistente ya no tiene la Agenda (config/permisos.php).
-        $this->assertFalse(Gate::forUser($asistente)->allows('create', Cita::class));
+        // 24/11/2026: la asistente agenda (módulo "agenda" en config/permisos.php).
+        $this->assertTrue(Gate::forUser($asistente)->allows('create', Cita::class));
     }
 
     public function test_una_cita_agendada_puede_confirmarse(): void

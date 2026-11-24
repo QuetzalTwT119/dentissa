@@ -40,6 +40,58 @@ class PacienteController extends Controller
         ]);
     }
 
+    /** Registrar paciente sin cita (24/11/2026). */
+    public function create(): View
+    {
+        return view('admin.pacientes.create');
+    }
+
+    public function store(Request $request, AuditoriaService $auditoria): RedirectResponse
+    {
+        $validated = $request->validate([
+            'nombre' => ['required', 'string', 'max:100'],
+            'apellido' => ['required', 'string', 'max:100'],
+            'telefono' => ['required', 'string', 'max:20', 'regex:/^(?:\\+?52[\\s().-]*)?(?:[0-9][\\s().-]*){10}$/'],
+            'email' => ['nullable', 'email', 'max:100', Rule::unique('pacientes', 'email')],
+            'acepta_aviso' => ['accepted'],
+        ], [
+            'telefono.regex' => 'Escribe los 10 dígitos del celular.',
+            'email.unique' => 'Ya hay un paciente con ese correo.',
+            'acepta_aviso.accepted' => 'Confirma que el paciente aceptó el aviso de privacidad.',
+        ]);
+
+        // Mismo formato que la agenda en línea: 10 dígitos, así se reconoce al agendar.
+        $telefono = substr(preg_replace('/\D/', '', $validated['telefono']), -10);
+
+        // El celular identifica al paciente en WhatsApp y en la agenda: no se duplica.
+        $existente = Paciente::where('telefono', $telefono)->first();
+        if ($existente) {
+            return back()->withInput()
+                ->withErrors(['telefono' => "Ya está registrado: {$existente->nombre_completo} tiene ese celular."])
+                ->with('paciente_existente', $existente->id);
+        }
+
+        $paciente = DB::transaction(function () use ($validated, $telefono, $auditoria, $request) {
+            $paciente = Paciente::create([
+                'nombre' => trim($validated['nombre']),
+                'apellido' => trim($validated['apellido']),
+                'telefono' => $telefono,
+                'email' => $validated['email'] ?? null,
+            ]);
+            $paciente->forceFill([
+                'aviso_privacidad_aceptado_en' => now(),
+                'aviso_privacidad_version' => config('dentissa.privacidad.version'),
+            ])->save();
+
+            $auditoria->registrar('paciente.registrado', $paciente, datosNuevos: ['origen' => 'panel'], request: $request);
+
+            return $paciente;
+        });
+
+        return Redirect::route('admin.pacientes.historial.index', $paciente)
+            ->with('success', "{$paciente->nombre_completo} quedó registrado. Ya puedes llenar su historia clínica.");
+    }
+
     public function edit(Paciente $paciente): View
     {
         return view('admin.pacientes.edit', [

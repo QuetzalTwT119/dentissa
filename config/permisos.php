@@ -18,8 +18,10 @@
 |   - super_admin: la doctora dueña; todo.
 |   - doctor: por ahora exactamente lo que tenía el antiguo "admin".
 |     Para restringirlo más adelante, quita módulos de su lista.
-|   - asistente: el panel de inicio y la historia clínica (cuestionario de
-|     salud, 22/11/2026). No ve consultas, notas privadas ni el expediente.
+|   - asistente: el panel de inicio, la Agenda con su asistente y la campana
+|     (24/11/2026: es quien agenda, confirma y reagenda) y la historia clínica
+|     (cuestionario de salud, 22/11/2026). No ve consultas, notas privadas ni
+|     el expediente.
 |     Para habilitarle algo más, agrega el módulo a su lista.
 |
 | Cerrar sesión no es un módulo: siempre está disponible.
@@ -38,6 +40,8 @@ return [
         'pacientes' => ['admin.pacientes.*', 'historial.imagenes.show'],
         'usuarios' => ['admin.usuarios.*'],
         'reportes' => ['admin.reportes.*'],
+        // Pagos e ingresos (24/11/2026).
+        'pagos' => ['admin.pagos.*'],
         'mensajes' => ['admin.mensajes.*'],
         'control_actividades' => ['admin.auditoria.*'],
         'catalogo' => ['admin.servicios.*', 'admin.tratamientos.*'],
@@ -45,7 +49,7 @@ return [
             'admin.ofertas.*', 'admin.testimonios.*', 'admin.galeria.*', 'admin.casos.*', 'admin.preguntas-frecuentes.*',
             'ofertas.index', 'galeria.index',
         ],
-        'configuracion' => ['admin.configuracion', 'admin.horarios.*', 'admin.consultorio.*'],
+        'configuracion' => ['admin.configuracion', 'admin.horarios.*', 'admin.consultorio.*', 'admin.bloqueos.*'],
     ],
 
     'roles' => [
@@ -53,12 +57,12 @@ return [
 
         // Igual que el antiguo "admin" (todas las rutas del panel). Temporal.
         'doctor' => [
-            'inicio', 'cuenta', 'notificaciones', 'agenda', 'historia_clinica', 'pacientes', 'usuarios', 'reportes',
+            'inicio', 'cuenta', 'notificaciones', 'agenda', 'historia_clinica', 'pacientes', 'usuarios', 'reportes', 'pagos',
             'mensajes', 'control_actividades', 'catalogo', 'contenido', 'configuracion',
         ],
 
-        // Panel de inicio y cuestionario de historia clínica (22/11/2026).
-        'asistente' => ['inicio', 'historia_clinica'],
+        // Inicio, Agenda y campana (24/11/2026) y cuestionario de historia clínica (22/11/2026).
+        'asistente' => ['inicio', 'agenda', 'notificaciones', 'historia_clinica'],
     ],
 
 ];

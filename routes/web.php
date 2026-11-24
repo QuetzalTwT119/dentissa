@@ -2,7 +2,9 @@
 
 use App\Enums\TipoImagen;
 use App\Http\Controllers\Admin\AuditoriaController;
+use App\Http\Controllers\Admin\BloqueoAgendaController;
 use App\Http\Controllers\Admin\CasoController;
+use App\Http\Controllers\Admin\ConsentimientoController;
 use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
 use App\Http\Controllers\Admin\ExploracionClinicaController;
 use App\Http\Controllers\Admin\HistoriaClinicaController;
@@ -12,6 +14,8 @@ use App\Http\Controllers\Admin\MensajeContactoController as AdminMensajeContacto
 use App\Http\Controllers\Admin\ConfiguracionController;
 use App\Http\Controllers\Admin\DatosConsultorioController;
 use App\Http\Controllers\Admin\OfertaController as AdminOfertaController;
+use App\Http\Controllers\Admin\PagoController;
+use App\Http\Controllers\Admin\PlanTratamientoController;
 use App\Http\Controllers\Admin\PacienteController;
 use App\Http\Controllers\Admin\PreguntaFrecuenteController;
 use App\Http\Controllers\Admin\ReporteController;
@@ -228,6 +232,9 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::resource('tratamientos', TratamientoController::class)->except('show');
 
     Route::get('pacientes', [PacienteController::class, 'index'])->name('pacientes.index');
+    // Registrar paciente sin cita (24/11/2026).
+    Route::get('pacientes/crear', [PacienteController::class, 'create'])->name('pacientes.create');
+    Route::post('pacientes', [PacienteController::class, 'store'])->name('pacientes.store');
     Route::get('pacientes/{paciente}/editar', [PacienteController::class, 'edit'])->name('pacientes.edit');
     Route::put('pacientes/{paciente}', [PacienteController::class, 'update'])->name('pacientes.update');
 
@@ -253,6 +260,19 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::post('pacientes/{paciente}/historial/{historial}/imagenes', [HistorialClinicoController::class, 'storeImagen'])->name('pacientes.historial.imagenes.store');
     Route::delete('pacientes/{paciente}/historial/{historial}/imagenes/{imagen}', [HistorialClinicoController::class, 'destroyImagen'])->name('pacientes.historial.imagenes.destroy');
     Route::get('pacientes/{paciente}/historial-pdf', [HistorialClinicoController::class, 'pdf'])->name('pacientes.historial.pdf');
+    Route::get('pacientes/{paciente}/historial/{historial}/receta', [HistorialClinicoController::class, 'receta'])->name('pacientes.historial.receta');
+    // Plan de tratamiento (24/11/2026).
+    Route::get('pacientes/{paciente}/planes/crear', [PlanTratamientoController::class, 'create'])->name('pacientes.planes.create');
+    Route::post('pacientes/{paciente}/planes', [PlanTratamientoController::class, 'store'])->name('pacientes.planes.store');
+    Route::get('pacientes/{paciente}/planes/{plan}', [PlanTratamientoController::class, 'show'])->name('pacientes.planes.show');
+    Route::put('pacientes/{paciente}/planes/{plan}', [PlanTratamientoController::class, 'update'])->name('pacientes.planes.update');
+    Route::post('pacientes/{paciente}/planes/{plan}/pasos', [PlanTratamientoController::class, 'agregarPaso'])->name('pacientes.planes.pasos.agregar');
+    Route::patch('pacientes/{paciente}/planes/{plan}/pasos/{paso}', [PlanTratamientoController::class, 'alternarPaso'])->name('pacientes.planes.pasos.alternar');
+    Route::delete('pacientes/{paciente}/planes/{plan}/pasos/{paso}', [PlanTratamientoController::class, 'quitarPaso'])->name('pacientes.planes.pasos.quitar');
+    // Consentimiento informado (24/11/2026).
+    Route::get('pacientes/{paciente}/consentimientos/crear', [ConsentimientoController::class, 'create'])->name('pacientes.consentimientos.create');
+    Route::post('pacientes/{paciente}/consentimientos', [ConsentimientoController::class, 'store'])->name('pacientes.consentimientos.store');
+    Route::get('pacientes/{paciente}/consentimientos/{consentimiento}/pdf', [ConsentimientoController::class, 'pdf'])->name('pacientes.consentimientos.pdf');
 
     Route::patch('usuarios/{usuario}/activo', [UsuarioController::class, 'toggleActivo'])->name('usuarios.activo.toggle');
     // Usuarios (22/11/2026, decisión del usuario): solo crear, desactivar y eliminar.
@@ -261,6 +281,11 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     // cascadeOnDelete y se borraría el historial de los pacientes (destroy() lo revisa).
     Route::resource('usuarios', UsuarioController::class)->only(['index', 'create', 'store', 'destroy']);
 
+    // Pagos e ingresos (24/11/2026).
+    Route::get('pagos', [PagoController::class, 'index'])->name('pagos.index');
+    Route::get('pagos/registrar', [PagoController::class, 'create'])->name('pagos.create');
+    Route::post('pagos', [PagoController::class, 'store'])->name('pagos.store');
+    Route::delete('pagos/{pago}', [PagoController::class, 'destroy'])->name('pagos.destroy');
     Route::get('reportes', [ReporteController::class, 'index'])->name('reportes.index');
     Route::get('reportes/pdf', [ReporteController::class, 'pdf'])->name('reportes.pdf');
     Route::get('reportes/excel', [ReporteController::class, 'excel'])->name('reportes.excel');
@@ -288,6 +313,9 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::put('horarios', [HorarioController::class, 'update'])->name('horarios.update');
     Route::redirect('consultorio', '/admin/configuracion#consultorio')->name('consultorio.edit');
     Route::put('consultorio', [DatosConsultorioController::class, 'update'])->name('consultorio.update');
+    // Días u horas bloqueados (24/11/2026), en Configuración.
+    Route::post('bloqueos', [BloqueoAgendaController::class, 'store'])->name('bloqueos.store');
+    Route::delete('bloqueos/{bloqueo}', [BloqueoAgendaController::class, 'destroy'])->name('bloqueos.destroy');
 
     Route::patch('casos/{caso}/estado', [CasoController::class, 'estado'])->name('casos.estado');
     Route::resource('casos', CasoController::class)->except('show');

@@ -124,6 +124,101 @@ $tipoConsultaLabel = [
                 @endif
             </section>
 
+            {{-- Planes de tratamiento (24/11/2026): avance calculado por pasos hechos. --}}
+            <section class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="titulo-planes" data-planes>
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h2 id="titulo-planes" class="text-headline font-semibold text-ink">Plan de tratamiento</h2>
+                        <p class="mt-0.5 text-sm text-muted">Procedimientos por hacer y hechos, para tratamientos de varias citas.</p>
+                    </div>
+                    <a href="{{ route('admin.pacientes.planes.create', $paciente) }}" class="btn-secondary min-h-11 px-5" data-nuevo-plan>Nuevo plan</a>
+                </div>
+                @if ($planes->isNotEmpty())
+                    <ul class="mt-4 space-y-3">
+                        @foreach ($planes as $plan)
+                            <li>
+                                <a href="{{ route('admin.pacientes.planes.show', [$paciente, $plan]) }}" class="block rounded-2xl border border-line p-4 transition hover:border-brand-300 hover:bg-brand-50/30" data-plan>
+                                    <div class="flex flex-wrap items-center justify-between gap-2">
+                                        <span class="font-semibold text-ink">{{ $plan->titulo }}</span>
+                                        <span class="text-sm text-muted">{{ $plan->estadoTexto() }} · {{ $plan->avance() }} %</span>
+                                    </div>
+                                    <div class="mt-2 h-2 overflow-hidden rounded-full bg-line" aria-hidden="true">
+                                        <div class="h-full rounded-full bg-sage-500" style="width: {{ $plan->avance() }}%"></div>
+                                    </div>
+                                    <p class="mt-1.5 text-xs text-muted">{{ $plan->pasos->whereNotNull('hecho_en')->count() }} de {{ $plan->pasos->count() }} pasos hechos</p>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </section>
+
+            {{-- Pagos (24/11/2026): lo cobrado y lo que falta de las citas atendidas (estimado). --}}
+            @if ($pagos !== null)
+                <section class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="titulo-pagos" data-pagos-paciente>
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                            <h2 id="titulo-pagos" class="text-headline font-semibold text-ink">Pagos</h2>
+                            <p class="mt-0.5 text-sm text-muted">
+                                Pagado: <strong class="text-ink">{{ \App\Models\Pago::dinero($resumenPagos['pagado']) }}</strong>
+                                @if ($resumenPagos['estimado'] > 0)
+                                    · Por cobrar (estimado):
+                                    <strong @class(['text-amber-700' => $resumenPagos['porCobrar'] > 0, 'text-sage-700' => $resumenPagos['porCobrar'] <= 0])>{{ \App\Models\Pago::dinero($resumenPagos['porCobrar']) }}</strong>
+                                    <x-ayuda etiqueta="Cómo se calcula">Suma del precio de las citas completadas (con su oferta) menos lo pagado. Es una referencia: lo que cuenta es lo registrado.</x-ayuda>
+                                @endif
+                            </p>
+                        </div>
+                        <a href="{{ route('admin.pagos.create', ['paciente' => $paciente->id]) }}" class="btn-secondary min-h-11 px-5" data-registrar-pago>Registrar pago</a>
+                    </div>
+
+                    @if ($pagos->isNotEmpty())
+                        <ul class="mt-4 divide-y divide-line rounded-2xl border border-line">
+                            @foreach ($pagos as $pago)
+                                <li class="flex flex-wrap items-center justify-between gap-2 px-4 py-2 text-sm">
+                                    <span class="min-w-0 text-ink">
+                                        <span class="font-semibold tabular-nums">{{ \App\Models\Pago::dinero($pago->monto) }}</span>
+                                        <span class="text-muted">· {{ $pago->metodoTexto() }} · {{ $pago->fecha->translatedFormat('j M Y') }}</span>
+                                        @if ($pago->concepto || $pago->cita)
+                                            <span class="text-ink-soft">· {{ $pago->concepto ?: ($pago->cita->tratamiento?->nombre ?? 'Cita') }}</span>
+                                        @endif
+                                    </span>
+                                    <x-admin.acciones-fila :eliminar="route('admin.pagos.destroy', $pago)" que="el pago" :nombre="\App\Models\Pago::dinero($pago->monto)" confirmar-titulo="¿Eliminar este pago?" />
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </section>
+            @endif
+
+            {{-- Consentimientos informados (24/11/2026): se imprimen para firmarlos a mano. --}}
+            <section class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="titulo-consentimientos" data-consentimientos>
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h2 id="titulo-consentimientos" class="text-headline font-semibold text-ink">Consentimientos informados</h2>
+                        <p class="mt-0.5 text-sm text-muted">Para extracciones, cirugías, endodoncias y otros procedimientos: se imprime y se firma.</p>
+                    </div>
+                    <a href="{{ route('admin.pacientes.consentimientos.create', $paciente) }}" class="btn-secondary min-h-11 px-5" data-nuevo-consentimiento>Nuevo consentimiento</a>
+                </div>
+
+                @if (session('imprimir_consentimiento'))
+                    <a href="{{ session('imprimir_consentimiento') }}" target="_blank" rel="noopener" class="btn-brand mt-4 min-h-11 px-5" data-imprimir-consentimiento>Abrir para imprimir</a>
+                @endif
+
+                @if ($consentimientos->isNotEmpty())
+                    <ul class="mt-4 divide-y divide-line rounded-2xl border border-line">
+                        @foreach ($consentimientos as $consentimiento)
+                            <li class="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-sm">
+                                <span class="min-w-0 text-ink">
+                                    <span class="font-semibold">{{ $consentimiento->procedimiento }}</span>{{ $consentimiento->dientes ? ' · '.$consentimiento->dientes : '' }}
+                                    <span class="text-muted">· {{ $consentimiento->created_at->translatedFormat('j M Y') }}{{ $consentimiento->doctor ? ' · '.$consentimiento->doctor->nombre.' '.$consentimiento->doctor->apellido : '' }}</span>
+                                </span>
+                                <a href="{{ route('admin.pacientes.consentimientos.pdf', [$paciente, $consentimiento]) }}" target="_blank" rel="noopener" class="link inline-flex min-h-11 items-center">Imprimir</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </section>
+
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <h2 class="text-headline font-semibold text-ink">Consultas</h2>
                 <a href="{{ route('admin.pacientes.historial.create', $paciente) }}" class="{{ $consultas->isEmpty() ? 'btn-brand' : 'btn-secondary' }} min-h-11 px-5" data-nueva-consulta>
@@ -160,6 +255,14 @@ $tipoConsultaLabel = [
                             </div>
 
                             <div class="flex shrink-0 items-center gap-2 pt-2 sm:pt-0 border-t border-line/60 sm:border-0">
+                                {{-- Receta en PDF (24/11/2026): solo si hay medicamentos recetados. --}}
+                                @if (filled($consulta->medicamentos_recetados))
+                                    <a href="{{ route('admin.pacientes.historial.receta', [$paciente, $consulta]) }}" target="_blank" rel="noopener" data-receta
+                                       class="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
+                                        <x-icon name="expediente" />
+                                        Receta
+                                    </a>
+                                @endif
                                 <a href="{{ route('admin.pacientes.historial.edit', [$paciente, $consulta]) }}" class="inline-flex min-h-11 items-center rounded-xl px-3 text-sm font-semibold text-brand-600 transition hover:bg-brand-50 hover:text-brand-800">
                                     Editar
                                 </a>

@@ -28,6 +28,11 @@ class HistorialClinicoController extends Controller
                 ->with(['doctor:id,nombre,apellido', 'cita', 'imagenes'])
                 ->orderByDesc('fecha_consulta')
                 ->paginate($this->paginationPageSize($request)),
+            'consentimientos' => $paciente->consentimientos()->with('doctor:id,nombre,apellido')->latest()->get(),
+            'planes' => $paciente->planes()->with('pasos')->orderByRaw("estado = 'activo' desc")->latest()->get(),
+            // Pagos (24/11/2026): solo para quien tiene el módulo.
+            'pagos' => $request->user()->puede('pagos') ? $paciente->pagos()->with('cita.tratamiento:id,nombre')->orderByDesc('fecha')->orderByDesc('id')->limit(10)->get() : null,
+            'resumenPagos' => $request->user()->puede('pagos') ? PagoController::resumenPaciente($paciente) : null,
         ]);
     }
 
@@ -169,6 +174,44 @@ class HistorialClinicoController extends Controller
         ]);
 
         return $pdf->download("historial-{$paciente->id}.pdf");
+    }
+
+    /**
+     * Receta en PDF de una consulta (24/11/2026). Necesita medicamentos y la
+     * cédula profesional de quien atendió (Mi perfil). Se abre en el navegador
+     * para imprimirla y queda en Control de actividades.
+     */
+    public function receta(Request $request, Paciente $paciente, HistorialClinico $historial, AuditoriaService $auditoria): HttpResponse|RedirectResponse
+    {
+        $this->verificarPertenece($paciente, $historial);
+        $volver = Redirect::route('admin.pacientes.historial.index', $paciente);
+
+        if (blank($historial->medicamentos_recetados)) {
+            return $volver->with('error', 'Esa consulta no tiene medicamentos recetados: escríbelos en «Editar» para imprimir la receta.');
+        }
+
+        $doctor = $historial->doctor;
+        if (! $doctor || blank($doctor->cedula_profesional)) {
+            $quien = $doctor ? "{$doctor->nombre} {$doctor->apellido}" : 'quien atendió';
+
+            return $volver->with('error', "Para imprimir la receta falta la cédula profesional de {$quien}: se agrega en Mi perfil.");
+        }
+
+        $historia = $paciente->historiaClinica;
+        $alergias = $historia ? \App\Models\HistoriaClinica::nombres($historia->alergias, \App\Models\HistoriaClinica::ALERGIAS) : [];
+        if ($historia && filled($historia->alergias_otras)) {
+            $alergias[] = trim($historia->alergias_otras);
+        }
+
+        $auditoria->registrar('receta.generada', $historial, datosNuevos: ['id_paciente' => $paciente->id], request: $request);
+
+        return Pdf::loadView('pdf.receta', [
+            'paciente' => $paciente,
+            'consulta' => $historial,
+            'doctor' => $doctor,
+            'edad' => $historia?->edad(),
+            'alergias' => implode(', ', $alergias),
+        ])->setPaper('letter')->stream("receta-{$paciente->id}-{$historial->id}.pdf");
     }
 
     private function verificarPertenece(Paciente $paciente, HistorialClinico $historial): void

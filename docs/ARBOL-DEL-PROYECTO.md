@@ -40,7 +40,8 @@ dentissa/
 │   │   └── Requests/             Validaciones de formularios
 │   ├── Mail/                     Correos (confirmación y recordatorio de cita, envío por Gmail)
 │   ├── Models/                   Tablas de la base: User, Paciente, Cita, HistorialClinico,
-│   │                             Servicio, Tratamiento, Oferta, Testimonio, LogAuditoria…
+│   │                             Servicio, Tratamiento, Oferta, Testimonio, BloqueoAgenda,
+│   │                             LogAuditoria…
 │   ├── Observers/                AuditoriaObserver: registra cambios en Control de actividades
 │   ├── Policies/                 CitaPolicy: quién puede cambiar una cita
 │   ├── Providers/                Arranque: observadores, búsqueda de texto, datos del consultorio
@@ -134,21 +135,25 @@ Quién puede abrir cada pantalla, según `config/permisos.php`.
 ```text
 Panel                                         Módulo               T   D   A
 ├── Inicio  /dashboard                         inicio               ✓   ✓   ✓
-├── Agenda  /citas (lista y semana)            agenda               ✓   ✓   ✗
+├── Agenda  /citas (lista y semana)            agenda               ✓   ✓   ✓
 │   ├── Nueva cita / Editar / Reagendar
 │   └── Confirmar · Iniciar · Completar · No asistió · Cancelar
-├── Asistente  /asistente-agenda               agenda               ✓   ✓   ✗
-├── 🔔 Notificaciones  /notificaciones         notificaciones       ✓   ✓   ✗
+├── Asistente  /asistente-agenda               agenda               ✓   ✓   ✓
+├── 🔔 Notificaciones  /notificaciones         notificaciones       ✓   ✓   ✓
 ├── Historias clínicas  /admin/historias-      historia_clinica     ✓   ✓   ✓
 │   clinicas (lista + cuestionario; en el menú solo para quien no tiene Pacientes)
 ├── Gestión ▾
 │   ├── Pacientes  /admin/pacientes            pacientes            ✓   ✓   ✗
+│   │   ├── ＋ Nuevo paciente (sin cita)
 │   │   ├── ✎ Editar paciente
 │   │   └── 📋 Historial clínico: historia clínica (cuestionario, módulo
-│   │       historia_clinica), consultas, adjuntos, PDF
+│   │       historia_clinica), plan de tratamiento, pagos, consultas, receta,
+│   │       consentimiento informado,
+│   │       adjuntos, PDF
 │   ├── Usuarios  /admin/usuarios              usuarios             ✓   ✓*  ✗
 │   │   └── Nuevo usuario · Desactivar · Eliminar
 │   ├── Reportes  /admin/reportes (PDF/Excel)  reportes             ✓   ✓   ✗
+│   ├── (Pagos e ingresos  /admin/pagos: oculto, DENTISSA_MODULO_PAGOS)
 │   ├── Mensajes  /admin/mensajes              mensajes             ✓   ✓   ✗
 │   └── Control de actividades                 control_actividades  ✓   ✓   ✗
 │       /admin/control-de-actividades

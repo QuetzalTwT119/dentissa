@@ -35,11 +35,11 @@ class DashboardVisualTest extends TestCase
         $this->actingAs($asistente)
             ->get(route('dashboard'))
             ->assertOk()
-            // 22/11/2026: la asistente solo tiene el panel de inicio; sin botones a secciones cerradas.
-            ->assertSee('Tu espacio de trabajo')
-            ->assertSee('data-solo-inicio', false)
-            ->assertDontSee('Ver agenda')
-            ->assertDontSee(route('citas.index'), false)
+            // 24/11/2026: la asistente tiene la Agenda; sigue sin botones a secciones cerradas.
+            ->assertSee(route('citas.index'), false)
+            ->assertDontSee('data-solo-inicio', false)
+            ->assertDontSee(route('admin.pacientes.index'), false)
+            ->assertDontSee(route('admin.configuracion'), false)
             ->assertDontSee(route('profile.edit'), false)
             ->assertDontSee('Portal de Paciente')
             ->assertDontSee('Ver mis citas');

@@ -46,11 +46,8 @@ class AgendaSemanalTest extends TestCase
     {
         $this->get(route('citas.index', ['vista' => 'semana']))->assertRedirect(route('login'));
 
-        // 22/11/2026: la asistente ya no tiene la Agenda (config/permisos.php).
-        $this->actingAs(User::factory()->create(['rol' => RolUsuario::Asistente]))
-            ->get(route('citas.index', ['vista' => 'semana']))->assertForbidden();
-
-        foreach ([RolUsuario::SuperAdmin, RolUsuario::Doctor] as $rol) {
+        // 24/11/2026: la asistente vuelve a tener la Agenda (config/permisos.php).
+        foreach ([RolUsuario::SuperAdmin, RolUsuario::Doctor, RolUsuario::Asistente] as $rol) {
             $this->actingAs(User::factory()->create(['rol' => $rol]))
                 ->get(route('citas.index', ['vista' => 'semana']))
                 ->assertOk()

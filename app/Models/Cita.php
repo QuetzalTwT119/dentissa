@@ -47,6 +47,27 @@ class Cita extends Model
         return $this->belongsTo(Servicio::class, 'id_servicio');
     }
 
+    /** Pagos ligados a esta cita (24/11/2026). */
+    public function pagos(): HasMany
+    {
+        return $this->hasMany(Pago::class, 'id_cita');
+    }
+
+    /**
+     * Precio estimado: el del tratamiento, con su oferta si se agendó con una.
+     * null si el tratamiento no tiene precio. Es una referencia para Pagos; lo
+     * que se cobra de verdad es lo que se registra.
+     */
+    public function precioEstimado(): ?float
+    {
+        $base = (float) ($this->tratamiento?->precio_referencia ?? 0);
+        if ($this->oferta) {
+            return $this->oferta->precioPara($base);
+        }
+
+        return $base > 0 ? $base : null;
+    }
+
     public function tratamiento(): BelongsTo
     {
         return $this->belongsTo(Tratamiento::class, 'id_tratamiento');

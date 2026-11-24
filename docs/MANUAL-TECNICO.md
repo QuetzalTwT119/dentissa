@@ -375,6 +375,15 @@ tratamiento, el margen entre citas, la capacidad simultánea y las citas ya
 registradas. Antes de guardar una cita vuelve a validar el horario dentro de
 una transacción para evitar reservas duplicadas.
 
+**Bloqueos (H-81, 24/11/2026).** Tabla `bloqueos_agenda` (`fecha_inicio`, `fecha_fin`,
+`hora_inicio`/`hora_fin` nulas = todo el día, `motivo`, `creado_por`). `BloqueoAgenda::tramosDelDia()`
+devuelve los tramos [inicio, fin) de una fecha y `chocaCon()` los compara con la cita
+(inicio + duración). `horariosDisponibles()` y `estaDisponible()` los descuentan; `resumenMensual()`
+marca los días completos como `cerrado`. `BloqueoAgendaController` (módulo `configuracion`,
+`admin.bloqueos.store/destroy`) valida: no fechas pasadas, horas solo en un día, máximo 60 días y
+**ninguna cita agendada, confirmada o en curso dentro del tramo**. Bitácora: `bloqueo.creado` y
+`bloqueo.eliminado`. Pruebas: `BloqueoAgendaTest`.
+
 ### Calendario de disponibilidad (`partials/disponibilidad-picker`)
 
 **Reagendar directo (H-66, 23/11/2026).** El botón Reagendar (WhatsApp y correo) manda
@@ -690,6 +699,18 @@ como obligatorios en la interfaz y se validan también en el servidor. El select
 de tipo incluye el atributo HTML `required`. Diagnóstico, tratamiento,
 medicamentos, observaciones, notas privadas y cita relacionada se identifican
 como opcionales; la cita relacionada solo se muestra si hay citas disponibles.
+
+**Registrar paciente sin cita (H-83, 24/11/2026).** `admin.pacientes.create/store` (módulo `pacientes`). Guarda el celular normalizado a 10 dígitos (igual que la agenda en línea) y rechaza uno ya registrado (ofrece abrir ese expediente) y un correo repetido. Exige `acepta_aviso` y llena `aviso_privacidad_aceptado_en`/`_version` con `forceFill`. Bitácora: `paciente.registrado`. Redirige al expediente. Pruebas: `PacienteNuevoTest`.
+
+**Receta en PDF (H-84, 24/11/2026).** `users.cedula_profesional` y `users.especialidad` (Mi perfil, solo con el módulo `pacientes`). `HistorialClinicoController@receta` (`admin.pacientes.historial.receta`): exige medicamentos y cédula de `id_doctor`, toma edad y alergias de la historia clínica, registra `receta.generada` y devuelve `pdf.receta` en tamaño carta con `stream()` (se abre en el navegador para imprimir). Pruebas: `RecetaPdfTest`.
+
+**Consentimiento informado (H-85, 24/11/2026).** Tabla `consentimientos` (paciente, doctor, procedimiento, dientes, beneficios, riesgos, alternativas). `ConsentimientoController` (`admin.pacientes.consentimientos.create/store/pdf`, módulo `pacientes`); textos de partida en `Consentimiento::BENEFICIOS/RIESGOS/ALTERNATIVAS`. `pdf.consentimiento` sigue los elementos de la NOM-004-SSA3-2012 (firmas de paciente o representante, odontólogo y dos testigos); se firma a mano, sin firma digital. Bitácora `consentimiento.creado` sin el texto clínico. Pruebas: `ConsentimientoTest`.
+
+**Agenda para la asistente (H-86, 24/11/2026).** `config/permisos.php`: `asistente => [inicio, agenda, notificaciones, historia_clinica]`. Con eso ve Agenda, Asistente de agenda y la campana, y recibe los avisos internos (`Permisos::rolesCon(notificaciones)`). "Registrar consulta" en la Agenda sigue oculto para ella porque pide el módulo `pacientes`.
+
+**Pagos e ingresos (H-87, 24/11/2026) — oculto.** El usuario decidió no usarlo: `config('dentissa.modulos.pagos')` (`DENTISSA_MODULO_PAGOS`, `false` por omisión). `Permisos::rolPuede()` niega cualquier módulo de `permisos.modulos` cuyo interruptor en `dentissa.modulos` esté apagado, así desaparecen el menú, la sección del expediente y el botón de la Agenda, y las rutas responden 403. Las tablas se conservan. Tabla `pagos` (paciente, cita opcional, monto, método `efectivo|tarjeta|transferencia`, fecha, concepto, `registrado_por`). Módulo nuevo `pagos` (`admin.pagos.index/create/store/destroy`) para `super_admin` y `doctor`. `Cita::precioEstimado()` usa `precio_referencia` del tratamiento y `Oferta::precioPara()`; `PagoController::resumenPaciente()` da pagado, estimado y por cobrar para el expediente. En la Agenda, una cita completada sin pagos muestra "Registrar pago". Bitácora: `pago.registrado`, `pago.eliminado`. Pruebas: `PagosTest`.
+
+**Plan de tratamiento (H-88, 24/11/2026).** Tablas `planes_tratamiento` (paciente, doctor, título, estado `activo|terminado|cancelado`, notas) y `plan_tratamiento_pasos` (descripción, dientes, costo, `id_tratamiento` si coincide con el catálogo, `hecho_en`, orden). `PlanTratamiento::avance()` = pasos con `hecho_en` / total; no se escribe a mano. `PlanTratamientoController` (`admin.pacientes.planes.*`, módulo `pacientes`). Bitácora: `plan.creado`, `plan.actualizado`, `plan.paso_hecho`, `plan.paso_pendiente`. Pruebas: `PlanTratamientoTest`.
 
 ## 12. Auditoría de operaciones sensibles
 
@@ -1700,7 +1721,9 @@ porque solo se ve un día y lo ya atendido se pliega.
   niveles, canceladas, horarios con lugar, sábado corto, bloque inicial, días
   cerrados con citas y la fecha prellenada al agendar.
 
-## 22. Recordatorio 24 h antes y respuesta del paciente (etapa 1)
+## 22. Recordatorio y respuesta del paciente (etapa 1)
+
+**Desde el 24/11/2026 (H-82)** el recordatorio ya no sale 24 h antes: `App\Support\MomentoRecordatorio::para()` calcula el día hábil anterior (abierto en Horarios de atención y sin bloqueo de día completo) a la hora de apertura + 1. `dentissa:enviar-recordatorios` revisa las citas de los próximos 8 días y manda las que ya pasaron ese momento y se crearon antes de él. Lo que sigue en esta sección describe la versión original de 24 h.
 
 **Objetivo:** reducir inasistencias. Un día antes, el paciente recibe un
 recordatorio por WhatsApp **y** por correo y puede responder **Asistiré**,

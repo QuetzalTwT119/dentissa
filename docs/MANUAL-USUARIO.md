@@ -42,9 +42,11 @@ controles de carga se acomodan en varias filas para facilitar el toque.
 - **Doctora titular** (la dueña): entra a todo.
 - **Doctor** (doctores asociados): por ahora, lo mismo que la doctora titular,
   salvo que no puede desactivar, eliminar ni crear una cuenta de Doctora titular.
-- **Asistente**: por ahora **solo el panel de inicio**; no ve el menú de secciones,
-  la campana ni Mi perfil (sí puede cerrar sesión). Para cambiar su contraseña,
-  usa "¿La olvidaste?" en la pantalla de acceso.
+- **Asistente** (desde el 24/11/2026): el panel de inicio, la **Agenda** (crear, confirmar,
+  reagendar y cancelar citas), el **Asistente de agenda**, la **campana** de avisos e
+  **Historias clínicas** (el cuestionario). No ve el expediente (consultas, notas privadas,
+  recetas, consentimientos), Usuarios, Reportes, Catálogo, Contenido, Configuración ni Mi perfil.
+  Para cambiar su contraseña usa "¿La olvidaste?" en la pantalla de acceso.
 
 El menú solo muestra lo que cada rol puede abrir.
 
@@ -264,9 +266,14 @@ falta que el personal pulse una segunda vez **Confirmar**.
 
 ### Recordatorio un día antes
 
-Unas 24 horas antes de la cita, el paciente recibe un recordatorio por correo
-y, cuando WhatsApp está configurado, también por WhatsApp. El correo trae tres
-botones:
+El **día hábil anterior** a la cita, **una hora después de abrir** el consultorio, el
+paciente recibe un recordatorio por correo y, cuando WhatsApp está configurado, también por
+WhatsApp (desde el 24/11/2026; antes salía 24 horas antes). "Día hábil" es un día abierto en
+**Horarios de atención** que no esté bloqueado completo. Ejemplo con horario de lunes a
+viernes de 9:00 a 18:00: una cita del martes a las 19:00 se recuerda el **lunes a las
+10:00**; una del lunes, el **viernes a las 10:00**. Así el mensaje nunca llega de noche ni en
+día cerrado, y si el paciente cancela o reagenda, el personal lo ve en horario de trabajo. El
+correo trae tres botones:
 
 | Botón | Qué pasa |
 |---|---|
@@ -279,8 +286,9 @@ cita y pide confirmar la respuesta con otro botón. Desde esa página el pacient
 puede elegir otra respuesta. Si la cita ya pasó o ya se canceló, la página
 indica que ya no admite cambios y muestra el teléfono del consultorio.
 
-Las citas que se agendan con menos de 24 horas de anticipación no reciben
-recordatorio, porque el paciente acaba de recibir su confirmación. Si el
+Las citas que se agendan **después** del momento del recordatorio (por ejemplo, el
+viernes por la tarde para el lunes) no reciben recordatorio, porque el paciente acaba de
+recibir su confirmación. Si el
 personal reagenda una cita, el paciente recibe un recordatorio nuevo para la
 nueva fecha.
 
@@ -502,6 +510,14 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
     pierde o cambia el celular. Pide confirmación y queda en Control de actividades. El
     número del bot de WhatsApp no se cambia aquí (se configura en Meta).
   - **Horarios de atención:** los días, las horas y cuántos pacientes se atienden a la vez (un solo valor).
+  - **Días u horas bloqueados** (desde el 24/11/2026): para vacaciones, un curso, un
+    imprevisto o mantenimiento. Elige **Desde**, opcionalmente **Hasta**, deja **Todo el día**
+    o quítalo para bloquear solo unas horas (**De** / **A**, en un solo día), escribe el
+    **motivo** (solo lo ve el personal) y pulsa **Bloquear**. Esos horarios dejan de
+    ofrecerse en la agenda en línea y en Nueva cita; los días completos se ven cerrados en el
+    calendario. Si en ese tiempo ya hay citas activas, el sistema avisa cuáles: primero
+    reagéndalas o cancélalas. En **Próximos bloqueos** se ve la lista y la 🗑 los quita
+    (vuelven a ofrecerse). Todo queda en Control de actividades.
 - **Guardar cambios** (en cualquier pantalla de editar) aparece apagado hasta
   que cambias algo; si regresas todo como estaba, se vuelve a apagar. Al
   guardar, el sistema sigue pidiendo confirmar. Para salir sin guardar usa
@@ -672,6 +688,17 @@ propio renglón con espacio para escribir.
 
 Desde `/admin/pacientes`:
 
+- **Plan de tratamiento** (desde el 24/11/2026): para tratamientos de varias citas (ortodoncia,
+  rehabilitación…). En el expediente, **Plan de tratamiento → Nuevo plan**: ponle un nombre y
+  después agrega sus **pasos** (procedimiento, dientes y costo; al elegir un tratamiento del
+  catálogo se sugiere su precio). Cada paso se marca como **hecho** con el círculo (guarda la
+  fecha) y se puede volver a pendiente. El **avance** (%) y el **costo del plan** se calculan
+  solos. Cuando todos están hechos, el sistema sugiere cambiar el estado a **Terminado**. El
+  expediente muestra cada plan con su barra de avance.
+- **Consentimiento informado** (desde el 24/11/2026): en el expediente, sección **Consentimientos informados → Nuevo consentimiento**. Escribe el **procedimiento** (sugiere los tratamientos del catálogo), los dientes si aplica, y revisa los textos de **beneficios**, **riesgos** y **alternativas** (vienen escritos de partida; ajústalos a lo que le explicaste). Al guardar aparece **Abrir para imprimir**: es una carta con los datos del consultorio, paciente, edad, alergias, procedimiento, lo que se le explicó, y espacios para la firma del paciente o su representante, de quien atiende y de dos testigos. Se firma a mano y se guarda en el archivo del paciente. Cada uno queda en la lista para volver a imprimirlo.
+- **Receta en PDF** (desde el 24/11/2026): en el expediente, cada consulta con **medicamentos recetados** muestra **Receta**. Se abre lista para imprimir, con tu nombre, **cédula profesional**, especialidad, fecha, nombre y edad del paciente, sus **alergias**, el diagnóstico, los medicamentos y la línea de firma; al pie, la dirección y el teléfono del consultorio. La cédula se escribe una sola vez en **Mi perfil** (solo la ve quien atiende consultas); sin ella el sistema avisa en lugar de imprimir. Cada receta impresa queda en Control de actividades.
+- **Nuevo paciente** (desde el 24/11/2026): registra a alguien que llegó sin cita, o para llenarle la historia clínica antes. Pide nombre, apellido, celular (obligatorios), correo (opcional) y confirmar que **aceptó el aviso de privacidad**. Si el celular ya está registrado, avisa de quién es y ofrece **Abrir su expediente** en lugar de duplicarlo. Al guardar se abre su expediente. Cuando después agende en línea con ese celular, el sistema lo reconoce.
+
 1. Buscar por una parte del nombre, correo o teléfono, o seleccionar un paciente de la lista.
 2. Abrir **Editar** (✎) para corregir su nombre, apellido, teléfono celular y correo. Nombre, apellido y **teléfono celular son obligatorios** (por el teléfono se le avisa por WhatsApp y se le reconoce al agendar); el correo es opcional y debe ser único. El teléfono debe tener diez dígitos, con código `+52` opcional.
 3. Abrir el **historial** (📋), o tocar su número de consultas.
@@ -746,6 +773,29 @@ nuevos con tu contraseña; los anteriores dejan de servir.
 Escribe el código actual de la app o un código de recuperación. Tienes 5
 minutos; si se pasa el tiempo, vuelve a iniciar sesión. Si el código no
 funciona, revisa que la hora de tu celular esté en automático.
+
+## 6.2 Pagos e ingresos
+
+> **Oculto.** El 24/11/2026 se decidió no usarlo por ahora: no aparece en el menú, el
+> expediente ni la Agenda. Lo que sigue describe cómo funciona si se enciende
+> (`DENTISSA_MODULO_PAGOS=true`).
+
+Desde el 24/11/2026 se registra lo que cada paciente paga en el consultorio (solo el
+registro: el cobro sigue siendo en persona; no hay pago en línea ni factura).
+
+- **Registrar un pago:** en la Agenda, una cita **completada** sin pago muestra **$ Registrar
+  pago** (llega con la cita elegida y su precio estimado como monto sugerido). También desde
+  el expediente, sección **Pagos → Registrar pago** (por ejemplo, un anticipo o un abono sin
+  cita). Se indica monto, forma de pago (efectivo, tarjeta o transferencia), fecha (hoy o
+  antes) y, si quieres, la cita y un concepto.
+- **En el expediente** se ve cuánto ha pagado el paciente y, si hay citas completadas con
+  precio, cuánto falta **por cobrar (estimado)**: suma del precio de esas citas (con su
+  oferta) menos lo pagado. Es una referencia; lo que cuenta es lo registrado.
+- **Gestión → Pagos e ingresos:** total cobrado del periodo (por omisión, el mes en curso),
+  lo de cada forma de pago y la lista de pagos, con filtros **Desde**, **Hasta** y **Forma
+  de pago**. Un pago capturado por error se quita con la 🗑.
+- Lo ven la doctora titular y los doctores; la asistente no. Registrar y eliminar pagos
+  queda en Control de actividades.
 
 ## 7. Reportes administrativos
 

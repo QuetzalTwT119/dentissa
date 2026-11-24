@@ -18,6 +18,11 @@ class Permisos
             return false;
         }
 
+        // Módulo apagado en config/dentissa.php → modulos (p. ej. "pagos"): nadie lo tiene.
+        if (config()->has("dentissa.modulos.$modulo") && ! config("dentissa.modulos.$modulo")) {
+            return false;
+        }
+
         $modulos = config('permisos.roles.'.$rol->value, []);
 
         return in_array('*', $modulos, true) || in_array($modulo, $modulos, true);

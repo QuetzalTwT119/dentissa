@@ -17,6 +17,13 @@ class PermisosPorModuloTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Pagos está oculto por omisión (24/11/2026); aquí se revisa con todo encendido.
+        config(['dentissa.modulos.pagos' => true]);
+    }
+
     /** Páginas GET representativas de cada módulo (sin parámetros). */
     private const PAGINAS = [
         'inicio' => 'dashboard',
@@ -27,6 +34,7 @@ class PermisosPorModuloTest extends TestCase
         'pacientes' => 'admin.pacientes.index',
         'usuarios' => 'admin.usuarios.index',
         'reportes' => 'admin.reportes.index',
+        'pagos' => 'admin.pagos.index',
         'mensajes' => 'admin.mensajes.index',
         'control_actividades' => 'admin.auditoria.index',
         'catalogo' => 'admin.servicios.index',
@@ -57,7 +65,7 @@ class PermisosPorModuloTest extends TestCase
         $roles = [
             RolUsuario::SuperAdmin->value => array_keys(self::PAGINAS),
             RolUsuario::Doctor->value => array_keys(self::PAGINAS),   // igual que el antiguo admin
-            RolUsuario::Asistente->value => ['inicio', 'historia_clinica'],
+            RolUsuario::Asistente->value => ['inicio', 'agenda', 'notificaciones', 'historia_clinica'],
         ];
 
         foreach ($roles as $rol => $permitidos) {
@@ -80,11 +88,14 @@ class PermisosPorModuloTest extends TestCase
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
         $html = $this->actingAs($asistente)->get(route('dashboard'))->assertOk()->getContent();
 
-        foreach (['citas.index', 'asistente-agenda.create', 'admin.pacientes.index', 'admin.usuarios.index', 'admin.servicios.index', 'admin.ofertas.index', 'admin.configuracion', 'notificaciones.index', 'profile.edit', 'ofertas.index', 'galeria.index'] as $pagina) {
+        foreach (['admin.pacientes.index', 'admin.usuarios.index', 'admin.servicios.index', 'admin.ofertas.index', 'admin.configuracion', 'profile.edit', 'ofertas.index', 'galeria.index'] as $pagina) {
             $this->assertStringNotContainsString('href="'.route($pagina).'"', $html, "La asistente no debe ver el enlace a $pagina");
         }
+        // 24/11/2026: Agenda, su asistente y la campana sí.
+        foreach (['citas.index', 'asistente-agenda.create', 'notificaciones.index'] as $pagina) {
+            $this->assertStringContainsString('href="'.route($pagina), $html, "La asistente debe ver $pagina");
+        }
         $this->assertStringContainsString('action="'.route('logout').'"', $html, 'Cerrar sesión siempre disponible');
-        $this->assertStringNotContainsString('data-notification-preview-trigger', $html);
 
         $doctor = User::factory()->create(['rol' => RolUsuario::Doctor]);
         $html = $this->actingAs($doctor)->get(route('dashboard'))->assertOk()->getContent();
@@ -97,7 +108,7 @@ class PermisosPorModuloTest extends TestCase
     {
         $this->assertFalse(RolUsuario::SuperAdmin->puede('modulo_que_no_existe'));
         $this->assertTrue(RolUsuario::SuperAdmin->puede('usuarios'));
-        $this->assertFalse(RolUsuario::Asistente->puede('agenda'));
+        $this->assertFalse(RolUsuario::Asistente->puede('pacientes'));
     }
 
     public function test_la_cuenta_titular_solo_la_toca_otra_titular(): void
