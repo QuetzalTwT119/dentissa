@@ -11,6 +11,7 @@ use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 
@@ -33,8 +34,12 @@ class PlanTratamientoController extends Controller
             'notas' => ['nullable', 'string', 'max:2000'],
         ], ['titulo.required' => 'Ponle un nombre al plan (por ejemplo, «Ortodoncia» o «Rehabilitación»).']);
 
-        $plan = PlanTratamiento::create($validated + ['id_paciente' => $paciente->id, 'id_doctor' => $request->user()->id, 'estado' => 'activo']);
-        $auditoria->registrar('plan.creado', $plan, datosNuevos: ['id_paciente' => $paciente->id, 'titulo' => $plan->titulo], request: $request);
+        $plan = DB::transaction(function () use ($validated, $paciente, $request, $auditoria) {
+            $plan = PlanTratamiento::create($validated + ['id_paciente' => $paciente->id, 'id_doctor' => $request->user()->id, 'estado' => 'activo']);
+            $auditoria->registrar('plan.creado', $plan, datosNuevos: ['id_paciente' => $paciente->id, 'titulo' => $plan->titulo], request: $request);
+
+            return $plan;
+        });
 
         return Redirect::route('admin.pacientes.planes.show', [$paciente, $plan])
             ->with('success', 'Plan creado. Ahora agrega sus pasos.');
@@ -87,8 +92,10 @@ class PlanTratamientoController extends Controller
     public function alternarPaso(Request $request, Paciente $paciente, PlanTratamiento $plan, PlanTratamientoPaso $paso, AuditoriaService $auditoria): RedirectResponse
     {
         $this->verificar($paciente, $plan, $paso);
-        $paso->update(['hecho_en' => $paso->hecho() ? null : now()->toDateString()]);
-        $auditoria->registrar($paso->hecho() ? 'plan.paso_hecho' : 'plan.paso_pendiente', $plan, datosNuevos: ['paso' => $paso->descripcion], request: $request);
+        DB::transaction(function () use ($paso, $plan, $request, $auditoria) {
+            $paso->update(['hecho_en' => $paso->hecho() ? null : now()->toDateString()]);
+            $auditoria->registrar($paso->hecho() ? 'plan.paso_hecho' : 'plan.paso_pendiente', $plan, datosNuevos: ['paso' => $paso->descripcion], request: $request);
+        });
 
         // Todos hechos: se propone terminar el plan (no se cierra solo).
         $plan->load('pasos');

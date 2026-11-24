@@ -753,6 +753,13 @@ transacción; para entidades con varios registros, los controladores usan una
 transacción explícita. Esto evita que una llamada escriba una auditoría que no
 pueda revertirse junto con el cambio. Las escrituras de negocio y su entrada de
 auditoría se ejecutan en una misma transacción de base de datos.
+
+Las pruebas de cada pantalla **no** detectan si falta la transacción, porque
+`RefreshDatabase` ya corre cada prueba dentro de una. Por eso
+`tests/Unit/BitacoraEnTransaccionTest` lee el código de `app/` y falla si una
+función llama a `$auditoria->registrar()` sin abrir `DB::transaction()` (H-92,
+24/11/2026: nueve funciones de bloqueos, consentimientos, recetas, pagos, planes
+y exploración clínica fallaban en local y en Railway).
 Si la bitácora no puede guardarse, la excepción
 revierte también el cambio de negocio y la aplicación muestra una respuesta
 503 indicando que no se guardaron los cambios y que se intente de nuevo más

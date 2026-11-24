@@ -9,6 +9,7 @@ use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 
@@ -157,11 +158,13 @@ class ExploracionClinicaController extends Controller
             ->reject(fn ($campo) => $exploracion->exists
                 && self::normalizar($exploracion->getOriginal($campo)) == self::normalizar($exploracion->getAttribute($campo)))
             ->values()->all();
-        $exploracion->save();
+        DB::transaction(function () use ($exploracion, $auditoria, $accion, $cambiados, $request) {
+            $exploracion->save();
 
-        $auditoria->registrar($accion, $exploracion, datosNuevos: [
-            'id_paciente' => $exploracion->id_paciente,
-            'campos_modificados' => $cambiados,
-        ], request: $request);
+            $auditoria->registrar($accion, $exploracion, datosNuevos: [
+                'id_paciente' => $exploracion->id_paciente,
+                'campos_modificados' => $cambiados,
+            ], request: $request);
+        });
     }
 }

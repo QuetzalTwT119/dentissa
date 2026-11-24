@@ -10,6 +10,7 @@ use App\Services\AuditoriaService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 
@@ -62,8 +63,14 @@ class BloqueoAgendaController extends Controller
 
         $this->revisarCitasActivas($datos);
 
-        $bloqueo = BloqueoAgenda::create($datos + ['creado_por' => $request->user()->id]);
-        $auditoria->registrar('bloqueo.creado', $bloqueo, datosNuevos: $datos, request: $request);
+        // El bloqueo y su registro en la bitácora se guardan juntos: si la
+        // bitácora falla, el bloqueo tampoco queda (AuditoriaService lo exige).
+        $bloqueo = DB::transaction(function () use ($datos, $request, $auditoria) {
+            $bloqueo = BloqueoAgenda::create($datos + ['creado_por' => $request->user()->id]);
+            $auditoria->registrar('bloqueo.creado', $bloqueo, datosNuevos: $datos, request: $request);
+
+            return $bloqueo;
+        });
 
         return Redirect::to(route('admin.configuracion').'#bloqueos')
             ->with('success', 'Bloqueo guardado: '.$bloqueo->descripcion().'. Esos horarios ya no se ofrecen.');
@@ -72,8 +79,10 @@ class BloqueoAgendaController extends Controller
     public function destroy(Request $request, BloqueoAgenda $bloqueo, AuditoriaService $auditoria): RedirectResponse
     {
         $descripcion = $bloqueo->descripcion();
-        $auditoria->registrar('bloqueo.eliminado', $bloqueo, datosAnteriores: $bloqueo->only(['fecha_inicio', 'fecha_fin', 'hora_inicio', 'hora_fin', 'motivo']), request: $request);
-        $bloqueo->delete();
+        DB::transaction(function () use ($bloqueo, $request, $auditoria) {
+            $auditoria->registrar('bloqueo.eliminado', $bloqueo, datosAnteriores: $bloqueo->only(['fecha_inicio', 'fecha_fin', 'hora_inicio', 'hora_fin', 'motivo']), request: $request);
+            $bloqueo->delete();
+        });
 
         return Redirect::to(route('admin.configuracion').'#bloqueos')
             ->with('success', "Se quitó el bloqueo ({$descripcion}). Esos horarios vuelven a ofrecerse.");
