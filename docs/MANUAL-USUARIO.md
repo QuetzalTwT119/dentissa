@@ -121,7 +121,7 @@ paso a paso" y dos formas de contacto:
   El **pie de página** muestra también el horario de la semana (por ejemplo
   "Lunes a viernes de 8:00 a 18:00 hrs"); los días cerrados no aparecen.
   En **Configuración → Horarios de atención**, "Citas a la vez" es cuántos pacientes se pueden
-  atender a la misma hora (1 si hay un solo sillón o dentista). Los horarios se ofrecen cada
+  atender a la misma hora (1 si hay un solo sillón o dentista; el consultorio usa 1). Los campos de número solo se escriben, sin flechas. Los horarios se ofrecen cada
   30 minutos y la última cita del día es la que **termina** a la hora de cierre: con cierre a
   las 18:00, una valoración de 30 min se puede agendar hasta las 17:30 y una limpieza de
   60 min hasta las 17:00. Los 15 minutos de limpieza de los tratamientos largos o

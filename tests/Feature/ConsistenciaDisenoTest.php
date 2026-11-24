@@ -276,7 +276,7 @@ class ConsistenciaDisenoTest extends TestCase
         $this->assertStringContainsString('tabla-panel', File::get(resource_path('views/components/admin/table.blade.php')));
 
         $css = File::get(resource_path('css/app.css'));
-        foreach (['.panel-marco {', '.panel-contenido {', '.formulario-panel {', 'position: sticky;'] as $regla) {
+        foreach (['.panel-marco {', '.panel-contenido {', '.formulario-panel {', 'position: sticky;', '::-webkit-inner-spin-button'] as $regla) {
             $this->assertStringContainsString($regla, $css);
         }
     }

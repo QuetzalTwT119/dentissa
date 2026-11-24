@@ -104,6 +104,20 @@
 
 @layer base {
     /*
+     * Campos de número sin flechas (24/11/2026): en el panel siempre se escriben
+     * (hora, citas a la vez, orden, precio…) y las flechas solo estorbaban. El
+     * celular sigue abriendo el teclado numérico.
+     */
+    input[type='number'] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
+    input[type='number']::-webkit-outer-spin-button,
+    input[type='number']::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    /*
      * Tokens de color "Boutique cálida".
      * Se escriben como canales RGB para que Tailwind pueda aplicar opacidad
      * (por ejemplo `bg-cream/80`). Cambiar un valor aquí actualiza todo el sitio.

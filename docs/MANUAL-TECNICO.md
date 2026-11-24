@@ -605,6 +605,8 @@ seguro médico y número de seguro social no aplica.
 **Botón global de regreso (H-73, 23/11/2026).** `components/volver.blade.php` ("← Volver a …"). Desde H-74 (24/11/2026) va solo en pantallas hijas **sin** botón "Cancelar" (expediente, dos pasos); en los formularios "Cancelar" ya cumple esa función.
 
 **Agenda tras una acción (H-75, 24/11/2026).** `CitaController::volverALaAgenda()` redirige a `url()->previous()` solo si es `/citas` o `/citas?…` (conserva día, vista y filtros); si no, a `/citas?fecha=` del día de la cita. `store` y `update` (reagendar) van al día de la cita. `pestanasDeLaSemana()` agrega `canceladas` y `noAsistio`.
+
+**Campos de número (H-76, 24/11/2026).** `resources/css/app.css` (`@layer base`) quita las flechas de todo `input[type=number]`; se conserva `type=number` para validar y abrir el teclado numérico. **Citas a la vez** (`horarios_atencion.capacidad_simultanea`) la usan `DisponibilidadService`, `OcupacionSemanalService` y `ReporteService`; en producción quedó en 1.
 En `x-admin.header` se usa con `:volver="route(...)" volver-texto="..."`; en encabezados propios,
 `<x-volver :href texto />`. Va en toda pantalla que se abre desde otra (crear/editar,
 expediente, cuestionarios); no en las principales del menú. `ConsistenciaDisenoTest` revisa las
