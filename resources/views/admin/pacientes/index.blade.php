@@ -16,6 +16,13 @@
                             <x-filtro.buscar etiqueta="Buscar pacientes por nombre, correo o teléfono" placeholder="Nombre, correo o teléfono…" />
                         </x-filtro.barra>
                     </x-slot:filtros>
+                    {{-- Registrar sin cita (24/11/2026), como "Nuevo usuario". --}}
+                    <x-slot:acciones>
+                        <a href="{{ route('admin.pacientes.create') }}" class="btn-brand min-h-11 px-5" data-nuevo-paciente>
+                            <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /> </svg>
+                            Nuevo paciente
+                        </a>
+                    </x-slot:acciones>
                 </x-pagination-summary>
                 <x-admin.table minWidth="min-w-[760px]">
                     <x-slot:head>

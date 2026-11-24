@@ -698,6 +698,8 @@ de tipo incluye el atributo HTML `required`. Diagnóstico, tratamiento,
 medicamentos, observaciones, notas privadas y cita relacionada se identifican
 como opcionales; la cita relacionada solo se muestra si hay citas disponibles.
 
+**Registrar paciente sin cita (H-83, 24/11/2026).** `admin.pacientes.create/store` (módulo `pacientes`). Guarda el celular normalizado a 10 dígitos (igual que la agenda en línea) y rechaza uno ya registrado (ofrece abrir ese expediente) y un correo repetido. Exige `acepta_aviso` y llena `aviso_privacidad_aceptado_en`/`_version` con `forceFill`. Bitácora: `paciente.registrado`. Redirige al expediente. Pruebas: `PacienteNuevoTest`.
+
 ## 12. Auditoría de operaciones sensibles
 
 `AuditoriaService` centraliza el registro de acciones relevantes del personal

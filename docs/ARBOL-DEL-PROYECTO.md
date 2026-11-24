@@ -144,6 +144,7 @@ Panel                                         Módulo               T   D   A
 │   clinicas (lista + cuestionario; en el menú solo para quien no tiene Pacientes)
 ├── Gestión ▾
 │   ├── Pacientes  /admin/pacientes            pacientes            ✓   ✓   ✗
+│   │   ├── ＋ Nuevo paciente (sin cita)
 │   │   ├── ✎ Editar paciente
 │   │   └── 📋 Historial clínico: historia clínica (cuestionario, módulo
 │   │       historia_clinica), consultas, adjuntos, PDF

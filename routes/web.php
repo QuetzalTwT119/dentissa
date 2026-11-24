@@ -229,6 +229,9 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::resource('tratamientos', TratamientoController::class)->except('show');
 
     Route::get('pacientes', [PacienteController::class, 'index'])->name('pacientes.index');
+    // Registrar paciente sin cita (24/11/2026).
+    Route::get('pacientes/crear', [PacienteController::class, 'create'])->name('pacientes.create');
+    Route::post('pacientes', [PacienteController::class, 'store'])->name('pacientes.store');
     Route::get('pacientes/{paciente}/editar', [PacienteController::class, 'edit'])->name('pacientes.edit');
     Route::put('pacientes/{paciente}', [PacienteController::class, 'update'])->name('pacientes.update');
 

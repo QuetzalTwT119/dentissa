@@ -18,6 +18,7 @@ $etiquetasAccion = [
     'historial.imagen_eliminada' => 'Archivo clínico eliminado',
     'paciente.datos_oficiales_actualizados' => 'Datos oficiales del paciente actualizados',
     'paciente.datos_actualizados' => 'Datos del paciente actualizados',
+    'paciente.registrado' => 'Paciente registrado sin cita',
     'usuario.creado' => 'Usuario creado',
     'usuario.actualizado' => 'Usuario actualizado',
     'usuario.activado' => 'Cuenta activada',
