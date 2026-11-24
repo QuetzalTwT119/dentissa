@@ -135,11 +135,11 @@ Quién puede abrir cada pantalla, según `config/permisos.php`.
 ```text
 Panel                                         Módulo               T   D   A
 ├── Inicio  /dashboard                         inicio               ✓   ✓   ✓
-├── Agenda  /citas (lista y semana)            agenda               ✓   ✓   ✗
+├── Agenda  /citas (lista y semana)            agenda               ✓   ✓   ✓
 │   ├── Nueva cita / Editar / Reagendar
 │   └── Confirmar · Iniciar · Completar · No asistió · Cancelar
-├── Asistente  /asistente-agenda               agenda               ✓   ✓   ✗
-├── 🔔 Notificaciones  /notificaciones         notificaciones       ✓   ✓   ✗
+├── Asistente  /asistente-agenda               agenda               ✓   ✓   ✓
+├── 🔔 Notificaciones  /notificaciones         notificaciones       ✓   ✓   ✓
 ├── Historias clínicas  /admin/historias-      historia_clinica     ✓   ✓   ✓
 │   clinicas (lista + cuestionario; en el menú solo para quien no tiene Pacientes)
 ├── Gestión ▾

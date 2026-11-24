@@ -704,6 +704,8 @@ como opcionales; la cita relacionada solo se muestra si hay citas disponibles.
 
 **Consentimiento informado (H-85, 24/11/2026).** Tabla `consentimientos` (paciente, doctor, procedimiento, dientes, beneficios, riesgos, alternativas). `ConsentimientoController` (`admin.pacientes.consentimientos.create/store/pdf`, módulo `pacientes`); textos de partida en `Consentimiento::BENEFICIOS/RIESGOS/ALTERNATIVAS`. `pdf.consentimiento` sigue los elementos de la NOM-004-SSA3-2012 (firmas de paciente o representante, odontólogo y dos testigos); se firma a mano, sin firma digital. Bitácora `consentimiento.creado` sin el texto clínico. Pruebas: `ConsentimientoTest`.
 
+**Agenda para la asistente (H-86, 24/11/2026).** `config/permisos.php`: `asistente => [inicio, agenda, notificaciones, historia_clinica]`. Con eso ve Agenda, Asistente de agenda y la campana, y recibe los avisos internos (`Permisos::rolesCon(notificaciones)`). "Registrar consulta" en la Agenda sigue oculto para ella porque pide el módulo `pacientes`.
+
 ## 12. Auditoría de operaciones sensibles
 
 `AuditoriaService` centraliza el registro de acciones relevantes del personal

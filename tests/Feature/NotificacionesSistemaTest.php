@@ -25,10 +25,10 @@ class NotificacionesSistemaTest extends TestCase
         Event::fake([NotificacionSistemaCreada::class]);
 
         $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
-        // 22/11/2026: los avisos van a quien tiene el módulo de notificaciones (doctor), ya no a la asistente.
+        // Los avisos van a quien tiene el módulo de notificaciones: doctor y (24/11/2026) asistente.
         $asistente = User::factory()->create(['rol' => RolUsuario::Doctor]);
         User::factory()->create(['rol' => RolUsuario::Doctor, 'activo' => false]);
-        User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $otraAsistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
 
         app(NotificacionInternaService::class)->cambioCita(
             Cita::make(['fecha_hora' => now()]),
@@ -36,7 +36,8 @@ class NotificacionesSistemaTest extends TestCase
             $admin->id,
         );
 
-        $this->assertDatabaseCount('notificaciones_sistema', 1);
+        $this->assertDatabaseCount('notificaciones_sistema', 2);
+        $this->assertDatabaseHas('notificaciones_sistema', ['user_id' => $otraAsistente->id, 'evento' => 'confirmada']);
         $this->assertDatabaseHas('notificaciones_sistema', [
             'user_id' => $asistente->id,
             'evento' => 'confirmada',

@@ -42,9 +42,11 @@ controles de carga se acomodan en varias filas para facilitar el toque.
 - **Doctora titular** (la dueña): entra a todo.
 - **Doctor** (doctores asociados): por ahora, lo mismo que la doctora titular,
   salvo que no puede desactivar, eliminar ni crear una cuenta de Doctora titular.
-- **Asistente**: por ahora **solo el panel de inicio**; no ve el menú de secciones,
-  la campana ni Mi perfil (sí puede cerrar sesión). Para cambiar su contraseña,
-  usa "¿La olvidaste?" en la pantalla de acceso.
+- **Asistente** (desde el 24/11/2026): el panel de inicio, la **Agenda** (crear, confirmar,
+  reagendar y cancelar citas), el **Asistente de agenda**, la **campana** de avisos e
+  **Historias clínicas** (el cuestionario). No ve el expediente (consultas, notas privadas,
+  recetas, consentimientos), Usuarios, Reportes, Catálogo, Contenido, Configuración ni Mi perfil.
+  Para cambiar su contraseña usa "¿La olvidaste?" en la pantalla de acceso.
 
 El menú solo muestra lo que cada rol puede abrir.
 
