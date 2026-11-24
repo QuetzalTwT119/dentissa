@@ -34,7 +34,12 @@ class AppAuthController extends Controller
             ], 403);
         }
 
-        if (!in_array($user->rol, ['admin', 'asistente'], true)) {
+        $rolRaw = $user->rol instanceof \BackedEnum
+            ? $user->rol->value
+            : ($user->getRawOriginal('rol') ?? $user->rol);
+        $rol = strtolower(trim((string) $rolRaw));
+
+        if (!in_array($rol, ['admin', 'asistente'], true)) {
             return response()->json([
                 'ok' => false,
                 'mensaje' => 'Acceso exclusivo para personal de la clínica.',
@@ -50,9 +55,9 @@ class AppAuthController extends Controller
                 'nombre' => $user->nombre,
                 'apellido' => $user->apellido,
                 'email' => $user->email,
-                'rol' => $user->rol,
+                'rol' => $rol,
                 'foto_perfil' => $user->foto_perfil,
-                'activo' => $user->activo,
+                'activo' => (int) $user->activo,
             ],
         ]);
     }
