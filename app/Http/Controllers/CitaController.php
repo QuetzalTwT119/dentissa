@@ -128,6 +128,9 @@ class CitaController extends Controller
                     'abierto' => (bool) $horarios->get($fecha->dayOfWeek)?->abierto,
                     'total' => $citas->reject(fn (Cita $cita) => $cita->estado->esInactiva())->count(),
                     'porConfirmar' => $citas->where('estado', EstadoCita::Agendada)->count(),
+                    // Para que un día con solo canceladas no diga "0 citas" sin más (24/11/2026).
+                    'canceladas' => $citas->where('estado', EstadoCita::Cancelada)->count(),
+                    'noAsistio' => $citas->where('estado', EstadoCita::NoAsistio)->count(),
                 ];
             })
             ->values();
@@ -262,7 +265,7 @@ class CitaController extends Controller
         $notificaciones->citaConfirmada($cita->load(['paciente', 'tratamiento']));
         $notificacionesInternas->cambioCita($cita, 'confirmada', $request->user()->id);
 
-        return Redirect::route('citas.index')->with('success', 'Cita confirmada correctamente.');
+        return Redirect::route('citas.index', ['fecha' => $cita->fecha_hora->toDateString()])->with('success', 'Cita confirmada correctamente.');
     }
 
     public function edit(Cita $cita): View
@@ -330,7 +333,7 @@ class CitaController extends Controller
         $notificaciones->citaReagendada($cita->load('paciente'));
         $notificacionesInternas->cambioCita($cita, 'reagendada', $request->user()->id);
 
-        return Redirect::route('citas.index')->with('success', 'Cita reagendada correctamente.');
+        return Redirect::route('citas.index', ['fecha' => $cita->fecha_hora->toDateString()])->with('success', 'Cita reagendada correctamente.');
     }
 
     public function cancel(Request $request, Cita $cita, NotificacionService $notificaciones, NotificacionInternaService $notificacionesInternas, AuditoriaService $auditoria): RedirectResponse
@@ -360,7 +363,7 @@ class CitaController extends Controller
         $notificaciones->citaCancelada($cita->load('paciente'));
         $notificacionesInternas->cambioCita($cita, 'cancelada', $request->user()->id);
 
-        return Redirect::route('citas.index')->with('success', 'Cita cancelada correctamente.');
+        return $this->volverALaAgenda($cita, 'Cita cancelada correctamente.');
     }
 
     public function confirm(Request $request, Cita $cita, NotificacionService $notificaciones, NotificacionInternaService $notificacionesInternas, AuditoriaService $auditoria): RedirectResponse
@@ -385,7 +388,7 @@ class CitaController extends Controller
         $notificaciones->citaConfirmada($cita->load('paciente'));
         $notificacionesInternas->cambioCita($cita, 'confirmada', $request->user()->id);
 
-        return Redirect::route('citas.index')->with('success', 'Cita confirmada correctamente.');
+        return $this->volverALaAgenda($cita, 'Cita confirmada correctamente.');
     }
 
     public function start(Request $request, Cita $cita, NotificacionInternaService $notificacionesInternas, AuditoriaService $auditoria): RedirectResponse
@@ -403,7 +406,7 @@ class CitaController extends Controller
         });
         $notificacionesInternas->cambioCita($cita, 'iniciada', $request->user()->id);
 
-        return Redirect::route('citas.index')->with('success', 'Cita iniciada correctamente.');
+        return $this->volverALaAgenda($cita, 'Cita iniciada correctamente.');
     }
 
     public function noShow(Request $request, Cita $cita, NotificacionInternaService $notificacionesInternas, AuditoriaService $auditoria): RedirectResponse
@@ -425,7 +428,7 @@ class CitaController extends Controller
         });
         $notificacionesInternas->cambioCita($cita, 'no_asistio', $request->user()->id);
 
-        return Redirect::route('citas.index')->with('success', 'Cita marcada como no asistida.');
+        return $this->volverALaAgenda($cita, 'Cita marcada como no asistida.');
     }
 
     public function complete(Request $request, Cita $cita, NotificacionInternaService $notificacionesInternas, AuditoriaService $auditoria): RedirectResponse
@@ -443,10 +446,25 @@ class CitaController extends Controller
         });
         $notificacionesInternas->cambioCita($cita, 'completada', $request->user()->id);
 
-        return Redirect::route('citas.index')->with('success', 'Cita completada correctamente.');
+        return $this->volverALaAgenda($cita, 'Cita completada correctamente.');
     }
 
     /** @return array<string, string> */
+    /**
+     * Tras cambiar el estado de una cita se vuelve a la misma agenda (día, vista y
+     * filtros) desde la que se pulsó el botón; si no se vino de la agenda, al día
+     * de la cita (24/11/2026: antes siempre regresaba a hoy).
+     */
+    private function volverALaAgenda(Cita $cita, string $mensaje): RedirectResponse
+    {
+        $agenda = route('citas.index');
+        $anterior = url()->previous();
+        $vieneDeLaAgenda = $anterior === $agenda || str_starts_with($anterior, $agenda.'?');
+
+        return Redirect::to($vieneDeLaAgenda ? $anterior : route('citas.index', ['fecha' => $cita->fecha_hora->toDateString()]))
+            ->with('success', $mensaje);
+    }
+
     private function datosAuditoria(Cita $cita, ?string $canal = null): array
     {
         $datos = [

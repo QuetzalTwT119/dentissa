@@ -281,14 +281,14 @@ class CitaReglasTest extends TestCase
 
         $this->actingAs($asistente)
             ->patch(route('citas.start', $cita))
-            ->assertRedirect(route('citas.index'))
+            ->assertRedirectContains(route('citas.index').'?fecha=')
             ->assertSessionHas('success', 'Cita iniciada correctamente.');
 
         $this->assertDatabaseHas('citas', ['id' => $cita->id, 'estado' => EstadoCita::EnCurso->value]);
 
         $this->actingAs($asistente)
             ->patch(route('citas.complete', $cita))
-            ->assertRedirect(route('citas.index'))
+            ->assertRedirectContains(route('citas.index').'?fecha=')
             ->assertSessionHas('success', 'Cita completada correctamente.');
 
         $this->assertDatabaseHas('citas', ['id' => $cita->id, 'estado' => EstadoCita::Completada->value]);
@@ -335,7 +335,7 @@ class CitaReglasTest extends TestCase
                 'hora' => '10:00',
                 'motivo' => 'Consulta interna de QA',
             ])
-            ->assertRedirect(route('citas.index'))
+            ->assertRedirectContains(route('citas.index').'?fecha=')
             ->assertSessionHas('success', 'Cita confirmada correctamente.');
 
         $this->assertDatabaseHas('citas', [
@@ -380,7 +380,7 @@ class CitaReglasTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('citas.store'), $datosCita + ['id_paciente' => $primerPaciente->id])
-            ->assertRedirect(route('citas.index'));
+            ->assertRedirectContains(route('citas.index').'?fecha=');
 
         $this->actingAs($admin)
             ->post(route('citas.store'), $datosCita + ['id_paciente' => $segundoPaciente->id])
@@ -426,7 +426,7 @@ class CitaReglasTest extends TestCase
 
         $this->actingAs($admin)
             ->patch(route('citas.confirm', $cita))
-            ->assertRedirect(route('citas.index'))
+            ->assertRedirectContains(route('citas.index').'?fecha=')
             ->assertSessionHas('success', 'Cita confirmada correctamente.');
 
         $this->get(route('citas.index', ['fecha' => $cita->fecha_hora->toDateString()]))
@@ -480,7 +480,7 @@ class CitaReglasTest extends TestCase
             ->patch(route('citas.cancel', $cita), [
                 'motivo_cancelacion' => 'Cancelación de prueba QA',
             ])
-            ->assertRedirect(route('citas.index'))
+            ->assertRedirectContains(route('citas.index').'?fecha=')
             ->assertSessionHas('success', 'Cita cancelada correctamente.');
 
         $cita->refresh();
@@ -518,7 +518,7 @@ class CitaReglasTest extends TestCase
                 'fecha' => $nuevaFecha->toDateString(),
                 'hora' => '11:00',
             ])
-            ->assertRedirect(route('citas.index'))
+            ->assertRedirectContains(route('citas.index').'?fecha=')
             ->assertSessionHas('success', 'Cita reagendada correctamente.');
 
         $cita->refresh();
@@ -557,7 +557,7 @@ class CitaReglasTest extends TestCase
                 'fecha' => $nuevaFecha->toDateString(),
                 'hora' => '11:00',
             ])
-            ->assertRedirect(route('citas.index'));
+            ->assertRedirectContains(route('citas.index').'?fecha=');
 
         $cita->refresh();
 
@@ -588,7 +588,7 @@ class CitaReglasTest extends TestCase
         try {
             $this->actingAs($admin)
                 ->patch(route('citas.no-show', $cita))
-                ->assertRedirect(route('citas.index'))
+                ->assertRedirectContains(route('citas.index').'?fecha=')
                 ->assertSessionHas('success', 'Cita marcada como no asistida.');
         } finally {
             Carbon::setTestNow();

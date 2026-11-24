@@ -21,7 +21,11 @@
             badge="Control de Agenda"
             title="Citas"
             subtitle="Las citas de cada día, en orden de hora, con su siguiente paso a un clic."
-        />
+        >
+            <x-slot name="actions">
+                @include('citas.partials.selector-vista', ['vistaActual' => 'lista'])
+            </x-slot>
+        </x-admin.header>
     </x-slot>
 
     <div class="panel-pagina py-8 sm:py-10">
@@ -31,8 +35,6 @@
             @if ($errors->any())
                 <x-alert type="error" :message="$errors->first()" />
             @endif
-
-            @include('citas.partials.selector-vista', ['vistaActual' => 'lista'])
 
             {{-- Búsqueda (en todas las fechas) y estado: filtro global (components/filtro). El buscador
                  actualiza solo la zona de resultados de citas, sin recargar. --}}
@@ -55,6 +57,8 @@
                         $enCurso = $citasDelDia->first(fn ($cita) => $cita->estado->value === 'en_curso');
                         $activas = $citasDelDia->reject(fn ($cita) => $cita->estado->esInactiva())->count();
                         $porConfirmar = $citasDelDia->where('estado', \App\Enums\EstadoCita::Agendada)->count();
+                        $canceladasDia = $citasDelDia->where('estado', \App\Enums\EstadoCita::Cancelada)->count();
+                        $noAsistioDia = $citasDelDia->where('estado', \App\Enums\EstadoCita::NoAsistio)->count();
                         $diaSeleccionado = $pestanas->firstWhere('seleccionada', true);
                         $partesHechas = collect(['completada', 'no_asistio', 'cancelada'])
                             ->map(fn ($estado) => [$estado, $hechas->filter(fn ($cita) => $cita->estado->value === $estado)->count()])
@@ -85,7 +89,9 @@
                                         {{ $pestana['esHoy'] ? 'Hoy' : ucfirst(rtrim($pestana['fecha']->locale('es')->isoFormat('ddd'), '.')) }} {{ $pestana['fecha']->day }}
                                     </span>
                                     <span class="whitespace-nowrap text-xs text-muted">
-                                        @if (! $pestana['abierto'] && $pestana['total'] === 0)
+                                        @if ($pestana['total'] === 0 && $pestana['canceladas'] + $pestana['noAsistio'] > 0)
+                                            {{ $pestana['canceladas'] + $pestana['noAsistio'] }} {{ $pestana['canceladas'] + $pestana['noAsistio'] === 1 ? 'cancelada' : 'canceladas' }}
+                                        @elseif (! $pestana['abierto'] && $pestana['total'] === 0)
                                             Cerrado
                                         @else
                                             {{ $pestana['total'] }} {{ $pestana['total'] === 1 ? 'cita' : 'citas' }}
@@ -108,7 +114,13 @@
                         <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                             <h2 class="font-serif text-title-3 text-ink">{{ $tituloDia($dia) }}</h2>
                             <p class="text-footnote text-muted">
-                                {{ $activas }} {{ $activas === 1 ? 'cita' : 'citas' }}
+                                {{ $activas }} {{ $activas === 1 ? 'cita activa' : 'citas activas' }}
+                                @if ($canceladasDia > 0)
+                                    · {{ $canceladasDia }} {{ $canceladasDia === 1 ? 'cancelada' : 'canceladas' }}
+                                @endif
+                                @if ($noAsistioDia > 0)
+                                    · {{ $noAsistioDia }} no {{ $noAsistioDia === 1 ? 'asistió' : 'asistieron' }}
+                                @endif
                                 @if ($porConfirmar > 0)
                                     · <span class="font-semibold text-amber-800">{{ $porConfirmar }} por confirmar</span>
                                 @endif

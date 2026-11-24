@@ -282,7 +282,7 @@ una sola vez cada 12 horas por número, y el sistema no guarda lo que escribió.
 
 ### Vista de lista o de semana
 
-Arriba de `/citas` hay un selector **Lista | Semana**:
+A la derecha del título de `/citas` hay un selector **Lista | Semana**:
 
 - **Lista** (predeterminada): las citas de **un día a la vez**, en orden de
   hora. Se abre en el día de hoy.
@@ -290,6 +290,12 @@ Arriba de `/citas` hay un selector **Lista | Semana**:
     cuántas faltan **por confirmar** (en ámbar). Toca una pestaña para ver ese
     día; las flechas **‹ ›** (o "Semana anterior / siguiente" en el celular)
     cambian de semana e **Ir a hoy** regresa al día actual.
+  - El conteo dice cuántas citas siguen **activas** y, aparte, cuántas se
+    cancelaron ("0 citas activas · 4 canceladas"); un día con solo canceladas
+    lo indica en su pestaña en lugar de "0 citas".
+  - Al confirmar, iniciar, completar, cancelar o marcar "no asistió" te quedas
+    en el **mismo día** (y vista) donde estabas; al crear o reagendar una cita
+    la agenda se abre en el día de esa cita.
   - Mientras queden citas por atender, las ya completadas, canceladas o sin
     asistencia se agrupan en un renglón ("4 ya atendidas o canceladas");
     pulsa **Mostrar** para verlas.

@@ -1,5 +1,5 @@
 {{-- Selector Lista | Semana. Ambas vistas viven en /citas para no agregar otro menú. --}}
-<nav aria-label="Vista de la agenda" data-vista-actual="{{ $vistaActual }}" class="flex justify-end">
+<nav aria-label="Vista de la agenda" data-vista-actual="{{ $vistaActual }}" class="flex">
     <div class="inline-flex rounded-full border border-line bg-white p-1 shadow-2xs">
         @foreach (['lista' => ['Lista', route('citas.index')], 'semana' => ['Semana', route('citas.index', ['vista' => 'semana'])]] as $clave => [$etiqueta, $url])
             <a href="{{ $url }}"
