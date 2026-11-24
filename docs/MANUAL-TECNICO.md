@@ -1408,6 +1408,16 @@ Un barrido de 41 pantallas a 375 y 1280 px dejó cuatro reglas, protegidas por
   ensanchaba la página 120 px en celular. `grid-cols-1` (`minmax(0, 1fr)`) y
   `min-w-0` en el hijo lo evitan.
 
+**Solo web, sin app móvil (H-80, 24/11/2026).** Dentissa se entrega como sistema web. La API
+del PR #80 (`routes/api.php`: login de la app Ionic y rutas `/api/iot/*` del ESP32) se quitó
+junto con `App\Http\Controllers\Api\AppAuthController` y su registro en `bootstrap/app.php`:
+no pedía ninguna clave (`POST /api/iot/puerta/abrir` dejaba abrir la puerta a cualquiera), el
+login no tenía límite de intentos, se saltaba la verificación en dos pasos y solo aceptaba los
+roles viejos `admin`/`asistente`. `SinApiMovilTest` cuida que no vuelva sin querer. Si se
+retoma la app, debe volver con token por usuario (Sanctum), clave por dispositivo para el
+ESP32, límite de intentos y los roles de config/permisos.php. La tabla `historial_asientos`
+que usaba no tiene migración en el repositorio y no se tocó.
+
 ## 20. Decisión de diseño: el paciente agenda sin cuenta
 
 **Estado:** aceptada.
