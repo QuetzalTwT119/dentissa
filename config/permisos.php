@@ -45,7 +45,7 @@ return [
             'admin.ofertas.*', 'admin.testimonios.*', 'admin.galeria.*', 'admin.casos.*', 'admin.preguntas-frecuentes.*',
             'ofertas.index', 'galeria.index',
         ],
-        'configuracion' => ['admin.configuracion', 'admin.horarios.*', 'admin.consultorio.*'],
+        'configuracion' => ['admin.configuracion', 'admin.horarios.*', 'admin.consultorio.*', 'admin.bloqueos.*'],
     ],
 
     'roles' => [

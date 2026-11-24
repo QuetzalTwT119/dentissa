@@ -40,7 +40,8 @@ dentissa/
 │   │   └── Requests/             Validaciones de formularios
 │   ├── Mail/                     Correos (confirmación y recordatorio de cita, envío por Gmail)
 │   ├── Models/                   Tablas de la base: User, Paciente, Cita, HistorialClinico,
-│   │                             Servicio, Tratamiento, Oferta, Testimonio, LogAuditoria…
+│   │                             Servicio, Tratamiento, Oferta, Testimonio, BloqueoAgenda,
+│   │                             LogAuditoria…
 │   ├── Observers/                AuditoriaObserver: registra cambios en Control de actividades
 │   ├── Policies/                 CitaPolicy: quién puede cambiar una cita
 │   ├── Providers/                Arranque: observadores, búsqueda de texto, datos del consultorio

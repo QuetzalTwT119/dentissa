@@ -498,6 +498,14 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
     pierde o cambia el celular. Pide confirmación y queda en Control de actividades. El
     número del bot de WhatsApp no se cambia aquí (se configura en Meta).
   - **Horarios de atención:** los días, las horas y cuántos pacientes se atienden a la vez (un solo valor).
+  - **Días u horas bloqueados** (desde el 24/11/2026): para vacaciones, un curso, un
+    imprevisto o mantenimiento. Elige **Desde**, opcionalmente **Hasta**, deja **Todo el día**
+    o quítalo para bloquear solo unas horas (**De** / **A**, en un solo día), escribe el
+    **motivo** (solo lo ve el personal) y pulsa **Bloquear**. Esos horarios dejan de
+    ofrecerse en la agenda en línea y en Nueva cita; los días completos se ven cerrados en el
+    calendario. Si en ese tiempo ya hay citas activas, el sistema avisa cuáles: primero
+    reagéndalas o cancélalas. En **Próximos bloqueos** se ve la lista y la 🗑 los quita
+    (vuelven a ofrecerse). Todo queda en Control de actividades.
 - **Guardar cambios** (en cualquier pantalla de editar) aparece apagado hasta
   que cambias algo; si regresas todo como estaba, se vuelve a apagar. Al
   guardar, el sistema sigue pidiendo confirmar. Para salir sin guardar usa

@@ -58,6 +58,8 @@ $etiquetasAccion = [
     'faq.actualizada' => 'Pregunta frecuente actualizada',
     'faq.eliminada' => 'Pregunta frecuente eliminada',
     'horario.actualizado' => 'Horario de atención actualizado',
+    'bloqueo.creado' => 'Día u hora bloqueado',
+    'bloqueo.eliminado' => 'Bloqueo quitado',
     'consultorio.actualizado' => 'Datos del consultorio actualizados',
     'mensaje.marco_leido' => 'Mensaje marcado como leído',
     'mensaje.marco_no_leido' => 'Mensaje marcado como no leído',
@@ -88,6 +90,7 @@ $etiquetasTabla = [
     'testimonios' => 'Testimonio',
     'preguntas_frecuentes' => 'Pregunta frecuente',
     'horarios_atencion' => 'Horario',
+    'bloqueos_agenda' => 'Bloqueo de agenda',
     'datos_consultorio' => 'Consultorio',
     'mensajes_contacto' => 'Mensaje de contacto',
 ];

@@ -375,6 +375,15 @@ tratamiento, el margen entre citas, la capacidad simultánea y las citas ya
 registradas. Antes de guardar una cita vuelve a validar el horario dentro de
 una transacción para evitar reservas duplicadas.
 
+**Bloqueos (H-81, 24/11/2026).** Tabla `bloqueos_agenda` (`fecha_inicio`, `fecha_fin`,
+`hora_inicio`/`hora_fin` nulas = todo el día, `motivo`, `creado_por`). `BloqueoAgenda::tramosDelDia()`
+devuelve los tramos [inicio, fin) de una fecha y `chocaCon()` los compara con la cita
+(inicio + duración). `horariosDisponibles()` y `estaDisponible()` los descuentan; `resumenMensual()`
+marca los días completos como `cerrado`. `BloqueoAgendaController` (módulo `configuracion`,
+`admin.bloqueos.store/destroy`) valida: no fechas pasadas, horas solo en un día, máximo 60 días y
+**ninguna cita agendada, confirmada o en curso dentro del tramo**. Bitácora: `bloqueo.creado` y
+`bloqueo.eliminado`. Pruebas: `BloqueoAgendaTest`.
+
 ### Calendario de disponibilidad (`partials/disponibilidad-picker`)
 
 **Reagendar directo (H-66, 23/11/2026).** El botón Reagendar (WhatsApp y correo) manda

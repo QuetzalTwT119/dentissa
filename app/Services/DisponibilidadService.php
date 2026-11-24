@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\EstadoCita;
+use App\Models\BloqueoAgenda;
 use App\Models\Cita;
 use App\Models\HorarioAtencion;
 use App\Models\Tratamiento;
@@ -30,6 +31,8 @@ class DisponibilidadService
         $margenMinutos = $this->margenMinutos($tratamiento);
 
         $citasDelDia = $this->citasDelDia($fecha, $excludeCitaId);
+        // Días u horas bloqueados (vacaciones, imprevistos), 24/11/2026.
+        $bloqueos = BloqueoAgenda::tramosDelDia($fecha);
 
         $horarios = [];
         $candidato = $apertura->copy();
@@ -38,7 +41,9 @@ class DisponibilidadService
         // entre una cita y la siguiente (tieneCupo), no después de la última del día
         // (22/11/2026: antes una extracción de 60 min terminaba a las 16:30 y no a las 17:00).
         while ($candidato->copy()->addMinutes($duracionMinutos)->lte($cierre)) {
-            if ($candidato->isFuture() && $this->tieneCupo($candidato, $duracionMinutos, $margenMinutos, $citasDelDia, $horario->capacidad_simultanea)) {
+            if ($candidato->isFuture()
+                && ! BloqueoAgenda::chocaCon($bloqueos, $candidato, $candidato->copy()->addMinutes($duracionMinutos))
+                && $this->tieneCupo($candidato, $duracionMinutos, $margenMinutos, $citasDelDia, $horario->capacidad_simultanea)) {
                 $horarios[] = $candidato->format('H:i');
             }
 
@@ -63,6 +68,11 @@ class DisponibilidadService
     {
         $hoy = CarbonImmutable::today();
         $horariosSemana = HorarioAtencion::all()->keyBy('dia_semana');
+        // Días bloqueados completos del mes: se ven como cerrados (24/11/2026).
+        $bloqueosDelMes = BloqueoAgenda::whereDate('fecha_inicio', '<=', $mes->endOfMonth()->toDateString())
+            ->whereDate('fecha_fin', '>=', $mes->startOfMonth()->toDateString())
+            ->get()
+            ->filter(fn (BloqueoAgenda $bloqueo) => $bloqueo->todoElDia());
         $dias = [];
 
         for ($dia = $mes->startOfMonth(); $dia->isSameMonth($mes); $dia = $dia->addDay()) {
@@ -71,7 +81,8 @@ class DisponibilidadService
 
             if ($dia->lt($hoy)) {
                 $dias[$fecha] = ['horarios' => 0, 'estado' => 'pasado'];
-            } elseif (! $horario || ! $horario->abierto) {
+            } elseif (! $horario || ! $horario->abierto
+                || $bloqueosDelMes->contains(fn (BloqueoAgenda $bloqueo) => $bloqueo->fecha_inicio->toDateString() <= $fecha && $bloqueo->fecha_fin->toDateString() >= $fecha)) {
                 $dias[$fecha] = ['horarios' => 0, 'estado' => 'cerrado'];
             } else {
                 $libres = count($this->horariosDisponibles($fecha, $tratamiento, $excludeCitaId));
@@ -107,6 +118,12 @@ class DisponibilidadService
         // que ven los pacientes: dentro del horario, terminando antes del cierre y
         // en los saltos de 30 min contados desde la apertura.
         if (! $this->dentroDelHorario(Carbon::parse($fechaHora), $horario, $this->duracionMinutos($tratamiento))) {
+            return false;
+        }
+
+        // El servidor también respeta los bloqueos, aunque la petición no venga del calendario.
+        $inicio = Carbon::parse($fechaHora);
+        if (BloqueoAgenda::chocaCon(BloqueoAgenda::tramosDelDia($inicio->toDateString()), $inicio, $inicio->copy()->addMinutes($this->duracionMinutos($tratamiento)))) {
             return false;
         }
 

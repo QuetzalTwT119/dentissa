@@ -2,6 +2,7 @@
 
 use App\Enums\TipoImagen;
 use App\Http\Controllers\Admin\AuditoriaController;
+use App\Http\Controllers\Admin\BloqueoAgendaController;
 use App\Http\Controllers\Admin\CasoController;
 use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
 use App\Http\Controllers\Admin\ExploracionClinicaController;
@@ -288,6 +289,9 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::put('horarios', [HorarioController::class, 'update'])->name('horarios.update');
     Route::redirect('consultorio', '/admin/configuracion#consultorio')->name('consultorio.edit');
     Route::put('consultorio', [DatosConsultorioController::class, 'update'])->name('consultorio.update');
+    // Días u horas bloqueados (24/11/2026), en Configuración.
+    Route::post('bloqueos', [BloqueoAgendaController::class, 'store'])->name('bloqueos.store');
+    Route::delete('bloqueos/{bloqueo}', [BloqueoAgendaController::class, 'destroy'])->name('bloqueos.destroy');
 
     Route::patch('casos/{caso}/estado', [CasoController::class, 'estado'])->name('casos.estado');
     Route::resource('casos', CasoController::class)->except('show');
