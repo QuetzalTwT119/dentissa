@@ -20,7 +20,7 @@ y desplegar proyectos desde cero, configurando un entorno profesional.
   de calidad y buenas prácticas de despliegue y contenerización.
 - **Stack inicial:** Git, GitHub Desktop y Docker. El usuario definirá después
   qué lenguajes y frameworks agregar.
-- **Fecha límite:** 5 de diciembre de 2026 para dominar el proceso y entregar
+- **Fecha límite:** 5 de enero de 2027 (cambió el 24/11/2026; antes 5 de diciembre de 2026) para dominar el proceso y entregar
   Dentissa v1.0 con cero bugs críticos, una interfaz intuitiva y un entorno
   desplegable.
 - **Documentación continua:** actualizar el Manual Técnico (arquitectura,

@@ -2,9 +2,11 @@
 
 ## Objetivo
 
-Entregar Dentissa v1.0 estable, demostrable y desplegable el **5 de diciembre
-de 2026**, con cero defectos críticos abiertos. El 17/11/2026 el usuario
-confirmó esta fecha. El adelanto al 31 de octubre registrado el 16/10/2026 ya no
+Entregar Dentissa v1.0 estable, demostrable y desplegable el **5 de enero
+de 2027**, con cero defectos críticos abiertos. El 24/11/2026 el usuario movió
+la fecha (antes 5 de diciembre de 2026, confirmada el 17/11/2026). Como la
+fecha ya cambió varias veces, `master` y producción se mantienen listos para
+entregar en cualquier momento. El adelanto al 31 de octubre registrado el 16/10/2026 ya no
 aplica; el calendario acelerado de octubre queda solo como referencia histórica.
 
 La meta inmediata es cerrar el MVP funcional antes de agregar funciones
@@ -39,7 +41,21 @@ nuevas.
 
 ## Calendario de trabajo
 
-### Calendario vigente — 17 de noviembre al 5 de diciembre
+### Calendario vigente — 25 de noviembre de 2026 al 5 de enero de 2027
+
+- **25 nov – 6 dic — Cerrar lo abierto:** revisiones pendientes del checklist
+  (H-29 a H-39), aceptación por rol (QA-48) y en celular/tableta reales
+  (QA-56 y 57); integrar lo que esté en PR.
+- **7 – 20 dic — Funciones opcionales, una a la vez:** solo las que el usuario
+  apruebe (por ejemplo receta en PDF, pagos por cita, recordatorio de revisión),
+  cada una con pruebas, revisada en 6 anchos y desplegada.
+- **21 – 30 dic — Candidato de entrega:** congelar funciones; encender el 2FA
+  del administrador; regresión completa (SQLite, MySQL y CI); respaldo a Google
+  Drive; manuales y guion de la demo.
+- **31 dic – 4 ene — Margen:** solo defectos críticos.
+- **5 ene 2027:** entrega de Dentissa v1.0.
+
+### Calendario anterior — 17 de noviembre al 5 de diciembre (histórico)
 
 Estado el 17/11/2026: el rediseño y el pulido de la interfaz ya están en
 `master` (PR #35 y #51; matriz QA-67 y QA-68). Lo que falta pesa más en

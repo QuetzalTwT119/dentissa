@@ -77,4 +77,33 @@ class PortadaPublicaTest extends TestCase
             ->assertSee('storage/casos/antes.jpg', false)
             ->assertDontSee('Caso sin fotos');
     }
+    /** 24/11/2026: Galería y Preguntas frecuentes del panel salen en la portada (antes no). */
+    public function test_galeria_y_preguntas_del_panel_salen_en_la_portada(): void
+    {
+        // Sin fotos ni preguntas: las 2 fotos de fábrica y sin sección de preguntas.
+        $html = $this->get('/')->assertOk()->assertDontSee('data-preguntas', false)->getContent();
+        $this->assertSame(2, substr_count($html, 'data-foto-galeria'));
+        $this->assertStringContainsString('/images/6.jpg', $html);
+
+        foreach (['Sala de espera', 'Sillón dental', 'Recepción'] as $i => $titulo) {
+            \App\Models\Imagen::create(['titulo' => $titulo, 'descripcion' => 'Foto '.$i, 'url' => "galeria/foto{$i}.jpg", 'tipo' => \App\Enums\TipoImagen::Galeria, 'orden' => $i, 'activa' => true]);
+        }
+        \App\Models\Imagen::create(['titulo' => 'Oculta', 'url' => 'galeria/oculta.jpg', 'tipo' => \App\Enums\TipoImagen::Galeria, 'orden' => 9, 'activa' => false]);
+        \App\Models\PreguntaFrecuente::create(['pregunta' => '¿Atienden niños?', 'respuesta' => 'Sí, con odontopediatría.', 'activa' => true, 'orden' => 1]);
+        \App\Models\PreguntaFrecuente::create(['pregunta' => 'Pregunta apagada', 'respuesta' => 'No sale.', 'activa' => false, 'orden' => 2]);
+
+        $html = $this->get('/')->assertOk()
+            ->assertSeeInOrder(['Sala de espera', 'Sillón dental', 'Recepción'])
+            ->assertDontSee('Oculta')
+            ->assertSee('data-preguntas', false)
+            ->assertSee('¿Atienden niños?')
+            ->assertSee('Sí, con odontopediatría.')
+            ->assertDontSee('Pregunta apagada')
+            ->getContent();
+        $this->assertSame(3, substr_count($html, 'data-foto-galeria'));
+        $this->assertStringContainsString('storage/galeria/foto0.jpg', $html);
+        $this->assertStringNotContainsString('/images/6.jpg', $html);
+        // Impar: la última ocupa todo el ancho.
+        $this->assertStringContainsString('md:col-span-5', $html);
+    }
 }

@@ -136,6 +136,10 @@ La portada también muestra:
   que subas es "Antes" y la segunda "Después". Solo salen los casos activos con foto.
 - En cada oferta, **Pedir info** abre WhatsApp con el nombre de la oferta ya escrito.
 - Un **botón verde de WhatsApp** fijo abajo a la derecha, encima del asistente.
+- **Instalaciones** usa las fotos activas de **Contenido → Galería**, en su orden (si no
+  hay ninguna, se ven dos fotos de fábrica).
+- **Preguntas frecuentes**: las activas de **Contenido → Preguntas frecuentes**; al tocar
+  una pregunta se abre su respuesta. Antes de publicar, revisa que no quede ninguna de prueba.
   En **Configuración → Horarios de atención**, **Pacientes a la vez** (un solo campo para todos los días, al final del bloque) es cuántos pacientes se pueden
   atender a la misma hora (1 si hay un solo sillón o dentista; el consultorio usa 1). Los campos de número solo se escriben, sin flechas. Los horarios se ofrecen cada
   30 minutos y la última cita del día es la que **termina** a la hora de cierre: con cierre a
