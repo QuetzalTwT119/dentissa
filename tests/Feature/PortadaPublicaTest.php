@@ -33,6 +33,19 @@ class PortadaPublicaTest extends TestCase
             ->assertDontSee('+500 pacientes satisfechos');
     }
     /** 24/11/2026: "Tu primera visita" en 3 pasos y la ubicación con mapa de Google. */
+    /** 24/11/2026: el enlace va al acceso del personal; los pacientes no tienen cuenta. */
+    public function test_el_enlace_de_acceso_es_para_el_personal_y_no_para_pacientes(): void
+    {
+        $this->get('/')->assertOk()
+            ->assertSee('Acceso del personal')
+            ->assertSee(route('login'), false)
+            ->assertDontSee('Portal Paciente');
+
+        $this->actingAs(\App\Models\User::factory()->create())->get('/')->assertOk()
+            ->assertSee('Ir al panel')
+            ->assertDontSee('>Dashboard<', false);
+    }
+
     public function test_muestra_primera_visita_y_ubicacion_con_mapa(): void
     {
         config(['dentissa.contacto.direccion' => 'Blvd. Montebello 228, 78421 Pozos, S.L.P.']);

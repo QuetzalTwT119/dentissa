@@ -56,7 +56,8 @@
         ];
 
         $urlPortal = Route::has('login') ? (auth()->check() ? url('/dashboard') : route('login')) : url('/login');
-        $textoPortal = auth()->check() ? 'Dashboard' : 'Portal Paciente';
+        // Lleva al acceso del personal: los pacientes no tienen cuenta (24/11/2026, antes "Portal Paciente").
+        $textoPortal = auth()->check() ? 'Ir al panel' : 'Acceso del personal';
 
         $beneficios = [
             [
