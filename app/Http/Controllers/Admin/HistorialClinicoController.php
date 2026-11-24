@@ -203,7 +203,7 @@ class HistorialClinicoController extends Controller
             $alergias[] = trim($historia->alergias_otras);
         }
 
-        $auditoria->registrar('receta.generada', $historial, datosNuevos: ['id_paciente' => $paciente->id], request: $request);
+        DB::transaction(fn () => $auditoria->registrar('receta.generada', $historial, datosNuevos: ['id_paciente' => $paciente->id], request: $request));
 
         return Pdf::loadView('pdf.receta', [
             'paciente' => $paciente,

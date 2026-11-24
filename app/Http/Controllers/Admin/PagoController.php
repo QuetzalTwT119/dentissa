@@ -12,6 +12,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 
@@ -87,10 +88,14 @@ class PagoController extends Controller
             'id_cita.exists' => 'Esa cita no es de este paciente.',
         ]);
 
-        $pago = Pago::create($validated + ['registrado_por' => $request->user()->id]);
-        $auditoria->registrar('pago.registrado', $pago, datosNuevos: [
-            'id_paciente' => $pago->id_paciente, 'id_cita' => $pago->id_cita, 'monto' => $pago->monto, 'metodo' => $pago->metodo, 'fecha' => $pago->fecha->toDateString(),
-        ], request: $request);
+        $pago = DB::transaction(function () use ($validated, $request, $auditoria) {
+            $pago = Pago::create($validated + ['registrado_por' => $request->user()->id]);
+            $auditoria->registrar('pago.registrado', $pago, datosNuevos: [
+                'id_paciente' => $pago->id_paciente, 'id_cita' => $pago->id_cita, 'monto' => $pago->monto, 'metodo' => $pago->metodo, 'fecha' => $pago->fecha->toDateString(),
+            ], request: $request);
+
+            return $pago;
+        });
 
         return Redirect::route('admin.pacientes.historial.index', $pago->id_paciente)
             ->with('success', 'Pago de '.Pago::dinero($pago->monto).' registrado.');
@@ -98,11 +103,13 @@ class PagoController extends Controller
 
     public function destroy(Request $request, Pago $pago, AuditoriaService $auditoria): RedirectResponse
     {
-        $auditoria->registrar('pago.eliminado', $pago, datosAnteriores: [
-            'id_paciente' => $pago->id_paciente, 'id_cita' => $pago->id_cita, 'monto' => $pago->monto, 'metodo' => $pago->metodo, 'fecha' => $pago->fecha->toDateString(),
-        ], request: $request);
         $paciente = $pago->id_paciente;
-        $pago->delete();
+        DB::transaction(function () use ($pago, $request, $auditoria) {
+            $auditoria->registrar('pago.eliminado', $pago, datosAnteriores: [
+                'id_paciente' => $pago->id_paciente, 'id_cita' => $pago->id_cita, 'monto' => $pago->monto, 'metodo' => $pago->metodo, 'fecha' => $pago->fecha->toDateString(),
+            ], request: $request);
+            $pago->delete();
+        });
 
         return Redirect::to(url()->previous() ?: route('admin.pacientes.historial.index', $paciente))
             ->with('success', 'Pago eliminado.');

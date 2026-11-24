@@ -13,6 +13,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 
 /**
@@ -43,13 +44,17 @@ class ConsentimientoController extends Controller
             'procedimiento.required' => 'Escribe el procedimiento que se va a realizar.',
         ]);
 
-        $consentimiento = Consentimiento::create($validated + [
-            'id_paciente' => $paciente->id,
-            'id_doctor' => $request->user()->id,
-        ]);
+        $consentimiento = DB::transaction(function () use ($validated, $paciente, $request, $auditoria) {
+            $consentimiento = Consentimiento::create($validated + [
+                'id_paciente' => $paciente->id,
+                'id_doctor' => $request->user()->id,
+            ]);
 
-        // Sin el contenido clínico en la bitácora: solo qué se generó.
-        $auditoria->registrar('consentimiento.creado', $consentimiento, datosNuevos: ['id_paciente' => $paciente->id], request: $request);
+            // Sin el contenido clínico en la bitácora: solo qué se generó.
+            $auditoria->registrar('consentimiento.creado', $consentimiento, datosNuevos: ['id_paciente' => $paciente->id], request: $request);
+
+            return $consentimiento;
+        });
 
         return Redirect::route('admin.pacientes.historial.index', $paciente)
             ->with('success', 'Consentimiento guardado. Imprímelo para que lo firmen.')
