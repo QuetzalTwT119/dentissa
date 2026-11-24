@@ -23,7 +23,7 @@
         html {
             scroll-padding-top: 5.5rem;
         }
-        #inicio, #servicios, #primera-visita, #nosotros, #galeria, #testimonios, #ubicacion, #contacto {
+        #inicio, #servicios, #nosotros, #galeria, #promociones, #casos, #testimonios, #primera-visita, #ubicacion, #contacto {
             scroll-margin-top: 5.5rem;
         }
         .landing-nav-link[aria-current="location"] {
@@ -40,6 +40,7 @@
 </head>
 <body class="bg-cream font-sans text-ink antialiased">
     <x-asistente-chat />
+    @include('partials.portada-whatsapp-flotante')
 
     @php
         $iconoCalendario = '<svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
@@ -362,9 +363,6 @@
             @endif
         </section>
 
-        <!-- ============ Tu primera visita ============ -->
-        @include('partials.portada-primera-visita')
-
         <!-- ============ La clínica ============ -->
         <section id="nosotros" class="overflow-x-clip border-y border-line/80 bg-white">
             <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8 lg:py-28">
@@ -403,6 +401,18 @@
                             </li>
                         @endforeach
                     </ul>
+
+                    {{-- Misión y Visión (24/11/2026): se editan en Configuración → Datos del consultorio. --}}
+                    <dl class="mt-8 grid gap-4 sm:grid-cols-2" data-mision-vision>
+                        @foreach (['Misión' => $contacto['mision'] ?? '', 'Visión' => $contacto['vision'] ?? ''] as $titulo => $texto)
+                            @if (filled($texto))
+                                <div class="rounded-2xl bg-cream/70 p-5">
+                                    <dt class="text-xs font-semibold uppercase tracking-label text-brand-700">{{ $titulo }}</dt>
+                                    <dd class="mt-2 text-callout text-ink-soft">{{ $texto }}</dd>
+                                </div>
+                            @endif
+                        @endforeach
+                    </dl>
                 </div>
             </div>
         </section>
@@ -439,8 +449,17 @@
         <!-- ============ Promociones (solo si hay vigentes) ============ -->
         @include('partials.portada-promociones')
 
+        <!-- ============ Casos antes / después ============ -->
+        @include('partials.portada-casos')
+
         <!-- ============ Testimonios ============ -->
         @include('partials.portada-testimonios')
+
+        <!-- ============ Tu primera visita ============ -->
+        @include('partials.portada-primera-visita')
+
+        <!-- ============ Ubicación con mapa ============ -->
+        @include('partials.portada-ubicacion')
 
         <!-- ============ Llamada a agendar ============ -->
         <section id="agendar" class="px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
@@ -464,9 +483,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- ============ Ubicación con mapa ============ -->
-        @include('partials.portada-ubicacion')
     </main>
 
     <!-- ============ Pie de página ============ -->

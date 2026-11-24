@@ -22,7 +22,8 @@
         ],
     ];
 @endphp
-<section id="primera-visita" aria-labelledby="titulo-primera-visita" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24" data-primera-visita>
+<section id="primera-visita" aria-labelledby="titulo-primera-visita" class="border-b border-line/80 bg-white" data-primera-visita>
+<div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
     <div class="max-w-2xl">
         <p class="eyebrow">Tu primera visita</p>
         <h2 id="titulo-primera-visita" class="mt-4 text-title-1 text-ink">Un proceso claro desde el primer clic</h2>
@@ -30,7 +31,7 @@
 
     <ol class="mt-10 grid gap-5 md:grid-cols-3">
         @foreach ($pasos as $paso)
-            <li class="flex flex-col gap-4 rounded-3xl border border-line bg-white p-6 shadow-soft">
+            <li class="flex flex-col gap-4 rounded-3xl border border-line bg-cream/60 p-6">
                 <div class="flex items-center gap-3">
                     <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-peach-50 text-brand-600">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="{{ $paso['icono'] }}"/></svg>
@@ -42,4 +43,5 @@
             </li>
         @endforeach
     </ol>
+</div>
 </section>

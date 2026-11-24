@@ -109,4 +109,17 @@ class DatosConsultorioTest extends TestCase
         $this->actingAs($admin)->get(route('admin.consultorio.edit'))->assertRedirect('/admin/configuracion#consultorio');
         $this->assertStringContainsString('href="'.route('admin.configuracion').'"', $html);
     }
+    /** 24/11/2026: Misión y Visión de la portada se cambian aquí; vacías vuelven al texto de fábrica. */
+    public function test_mision_y_vision_se_editan_y_salen_en_la_portada(): void
+    {
+        $admin = $this->admin();
+        $this->actingAs($admin)->get(route('admin.configuracion'))->assertOk()
+            ->assertSee('Misión (portada)')->assertSee('Visión (portada)');
+
+        $this->guardar($admin, ['telefono' => '7551131833', 'mision' => 'Sonrisas sanas sin prisas.', 'vision' => 'Ser el consultorio de confianza de Pozos.'])
+            ->assertSessionHasNoErrors();
+        $this->get('/')->assertOk()->assertSee('Sonrisas sanas sin prisas.')->assertSee('Ser el consultorio de confianza de Pozos.');
+
+        $this->guardar($admin, ['telefono' => '7551131833', 'mision' => str_repeat('a', 401)])->assertSessionHasErrors('mision');
+    }
 }

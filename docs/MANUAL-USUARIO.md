@@ -127,6 +127,15 @@ primera consulta con la historia clínica. Antes del pie, **Ubicación** muestra
 dirección con un **mapa de Google**; **Cómo llegar** abre la ruta en Google Maps y
 **Escribir por WhatsApp** abre el chat. La dirección se cambia en
 **Configuración → Datos del consultorio**; si se deja vacía, el mapa no aparece.
+
+La portada también muestra:
+
+- **Misión y Visión** en "La clínica". Se cambian en **Configuración → Datos del
+  consultorio**; si se borran, vuelve el texto de fábrica.
+- **Casos antes y después**, con lo capturado en **Contenido → Casos**: la primera foto
+  que subas es "Antes" y la segunda "Después". Solo salen los casos activos con foto.
+- En cada oferta, **Pedir info** abre WhatsApp con el nombre de la oferta ya escrito.
+- Un **botón verde de WhatsApp** fijo abajo a la derecha, encima del asistente.
   En **Configuración → Horarios de atención**, **Pacientes a la vez** (un solo campo para todos los días, al final del bloque) es cuántos pacientes se pueden
   atender a la misma hora (1 si hay un solo sillón o dentista; el consultorio usa 1). Los campos de número solo se escriben, sin flechas. Los horarios se ofrecen cada
   30 minutos y la última cita del día es la que **termina** a la hora de cierre: con cierre a

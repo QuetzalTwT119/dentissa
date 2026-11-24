@@ -9,13 +9,13 @@
     $direccionUrl = urlencode($direccion);
 @endphp
 @if ($direccion !== '')
-    <section id="ubicacion" aria-labelledby="titulo-ubicacion" class="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8 lg:pb-24" data-ubicacion>
-        <div class="grid overflow-hidden rounded-[2rem] border border-line bg-white shadow-soft lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+    <section id="ubicacion" aria-labelledby="titulo-ubicacion" class="mx-auto max-w-7xl px-4 pt-20 sm:px-6 lg:px-8 lg:pt-28" data-ubicacion>
+        <div class="max-w-2xl">
+            <p class="eyebrow">Ubicación</p>
+            <h2 id="titulo-ubicacion" class="mt-4 text-title-1 text-ink">Visítanos en el consultorio</h2>
+        </div>
+        <div class="mt-10 grid overflow-hidden rounded-[2rem] border border-line bg-white shadow-soft lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
             <div class="flex flex-col justify-center gap-5 p-6 sm:p-10">
-                <div>
-                    <p class="eyebrow">Ubicación</p>
-                    <h2 id="titulo-ubicacion" class="mt-4 text-title-2 text-ink">Visítanos en el consultorio</h2>
-                </div>
                 <address class="flex items-start gap-3 not-italic text-body text-ink-soft">
                     <svg class="mt-0.5 h-5 w-5 shrink-0 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     <span data-direccion>{{ $direccion }}</span>

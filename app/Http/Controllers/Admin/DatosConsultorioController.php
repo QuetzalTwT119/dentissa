@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Redirect;
  */
 class DatosConsultorioController extends Controller
 {
-    private const CAMPOS = ['telefono', 'whatsapp', 'correo', 'direccion'];
+    private const CAMPOS = ['telefono', 'whatsapp', 'correo', 'direccion', 'mision', 'vision'];
 
     // La pantalla vive en Configuración (ConfiguracionController); aquí solo se guarda.
 
@@ -36,6 +36,8 @@ class DatosConsultorioController extends Controller
             'whatsapp' => ['exclude_if:mismo_whatsapp,1', 'required', 'digits:10'],
             'correo' => ['nullable', 'email', 'max:100'],
             'direccion' => ['nullable', 'string', 'max:200'],
+            'mision' => ['nullable', 'string', 'max:400'],
+            'vision' => ['nullable', 'string', 'max:400'],
         ], [
             'telefono.digits' => 'Escribe los 10 dígitos del celular, por ejemplo 755 113 1833.',
             'whatsapp.digits' => 'Escribe los 10 dígitos del WhatsApp, por ejemplo 755 113 1833.',
@@ -44,6 +46,8 @@ class DatosConsultorioController extends Controller
             'whatsapp' => 'WhatsApp',
             'correo' => 'correo',
             'direccion' => 'dirección',
+            'mision' => 'misión',
+            'vision' => 'visión',
         ]);
 
         $nuevos = [
@@ -52,6 +56,8 @@ class DatosConsultorioController extends Controller
             'whatsapp' => $request->boolean('mismo_whatsapp') ? null : '52'.$datos['whatsapp'],
             'correo' => $datos['correo'] ?? null,
             'direccion' => $datos['direccion'] ?? null,
+            'mision' => filled($datos['mision'] ?? null) ? trim($datos['mision']) : null,
+            'vision' => filled($datos['vision'] ?? null) ? trim($datos['vision']) : null,
         ];
 
         $fila = DatosConsultorio::fila();

@@ -53,4 +53,28 @@ class PortadaPublicaTest extends TestCase
         config(['dentissa.contacto.direccion' => '']);
         $this->get('/')->assertOk()->assertDontSee('data-ubicacion', false)->assertDontSee('<iframe', false);
     }
+    /** 24/11/2026: lo que tenían los sitios de referencia y faltaba (sin certificados). */
+    public function test_casos_whatsapp_flotante_y_mision_vision(): void
+    {
+        // Sin casos con foto, no hay sección vacía.
+        $this->get('/')->assertOk()->assertDontSee('data-casos', false)
+            ->assertSee('data-whatsapp-flotante', false)
+            ->assertSee('data-mision-vision', false)
+            ->assertSee(config('dentissa.contacto.mision'))
+            ->assertSee(config('dentissa.contacto.vision'))
+            ->assertDontSee('Certificad');
+
+        $caso = \App\Models\Caso::create(['titulo' => 'Blanqueamiento de Ana', 'descripcion' => 'Dos sesiones.', 'activo' => true, 'orden' => 1]);
+        foreach (['antes.jpg', 'despues.jpg'] as $i => $archivo) {
+            \App\Models\Imagen::create(['titulo' => $archivo, 'url' => 'casos/'.$archivo, 'tipo' => \App\Enums\TipoImagen::Caso, 'referencia_id' => $caso->id, 'orden' => $i, 'activa' => true]);
+        }
+        \App\Models\Caso::create(['titulo' => 'Caso sin fotos', 'activo' => true, 'orden' => 2]);
+
+        $this->get('/')->assertOk()
+            ->assertSee('data-casos', false)
+            ->assertSee('Blanqueamiento de Ana')
+            ->assertSeeInOrder(['Antes', 'Después'])
+            ->assertSee('storage/casos/antes.jpg', false)
+            ->assertDontSee('Caso sin fotos');
+    }
 }

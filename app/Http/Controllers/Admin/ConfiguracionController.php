@@ -30,6 +30,8 @@ class ConfiguracionController extends Controller
             'mismoWhatsapp' => $whatsapp === $telefono,
             'correo' => $contacto['correo'],
             'direccion' => $contacto['direccion'],
+            'mision' => $contacto['mision'] ?? '',
+            'vision' => $contacto['vision'] ?? '',
             'horarios' => collect(self::ORDEN_SEMANA)->map(fn (int $dia) => $horarios->get($dia))->values(),
         ]);
     }
