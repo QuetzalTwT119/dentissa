@@ -57,7 +57,7 @@ class PermisosPorRolTest extends TestCase
             ->assertDontSee('<x-text-input', false)
             ->assertSee('name="dias[0][hora_apertura]"', false)
             ->assertSee('name="dias[0][hora_cierre]"', false)
-            ->assertSee('name="dias[0][capacidad_simultanea]"', false);
+            ->assertSee('name="capacidad_simultanea"', false);
     }
 
     public function test_lista_de_usuarios_tiene_contexto_correcto_y_filtros_accesibles(): void

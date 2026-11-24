@@ -16,16 +16,15 @@ $diaLabel = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 =
                 @method('put')
 
                 {{-- Encabezados solo en PC; en celular cada campo lleva su etiqueta. --}}
-                <div class="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] gap-4 border-b border-line bg-cream/40 px-6 py-2.5 text-xs font-semibold uppercase tracking-label text-muted lg:grid">
+                <div class="hidden grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)] gap-4 border-b border-line bg-cream/40 px-6 py-2.5 text-xs font-semibold uppercase tracking-label text-muted lg:grid">
                     <span>Día</span>
                     <span>Estado</span>
                     <span>Horario</span>
-                    <span title="Cuántas citas pueden coincidir a la misma hora (por ejemplo, 2 si hay dos sillones o dos dentistas).">Citas a la vez</span>
                 </div>
 
                 <ul class="divide-y divide-line">
                     @foreach ($horarios as $indice => $horario)
-                        <li class="grid grid-cols-1 items-center gap-3 px-6 py-3 transition hover:bg-cream/30 lg:py-1.5 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-4"
+                        <li class="grid grid-cols-1 items-center gap-3 px-6 py-3 transition hover:bg-cream/30 lg:py-1.5 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-4"
                             x-data="{ abierto: {{ old("dias.$indice.abierto", $horario->abierto) ? 'true' : 'false' }} }" data-dia-horario>
                             <input type="hidden" name="dias[{{ $indice }}][dia_semana]" value="{{ $horario->dia_semana }}">
 
@@ -54,20 +53,21 @@ $diaLabel = [0 => 'Domingo', 1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 =
                                 </div>
                                 <x-input-error :messages="$errors->get('dias.'.$indice.'.hora_cierre')" class="mt-1" />
                             </div>
-
-                            <div class="flex items-center gap-2 text-sm text-ink-soft" :class="{ 'opacity-40 pointer-events-none': !abierto }">
-                                <x-text-input type="number" min="1" class="w-20 text-center lg:min-h-9 lg:py-1" aria-label="Citas a la vez el {{ $diaLabel[$horario->dia_semana] }}"
-                                              name="dias[{{ $indice }}][capacidad_simultanea]"
-                                              :value="old('dias.'.$indice.'.capacidad_simultanea', $horario->capacidad_simultanea)" x-bind:tabindex="abierto ? 0 : -1" />
-                                <span class="lg:hidden">citas a la vez</span>
-                            </div>
                         </li>
                     @endforeach
                 </ul>
 
-                <p class="border-t border-line bg-cream/30 px-6 py-2.5 text-xs text-muted">
-                    <strong class="font-semibold text-ink-soft">Citas a la vez:</strong> cuántos pacientes se pueden atender a la misma hora. Usa 1 si hay un solo sillón o dentista; 2 si pueden atender a dos al mismo tiempo.
-                </p>
+                {{-- 24/11/2026: un solo valor para todo el consultorio; se guarda en los 7 días. --}}
+                <div class="flex flex-col gap-2 border-t border-line bg-cream/30 px-6 py-4 sm:flex-row sm:items-center sm:gap-4" data-pacientes-a-la-vez>
+                    <div class="flex items-center gap-3">
+                        <x-input-label for="capacidad_simultanea" value="Pacientes a la vez" class="mb-0" />
+                        <x-text-input id="capacidad_simultanea" name="capacidad_simultanea" type="number" min="1" max="20" required
+                                      class="w-20 text-center lg:min-h-9 lg:py-1"
+                                      :value="old('capacidad_simultanea', $horarios->max('capacidad_simultanea') ?? 1)" />
+                    </div>
+                    <p class="text-xs text-muted">Cuántos pacientes se atienden a la misma hora, todos los días. Usa 1 si hay un solo sillón o dentista; 2 si pueden atender a dos al mismo tiempo.</p>
+                </div>
+                <x-input-error :messages="$errors->get('capacidad_simultanea')" class="px-6 pb-2" />
 
                 {{-- Guardar al final del bloque (antes arriba en PC; ahora hay dos bloques en la página). --}}
                 <div class="flex justify-end border-t border-line p-4">
