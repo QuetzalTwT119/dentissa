@@ -708,6 +708,8 @@ como opcionales; la cita relacionada solo se muestra si hay citas disponibles.
 
 **Pagos e ingresos (H-87, 24/11/2026).** Tabla `pagos` (paciente, cita opcional, monto, método `efectivo|tarjeta|transferencia`, fecha, concepto, `registrado_por`). Módulo nuevo `pagos` (`admin.pagos.index/create/store/destroy`) para `super_admin` y `doctor`. `Cita::precioEstimado()` usa `precio_referencia` del tratamiento y `Oferta::precioPara()`; `PagoController::resumenPaciente()` da pagado, estimado y por cobrar para el expediente. En la Agenda, una cita completada sin pagos muestra "Registrar pago". Bitácora: `pago.registrado`, `pago.eliminado`. Pruebas: `PagosTest`.
 
+**Plan de tratamiento (H-88, 24/11/2026).** Tablas `planes_tratamiento` (paciente, doctor, título, estado `activo|terminado|cancelado`, notas) y `plan_tratamiento_pasos` (descripción, dientes, costo, `id_tratamiento` si coincide con el catálogo, `hecho_en`, orden). `PlanTratamiento::avance()` = pasos con `hecho_en` / total; no se escribe a mano. `PlanTratamientoController` (`admin.pacientes.planes.*`, módulo `pacientes`). Bitácora: `plan.creado`, `plan.actualizado`, `plan.paso_hecho`, `plan.paso_pendiente`. Pruebas: `PlanTratamientoTest`.
+
 ## 12. Auditoría de operaciones sensibles
 
 `AuditoriaService` centraliza el registro de acciones relevantes del personal

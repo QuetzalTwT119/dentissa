@@ -124,6 +124,35 @@ $tipoConsultaLabel = [
                 @endif
             </section>
 
+            {{-- Planes de tratamiento (24/11/2026): avance calculado por pasos hechos. --}}
+            <section class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="titulo-planes" data-planes>
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h2 id="titulo-planes" class="text-headline font-semibold text-ink">Plan de tratamiento</h2>
+                        <p class="mt-0.5 text-sm text-muted">Procedimientos por hacer y hechos, para tratamientos de varias citas.</p>
+                    </div>
+                    <a href="{{ route('admin.pacientes.planes.create', $paciente) }}" class="btn-secondary min-h-11 px-5" data-nuevo-plan>Nuevo plan</a>
+                </div>
+                @if ($planes->isNotEmpty())
+                    <ul class="mt-4 space-y-3">
+                        @foreach ($planes as $plan)
+                            <li>
+                                <a href="{{ route('admin.pacientes.planes.show', [$paciente, $plan]) }}" class="block rounded-2xl border border-line p-4 transition hover:border-brand-300 hover:bg-brand-50/30" data-plan>
+                                    <div class="flex flex-wrap items-center justify-between gap-2">
+                                        <span class="font-semibold text-ink">{{ $plan->titulo }}</span>
+                                        <span class="text-sm text-muted">{{ $plan->estadoTexto() }} · {{ $plan->avance() }} %</span>
+                                    </div>
+                                    <div class="mt-2 h-2 overflow-hidden rounded-full bg-line" aria-hidden="true">
+                                        <div class="h-full rounded-full bg-sage-500" style="width: {{ $plan->avance() }}%"></div>
+                                    </div>
+                                    <p class="mt-1.5 text-xs text-muted">{{ $plan->pasos->whereNotNull('hecho_en')->count() }} de {{ $plan->pasos->count() }} pasos hechos</p>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </section>
+
             {{-- Pagos (24/11/2026): lo cobrado y lo que falta de las citas atendidas (estimado). --}}
             @if ($pagos !== null)
                 <section class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="titulo-pagos" data-pagos-paciente>

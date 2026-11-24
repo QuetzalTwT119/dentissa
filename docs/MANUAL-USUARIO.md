@@ -684,6 +684,13 @@ propio renglón con espacio para escribir.
 
 Desde `/admin/pacientes`:
 
+- **Plan de tratamiento** (desde el 24/11/2026): para tratamientos de varias citas (ortodoncia,
+  rehabilitación…). En el expediente, **Plan de tratamiento → Nuevo plan**: ponle un nombre y
+  después agrega sus **pasos** (procedimiento, dientes y costo; al elegir un tratamiento del
+  catálogo se sugiere su precio). Cada paso se marca como **hecho** con el círculo (guarda la
+  fecha) y se puede volver a pendiente. El **avance** (%) y el **costo del plan** se calculan
+  solos. Cuando todos están hechos, el sistema sugiere cambiar el estado a **Terminado**. El
+  expediente muestra cada plan con su barra de avance.
 - **Consentimiento informado** (desde el 24/11/2026): en el expediente, sección **Consentimientos informados → Nuevo consentimiento**. Escribe el **procedimiento** (sugiere los tratamientos del catálogo), los dientes si aplica, y revisa los textos de **beneficios**, **riesgos** y **alternativas** (vienen escritos de partida; ajústalos a lo que le explicaste). Al guardar aparece **Abrir para imprimir**: es una carta con los datos del consultorio, paciente, edad, alergias, procedimiento, lo que se le explicó, y espacios para la firma del paciente o su representante, de quien atiende y de dos testigos. Se firma a mano y se guarda en el archivo del paciente. Cada uno queda en la lista para volver a imprimirlo.
 - **Receta en PDF** (desde el 24/11/2026): en el expediente, cada consulta con **medicamentos recetados** muestra **Receta**. Se abre lista para imprimir, con tu nombre, **cédula profesional**, especialidad, fecha, nombre y edad del paciente, sus **alergias**, el diagnóstico, los medicamentos y la línea de firma; al pie, la dirección y el teléfono del consultorio. La cédula se escribe una sola vez en **Mi perfil** (solo la ve quien atiende consultas); sin ella el sistema avisa en lugar de imprimir. Cada receta impresa queda en Control de actividades.
 - **Nuevo paciente** (desde el 24/11/2026): registra a alguien que llegó sin cita, o para llenarle la historia clínica antes. Pide nombre, apellido, celular (obligatorios), correo (opcional) y confirmar que **aceptó el aviso de privacidad**. Si el celular ya está registrado, avisa de quién es y ofrece **Abrir su expediente** en lugar de duplicarlo. Al guardar se abre su expediente. Cuando después agende en línea con ese celular, el sistema lo reconoce.

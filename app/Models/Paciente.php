@@ -62,6 +62,12 @@ class Paciente extends Model
     }
 
     /** Cuestionario de historia clínica (una por paciente, 22/11/2026). */
+    /** Planes de tratamiento (24/11/2026). */
+    public function planes(): HasMany
+    {
+        return $this->hasMany(PlanTratamiento::class, 'id_paciente');
+    }
+
     /** Pagos registrados (24/11/2026). */
     public function pagos(): HasMany
     {

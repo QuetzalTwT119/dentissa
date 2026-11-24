@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ConfiguracionController;
 use App\Http\Controllers\Admin\DatosConsultorioController;
 use App\Http\Controllers\Admin\OfertaController as AdminOfertaController;
 use App\Http\Controllers\Admin\PagoController;
+use App\Http\Controllers\Admin\PlanTratamientoController;
 use App\Http\Controllers\Admin\PacienteController;
 use App\Http\Controllers\Admin\PreguntaFrecuenteController;
 use App\Http\Controllers\Admin\ReporteController;
@@ -260,6 +261,14 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::delete('pacientes/{paciente}/historial/{historial}/imagenes/{imagen}', [HistorialClinicoController::class, 'destroyImagen'])->name('pacientes.historial.imagenes.destroy');
     Route::get('pacientes/{paciente}/historial-pdf', [HistorialClinicoController::class, 'pdf'])->name('pacientes.historial.pdf');
     Route::get('pacientes/{paciente}/historial/{historial}/receta', [HistorialClinicoController::class, 'receta'])->name('pacientes.historial.receta');
+    // Plan de tratamiento (24/11/2026).
+    Route::get('pacientes/{paciente}/planes/crear', [PlanTratamientoController::class, 'create'])->name('pacientes.planes.create');
+    Route::post('pacientes/{paciente}/planes', [PlanTratamientoController::class, 'store'])->name('pacientes.planes.store');
+    Route::get('pacientes/{paciente}/planes/{plan}', [PlanTratamientoController::class, 'show'])->name('pacientes.planes.show');
+    Route::put('pacientes/{paciente}/planes/{plan}', [PlanTratamientoController::class, 'update'])->name('pacientes.planes.update');
+    Route::post('pacientes/{paciente}/planes/{plan}/pasos', [PlanTratamientoController::class, 'agregarPaso'])->name('pacientes.planes.pasos.agregar');
+    Route::patch('pacientes/{paciente}/planes/{plan}/pasos/{paso}', [PlanTratamientoController::class, 'alternarPaso'])->name('pacientes.planes.pasos.alternar');
+    Route::delete('pacientes/{paciente}/planes/{plan}/pasos/{paso}', [PlanTratamientoController::class, 'quitarPaso'])->name('pacientes.planes.pasos.quitar');
     // Consentimiento informado (24/11/2026).
     Route::get('pacientes/{paciente}/consentimientos/crear', [ConsentimientoController::class, 'create'])->name('pacientes.consentimientos.create');
     Route::post('pacientes/{paciente}/consentimientos', [ConsentimientoController::class, 'store'])->name('pacientes.consentimientos.store');
