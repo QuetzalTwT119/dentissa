@@ -11,4 +11,9 @@ mkdir -p storage/app/private storage/app/public storage/app/respaldos-tmp
 chown -R www-data:www-data storage/app
 
 php artisan migrate --force
+
+# Festivos del año actual y el siguiente (no duplica). Si falla, la app arranca
+# igual: el programador lo reintenta el día 1 de cada mes.
+php artisan dentissa:bloquear-festivos || echo "Aviso: no se pudieron bloquear los festivos; se reintentará el día 1."
+
 exec supervisord -n -c /etc/supervisor/conf.d/dentissa.conf

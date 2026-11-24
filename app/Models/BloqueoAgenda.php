@@ -36,6 +36,15 @@ class BloqueoAgenda extends Model
         return $this->belongsTo(User::class, 'creado_por');
     }
 
+    /** Inicio del motivo de los festivos que pone dentissa:bloquear-festivos. */
+    public const PREFIJO_FESTIVO = 'Festivo: ';
+
+    /** Festivo puesto por el sistema (sin autor), no uno escrito por el personal. */
+    public function esFestivo(): bool
+    {
+        return $this->creado_por === null && str_starts_with($this->motivo, self::PREFIJO_FESTIVO);
+    }
+
     public function todoElDia(): bool
     {
         return $this->hora_inicio === null || $this->hora_fin === null;

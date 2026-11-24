@@ -85,6 +85,8 @@
                                 <p class="mt-0.5 break-words text-sm text-ink-soft">{{ $bloqueo->motivo }}</p>
                                 @if ($bloqueo->creadoPor)
                                     <p class="mt-0.5 text-xs text-muted">Lo registró {{ $bloqueo->creadoPor->nombre }} {{ $bloqueo->creadoPor->apellido }}</p>
+                                @elseif ($bloqueo->esFestivo())
+                                    <p class="mt-0.5 text-xs text-muted">Festivo puesto por el sistema. Si vas a trabajar ese día, quítalo con 🗑 y no se volverá a poner.</p>
                                 @endif
                             </div>
                             <x-admin.acciones-fila :eliminar="route('admin.bloqueos.destroy', $bloqueo)" que="el bloqueo" :nombre="$bloqueo->descripcion()"

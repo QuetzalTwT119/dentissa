@@ -45,6 +45,12 @@ Schedule::command('dentissa:respaldar')
     ->dailyAt('03:00')
     ->withoutOverlapping();
 
+// Festivos (24/11/2026): el día 1 de cada mes bloquea los del año actual y el
+// siguiente. No duplica; si un festivo tiene citas, avisa en la campana.
+Schedule::command('dentissa:bloquear-festivos --avisar')
+    ->monthlyOn(1, '06:00')
+    ->withoutOverlapping();
+
 Artisan::command('dentissa:respaldo-llave', function () {
     $this->warn('Esta llave descifra todos los respaldos. Guárdala en un gestor de contraseñas y en DENTISSA_RESPALDO_CLAVE; si se pierde, los respaldos no se pueden recuperar. No la compartas ni la subas a Git.');
     $this->line(CifradoRespaldo::generarLlave());

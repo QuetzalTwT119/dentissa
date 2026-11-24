@@ -40,7 +40,8 @@ El repositorio conserva un `Dockerfile` de producción separado y
 27/10/2026, el servicio Railway usa el builder Dockerfile y no tiene comando de
 inicio personalizado; el `compose.yaml` local no se despliega como una unidad.
 El Dockerfile productivo inicia `scripts/start-production.sh`, que aplica las
-migraciones y ejecuta Supervisor para mantener juntos el servidor web y el
+migraciones, bloquea los días festivos del año actual y el siguiente
+(`dentissa:bloquear-festivos`; si falla no detiene el arranque) y ejecuta Supervisor para mantener juntos el servidor web y el
 proceso `php artisan dentissa:telegram`. Por eso, el token del bot debe existir
 como variable privada `DENTISSA_TELEGRAM_BOT_TOKEN` en el servicio `dentissa`.
 Supervisor también ejecuta `php artisan schedule:work`, que manda los
