@@ -23,7 +23,7 @@
         html {
             scroll-padding-top: 5.5rem;
         }
-        #inicio, #servicios, #nosotros, #galeria, #promociones, #casos, #testimonios, #primera-visita, #ubicacion, #contacto {
+        #inicio, #servicios, #nosotros, #galeria, #promociones, #casos, #testimonios, #primera-visita, #preguntas, #ubicacion, #contacto {
             scroll-margin-top: 5.5rem;
         }
         .landing-nav-link[aria-current="location"] {
@@ -431,12 +431,30 @@
             </div>
 
             <div class="mt-12 grid grid-cols-1 gap-5 md:grid-cols-5">
-                @foreach ([
-                    ['6.jpg', 'Detalles del consultorio', 'Espacios Diseñados para Ti', 'Calidez y Hospitalidad', 'Disfruta de una sala relajante y una atención pensada para tu total tranquilidad.', 'md:col-span-3'],
-                    ['2.jpg', 'Identidad de marca Dentissa', 'Armonía & Estética', 'Paleta de Marca Relajante', 'Colores rosa y durazno cálidos que transmiten serenidad, confianza y bienestar.', 'md:col-span-2'],
-                ] as [$imagen, $alt, $etiqueta, $titulo, $texto, $columnas])
-                    <figure class="group relative min-h-[300px] overflow-hidden rounded-[2rem] bg-shell shadow-soft sm:min-h-[380px] {{ $columnas }}">
-                        <img src="{{ asset('images/'.$imagen) }}" alt="{{ $alt }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
+                @php
+                    // 24/11/2026: las fotos de Contenido → Galería (antes se cargaban y no se
+                    // mostraban). Sin fotos activas, quedan las dos de fábrica. Filas de
+                    // 3 + 2 columnas que se alternan (2 + 3) para que no se vea una cuadrícula rígida.
+                    $fotosGaleria = ($galeria ?? collect())->isNotEmpty()
+                        ? $galeria->values()->map(fn ($foto, $i) => [
+                            asset('storage/'.$foto->url), $foto->titulo ?: 'Consultorio Dentissa', 'Nuestro consultorio',
+                            $foto->titulo ?: 'Consultorio Dentissa', (string) $foto->descripcion,
+                            in_array($i % 4, [0, 3], true) ? 'md:col-span-3' : 'md:col-span-2',
+                        ])
+                        : collect([
+                            [asset('images/6.jpg'), 'Detalles del consultorio', 'Espacios Diseñados para Ti', 'Calidez y Hospitalidad', 'Disfruta de una sala relajante y una atención pensada para tu total tranquilidad.', 'md:col-span-3'],
+                            [asset('images/2.jpg'), 'Identidad de marca Dentissa', 'Armonía & Estética', 'Paleta de Marca Relajante', 'Colores rosa y durazno cálidos que transmiten serenidad, confianza y bienestar.', 'md:col-span-2'],
+                        ]);
+                    // Un número impar deja la última sola: que ocupe todo el ancho.
+                    if ($fotosGaleria->count() % 2 === 1 && $fotosGaleria->count() > 1) {
+                        $ultima = $fotosGaleria->pop();
+                        $ultima[5] = 'md:col-span-5';
+                        $fotosGaleria->push($ultima);
+                    }
+                @endphp
+                @foreach ($fotosGaleria as [$imagen, $alt, $etiqueta, $titulo, $texto, $columnas])
+                    <figure class="group relative min-h-[300px] overflow-hidden rounded-[2rem] bg-shell shadow-soft sm:min-h-[380px] {{ $columnas }}" data-foto-galeria>
+                        <img src="{{ $imagen }}" alt="{{ $alt }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
                         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/85 via-[#2b1a20]/20 to-transparent"></div>
                         <figcaption class="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
                             <span class="text-caption font-semibold uppercase tracking-label text-peach-200">{{ $etiqueta }}</span>
@@ -459,6 +477,9 @@
 
         <!-- ============ Tu primera visita ============ -->
         @include('partials.portada-primera-visita')
+
+        <!-- ============ Preguntas frecuentes ============ -->
+        @include('partials.portada-preguntas')
 
         <!-- ============ Ubicación con mapa ============ -->
         @include('partials.portada-ubicacion')

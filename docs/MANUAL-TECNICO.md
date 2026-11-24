@@ -619,7 +619,9 @@ seguro médico y número de seguro social no aplica.
 
 **Portada: primera visita y ubicación (H-78, 24/11/2026).** `partials/portada-primera-visita.blade.php` (3 pasos) y `partials/portada-ubicacion.blade.php`: iframe `https://maps.google.com/maps?q=…&output=embed` (sin clave de API, `loading="lazy"`) y enlace `https://www.google.com/maps/dir/?api=1&destination=…`. La dirección viene de `dentissa.contacto.direccion` (por defecto Blvd. Montebello 228, 78421 Pozos, S.L.P.; `DENTISSA_DIRECCION` o Datos del consultorio la reemplazan). Si está vacía, la sección no se muestra.
 
-**Portada: casos, WhatsApp y misión/visión (H-79, 24/11/2026).** `partials/portada-casos.blade.php` usa `$casos` de la ruta `/` (antes se enviaba y no se dibujaba): primera imagen = Antes, segunda = Después. `partials/portada-whatsapp-flotante.blade.php` (fijo, `bottom-24`, encima del asistente). Ofertas con enlace `wa.me/…?text=` por oferta. Migración `2026_11_24_000001`: `datos_consultorio.mision` y `vision` (400), aplicadas a `dentissa.contacto` como los demás datos. Orden de secciones: servicios, nosotros, galería, promociones, casos, testimonios, primera-visita, ubicación, agendar.
+**Portada: casos, WhatsApp y misión/visión (H-79, 24/11/2026).** `partials/portada-casos.blade.php` usa `$casos` de la ruta `/` (antes se enviaba y no se dibujaba): primera imagen = Antes, segunda = Después. `partials/portada-whatsapp-flotante.blade.php` (fijo, `bottom-24`, encima del asistente). Ofertas con enlace `wa.me/…?text=` por oferta. Migración `2026_11_24_000001`: `datos_consultorio.mision` y `vision` (400), aplicadas a `dentissa.contacto` como los demás datos. Orden de secciones: servicios, nosotros, galería, promociones, casos, testimonios, primera-visita, preguntas, ubicación, agendar.
+
+**Galería y preguntas (H-80, 24/11/2026).** `welcome.blade.php` arma "Instalaciones" con `$galeria` (Imagen tipo galería activa, máx. 8; `asset('storage/…')`) y cae a `images/6.jpg` y `2.jpg` si no hay. `partials/portada-preguntas.blade.php` muestra `$faqs` activas con `<details>` (sin JavaScript).
 En `x-admin.header` se usa con `:volver="route(...)" volver-texto="..."`; en encabezados propios,
 `<x-volver :href texto />`. Va en toda pantalla que se abre desde otra (crear/editar,
 expediente, cuestionarios); no en las principales del menú. `ConsistenciaDisenoTest` revisa las
@@ -1428,6 +1430,16 @@ Un barrido de 41 pantallas a 375 y 1280 px dejó cuatro reglas, protegidas por
   ancho mínimo de su contenido: en el perfil, la fila de pestañas desplazable
   ensanchaba la página 120 px en celular. `grid-cols-1` (`minmax(0, 1fr)`) y
   `min-w-0` en el hijo lo evitan.
+
+**Solo web, sin app móvil (H-80, 24/11/2026).** Dentissa se entrega como sistema web. La API
+del PR #80 (`routes/api.php`: login de la app Ionic y rutas `/api/iot/*` del ESP32) se quitó
+junto con `App\Http\Controllers\Api\AppAuthController` y su registro en `bootstrap/app.php`:
+no pedía ninguna clave (`POST /api/iot/puerta/abrir` dejaba abrir la puerta a cualquiera), el
+login no tenía límite de intentos, se saltaba la verificación en dos pasos y solo aceptaba los
+roles viejos `admin`/`asistente`. `SinApiMovilTest` cuida que no vuelva sin querer. Si se
+retoma la app, debe volver con token por usuario (Sanctum), clave por dispositivo para el
+ESP32, límite de intentos y los roles de config/permisos.php. La tabla `historial_asientos`
+que usaba no tiene migración en el repositorio y no se tocó.
 
 ## 20. Decisión de diseño: el paciente agenda sin cuenta
 
