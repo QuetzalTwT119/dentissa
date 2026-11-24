@@ -131,6 +131,38 @@ class ListaCitasPorDiaTest extends TestCase
             ->assertSee('El consultorio no abre este día.');
     }
 
+    public function test_un_dia_con_solo_canceladas_lo_dice_en_la_pestana_y_el_titulo(): void
+    {
+        $this->cita('Ana Cancelada', '2030-01-09 09:00', EstadoCita::Cancelada);
+        $this->cita('Beto Cancelado', '2030-01-09 11:00', EstadoCita::Cancelada);
+
+        $html = $this->actingAs($this->admin)->get(route('citas.index'))->assertOk()
+            ->getContent();
+        $this->assertMatchesRegularExpression('#0 citas activas\s*·\s*2 canceladas#u', $html);
+        $this->assertMatchesRegularExpression('#Hoy 9\s*</span>\s*<span[^>]*>\s*2 canceladas#u', $html);
+    }
+
+    public function test_tras_una_accion_regresa_al_mismo_dia_y_no_a_hoy(): void
+    {
+        $cita = $this->cita('Ana Lunes', '2030-01-07 09:00', EstadoCita::Confirmada);
+        $agendaDelLunes = route('citas.index', ['fecha' => '2030-01-07']);
+
+        $this->actingAs($this->admin)->from($agendaDelLunes)->patch(route('citas.start', $cita))
+            ->assertRedirect($agendaDelLunes);
+
+        // Si no venía de la agenda, va al día de la cita.
+        $this->actingAs($this->admin)->from(route('dashboard'))->patch(route('citas.complete', $cita))
+            ->assertRedirect($agendaDelLunes);
+    }
+
+    public function test_lista_y_semana_estan_en_el_encabezado(): void
+    {
+        foreach ([route('citas.index'), route('citas.index', ['vista' => 'semana'])] as $url) {
+            $html = $this->actingAs($this->admin)->get($url)->assertOk()->getContent();
+            $this->assertLessThan(strpos($html, 'panel-contenido'), strpos($html, 'data-vista-actual'), 'El selector va junto al título');
+        }
+    }
+
     private function cita(string $nombre, string $fechaHora, EstadoCita $estado): Cita
     {
         $servicio = Servicio::firstOrCreate(['nombre' => 'Odontología General'], ['activo' => true, 'orden' => 1]);

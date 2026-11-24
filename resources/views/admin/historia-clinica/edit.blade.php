@@ -24,8 +24,7 @@
         <div class="flex flex-wrap items-end justify-between gap-4">
             <div class="min-w-0">
                 {{-- La asistente no ve el expediente: regresa a su lista. --}}
-                <x-volver :href="$regreso" :texto="$puedeExpediente ? 'Volver al expediente' : 'Volver a Historias clínicas'" />
-                <h1 class="mt-1 truncate text-title-2 text-ink">Historia clínica — {{ $paciente->nombre_completo }}</h1>
+                <h1 class="truncate text-title-2 text-ink">Historia clínica — {{ $paciente->nombre_completo }}</h1>
             </div>
             <div class="flex items-center gap-2.5">
                 <a href="{{ $regreso }}" class="hidden sm:inline-block">

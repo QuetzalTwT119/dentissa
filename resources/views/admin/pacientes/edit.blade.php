@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header :volver="route('admin.pacientes.index')" volver-texto="Volver a Pacientes"
+        <x-admin.header
             badge="Expediente de Paciente"
             title="Editar paciente — {{ $paciente->nombre }} {{ $paciente->apellido }}"
             subtitle="Actualización de contacto y datos oficiales del expediente."

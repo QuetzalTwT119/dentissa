@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header :volver="route('admin.usuarios.index')" volver-texto="Volver a Usuarios"
+        <x-admin.header
             badge="Equipo y Accesos"
             title="Nuevo usuario"
             subtitle="Creación de usuario del personal con privilegios de sistema."

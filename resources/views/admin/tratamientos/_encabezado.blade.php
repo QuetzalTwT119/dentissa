@@ -4,8 +4,7 @@
 @endphp
 <div class="flex flex-wrap items-end justify-between gap-4">
     <div class="min-w-0">
-        <x-volver :href="route('admin.tratamientos.index')" texto="Volver a Tratamientos" />
-        <h1 class="mt-1 truncate text-title-2 text-ink">{{ $editando ? $tratamiento->nombre : 'Nuevo tratamiento' }}</h1>
+        <h1 class="truncate text-title-2 text-ink">{{ $editando ? $tratamiento->nombre : 'Nuevo tratamiento' }}</h1>
     </div>
     <div class="flex items-center gap-2.5">
         <a href="{{ route('admin.tratamientos.index') }}" class="hidden sm:inline-block">

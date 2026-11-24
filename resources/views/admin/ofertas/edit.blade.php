@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header :volver="route('admin.ofertas.index')" volver-texto="Volver a Ofertas"
+        <x-admin.header
             title="Editar oferta"
             subtitle="Ajuste de cupos, vigencia y precios de promoción."
         >
