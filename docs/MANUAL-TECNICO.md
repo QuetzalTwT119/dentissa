@@ -384,6 +384,19 @@ marca los días completos como `cerrado`. `BloqueoAgendaController` (módulo `co
 **ninguna cita agendada, confirmada o en curso dentro del tramo**. Bitácora: `bloqueo.creado` y
 `bloqueo.eliminado`. Pruebas: `BloqueoAgendaTest`.
 
+**Festivos (H-93, 24/11/2026).** `App\Support\DiasFestivos::delAnio()` calcula los festivos
+del consultorio: los 7 del art. 74 de la LFT (tres caen en lunes y se calculan con
+`nthOfMonth`), el 1 de octubre cada 6 años desde 2024, y por decisión del usuario el 2 de
+noviembre y el 12, 24 y 31 de diciembre. `php artisan dentissa:bloquear-festivos [años…]`
+crea un `BloqueoAgenda` de día completo por festivo (`motivo` = «Festivo: …»,
+`creado_por` nulo → `esFestivo()`). Es idempotente: salta fechas pasadas, días ya bloqueados
+completos, días con citas activas (los reporta) y las fechas de `festivos_omitidos`, que se
+llena cuando el personal quita con 🗑 un festivo del sistema. `--simular` solo muestra;
+`--avisar` manda una alerta `festivos_con_citas` a la campana. Corre en
+`scripts/start-production.sh` después de `migrate --force` (no detiene el arranque si falla)
+y el programador lo ejecuta el día 1 de cada mes a las 06:00 con `--avisar`.
+Pruebas: `DiasFestivosTest` y `BloquearDiasFestivosTest`.
+
 ### Calendario de disponibilidad (`partials/disponibilidad-picker`)
 
 **Reagendar directo (H-66, 23/11/2026).** El botón Reagendar (WhatsApp y correo) manda

@@ -518,6 +518,14 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
     calendario. Si en ese tiempo ya hay citas activas, el sistema avisa cuáles: primero
     reagéndalas o cancélalas. En **Próximos bloqueos** se ve la lista y la 🗑 los quita
     (vuelven a ofrecerse). Todo queda en Control de actividades.
+  - **Días festivos** (desde el 24/11/2026): el sistema bloquea solo los días en que el
+    consultorio no trabaja: 1 de enero, primer lunes de febrero, tercer lunes de marzo,
+    1 de mayo, 16 de septiembre, 2 de noviembre, tercer lunes de noviembre, 12, 24, 25 y
+    31 de diciembre (y el 1 de octubre cuando hay cambio de Presidente). Aparecen en
+    **Próximos bloqueos** con el motivo «Festivo: …» y la nota «Festivo puesto por el
+    sistema». Si vas a trabajar uno de esos días, quítalo con la 🗑: no se volverá a poner.
+    Si un festivo ya tenía citas, no se bloquea y la campana avisa cuáles fechas son, para
+    que las reagendes o lo dejes abierto.
 - **Guardar cambios** (en cualquier pantalla de editar) aparece apagado hasta
   que cambias algo; si regresas todo como estaba, se vuelve a apagar. Al
   guardar, el sistema sigue pidiendo confirmar. Para salir sin guardar usa

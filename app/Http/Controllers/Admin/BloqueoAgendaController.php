@@ -6,6 +6,7 @@ use App\Enums\EstadoCita;
 use App\Http\Controllers\Controller;
 use App\Models\BloqueoAgenda;
 use App\Models\Cita;
+use App\Models\FestivoOmitido;
 use App\Services\AuditoriaService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -81,6 +82,16 @@ class BloqueoAgendaController extends Controller
         $descripcion = $bloqueo->descripcion();
         DB::transaction(function () use ($bloqueo, $request, $auditoria) {
             $auditoria->registrar('bloqueo.eliminado', $bloqueo, datosAnteriores: $bloqueo->only(['fecha_inicio', 'fecha_fin', 'hora_inicio', 'hora_fin', 'motivo']), request: $request);
+
+            // Si era un festivo puesto por el sistema, la doctora sí va a
+            // trabajar ese día: se recuerda para no volver a bloquearlo.
+            if ($bloqueo->esFestivo()) {
+                FestivoOmitido::firstOrCreate(
+                    ['fecha' => $bloqueo->fecha_inicio->toDateString()],
+                    ['omitido_por' => $request->user()->id],
+                );
+            }
+
             $bloqueo->delete();
         });
 
