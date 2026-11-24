@@ -31,6 +31,31 @@ class Cita extends Model
         ];
     }
 
+    /** Hora en que termina, según su duración. */
+    public function fin(): \Carbon\CarbonInterface
+    {
+        return $this->fecha_hora->copy()->addMinutes((int) $this->duracion_estimada);
+    }
+
+    /**
+     * Ya pasó su hora de fin sin que nadie la atendiera en el sistema (QA
+     * 24/11/2026). La agenda deja de ofrecer «Iniciar» y pregunta directo si
+     * el paciente fue: «Atendida» o «No asistió».
+     */
+    public function yaTermino(): bool
+    {
+        return in_array($this->estado, [EstadoCita::Agendada, EstadoCita::Confirmada], true)
+            && $this->fin()->lte(now());
+    }
+
+    /** Se puede iniciar: confirmada, de hoy y sin haber terminado ya su horario. */
+    public function sePuedeIniciar(): bool
+    {
+        return $this->estado === EstadoCita::Confirmada
+            && $this->fecha_hora->isToday()
+            && ! $this->yaTermino();
+    }
+
     /** Cita que la reemplazó cuando el paciente reagendó desde el recordatorio (23/11/2026). */
     public function citaNueva(): BelongsTo
     {

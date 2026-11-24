@@ -628,6 +628,15 @@ seguro médico y número de seguro social no aplica.
 
 **Agenda tras una acción (H-75, 24/11/2026).** `CitaController::volverALaAgenda()` redirige a `url()->previous()` solo si es `/citas` o `/citas?…` (conserva día, vista y filtros); si no, a `/citas?fecha=` del día de la cita. `store` y `update` (reagendar) van al día de la cita. `pestanasDeLaSemana()` agrega `canceladas` y `noAsistio`.
 
+**Lógica de la agenda (H-94, QA en producción 24/11/2026).** `EstadoCita::esPorAtender()` (agendada,
+confirmada, en curso) reemplaza a `! esInactiva()` en el conteo del día: las completadas salen como
+"atendidas". `Cita::fin()`, `yaTermino()` (agendada/confirmada con su fin ya pasado) y `sePuedeIniciar()`
+(confirmada, de hoy y sin terminar) deciden los botones de `citas/partials/acciones`. `start()` rechaza
+citas de otro día, ya terminadas y, dentro de una transacción con `lockForUpdate`, las que excederían
+`capacidad_simultanea` del día con otras «En curso». `complete()` acepta además agendadas/confirmadas
+cuya hora ya llegó («Atendida» en un paso) y `noShow()` acepta agendadas. `index` manda
+`enCursoOlvidadas` (en curso de días anteriores) para el aviso ámbar. Pruebas: `AgendaLogicaQaTest`.
+
 **Campos de número (H-76, 24/11/2026).** `resources/css/app.css` (`@layer base`) quita las flechas de todo `input[type=number]`; se conserva `type=number` para validar y abrir el teclado numérico. **Citas a la vez** (`horarios_atencion.capacidad_simultanea`) la usan `DisponibilidadService`, `OcupacionSemanalService` y `ReporteService`; en producción quedó en 1. Desde H-77 se edita con **un solo campo** (`capacidad_simultanea` en la raíz del formulario) y `HorarioController::update` lo copia a los 7 días.
 
 **Portada: primera visita y ubicación (H-78, 24/11/2026).** `partials/portada-primera-visita.blade.php` (3 pasos) y `partials/portada-ubicacion.blade.php`: iframe `https://maps.google.com/maps?q=…&output=embed` (sin clave de API, `loading="lazy"`) y enlace `https://www.google.com/maps/dir/?api=1&destination=…`. La dirección viene de `dentissa.contacto.direccion` (por defecto Blvd. Montebello 228, 78421 Pozos, S.L.P.; `DENTISSA_DIRECCION` o Datos del consultorio la reemplazan). Si está vacía, la sección no se muestra.

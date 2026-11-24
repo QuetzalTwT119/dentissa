@@ -41,4 +41,14 @@ enum EstadoCita: string
     {
         return in_array($this, [self::Cancelada, self::NoAsistio], true);
     }
+
+    /**
+     * Citas que todavía tienen algo por hacer (agendada, confirmada o en curso).
+     * Una completada ya no es "activa" (QA 24/11/2026: el día decía "4 citas
+     * activas" con 2 ya completadas).
+     */
+    public function esPorAtender(): bool
+    {
+        return in_array($this, [self::Agendada, self::Confirmada, self::EnCurso], true);
+    }
 }

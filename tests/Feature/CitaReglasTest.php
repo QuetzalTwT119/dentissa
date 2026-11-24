@@ -279,17 +279,29 @@ class CitaReglasTest extends TestCase
             'estado' => EstadoCita::Confirmada,
         ]);
 
+        // QA 24/11/2026: una cita solo se inicia el día que le toca.
         $this->actingAs($asistente)
             ->patch(route('citas.start', $cita))
-            ->assertRedirectContains(route('citas.index').'?fecha=')
-            ->assertSessionHas('success', 'Cita iniciada correctamente.');
+            ->assertSessionHasErrors('estado');
+        $this->assertDatabaseHas('citas', ['id' => $cita->id, 'estado' => EstadoCita::Confirmada->value]);
 
-        $this->assertDatabaseHas('citas', ['id' => $cita->id, 'estado' => EstadoCita::EnCurso->value]);
+        Carbon::setTestNow($cita->fecha_hora->copy()->subMinutes(5));
 
-        $this->actingAs($asistente)
-            ->patch(route('citas.complete', $cita))
-            ->assertRedirectContains(route('citas.index').'?fecha=')
-            ->assertSessionHas('success', 'Cita completada correctamente.');
+        try {
+            $this->actingAs($asistente)
+                ->patch(route('citas.start', $cita))
+                ->assertRedirectContains(route('citas.index').'?fecha=')
+                ->assertSessionHas('success', 'Cita iniciada correctamente.');
+
+            $this->assertDatabaseHas('citas', ['id' => $cita->id, 'estado' => EstadoCita::EnCurso->value]);
+
+            $this->actingAs($asistente)
+                ->patch(route('citas.complete', $cita))
+                ->assertRedirectContains(route('citas.index').'?fecha=')
+                ->assertSessionHas('success', 'Cita completada correctamente.');
+        } finally {
+            Carbon::setTestNow();
+        }
 
         $this->assertDatabaseHas('citas', ['id' => $cita->id, 'estado' => EstadoCita::Completada->value]);
     }
@@ -433,7 +445,8 @@ class CitaReglasTest extends TestCase
             ->assertOk()
             ->assertSee('Cita confirmada correctamente.')
             ->assertSee('Confirmada')
-            ->assertSee('Iniciar')
+            // QA 24/11/2026: es de mañana, todavía no se puede iniciar.
+            ->assertDontSee(route('citas.start', $cita), false)
             // Aún no llega la hora: el servidor rechazaría la inasistencia, así que no se ofrece.
             ->assertDontSee(route('citas.no-show', $cita), false);
 
@@ -442,6 +455,7 @@ class CitaReglasTest extends TestCase
         try {
             $this->get(route('citas.index', ['fecha' => $cita->fecha_hora->toDateString()]))
                 ->assertOk()
+                ->assertSee(route('citas.start', $cita), false)
                 ->assertSee(route('citas.no-show', $cita), false)
                 ->assertSee('data-confirmar-titulo="¿Marcar esta cita como no asistida?"', false)
                 ->assertSee('data-confirmar="Esta acción no se puede deshacer."', false);
