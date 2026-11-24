@@ -10,9 +10,10 @@
     en dos renglones con "…"; mide como máximo 300 caracteres).
 --}}
 @if ($ofertas->isNotEmpty())
-    <section id="promociones" class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20" aria-labelledby="titulo-promociones">
-        <div class="mx-auto max-w-2xl text-center">
-            <p class="eyebrow justify-center">Promociones</p>
+    <section id="promociones" class="border-y border-line/80 bg-white" aria-labelledby="titulo-promociones">
+    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div class="max-w-2xl">
+            <p class="eyebrow">Promociones</p>
             <h2 id="titulo-promociones" class="mt-4 text-title-1 text-ink">Ofertas</h2>
             <p class="mt-3 text-callout text-muted">Por tiempo limitado. El pago se realiza en el consultorio el día de tu cita.</p>
         </div>
@@ -49,9 +50,14 @@
                                         <br>{{ $quedan === 1 ? 'Queda 1 lugar' : "Quedan {$quedan} lugares" }}
                                     @endif
                                 </p>
-                                <a href="{{ route('citas.publica.create', array_filter(['tratamiento' => $oferta->id_tratamiento, 'oferta' => $oferta->id_tratamiento ? $oferta->id : null])) }}" class="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand-700 hover:text-brand-800" aria-label="Agendar cita: {{ $oferta->titulo }}">
+                                <div class="flex items-center gap-4">
+                                    {{-- 24/11/2026: dudas de la oferta por WhatsApp, con el nombre ya escrito. --}}
+                                    <a href="https://wa.me/{{ preg_replace('/\D/', '', $contacto['whatsapp']) }}?text={{ rawurlencode('Hola, quisiera información sobre la oferta «'.$oferta->titulo.'».') }}" target="_blank" rel="noopener noreferrer"
+                                       class="inline-flex min-h-11 items-center text-sm font-semibold text-sage-700 hover:text-sage-800" aria-label="Pedir información por WhatsApp: {{ $oferta->titulo }}" data-oferta-whatsapp>Pedir info</a>
+                                    <a href="{{ route('citas.publica.create', array_filter(['tratamiento' => $oferta->id_tratamiento, 'oferta' => $oferta->id_tratamiento ? $oferta->id : null])) }}" class="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand-700 hover:text-brand-800" aria-label="Agendar cita: {{ $oferta->titulo }}">
                                     Agendar {!! $iconoFlecha !!}
                                 </a>
+                                </div>
                             </div>
                         </div>
                     </article>
@@ -71,5 +77,6 @@
                 </template>
             </div>
         </div>
+    </div>
     </section>
 @endif

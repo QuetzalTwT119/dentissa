@@ -310,4 +310,12 @@ class OfertasEnCitasTest extends TestCase
         $this->assertStringStartsWith('Ya no le quedan lugares.', $sinLugar->fresh()->motivoNoVisible(Oferta::paraPortada()->pluck('id')->all()));
         $this->assertStringStartsWith('La portada muestra las', $visible->fresh()->motivoNoVisible([]));
     }
+    /** 24/11/2026: cada oferta de la portada también deja pedir información por WhatsApp. */
+    public function test_la_oferta_de_la_portada_permite_pedir_informacion_por_whatsapp(): void
+    {
+        $this->oferta(['titulo' => 'Limpieza navideña']);
+
+        $html = $this->get('/')->assertOk()->assertSee('data-oferta-whatsapp', false)->getContent();
+        $this->assertStringContainsString('?text='.rawurlencode('Hola, quisiera información sobre la oferta «Limpieza navideña».'), $html);
+    }
 }

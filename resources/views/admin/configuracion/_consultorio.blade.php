@@ -60,6 +60,20 @@
                     <x-input-error :messages="$errors->get('direccion')" class="mt-2" />
                 </div>
 
+                {{-- 24/11/2026: textos del bloque "La clínica" de la portada. --}}
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
+                        <x-input-label for="mision" value="Misión (portada)" />
+                        <x-textarea id="mision" name="mision" rows="3" maxlength="400" class="mt-1.5">{{ old('mision', $mision) }}</x-textarea>
+                        <x-input-error :messages="$errors->get('mision')" class="mt-2" />
+                    </div>
+                    <div>
+                        <x-input-label for="vision" value="Visión (portada)" />
+                        <x-textarea id="vision" name="vision" rows="3" maxlength="400" class="mt-1.5">{{ old('vision', $vision) }}</x-textarea>
+                        <x-input-error :messages="$errors->get('vision')" class="mt-2" />
+                    </div>
+                </div>
+
                 <div class="flex justify-end border-t border-line pt-4">
                     <x-primary-button>Guardar cambios</x-primary-button>
                 </div>

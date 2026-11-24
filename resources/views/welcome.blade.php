@@ -23,7 +23,7 @@
         html {
             scroll-padding-top: 5.5rem;
         }
-        #inicio, #servicios, #nosotros, #galeria, #testimonios, #contacto {
+        #inicio, #servicios, #nosotros, #galeria, #promociones, #casos, #testimonios, #primera-visita, #ubicacion, #contacto {
             scroll-margin-top: 5.5rem;
         }
         .landing-nav-link[aria-current="location"] {
@@ -40,6 +40,7 @@
 </head>
 <body class="bg-cream font-sans text-ink antialiased">
     <x-asistente-chat />
+    @include('partials.portada-whatsapp-flotante')
 
     @php
         $iconoCalendario = '<svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
@@ -400,6 +401,18 @@
                             </li>
                         @endforeach
                     </ul>
+
+                    {{-- Misión y Visión (24/11/2026): se editan en Configuración → Datos del consultorio. --}}
+                    <dl class="mt-8 grid gap-4 sm:grid-cols-2" data-mision-vision>
+                        @foreach (['Misión' => $contacto['mision'] ?? '', 'Visión' => $contacto['vision'] ?? ''] as $titulo => $texto)
+                            @if (filled($texto))
+                                <div class="rounded-2xl bg-cream/70 p-5">
+                                    <dt class="text-xs font-semibold uppercase tracking-label text-brand-700">{{ $titulo }}</dt>
+                                    <dd class="mt-2 text-callout text-ink-soft">{{ $texto }}</dd>
+                                </div>
+                            @endif
+                        @endforeach
+                    </dl>
                 </div>
             </div>
         </section>
@@ -436,8 +449,17 @@
         <!-- ============ Promociones (solo si hay vigentes) ============ -->
         @include('partials.portada-promociones')
 
+        <!-- ============ Casos antes / después ============ -->
+        @include('partials.portada-casos')
+
         <!-- ============ Testimonios ============ -->
         @include('partials.portada-testimonios')
+
+        <!-- ============ Tu primera visita ============ -->
+        @include('partials.portada-primera-visita')
+
+        <!-- ============ Ubicación con mapa ============ -->
+        @include('partials.portada-ubicacion')
 
         <!-- ============ Llamada a agendar ============ -->
         <section id="agendar" class="px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
@@ -506,6 +528,9 @@
                     <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Contacto y citas</h3>
                     <ul class="mt-4 space-y-1 text-sm text-white/70">
                         <li><a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-11 items-center transition-colors hover:text-white">{{ $contacto['telefono'] }}</a></li>
+                        @if (filled($contacto['direccion'] ?? null))
+                            <li><a href="#ubicacion" class="inline-flex min-h-11 items-center transition-colors hover:text-white">{{ $contacto['direccion'] }}</a></li>
+                        @endif
                         <li><a href="mailto:trabajout745@gmail.com" class="inline-flex min-h-11 items-center break-all transition-colors hover:text-white">trabajout745@gmail.com</a></li>
                     </ul>
                     <div class="mt-4 flex flex-wrap gap-2">

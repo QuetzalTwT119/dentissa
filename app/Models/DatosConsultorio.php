@@ -19,7 +19,7 @@ use Throwable;
  * No incluye el número del bot de WhatsApp: ese vive en Meta y se configura
  * con DENTISSA_WHATSAPP_PHONE_ID.
  */
-#[Fillable(['telefono', 'whatsapp', 'correo', 'direccion'])]
+#[Fillable(['telefono', 'whatsapp', 'correo', 'direccion', 'mision', 'vision'])]
 class DatosConsultorio extends Model
 {
     protected $table = 'datos_consultorio';
@@ -44,7 +44,7 @@ class DatosConsultorio extends Model
      */
     public static function guardados(): array
     {
-        return Cache::rememberForever(self::CACHE, fn () => self::query()->first()?->only(['telefono', 'whatsapp', 'correo', 'direccion']) ?? []);
+        return Cache::rememberForever(self::CACHE, fn () => self::query()->first()?->only(['telefono', 'whatsapp', 'correo', 'direccion', 'mision', 'vision']) ?? []);
     }
 
     /**
@@ -74,7 +74,7 @@ class DatosConsultorio extends Model
             $contacto['whatsapp'] = $datos['whatsapp'];
         }
 
-        foreach (['correo', 'direccion'] as $campo) {
+        foreach (['correo', 'direccion', 'mision', 'vision'] as $campo) {
             if (isset($datos[$campo])) {
                 $contacto[$campo] = $datos[$campo];
             }

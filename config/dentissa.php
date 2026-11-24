@@ -94,7 +94,10 @@ return [
         'telefono_enlace' => 'tel:+'.(strlen($digitosTelefono) === 10 ? '52'.$digitosTelefono : $digitosTelefono),
         'whatsapp' => env('DENTISSA_WHATSAPP') ?: '527551131833',
         'correo' => env('DENTISSA_CORREO', 'hola@dentissa.demo'),
-        'direccion' => env('DENTISSA_DIRECCION', 'Consultorio de demostración · Ciudad de México'),
+        'direccion' => env('DENTISSA_DIRECCION', 'Blvd. Montebello 228, 78421 Pozos, S.L.P.'),
+        // Portada, bloque "La clínica" (24/11/2026). Se cambian en Configuración → Datos del consultorio.
+        'mision' => 'Cuidar y transformar sonrisas con atención odontológica confiable, ética y accesible, explicando cada paso con calma para que decidas informado y sin presión.',
+        'vision' => 'Ser el consultorio dental de confianza de las familias de la región, reconocido por su trato humano, su puntualidad y resultados que duran.',
         'horario_texto' => env('DENTISSA_HORARIO_TEXTO', 'Lunes a viernes · 9:00 a 18:00'),
         'telegram_usuario' => env('DENTISSA_TELEGRAM_USUARIO', '@dentissa_demo'),
         'telegram_url' => env('DENTISSA_TELEGRAM_URL'),
