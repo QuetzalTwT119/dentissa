@@ -23,7 +23,7 @@
         html {
             scroll-padding-top: 5.5rem;
         }
-        #inicio, #servicios, #nosotros, #galeria, #testimonios, #contacto {
+        #inicio, #servicios, #primera-visita, #nosotros, #galeria, #testimonios, #ubicacion, #contacto {
             scroll-margin-top: 5.5rem;
         }
         .landing-nav-link[aria-current="location"] {
@@ -362,6 +362,9 @@
             @endif
         </section>
 
+        <!-- ============ Tu primera visita ============ -->
+        @include('partials.portada-primera-visita')
+
         <!-- ============ La clínica ============ -->
         <section id="nosotros" class="overflow-x-clip border-y border-line/80 bg-white">
             <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8 lg:py-28">
@@ -461,6 +464,9 @@
                 </div>
             </div>
         </section>
+
+        <!-- ============ Ubicación con mapa ============ -->
+        @include('partials.portada-ubicacion')
     </main>
 
     <!-- ============ Pie de página ============ -->
@@ -506,6 +512,9 @@
                     <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Contacto y citas</h3>
                     <ul class="mt-4 space-y-1 text-sm text-white/70">
                         <li><a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-11 items-center transition-colors hover:text-white">{{ $contacto['telefono'] }}</a></li>
+                        @if (filled($contacto['direccion'] ?? null))
+                            <li><a href="#ubicacion" class="inline-flex min-h-11 items-center transition-colors hover:text-white">{{ $contacto['direccion'] }}</a></li>
+                        @endif
                         <li><a href="mailto:trabajout745@gmail.com" class="inline-flex min-h-11 items-center break-all transition-colors hover:text-white">trabajout745@gmail.com</a></li>
                     </ul>
                     <div class="mt-4 flex flex-wrap gap-2">

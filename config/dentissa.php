@@ -94,7 +94,7 @@ return [
         'telefono_enlace' => 'tel:+'.(strlen($digitosTelefono) === 10 ? '52'.$digitosTelefono : $digitosTelefono),
         'whatsapp' => env('DENTISSA_WHATSAPP') ?: '527551131833',
         'correo' => env('DENTISSA_CORREO', 'hola@dentissa.demo'),
-        'direccion' => env('DENTISSA_DIRECCION', 'Consultorio de demostración · Ciudad de México'),
+        'direccion' => env('DENTISSA_DIRECCION', 'Blvd. Montebello 228, 78421 Pozos, S.L.P.'),
         'horario_texto' => env('DENTISSA_HORARIO_TEXTO', 'Lunes a viernes · 9:00 a 18:00'),
         'telegram_usuario' => env('DENTISSA_TELEGRAM_USUARIO', '@dentissa_demo'),
         'telegram_url' => env('DENTISSA_TELEGRAM_URL'),
