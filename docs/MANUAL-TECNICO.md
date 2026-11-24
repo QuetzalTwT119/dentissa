@@ -678,6 +678,30 @@ hasta cinco avisos (scopes `porAtender()` e `informativas()`).
   (`por_atender`) tanto en el evento de Reverb como en el sondeo, y el navegador
   lo inserta con un `<template>`: la carga inicial y la llegada en vivo se ven
   idénticas sin duplicar marcado en JavaScript.
+
+**QA de notificaciones (H-95, 25/11/2026).** Errores encontrados y corregidos:
+
+- **Avisos perdidos por largo:** `titulo` es VARCHAR(120) y `mensaje` VARCHAR(255).
+  Un respaldo fallido con un error largo de Google Drive, o un aviso de cita con
+  una oferta de título largo, daba «Data too long» en MySQL y el aviso no se
+  guardaba (SQLite no lo nota). `NotificacionSistema::booted()` los recorta con
+  «…» al guardar (`LARGO_TITULO`, `LARGO_MENSAJE`).
+- **«Marcar todas como leídas»** ahora también pone `vista_en`: antes la lista
+  decía 0 pendientes y la campana seguía con su número.
+- **Acción de cada aviso:** `accionPrincipal()` decide por evento (cita → agenda
+  del día; `testimonio_nuevo` → Contenido → Testimonios; `festivos_con_citas` →
+  Configuración `#bloqueos`; lo demás → la url guardada). La usan la campana, la
+  lista (antes decía «Ver cita» en todos) y el aviso emergente; en la lista se
+  oculta si llevaría a la misma lista (`accionLlevaAOtraPantalla()`).
+- **Prioritarios:** se agregan `testimonio_nuevo` y `festivos_con_citas` con
+  etiqueta e insignia propias. La migración `2026_11_25_000002` da por atendidos
+  los avisos viejos de esos tipos que ya estaban leídos.
+- **Aviso en vivo después de guardar:** `NotificacionInternaService::transmitir()`
+  usa `DB::afterCommit()`. `CrearCitaService` llama a `cambioCita()` dentro de su
+  transacción; si la cita no se guardaba, la campana mostraba un aviso fantasma.
+  Además, un error al guardar el aviso de una persona ya no deja sin aviso a las demás.
+
+Pruebas: `NotificacionesQaTest` (6, todas fallan con el código anterior).
 - Las clases `avatar-tono-N` y `aviso-tono-*` se escriben fuera de `@layer` en
   `app.css`: se arman en PHP y Tailwind eliminaría las que no ve escritas.
 
