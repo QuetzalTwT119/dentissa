@@ -86,7 +86,7 @@ class NotificacionService
     }
 
     /**
-     * Recordatorio 24 h antes. A diferencia de los demás avisos, no es una
+     * Recordatorio del día hábil anterior (MomentoRecordatorio). A diferencia de los demás avisos, no es una
      * cascada: se intenta WhatsApp Y correo, cada uno por su lado, y cada
      * envío exitoso deja su propia fila en `notificaciones`. Los dos traen las
      * opciones Asistiré / Cancelar / Reagendar.

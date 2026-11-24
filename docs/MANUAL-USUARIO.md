@@ -260,9 +260,14 @@ falta que el personal pulse una segunda vez **Confirmar**.
 
 ### Recordatorio un día antes
 
-Unas 24 horas antes de la cita, el paciente recibe un recordatorio por correo
-y, cuando WhatsApp está configurado, también por WhatsApp. El correo trae tres
-botones:
+El **día hábil anterior** a la cita, **una hora después de abrir** el consultorio, el
+paciente recibe un recordatorio por correo y, cuando WhatsApp está configurado, también por
+WhatsApp (desde el 24/11/2026; antes salía 24 horas antes). "Día hábil" es un día abierto en
+**Horarios de atención** que no esté bloqueado completo. Ejemplo con horario de lunes a
+viernes de 9:00 a 18:00: una cita del martes a las 19:00 se recuerda el **lunes a las
+10:00**; una del lunes, el **viernes a las 10:00**. Así el mensaje nunca llega de noche ni en
+día cerrado, y si el paciente cancela o reagenda, el personal lo ve en horario de trabajo. El
+correo trae tres botones:
 
 | Botón | Qué pasa |
 |---|---|
@@ -275,8 +280,9 @@ cita y pide confirmar la respuesta con otro botón. Desde esa página el pacient
 puede elegir otra respuesta. Si la cita ya pasó o ya se canceló, la página
 indica que ya no admite cambios y muestra el teléfono del consultorio.
 
-Las citas que se agendan con menos de 24 horas de anticipación no reciben
-recordatorio, porque el paciente acaba de recibir su confirmación. Si el
+Las citas que se agendan **después** del momento del recordatorio (por ejemplo, el
+viernes por la tarde para el lunes) no reciben recordatorio, porque el paciente acaba de
+recibir su confirmación. Si el
 personal reagenda una cita, el paciente recibe un recordatorio nuevo para la
 nueva fecha.
 

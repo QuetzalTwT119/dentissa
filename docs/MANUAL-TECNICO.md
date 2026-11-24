@@ -1697,7 +1697,9 @@ porque solo se ve un día y lo ya atendido se pliega.
   niveles, canceladas, horarios con lugar, sábado corto, bloque inicial, días
   cerrados con citas y la fecha prellenada al agendar.
 
-## 22. Recordatorio 24 h antes y respuesta del paciente (etapa 1)
+## 22. Recordatorio y respuesta del paciente (etapa 1)
+
+**Desde el 24/11/2026 (H-82)** el recordatorio ya no sale 24 h antes: `App\Support\MomentoRecordatorio::para()` calcula el día hábil anterior (abierto en Horarios de atención y sin bloqueo de día completo) a la hora de apertura + 1. `dentissa:enviar-recordatorios` revisa las citas de los próximos 8 días y manda las que ya pasaron ese momento y se crearon antes de él. Lo que sigue en esta sección describe la versión original de 24 h.
 
 **Objetivo:** reducir inasistencias. Un día antes, el paciente recibe un
 recordatorio por WhatsApp **y** por correo y puede responder **Asistiré**,

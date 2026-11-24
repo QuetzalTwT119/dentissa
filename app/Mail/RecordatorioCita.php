@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\URL;
 
 /**
- * Recordatorio 24 h antes de la cita, con un enlace firmado por cada
+ * Recordatorio del día hábil anterior a la cita, con un enlace firmado por cada
  * respuesta posible. La firma impide cambiar el número de cita o la acción en
  * la URL; después de la hora de la cita la respuesta ya no se acepta.
  */

@@ -14,6 +14,7 @@ use App\Models\Servicio;
 use App\Models\Tratamiento;
 use App\Models\User;
 use App\Services\RespuestaRecordatorioService;
+use App\Support\MomentoRecordatorio;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -112,14 +113,15 @@ class RecordatorioCitaTest extends TestCase
         }
     }
 
-    public function test_ignora_citas_canceladas_atendidas_ya_pasadas_o_de_mas_de_24_horas(): void
+    public function test_ignora_citas_canceladas_atendidas_ya_pasadas_o_que_aun_no_les_toca(): void
     {
         $citas = [
             $this->cita('2030-01-10 09:00', EstadoCita::Cancelada),
             $this->cita('2030-01-10 09:00', EstadoCita::NoAsistio),
             $this->cita('2030-01-10 09:00', EstadoCita::Completada),
             $this->cita('2030-01-09 09:00'),
-            $this->cita('2030-01-10 10:15'),
+            // Viernes: su recordatorio sale el jueves a las 9:00.
+            $this->cita('2030-01-11 09:00'),
         ];
 
         $this->artisan('dentissa:enviar-recordatorios')->assertSuccessful();
@@ -139,7 +141,7 @@ class RecordatorioCitaTest extends TestCase
         Mail::assertSent(RecordatorioCita::class, 1);
     }
 
-    public function test_no_recuerda_una_cita_agendada_con_menos_de_24_horas_de_anticipacion(): void
+    public function test_no_recuerda_una_cita_agendada_despues_del_momento_del_recordatorio(): void
     {
         $cita = $this->cita('2030-01-10 09:00', creadaEl: '2030-01-09 09:30');
 
@@ -164,6 +166,33 @@ class RecordatorioCitaTest extends TestCase
 
         $this->artisan('dentissa:enviar-recordatorios')->assertSuccessful();
         Mail::assertSent(RecordatorioCita::class, 1);
+    }
+
+    /** 24/11/2026: el día hábil anterior, una hora después de abrir. */
+    public function test_sale_el_dia_habil_anterior_una_hora_despues_de_abrir(): void
+    {
+        // Abre de lunes a viernes de 8 a 18 y sábado de 9 a 14 (migración); domingo cerrado.
+        $this->assertSame('2030-01-09 09:00', MomentoRecordatorio::para(Carbon::parse('2030-01-10 19:30'))->format('Y-m-d H:i'));
+        // Lunes 14 → sábado 12, 10:00 (el domingo está cerrado).
+        $this->assertSame('2030-01-12 10:00', MomentoRecordatorio::para(Carbon::parse('2030-01-14 08:00'))->format('Y-m-d H:i'));
+
+        // Sin sábados → el viernes. Con el viernes bloqueado → el jueves.
+        \App\Models\HorarioAtencion::where('dia_semana', 6)->update(['abierto' => false]);
+        $this->assertSame('2030-01-11 09:00', MomentoRecordatorio::para(Carbon::parse('2030-01-14 08:00'))->format('Y-m-d H:i'));
+        \App\Models\BloqueoAgenda::create(['fecha_inicio' => '2030-01-11', 'fecha_fin' => '2030-01-11', 'motivo' => 'Curso']);
+        $this->assertSame('2030-01-10 09:00', MomentoRecordatorio::para(Carbon::parse('2030-01-14 08:00'))->format('Y-m-d H:i'));
+    }
+
+    public function test_una_cita_del_lunes_se_recuerda_antes_del_fin_de_semana(): void
+    {
+        Carbon::setTestNow('2030-01-12 10:05'); // sábado
+        $lunes = $this->cita('2030-01-14 08:00');
+        $martes = $this->cita('2030-01-15 08:00');
+
+        $this->artisan('dentissa:enviar-recordatorios')->assertSuccessful();
+
+        $this->assertNotNull($lunes->fresh()->recordatorio_enviado_en);
+        $this->assertNull($martes->fresh()->recordatorio_enviado_en);
     }
 
     public function test_el_scheduler_corre_el_comando_cada_15_minutos(): void
