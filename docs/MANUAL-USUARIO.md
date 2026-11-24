@@ -763,6 +763,25 @@ Escribe el código actual de la app o un código de recuperación. Tienes 5
 minutos; si se pasa el tiempo, vuelve a iniciar sesión. Si el código no
 funciona, revisa que la hora de tu celular esté en automático.
 
+## 6.2 Pagos e ingresos
+
+Desde el 24/11/2026 se registra lo que cada paciente paga en el consultorio (solo el
+registro: el cobro sigue siendo en persona; no hay pago en línea ni factura).
+
+- **Registrar un pago:** en la Agenda, una cita **completada** sin pago muestra **$ Registrar
+  pago** (llega con la cita elegida y su precio estimado como monto sugerido). También desde
+  el expediente, sección **Pagos → Registrar pago** (por ejemplo, un anticipo o un abono sin
+  cita). Se indica monto, forma de pago (efectivo, tarjeta o transferencia), fecha (hoy o
+  antes) y, si quieres, la cita y un concepto.
+- **En el expediente** se ve cuánto ha pagado el paciente y, si hay citas completadas con
+  precio, cuánto falta **por cobrar (estimado)**: suma del precio de esas citas (con su
+  oferta) menos lo pagado. Es una referencia; lo que cuenta es lo registrado.
+- **Gestión → Pagos e ingresos:** total cobrado del periodo (por omisión, el mes en curso),
+  lo de cada forma de pago y la lista de pagos, con filtros **Desde**, **Hasta** y **Forma
+  de pago**. Un pago capturado por error se quita con la 🗑.
+- Lo ven la doctora titular y los doctores; la asistente no. Registrar y eliminar pagos
+  queda en Control de actividades.
+
 ## 7. Reportes administrativos
 
 En **Reportes**, el administrador selecciona las fechas **Desde** y **Hasta**

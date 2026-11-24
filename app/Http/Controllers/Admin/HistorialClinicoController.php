@@ -29,6 +29,9 @@ class HistorialClinicoController extends Controller
                 ->orderByDesc('fecha_consulta')
                 ->paginate($this->paginationPageSize($request)),
             'consentimientos' => $paciente->consentimientos()->with('doctor:id,nombre,apellido')->latest()->get(),
+            // Pagos (24/11/2026): solo para quien tiene el módulo.
+            'pagos' => $request->user()->puede('pagos') ? $paciente->pagos()->with('cita.tratamiento:id,nombre')->orderByDesc('fecha')->orderByDesc('id')->limit(10)->get() : null,
+            'resumenPagos' => $request->user()->puede('pagos') ? PagoController::resumenPaciente($paciente) : null,
         ]);
     }
 

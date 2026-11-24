@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\MensajeContactoController as AdminMensajeContacto
 use App\Http\Controllers\Admin\ConfiguracionController;
 use App\Http\Controllers\Admin\DatosConsultorioController;
 use App\Http\Controllers\Admin\OfertaController as AdminOfertaController;
+use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\PacienteController;
 use App\Http\Controllers\Admin\PreguntaFrecuenteController;
 use App\Http\Controllers\Admin\ReporteController;
@@ -271,6 +272,11 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     // cascadeOnDelete y se borraría el historial de los pacientes (destroy() lo revisa).
     Route::resource('usuarios', UsuarioController::class)->only(['index', 'create', 'store', 'destroy']);
 
+    // Pagos e ingresos (24/11/2026).
+    Route::get('pagos', [PagoController::class, 'index'])->name('pagos.index');
+    Route::get('pagos/registrar', [PagoController::class, 'create'])->name('pagos.create');
+    Route::post('pagos', [PagoController::class, 'store'])->name('pagos.store');
+    Route::delete('pagos/{pago}', [PagoController::class, 'destroy'])->name('pagos.destroy');
     Route::get('reportes', [ReporteController::class, 'index'])->name('reportes.index');
     Route::get('reportes/pdf', [ReporteController::class, 'pdf'])->name('reportes.pdf');
     Route::get('reportes/excel', [ReporteController::class, 'excel'])->name('reportes.excel');

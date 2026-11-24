@@ -27,6 +27,7 @@ class PermisosPorModuloTest extends TestCase
         'pacientes' => 'admin.pacientes.index',
         'usuarios' => 'admin.usuarios.index',
         'reportes' => 'admin.reportes.index',
+        'pagos' => 'admin.pagos.index',
         'mensajes' => 'admin.mensajes.index',
         'control_actividades' => 'admin.auditoria.index',
         'catalogo' => 'admin.servicios.index',

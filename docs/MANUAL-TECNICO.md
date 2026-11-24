@@ -706,6 +706,8 @@ como opcionales; la cita relacionada solo se muestra si hay citas disponibles.
 
 **Agenda para la asistente (H-86, 24/11/2026).** `config/permisos.php`: `asistente => [inicio, agenda, notificaciones, historia_clinica]`. Con eso ve Agenda, Asistente de agenda y la campana, y recibe los avisos internos (`Permisos::rolesCon(notificaciones)`). "Registrar consulta" en la Agenda sigue oculto para ella porque pide el módulo `pacientes`.
 
+**Pagos e ingresos (H-87, 24/11/2026).** Tabla `pagos` (paciente, cita opcional, monto, método `efectivo|tarjeta|transferencia`, fecha, concepto, `registrado_por`). Módulo nuevo `pagos` (`admin.pagos.index/create/store/destroy`) para `super_admin` y `doctor`. `Cita::precioEstimado()` usa `precio_referencia` del tratamiento y `Oferta::precioPara()`; `PagoController::resumenPaciente()` da pagado, estimado y por cobrar para el expediente. En la Agenda, una cita completada sin pagos muestra "Registrar pago". Bitácora: `pago.registrado`, `pago.eliminado`. Pruebas: `PagosTest`.
+
 ## 12. Auditoría de operaciones sensibles
 
 `AuditoriaService` centraliza el registro de acciones relevantes del personal

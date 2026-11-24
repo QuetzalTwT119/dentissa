@@ -40,6 +40,8 @@ return [
         'pacientes' => ['admin.pacientes.*', 'historial.imagenes.show'],
         'usuarios' => ['admin.usuarios.*'],
         'reportes' => ['admin.reportes.*'],
+        // Pagos e ingresos (24/11/2026).
+        'pagos' => ['admin.pagos.*'],
         'mensajes' => ['admin.mensajes.*'],
         'control_actividades' => ['admin.auditoria.*'],
         'catalogo' => ['admin.servicios.*', 'admin.tratamientos.*'],
@@ -55,7 +57,7 @@ return [
 
         // Igual que el antiguo "admin" (todas las rutas del panel). Temporal.
         'doctor' => [
-            'inicio', 'cuenta', 'notificaciones', 'agenda', 'historia_clinica', 'pacientes', 'usuarios', 'reportes',
+            'inicio', 'cuenta', 'notificaciones', 'agenda', 'historia_clinica', 'pacientes', 'usuarios', 'reportes', 'pagos',
             'mensajes', 'control_actividades', 'catalogo', 'contenido', 'configuracion',
         ],
 

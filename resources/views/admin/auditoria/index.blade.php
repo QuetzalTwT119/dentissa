@@ -21,6 +21,8 @@ $etiquetasAccion = [
     'paciente.registrado' => 'Paciente registrado sin cita',
     'receta.generada' => 'Receta impresa',
     'consentimiento.creado' => 'Consentimiento informado generado',
+    'pago.registrado' => 'Pago registrado',
+    'pago.eliminado' => 'Pago eliminado',
     'usuario.creado' => 'Usuario creado',
     'usuario.actualizado' => 'Usuario actualizado',
     'usuario.activado' => 'Cuenta activada',
@@ -95,6 +97,7 @@ $etiquetasTabla = [
     'horarios_atencion' => 'Horario',
     'bloqueos_agenda' => 'Bloqueo de agenda',
     'consentimientos' => 'Consentimiento informado',
+    'pagos' => 'Pago',
     'datos_consultorio' => 'Consultorio',
     'mensajes_contacto' => 'Mensaje de contacto',
 ];

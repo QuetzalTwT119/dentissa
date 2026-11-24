@@ -7,6 +7,8 @@
     $estadosConAccionesSecundarias = ['agendada', 'confirmada'];
     $estadosTerminales = ['completada', 'cancelada', 'no_asistio'];
     $esPersonal = true;
+    // Cita completada sin pago y quien registra pagos (24/11/2026).
+    $puedeRegistrarPago = $cita->exists && $cita->id_paciente && $cita->estado->value === 'completada' && auth()->user()?->puede('pagos') && ! $cita->pagos()->exists();
     // Cita completada sin su consulta y quien ve expedientes (22/11/2026).
     $puedeRegistrarConsulta = $cita->exists && $cita->id_paciente && $cita->estado->value === 'completada' && auth()->user()?->puede('pacientes') && ! $cita->historialClinico()->exists();
 @endphp
@@ -51,6 +53,13 @@
            class="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-brand-200 bg-white px-3.5 text-xs font-semibold text-brand-700 shadow-2xs transition hover:border-brand-400 hover:bg-brand-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2">
             <x-icon name="expediente" />
             Registrar consulta
+        </a>
+    @endif
+
+    @if ($puedeRegistrarPago)
+        <a href="{{ route('admin.pagos.create', ['paciente' => $cita->id_paciente, 'cita' => $cita->id]) }}" data-registrar-pago
+           class="inline-flex h-[42px] items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-sage-200 bg-white px-3.5 text-xs font-semibold text-sage-700 shadow-2xs transition hover:border-sage-400 hover:bg-sage-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sage-400 focus-visible:ring-offset-2">
+            $ Registrar pago
         </a>
     @endif
 
@@ -104,7 +113,7 @@
                 </form>
             </div>
         </details>
-    @elseif ($esPersonal && in_array($cita->estado->value, $estadosTerminales, true) && ! $puedeRegistrarConsulta)
+    @elseif ($esPersonal && in_array($cita->estado->value, $estadosTerminales, true) && ! $puedeRegistrarConsulta && ! $puedeRegistrarPago)
         <span class="text-xs text-muted">Sin acciones</span>
     @endif
 </div>

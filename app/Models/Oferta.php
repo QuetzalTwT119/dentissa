@@ -90,6 +90,19 @@ class Oferta extends Model
         };
     }
 
+    /** Precio final de un tratamiento con esta oferta (24/11/2026, para Pagos). */
+    public function precioPara(float $base): float
+    {
+        $cantidad = (float) $this->cantidadBeneficio();
+
+        return match ($this->beneficio()) {
+            'precio' => $cantidad,
+            'porcentaje' => round($base * max(0, 100 - $cantidad) / 100, 2),
+            'monto' => max(0, $base - $cantidad),
+            default => 0.0,
+        };
+    }
+
     /** Texto corto del beneficio: "−20%", "−$300", "Precio especial $2,800", "Gratis". */
     public function etiquetaBeneficio(): string
     {
