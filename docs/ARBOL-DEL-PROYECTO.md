@@ -147,7 +147,8 @@ Panel                                         Módulo               T   D   A
 │   │   ├── ＋ Nuevo paciente (sin cita)
 │   │   ├── ✎ Editar paciente
 │   │   └── 📋 Historial clínico: historia clínica (cuestionario, módulo
-│   │       historia_clinica), consultas, adjuntos, PDF
+│   │       historia_clinica), consultas, receta, consentimiento informado,
+│   │       adjuntos, PDF
 │   ├── Usuarios  /admin/usuarios              usuarios             ✓   ✓*  ✗
 │   │   └── Nuevo usuario · Desactivar · Eliminar
 │   ├── Reportes  /admin/reportes (PDF/Excel)  reportes             ✓   ✓   ✗

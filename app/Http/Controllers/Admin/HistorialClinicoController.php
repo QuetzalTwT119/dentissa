@@ -28,6 +28,7 @@ class HistorialClinicoController extends Controller
                 ->with(['doctor:id,nombre,apellido', 'cita', 'imagenes'])
                 ->orderByDesc('fecha_consulta')
                 ->paginate($this->paginationPageSize($request)),
+            'consentimientos' => $paciente->consentimientos()->with('doctor:id,nombre,apellido')->latest()->get(),
         ]);
     }
 

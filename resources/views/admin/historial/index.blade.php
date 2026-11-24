@@ -124,6 +124,35 @@ $tipoConsultaLabel = [
                 @endif
             </section>
 
+            {{-- Consentimientos informados (24/11/2026): se imprimen para firmarlos a mano. --}}
+            <section class="rounded-3xl border border-line bg-white p-5 shadow-soft sm:p-6" aria-labelledby="titulo-consentimientos" data-consentimientos>
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                        <h2 id="titulo-consentimientos" class="text-headline font-semibold text-ink">Consentimientos informados</h2>
+                        <p class="mt-0.5 text-sm text-muted">Para extracciones, cirugías, endodoncias y otros procedimientos: se imprime y se firma.</p>
+                    </div>
+                    <a href="{{ route('admin.pacientes.consentimientos.create', $paciente) }}" class="btn-secondary min-h-11 px-5" data-nuevo-consentimiento>Nuevo consentimiento</a>
+                </div>
+
+                @if (session('imprimir_consentimiento'))
+                    <a href="{{ session('imprimir_consentimiento') }}" target="_blank" rel="noopener" class="btn-brand mt-4 min-h-11 px-5" data-imprimir-consentimiento>Abrir para imprimir</a>
+                @endif
+
+                @if ($consentimientos->isNotEmpty())
+                    <ul class="mt-4 divide-y divide-line rounded-2xl border border-line">
+                        @foreach ($consentimientos as $consentimiento)
+                            <li class="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-sm">
+                                <span class="min-w-0 text-ink">
+                                    <span class="font-semibold">{{ $consentimiento->procedimiento }}</span>{{ $consentimiento->dientes ? ' · '.$consentimiento->dientes : '' }}
+                                    <span class="text-muted">· {{ $consentimiento->created_at->translatedFormat('j M Y') }}{{ $consentimiento->doctor ? ' · '.$consentimiento->doctor->nombre.' '.$consentimiento->doctor->apellido : '' }}</span>
+                                </span>
+                                <a href="{{ route('admin.pacientes.consentimientos.pdf', [$paciente, $consentimiento]) }}" target="_blank" rel="noopener" class="link inline-flex min-h-11 items-center">Imprimir</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </section>
+
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <h2 class="text-headline font-semibold text-ink">Consultas</h2>
                 <a href="{{ route('admin.pacientes.historial.create', $paciente) }}" class="{{ $consultas->isEmpty() ? 'btn-brand' : 'btn-secondary' }} min-h-11 px-5" data-nueva-consulta>

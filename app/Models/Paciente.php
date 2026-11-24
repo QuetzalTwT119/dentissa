@@ -62,6 +62,12 @@ class Paciente extends Model
     }
 
     /** Cuestionario de historia clínica (una por paciente, 22/11/2026). */
+    /** Consentimientos informados impresos (24/11/2026). */
+    public function consentimientos(): HasMany
+    {
+        return $this->hasMany(Consentimiento::class, 'id_paciente');
+    }
+
     public function historiaClinica(): HasOne
     {
         return $this->hasOne(HistoriaClinica::class, 'id_paciente');

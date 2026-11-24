@@ -702,6 +702,8 @@ como opcionales; la cita relacionada solo se muestra si hay citas disponibles.
 
 **Receta en PDF (H-84, 24/11/2026).** `users.cedula_profesional` y `users.especialidad` (Mi perfil, solo con el módulo `pacientes`). `HistorialClinicoController@receta` (`admin.pacientes.historial.receta`): exige medicamentos y cédula de `id_doctor`, toma edad y alergias de la historia clínica, registra `receta.generada` y devuelve `pdf.receta` en tamaño carta con `stream()` (se abre en el navegador para imprimir). Pruebas: `RecetaPdfTest`.
 
+**Consentimiento informado (H-85, 24/11/2026).** Tabla `consentimientos` (paciente, doctor, procedimiento, dientes, beneficios, riesgos, alternativas). `ConsentimientoController` (`admin.pacientes.consentimientos.create/store/pdf`, módulo `pacientes`); textos de partida en `Consentimiento::BENEFICIOS/RIESGOS/ALTERNATIVAS`. `pdf.consentimiento` sigue los elementos de la NOM-004-SSA3-2012 (firmas de paciente o representante, odontólogo y dos testigos); se firma a mano, sin firma digital. Bitácora `consentimiento.creado` sin el texto clínico. Pruebas: `ConsentimientoTest`.
+
 ## 12. Auditoría de operaciones sensibles
 
 `AuditoriaService` centraliza el registro de acciones relevantes del personal

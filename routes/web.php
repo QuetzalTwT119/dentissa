@@ -4,6 +4,7 @@ use App\Enums\TipoImagen;
 use App\Http\Controllers\Admin\AuditoriaController;
 use App\Http\Controllers\Admin\BloqueoAgendaController;
 use App\Http\Controllers\Admin\CasoController;
+use App\Http\Controllers\Admin\ConsentimientoController;
 use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
 use App\Http\Controllers\Admin\ExploracionClinicaController;
 use App\Http\Controllers\Admin\HistoriaClinicaController;
@@ -258,6 +259,10 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::delete('pacientes/{paciente}/historial/{historial}/imagenes/{imagen}', [HistorialClinicoController::class, 'destroyImagen'])->name('pacientes.historial.imagenes.destroy');
     Route::get('pacientes/{paciente}/historial-pdf', [HistorialClinicoController::class, 'pdf'])->name('pacientes.historial.pdf');
     Route::get('pacientes/{paciente}/historial/{historial}/receta', [HistorialClinicoController::class, 'receta'])->name('pacientes.historial.receta');
+    // Consentimiento informado (24/11/2026).
+    Route::get('pacientes/{paciente}/consentimientos/crear', [ConsentimientoController::class, 'create'])->name('pacientes.consentimientos.create');
+    Route::post('pacientes/{paciente}/consentimientos', [ConsentimientoController::class, 'store'])->name('pacientes.consentimientos.store');
+    Route::get('pacientes/{paciente}/consentimientos/{consentimiento}/pdf', [ConsentimientoController::class, 'pdf'])->name('pacientes.consentimientos.pdf');
 
     Route::patch('usuarios/{usuario}/activo', [UsuarioController::class, 'toggleActivo'])->name('usuarios.activo.toggle');
     // Usuarios (22/11/2026, decisión del usuario): solo crear, desactivar y eliminar.
