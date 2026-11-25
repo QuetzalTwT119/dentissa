@@ -6,7 +6,10 @@
 --}}
 @php
     $direccion = trim((string) ($contacto['direccion'] ?? ''));
-    $direccionUrl = urlencode($direccion);
+    // 25/11/2026: con el nombre del negocio, Maps abre su ficha (foto, horario,
+    // teléfono); solo con la dirección marcaba un punto en la calle.
+    $nombreMaps = trim((string) ($contacto['nombre_maps'] ?? ''));
+    $direccionUrl = urlencode($nombreMaps !== '' ? "{$nombreMaps}, {$direccion}" : $direccion);
 @endphp
 @if ($direccion !== '')
     <section id="ubicacion" aria-labelledby="titulo-ubicacion" class="mx-auto max-w-7xl px-4 pt-20 sm:px-6 lg:px-8 lg:pt-28" data-ubicacion>

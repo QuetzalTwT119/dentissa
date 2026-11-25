@@ -135,6 +135,9 @@ primera consulta con la historia clínica. Antes del pie, **Ubicación** muestra
 dirección con un **mapa de Google**; **Cómo llegar** abre la ruta en Google Maps y
 **Escribir por WhatsApp** abre el chat. La dirección se cambia en
 **Configuración → Datos del consultorio**; si se deja vacía, el mapa no aparece.
+Si escribes también el **Nombre del negocio en Google Maps** (tal como aparece en
+Maps, por ejemplo «Dentiluna»), el mapa y **Cómo llegar** abren la **ficha del
+consultorio** con su foto, horario y teléfono, y no solo un punto en la calle.
 
 La portada también muestra:
 
@@ -546,7 +549,7 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
 - **Configuración** (menú del panel, solo administradores) es una sola página
   con dos bloques, cada uno con su botón de guardar:
   - **Datos del consultorio:** teléfono, WhatsApp de contacto ("Es el mismo
-    número que el teléfono" o uno distinto), correo y dirección. Lo que se
+    número que el teléfono" o uno distinto), correo, dirección y nombre del negocio en Google Maps (opcional). Lo que se
     guarde se ve de inmediato en la portada, el pie, "¿Prefieres llamar?", la
     página del recordatorio y la respuesta automática del bot. Úsalo si se
     pierde o cambia el celular. Pide confirmación y queda en Control de actividades. El
