@@ -38,22 +38,18 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                         </x-filtro.barra>
                         {{-- Las descargas respetan el rango elegido. --}}
                         <div class="flex flex-wrap items-center gap-3 shrink-0">
-                                <a href="{{ route('admin.reportes.pdf').$queryString }}">
-                                    <x-secondary-button type="button" class="inline-flex items-center gap-1.5">
+                                <x-boton-enlace href="{{ route('admin.reportes.pdf').$queryString }}" class="inline-flex items-center gap-1.5">
                                         <svg class="h-4 w-4 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                         Descargar PDF
-                                    </x-secondary-button>
-                                </a>
-                                <a href="{{ route('admin.reportes.excel').$queryString }}">
-                                    <x-secondary-button type="button" class="inline-flex items-center gap-1.5">
+                                    </x-boton-enlace>
+                                <x-boton-enlace href="{{ route('admin.reportes.excel').$queryString }}" class="inline-flex items-center gap-1.5">
                                         <svg class="h-4 w-4 text-sage-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                         Descargar Excel
-                                    </x-secondary-button>
-                                </a>
+                                    </x-boton-enlace>
                         </div>
                     </div>
                     <x-input-error :messages="$errors->get('fecha_inicio')" class="mt-2" />
@@ -66,6 +62,8 @@ $queryString = '?fecha_inicio='.$reporte['rango']['fecha_inicio'].'&fecha_fin='.
                 <div class="rounded-2xl border border-line bg-white p-5 shadow-soft transition hover:border-peach-300 flex flex-col justify-between h-full lg:p-4">
                     <p class="text-xs font-semibold uppercase tracking-label text-muted">Tasa de ocupación</p>
                     <p class="mt-2 font-serif text-3xl font-semibold text-brand-600 lg:mt-1 lg:text-2xl">{{ $reporte['ocupacion']['tasa_ocupacion'] }}%</p>
+                    {{-- 25/11/2026: se explica qué mide (antes un número suelto que no cuadraba). --}}
+                    <p class="mt-1 text-xs text-muted" data-ocupacion-detalle>{{ number_format(intdiv($reporte['ocupacion']['minutos_ocupados'] ?? 0, 60)) }} h con citas de {{ number_format(intdiv($reporte['ocupacion']['capacidad_total'], 60)) }} h de atención</p>
                 </div>
                 <div class="rounded-2xl border border-line bg-white p-5 shadow-soft transition hover:border-peach-300 flex flex-col justify-between h-full lg:p-4">
                     <p class="text-xs font-semibold uppercase tracking-label text-muted">Tasa de inasistencia</p>

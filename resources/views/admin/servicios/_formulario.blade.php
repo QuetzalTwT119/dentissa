@@ -30,9 +30,7 @@
                 <h1 class="truncate text-title-2 text-ink">{{ $esNuevo ? 'Nuevo servicio' : $servicio->nombre }}</h1>
             </div>
             <div class="flex items-center gap-2.5">
-                <a href="{{ route('admin.servicios.index') }}" class="hidden sm:inline-block">
-                    <x-secondary-button type="button">Cancelar</x-secondary-button>
-                </a>
+                <x-boton-cancelar href="{{ route('admin.servicios.index') }}" class="hidden sm:inline-flex" />
                 {{-- En escritorio el botón vive arriba: siempre a la vista y sin desplazarse. --}}
                 <x-primary-button form="form-servicio" class="hidden lg:inline-flex" data-guardar-arriba>{{ $textoGuardar }}</x-primary-button>
             </div>

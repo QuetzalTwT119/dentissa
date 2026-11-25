@@ -55,7 +55,7 @@ class OfertasEnCitasTest extends TestCase
     }
 
     /** 23/11/2026: la oferta solo se aplica si el paciente entró desde ella (id_oferta). */
-    private function agendar(string $hora = '09:00', ?Carbon $fecha = null, string $telefono = '5555555555', ?int $idOferta = null)
+    private function agendar(string $hora = '09:00', ?Carbon $fecha = null, string $telefono = '5544332211', ?int $idOferta = null)
     {
         return $this->post(route('citas.publica.store'), array_filter([
             'id_servicio' => $this->servicio->id,

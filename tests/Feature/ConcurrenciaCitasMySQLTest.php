@@ -57,7 +57,7 @@ class ConcurrenciaCitasMySQLTest extends TestCase
                 'id_usuario' => $usuario->id,
                 'nombre' => "Paciente QA {$numero}",
                 'apellido' => 'Concurrencia',
-                'telefono' => '5555555555',
+                'telefono' => '5544332211',
                 'email' => "concurrencia-{$numero}-".uniqid().'@example.test',
             ]);
         });

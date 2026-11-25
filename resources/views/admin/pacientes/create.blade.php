@@ -63,9 +63,7 @@
 
                     <div class="flex items-center gap-4 border-t border-line pt-4">
                         <x-primary-button>Registrar paciente</x-primary-button>
-                        <a href="{{ route('admin.pacientes.index') }}">
-                            <x-secondary-button type="button">Cancelar</x-secondary-button>
-                        </a>
+                        <x-boton-cancelar href="{{ route('admin.pacientes.index') }}" />
                     </div>
                 </form>
             </x-admin.card>

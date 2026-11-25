@@ -25,9 +25,7 @@
                     </div>
                     <div class="flex items-center gap-4 border-t border-line pt-4">
                         <x-primary-button>Crear plan</x-primary-button>
-                        <a href="{{ route('admin.pacientes.historial.index', $paciente) }}">
-                            <x-secondary-button type="button">Cancelar</x-secondary-button>
-                        </a>
+                        <x-boton-cancelar href="{{ route('admin.pacientes.historial.index', $paciente) }}" />
                     </div>
                 </form>
             </x-admin.card>

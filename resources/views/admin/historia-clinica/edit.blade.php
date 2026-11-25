@@ -27,9 +27,7 @@
                 <h1 class="truncate text-title-2 text-ink">Historia clínica — {{ $paciente->nombre_completo }}</h1>
             </div>
             <div class="flex items-center gap-2.5">
-                <a href="{{ $regreso }}" class="hidden sm:inline-block">
-                    <x-secondary-button type="button">Cancelar</x-secondary-button>
-                </a>
+                <x-boton-cancelar href="{{ $regreso }}" class="hidden sm:inline-flex" />
                 <x-primary-button form="form-historia" class="hidden lg:inline-flex">{{ $esNueva ? 'Guardar historia clínica' : 'Guardar cambios' }}</x-primary-button>
             </div>
         </div>

@@ -105,7 +105,7 @@ class PacienteHistorialTest extends TestCase
 
         $this->assertDatabaseHas('pacientes', [
             'id' => $paciente->id,
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => $paciente->email,
         ]);
         $this->assertDatabaseMissing('logs_auditoria', [
@@ -251,7 +251,7 @@ class PacienteHistorialTest extends TestCase
         return Paciente::create([
             'nombre' => $nombre,
             'apellido' => $apellido,
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => fake()->unique()->safeEmail(),
         ]);
     }

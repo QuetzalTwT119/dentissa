@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Rules\TelefonoMexico;
 use App\Http\Controllers\Controller;
 use App\Models\DatosConsultorio;
 use App\Services\AuditoriaService;
@@ -31,9 +32,9 @@ class DatosConsultorioController extends Controller
         ]);
 
         $datos = $request->validate([
-            'telefono' => ['required', 'digits:10'],
+            'telefono' => ['required', 'digits:10', new TelefonoMexico],
             'mismo_whatsapp' => ['boolean'],
-            'whatsapp' => ['exclude_if:mismo_whatsapp,1', 'required', 'digits:10'],
+            'whatsapp' => ['exclude_if:mismo_whatsapp,1', 'required', 'digits:10', new TelefonoMexico],
             'correo' => ['nullable', 'email', 'max:100'],
             'direccion' => ['nullable', 'string', 'max:200'],
             'mision' => ['nullable', 'string', 'max:400'],

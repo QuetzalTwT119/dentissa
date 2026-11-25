@@ -69,9 +69,7 @@
                     <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button x-bind:disabled="!hora">Guardar nuevo horario</x-primary-button>
 
-                        <a href="{{ route('citas.index') }}">
-                            <x-secondary-button type="button">Cancelar</x-secondary-button>
-                        </a>
+                        <x-boton-cancelar href="{{ route('citas.index') }}" />
                     </div>
                 </form>
             </x-admin.card>

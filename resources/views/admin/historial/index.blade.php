@@ -19,9 +19,7 @@ $tipoConsultaLabel = [
                         subtitle="Historia clínica, exploración con odontograma y consultas.">
             <x-slot:actions>
                 @if ($hayPdf)
-                    <a href="{{ route('admin.pacientes.historial.pdf', $paciente) }}">
-                        <x-secondary-button type="button" class="inline-flex items-center gap-2">{!! $iconoPdf !!} Descargar PDF</x-secondary-button>
-                    </a>
+                    <x-boton-enlace href="{{ route('admin.pacientes.historial.pdf', $paciente) }}" class="inline-flex items-center gap-2">{!! $iconoPdf !!} Descargar PDF</x-boton-enlace>
                 @else
                     <x-secondary-button type="button" disabled title="Disponible cuando haya historia clínica, exploración o una consulta" class="inline-flex cursor-not-allowed items-center gap-2 opacity-50">{!! $iconoPdf !!} Descargar PDF</x-secondary-button>
                 @endif

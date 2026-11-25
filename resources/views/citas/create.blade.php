@@ -55,6 +55,13 @@
                                     @endforeach
                                 </x-select>
                                 <x-input-error :messages="$errors->get('id_paciente')" class="mt-2" />
+                                @if (auth()->user()->puede('pacientes'))
+                                    {{-- 25/11/2026: antes no había forma de llegar desde aquí a registrar a alguien nuevo. --}}
+                                    <p class="mt-2 text-sm text-ink-soft" data-nuevo-paciente>
+                                        ¿No está en la lista?
+                                        <a href="{{ route('admin.pacientes.create') }}" class="font-semibold text-brand-700 underline-offset-2 hover:underline">Registrar paciente nuevo</a>
+                                    </p>
+                                @endif
                             </div>
                         @endif
                     </div>
@@ -88,6 +95,10 @@
                                         </template>
                                     </x-select>
                                     <x-input-error :messages="$errors->get('id_tratamiento')" class="mt-2" />
+                                    {{-- 25/11/2026: una especialidad sin tratamientos dejaba la lista vacía sin explicar por qué. --}}
+                                    <p x-show="servicioSeleccionado.tratamientos.length === 0" x-cloak class="mt-2 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800" data-sin-tratamientos>
+                                        Esta especialidad todavía no tiene tratamientos publicados, así que no se puede agendar en línea. Agrégalos en Catálogo → Servicios, o elige otra especialidad.
+                                    </p>
                                 </div>
                             </template>
                         </div>
@@ -119,9 +130,7 @@
                     <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button x-bind:disabled="!hora">Confirmar cita</x-primary-button>
 
-                        <a href="{{ route('citas.index') }}">
-                            <x-secondary-button type="button">Cancelar</x-secondary-button>
-                        </a>
+                        <x-boton-cancelar href="{{ route('citas.index') }}" />
                     </div>
                 </form>
             </div>

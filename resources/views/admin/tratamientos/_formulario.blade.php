@@ -53,9 +53,9 @@
 
 
                 <div>
-                    <x-input-label for="duracion_estimada" value="Duración (minutos)" />
-                    <x-text-input id="duracion_estimada" name="duracion_estimada" type="number" min="0" step="5" class="mt-1.5 block w-full" :value="$valor('duracion_estimada')" x-model="duracion" />
-                    <p class="mt-1 text-xs text-muted">Define cuánto ocupa en la agenda.</p>
+                    <x-input-label :required="true" for="duracion_estimada" value="Duración (minutos)" />
+                    <x-text-input id="duracion_estimada" name="duracion_estimada" type="number" min="15" max="480" step="5" required class="mt-1.5 block w-full" :value="$valor('duracion_estimada')" x-model="duracion" />
+                    <p class="mt-1 text-xs text-muted">Define cuánto ocupa en la agenda (de 15 a 480 minutos).</p>
                     <x-input-error :messages="$errors->get('duracion_estimada')" class="mt-2" />
                 </div>
 

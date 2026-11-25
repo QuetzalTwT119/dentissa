@@ -106,7 +106,7 @@
 
                             <div class="flex items-center gap-4">
                                 <x-primary-button>Confirmar y agendar</x-primary-button>
-                                <a href="{{ route('asistente-agenda.create') }}"><x-secondary-button type="button">Empezar de nuevo</x-secondary-button></a>
+                                <x-boton-enlace href="{{ route('asistente-agenda.create') }}">Empezar de nuevo</x-boton-enlace>
                             </div>
                         </form>
                     @else
