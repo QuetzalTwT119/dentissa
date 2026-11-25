@@ -80,7 +80,8 @@
                                 {{ $enCursoOlvidadas->count() === 1 ? 'Una cita quedó' : $enCursoOlvidadas->count().' citas quedaron' }} «En curso» de días anteriores.
                             </p>
                             <p class="mt-1">
-                                Ábrela y presiona <strong>Completar</strong> para que el día cuente bien:
+                                {{-- 25/11/2026: dentissa:cerrar-citas-en-curso las completa a las 00:05. --}}
+                                Se completarán solas esta noche, o ábrelas y presiona <strong>Completar</strong> ahora:
                                 @foreach ($enCursoOlvidadas->groupBy(fn ($cita) => $cita->fecha_hora->toDateString()) as $fecha => $grupo)
                                     <a href="{{ route('citas.index', ['fecha' => $fecha]) }}" class="font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-700">{{ \Illuminate\Support\Carbon::parse($fecha)->locale('es')->translatedFormat('D j M') }} ({{ $grupo->count() }})</a>@if (! $loop->last), @endif
                                 @endforeach

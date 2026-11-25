@@ -16,4 +16,8 @@ php artisan migrate --force
 # igual: el programador lo reintenta el día 1 de cada mes.
 php artisan dentissa:bloquear-festivos || echo "Aviso: no se pudieron bloquear los festivos; se reintentará el día 1."
 
+# Citas que quedaron «En curso» de días anteriores: se completan al arrancar
+# (y cada noche con el programador). Si falla, la app arranca igual.
+php artisan dentissa:cerrar-citas-en-curso || echo "Aviso: no se pudieron cerrar las citas en curso; se reintentará a las 00:05."
+
 exec supervisord -n -c /etc/supervisor/conf.d/dentissa.conf

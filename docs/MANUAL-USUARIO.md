@@ -341,7 +341,10 @@ A la derecha del título de `/citas` hay un selector **Lista | Semana**:
     "0 citas". Las ya cerradas se pliegan en un renglón ("2 atendidas · 1
     cancelada") con **Mostrar**.
   - Si una cita quedó **En curso** de un día anterior (nadie presionó
-    **Completar**), arriba sale un aviso ámbar con el día: ábrelo y complétala.
+    **Completar**), el sistema la completa solo cada noche (00:05) y te deja un
+    aviso en la campana: «Se completaron N citas olvidadas», con los días.
+    Revisa que tengan su consulta en el historial. Mientras tanto, arriba sale
+    un aviso ámbar con el día por si prefieres completarla tú en ese momento.
   - Al confirmar, iniciar, completar, cancelar o marcar "no asistió" te quedas
     en el **mismo día** (y vista) donde estabas; al crear o reagendar una cita
     la agenda se abre en el día de esa cita.
