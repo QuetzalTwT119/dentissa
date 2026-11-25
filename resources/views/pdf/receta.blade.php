@@ -34,7 +34,10 @@
         <p class="doctor">
             <strong>{{ $doctor->nombre }} {{ $doctor->apellido }}</strong>
             @if ($doctor->especialidad) · {{ $doctor->especialidad }} @endif
-            <br>Cédula profesional: {{ $doctor->cedula_profesional }}
+            {{-- 25/11/2026: sin cédula (exigirla está apagado temporalmente) se omite la línea. --}}
+            @if (filled($doctor->cedula_profesional))
+                <br>Cédula profesional: {{ $doctor->cedula_profesional }}
+            @endif
         </p>
     </div>
 
@@ -67,8 +70,10 @@
     <div class="medicamentos">{{ $consulta->medicamentos_recetados }}</div>
 
     <div class="firma">
-        {{ $doctor->nombre }} {{ $doctor->apellido }}<br>
-        Céd. prof. {{ $doctor->cedula_profesional }}
+        {{ $doctor->nombre }} {{ $doctor->apellido }}
+        @if (filled($doctor->cedula_profesional))
+            <br>Céd. prof. {{ $doctor->cedula_profesional }}
+        @endif
     </div>
 
     <div class="pie">

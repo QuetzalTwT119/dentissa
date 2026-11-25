@@ -76,9 +76,22 @@ class RecetaPdfTest extends TestCase
             ->assertRedirect(route('admin.pacientes.historial.index', $this->paciente))
             ->assertSessionHas('error');
 
+        // Con el interruptor encendido, sin cédula explica qué falta.
+        config(['dentissa.recetas.exigir_cedula' => true]);
         $this->doctora->update(['cedula_profesional' => null]);
         $this->actingAs($this->doctora)->get(route('admin.pacientes.historial.receta', [$this->paciente, $this->consulta()]))
             ->assertSessionHas('error', fn (string $mensaje) => str_contains($mensaje, 'cédula profesional') && str_contains($mensaje, 'Mi perfil'));
+    }
+
+    /** 25/11/2026: exigir la cédula está apagado temporalmente (por omisión). */
+    public function test_sin_cedula_la_receta_se_imprime_si_no_se_exige(): void
+    {
+        $this->assertFalse(config('dentissa.recetas.exigir_cedula'), 'Por omisión no se exige');
+        $this->doctora->update(['cedula_profesional' => null]);
+
+        $respuesta = $this->actingAs($this->doctora)->get(route('admin.pacientes.historial.receta', [$this->paciente, $this->consulta()]));
+
+        $respuesta->assertOk()->assertHeader('content-type', 'application/pdf');
     }
 
     public function test_la_consulta_de_otro_paciente_no_se_imprime(): void
