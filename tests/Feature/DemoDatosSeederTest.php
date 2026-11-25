@@ -3,13 +3,17 @@
 namespace Tests\Feature;
 
 use App\Enums\RolUsuario;
+use App\Enums\TipoImagen;
+use App\Models\Caso;
 use App\Models\Cita;
 use App\Models\HistorialClinico;
+use App\Models\Imagen;
 use App\Models\NotificacionSistema;
 use App\Models\Paciente;
 use App\Models\User;
 use Database\Seeders\DemoDatosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -35,6 +39,7 @@ class DemoDatosSeederTest extends TestCase
     public function test_llena_las_pantallas_sin_mandar_recordatorios_ni_dejar_avisos_pendientes(): void
     {
         config(['services.demo_presentacion.habilitada' => true]);
+        Storage::fake('public');
 
         $this->seed(DemoDatosSeeder::class);
 
@@ -46,9 +51,16 @@ class DemoDatosSeederTest extends TestCase
         // La mañana de hoy queda libre para agendar en vivo.
         $this->assertSame(0, Cita::whereBetween('fecha_hora', ['2026-11-25 08:00', '2026-11-25 11:00'])->count());
 
+        // Galería (3) y dos casos con foto de antes y después (4).
+        Storage::disk('public')->assertExists('galeria/demo-consultorio.jpg');
+        $this->assertSame(3, Imagen::where('tipo', TipoImagen::Galeria)->count());
+        $this->assertSame(2, Caso::count());
+        $this->assertSame(4, Imagen::where('tipo', TipoImagen::Caso)->count());
+
         // Correrlo otra vez no duplica nada.
         $citas = Cita::count();
         $this->seed(DemoDatosSeeder::class);
         $this->assertSame($citas, Cita::count());
+        $this->assertSame(7, Imagen::count());
     }
 }

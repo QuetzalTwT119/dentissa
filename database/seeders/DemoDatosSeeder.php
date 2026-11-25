@@ -7,12 +7,15 @@ use App\Enums\EstadoOferta;
 use App\Enums\EstadoTestimonio;
 use App\Enums\RolUsuario;
 use App\Enums\TipoConsulta;
+use App\Enums\TipoImagen;
+use App\Models\Caso;
 use App\Models\Cita;
 use App\Models\Consentimiento;
 use App\Models\ExploracionClinica;
 use App\Models\HistoriaClinica;
 use App\Models\HistorialClinico;
 use App\Models\HorarioAtencion;
+use App\Models\Imagen;
 use App\Models\MensajeContacto;
 use App\Models\NotificacionSistema;
 use App\Models\Oferta;
@@ -27,6 +30,7 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 /**
@@ -82,8 +86,12 @@ class DemoDatosSeeder extends Seeder
             );
         }
 
+        // Fotos de Galería y Casos: van aparte para poder agregarlas aunque los
+        // datos demo ya existan (cada una revisa si ya está).
+        $this->crearFotos();
+
         if (Paciente::where('email', 'like', self::MARCA.'%@'.self::DOMINIO)->exists()) {
-            $this->command?->warn('Los datos demo ya existen; no se crea nada nuevo.');
+            $this->command?->warn('Los pacientes y citas demo ya existen; no se repiten (las fotos se revisaron aparte).');
 
             return;
         }
@@ -453,6 +461,61 @@ class DemoDatosSeeder extends Seeder
                 $aviso->created_at = $momento;
                 $aviso->updated_at = $momento;
                 $aviso->save();
+            }
+        }
+    }
+
+    /**
+     * Ilustraciones (no fotos de pacientes) en database/seeders/demo-fotos.
+     * Solo se agregan si la clínica todavía no tiene fotos de ese tipo, para no
+     * mezclarlas con fotos reales.
+     */
+    private function crearFotos(): void
+    {
+        $carpeta = __DIR__.'/demo-fotos';
+        $disco = Storage::disk('public');
+        $subir = function (string $archivo, string $destino) use ($carpeta, $disco): string {
+            $ruta = $destino.'/demo-'.$archivo;
+            $disco->put($ruta, file_get_contents($carpeta.'/'.$archivo));
+
+            return $ruta;
+        };
+
+        if (Imagen::where('tipo', TipoImagen::Galeria)->doesntExist()) {
+            $galeria = [
+                ['consultorio.jpg', 'Sala de atención', 'Sillón dental junto a la ventana, con luz natural.'],
+                ['esterilizacion.jpg', 'Área de esterilización', 'Instrumental esterilizado y empaquetado para cada paciente.'],
+                ['sala-espera.jpg', 'Sala de espera', 'Un espacio tranquilo mientras llega tu hora.'],
+            ];
+            foreach ($galeria as $i => [$archivo, $titulo, $descripcion]) {
+                Imagen::create([
+                    'titulo' => $titulo,
+                    'descripcion' => $descripcion,
+                    'url' => $subir($archivo, 'galeria'),
+                    'tipo' => TipoImagen::Galeria,
+                    'orden' => $i + 1,
+                    'activa' => true,
+                ]);
+            }
+        }
+
+        if (Caso::query()->doesntExist()) {
+            $casos = [
+                ['Blanqueamiento dental', 'Ilustración de ejemplo: dientes amarillentos por café antes y después de una sesión de blanqueamiento.', 'blanqueamiento'],
+                ['Retiro de caries', 'Ilustración de ejemplo: caries en premolares antes y después de retirarlas y restaurar con resina del color del diente.', 'caries'],
+            ];
+            foreach ($casos as $i => [$titulo, $descripcion, $base]) {
+                $caso = Caso::create(['titulo' => $titulo, 'descripcion' => $descripcion, 'activo' => true, 'orden' => $i + 1]);
+                foreach (['antes', 'despues'] as $orden => $momento) {
+                    Imagen::create([
+                        'titulo' => $titulo.' — '.($momento === 'antes' ? 'antes' : 'después'),
+                        'url' => $subir("{$base}-{$momento}.jpg", 'casos'),
+                        'tipo' => TipoImagen::Caso,
+                        'referencia_id' => $caso->id,
+                        'orden' => $orden + 1,
+                        'activa' => true,
+                    ]);
+                }
             }
         }
     }
