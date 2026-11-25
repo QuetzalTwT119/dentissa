@@ -109,6 +109,7 @@ class DatosConsultorioTest extends TestCase
         $this->actingAs($admin)->get(route('admin.consultorio.edit'))->assertRedirect('/admin/configuracion#consultorio');
         $this->assertStringContainsString('href="'.route('admin.configuracion').'"', $html);
     }
+
     /** 24/11/2026: Misión y Visión de la portada se cambian aquí; vacías vuelven al texto de fábrica. */
     public function test_mision_y_vision_se_editan_y_salen_en_la_portada(): void
     {
@@ -121,5 +122,32 @@ class DatosConsultorioTest extends TestCase
         $this->get('/')->assertOk()->assertSee('Sonrisas sanas sin prisas.')->assertSee('Ser el consultorio de confianza de Pozos.');
 
         $this->guardar($admin, ['telefono' => '7551131833', 'mision' => str_repeat('a', 401)])->assertSessionHasErrors('mision');
+    }
+
+    /**
+     * 25/11/2026: con solo la dirección, Google Maps marcaba un punto en la calle.
+     * Con el nombre del negocio, el mapa y «Cómo llegar» abren su ficha.
+     */
+    public function test_el_nombre_en_google_maps_abre_la_ficha_del_negocio(): void
+    {
+        $admin = $this->admin();
+        $direccion = 'Juan Francisco Noyola 2443, Cultura Purépecha, 60950 Cdad. Lázaro Cárdenas, Mich.';
+
+        // Sin nombre: se busca solo la dirección, como antes.
+        $this->guardar($admin, ['telefono' => '7551131833', 'direccion' => $direccion])->assertSessionHasNoErrors();
+        $this->get('/')->assertSee('destination='.urlencode($direccion), false);
+
+        $this->actingAs($admin)->get(route('admin.configuracion'))->assertSee('Nombre del negocio en Google Maps');
+        $this->guardar($admin, ['telefono' => '7551131833', 'direccion' => $direccion, 'nombre_maps' => ' Dentiluna '])->assertSessionHasNoErrors();
+        $this->assertSame('Dentiluna', DatosConsultorio::sole()->nombre_maps);
+
+        $busqueda = urlencode('Dentiluna, '.$direccion);
+        $html = $this->get('/')->assertOk()->getContent();
+        $this->assertStringContainsString('https://maps.google.com/maps?q='.$busqueda.'&amp;z=16&amp;output=embed', $html);
+        $this->assertStringContainsString('https://www.google.com/maps/dir/?api=1&amp;destination='.$busqueda, $html);
+        // La dirección escrita en la portada no cambia.
+        $this->assertStringContainsString('<span data-direccion>'.e($direccion).'</span>', $html);
+
+        $this->guardar($admin, ['telefono' => '7551131833', 'nombre_maps' => str_repeat('a', 101)])->assertSessionHasErrors('nombre_maps');
     }
 }

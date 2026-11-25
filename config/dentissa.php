@@ -97,6 +97,9 @@ return [
         'whatsapp' => env('DENTISSA_WHATSAPP') ?: '527551131833',
         'correo' => env('DENTISSA_CORREO', 'hola@dentissa.demo'),
         'direccion' => env('DENTISSA_DIRECCION', 'Blvd. Montebello 228, 78421 Pozos, S.L.P.'),
+        // 25/11/2026: nombre del negocio en Google Maps; con él, el mapa y «Cómo
+        // llegar» abren la ficha del consultorio y no un punto en la calle.
+        'nombre_maps' => env('DENTISSA_MAPS_NOMBRE'),
         // Portada, bloque "La clínica" (24/11/2026). Se cambian en Configuración → Datos del consultorio.
         'mision' => 'Cuidar y transformar sonrisas con atención odontológica confiable, ética y accesible, explicando cada paso con calma para que decidas informado y sin presión.',
         'vision' => 'Ser el consultorio dental de confianza de las familias de la región, reconocido por su trato humano, su puntualidad y resultados que duran.',

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Rules\TelefonoMexico;
 use App\Http\Controllers\Controller;
 use App\Models\DatosConsultorio;
+use App\Rules\TelefonoMexico;
 use App\Services\AuditoriaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Redirect;
  */
 class DatosConsultorioController extends Controller
 {
-    private const CAMPOS = ['telefono', 'whatsapp', 'correo', 'direccion', 'mision', 'vision'];
+    private const CAMPOS = ['telefono', 'whatsapp', 'correo', 'direccion', 'nombre_maps', 'mision', 'vision'];
 
     // La pantalla vive en Configuración (ConfiguracionController); aquí solo se guarda.
 
@@ -37,6 +37,7 @@ class DatosConsultorioController extends Controller
             'whatsapp' => ['exclude_if:mismo_whatsapp,1', 'required', 'digits:10', new TelefonoMexico],
             'correo' => ['nullable', 'email', 'max:100'],
             'direccion' => ['nullable', 'string', 'max:200'],
+            'nombre_maps' => ['nullable', 'string', 'max:100'],
             'mision' => ['nullable', 'string', 'max:400'],
             'vision' => ['nullable', 'string', 'max:400'],
         ], [
@@ -47,6 +48,7 @@ class DatosConsultorioController extends Controller
             'whatsapp' => 'WhatsApp',
             'correo' => 'correo',
             'direccion' => 'dirección',
+            'nombre_maps' => 'nombre en Google Maps',
             'mision' => 'misión',
             'vision' => 'visión',
         ]);
@@ -57,6 +59,7 @@ class DatosConsultorioController extends Controller
             'whatsapp' => $request->boolean('mismo_whatsapp') ? null : '52'.$datos['whatsapp'],
             'correo' => $datos['correo'] ?? null,
             'direccion' => $datos['direccion'] ?? null,
+            'nombre_maps' => filled($datos['nombre_maps'] ?? null) ? trim($datos['nombre_maps']) : null,
             'mision' => filled($datos['mision'] ?? null) ? trim($datos['mision']) : null,
             'vision' => filled($datos['vision'] ?? null) ? trim($datos['vision']) : null,
         ];

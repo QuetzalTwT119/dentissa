@@ -60,6 +60,14 @@
                     <x-input-error :messages="$errors->get('direccion')" class="mt-2" />
                 </div>
 
+                {{-- 25/11/2026: con el nombre, Google Maps abre la ficha del negocio. --}}
+                <div>
+                    <x-input-label for="nombre_maps" value="Nombre del negocio en Google Maps (opcional)" />
+                    <x-text-input id="nombre_maps" name="nombre_maps" class="mt-1.5 block w-full" :value="old('nombre_maps', $nombreMaps ?? '')" maxlength="100" placeholder="Tal como aparece en Google Maps" aria-describedby="nombre-maps-ayuda" />
+                    <p id="nombre-maps-ayuda" class="mt-1 text-xs text-muted">Así el mapa de la portada y «Cómo llegar» abren la ficha del consultorio (foto, horario y teléfono) y no solo un punto en la calle.</p>
+                    <x-input-error :messages="$errors->get('nombre_maps')" class="mt-2" />
+                </div>
+
                 {{-- 24/11/2026: textos del bloque "La clínica" de la portada. --}}
                 <div class="grid gap-4 md:grid-cols-2">
                     <div>

@@ -743,6 +743,13 @@ las veía nadie.
 `pdf/receta.blade.php` omite sus dos líneas. Para volver a exigirla, se pone `true` en
 Railway; no hay que tocar código. Prueba: `RecetaPdfTest`.
 
+**Ficha del negocio en Google Maps (H-103, 25/11/2026).** Con solo la dirección, Maps
+marcaba un punto en la calle. Nueva columna `datos_consultorio.nombre_maps` (migración
+`2026_11_25_000002`, nullable, 100) y `config('dentissa.contacto.nombre_maps')`
+(`DENTISSA_MAPS_NOMBRE`). `partials/portada-ubicacion` busca «nombre, dirección» en el
+mapa embebido y en «Cómo llegar»; vacío, solo la dirección. Se edita en Configuración →
+Datos del consultorio y queda en la bitácora. Prueba: `DatosConsultorioTest`.
+
 **QA del panel en producción (H-98, 25/11/2026).** Hallazgos corregidos:
 
 - **Avisos de testimonio:** `TestimonioController` (aprobar, rechazar, eliminar) da
