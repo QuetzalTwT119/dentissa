@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\EstadoTestimonio;
 use App\Http\Controllers\Controller;
+use App\Models\NotificacionSistema;
 use App\Models\Testimonio;
 use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
@@ -61,6 +62,8 @@ class TestimonioController extends Controller
             ]),
         );
 
+        $this->cerrarAvisosSiNoQuedanPendientes();
+
         return Redirect::route('admin.testimonios.index')->with('success', 'Testimonio aprobado: ya se ve en la portada.');
     }
 
@@ -73,6 +76,8 @@ class TestimonioController extends Controller
             ['estado'],
             fn () => $testimonio->update(['estado' => EstadoTestimonio::Rechazado]),
         );
+
+        $this->cerrarAvisosSiNoQuedanPendientes();
 
         return Redirect::route('admin.testimonios.index')->with('success', 'Testimonio rechazado: no se mostrará en la portada.');
     }
@@ -88,7 +93,27 @@ class TestimonioController extends Controller
             eliminado: true,
         );
 
+        $this->cerrarAvisosSiNoQuedanPendientes();
+
         return Redirect::route('admin.testimonios.index')->with('success', 'Testimonio eliminado.');
     }
 
+    /**
+     * QA en producción (25/11/2026): la campana seguía con «Revisar testimonios»
+     * aunque ya se hubiera aprobado. Cuando no queda ningún testimonio pendiente,
+     * los avisos «testimonio_nuevo» de todo el equipo se dan por atendidos. Si aún
+     * quedan pendientes, el aviso se queda: todavía hay algo que revisar.
+     */
+    private function cerrarAvisosSiNoQuedanPendientes(): void
+    {
+        if (Testimonio::where('estado', EstadoTestimonio::Pendiente)->exists()) {
+            return;
+        }
+
+        $avisos = NotificacionSistema::query()->porAtender()->where('evento', 'testimonio_nuevo');
+        $ahora = now();
+        (clone $avisos)->whereNull('leida_en')->update(['leida_en' => $ahora]);
+        (clone $avisos)->whereNull('vista_en')->update(['vista_en' => $ahora]);
+        $avisos->update(['atendida_en' => $ahora]);
+    }
 }

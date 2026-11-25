@@ -231,7 +231,7 @@ class CitaReglasTest extends TestCase
             'hora' => '10:00',
             'nombre' => 'Ana',
             'apellido' => 'Prueba',
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => 'ana-reglas@example.test',
             'acepta_aviso' => '1',
         ])->assertSessionHasErrors('id_tratamiento');
@@ -257,7 +257,7 @@ class CitaReglasTest extends TestCase
             'hora' => '10:00',
             'nombre' => 'Ana',
             'apellido' => 'Pasada',
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => 'ana-pasada@example.test',
             'acepta_aviso' => '1',
         ])->assertSessionHasErrors('hora');
@@ -681,7 +681,7 @@ class CitaReglasTest extends TestCase
         return Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => fake()->unique()->safeEmail(),
         ]);
     }

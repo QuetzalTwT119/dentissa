@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Rules\TelefonoMexico;
 use App\Http\Controllers\Controller;
 use App\Models\Paciente;
 use App\Services\AuditoriaService;
@@ -51,7 +52,7 @@ class PacienteController extends Controller
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:100'],
             'apellido' => ['required', 'string', 'max:100'],
-            'telefono' => ['required', 'string', 'max:20', 'regex:/^(?:\\+?52[\\s().-]*)?(?:[0-9][\\s().-]*){10}$/'],
+            'telefono' => ['required', 'string', 'max:20', 'regex:/^(?:\\+?52[\\s().-]*)?(?:[0-9][\\s().-]*){10}$/', new TelefonoMexico],
             'email' => ['nullable', 'email', 'max:100', Rule::unique('pacientes', 'email')],
             'acepta_aviso' => ['accepted'],
         ], [
@@ -108,6 +109,7 @@ class PacienteController extends Controller
             'telefono' => [
                 'required', 'string', 'max:20',
                 'regex:/^(?:\\+?52[\\s().-]*)?(?:[0-9][\\s().-]*){10}$/',
+                new TelefonoMexico,
             ],
             'email' => [
                 'nullable', 'email', 'max:100',

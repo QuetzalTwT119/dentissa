@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\TelefonoMexico;
 use App\Models\Cita;
 use App\Models\HorarioAtencion;
 use App\Models\Oferta;
@@ -130,6 +131,7 @@ class CitaPublicaController extends Controller
                 'string',
                 'size:10',
                 'regex:/^[0-9]{10}$/',
+                new TelefonoMexico,
             ],
             // Opcional: hay pacientes sin correo; el celular sí es obligatorio (WhatsApp).
             'email' => ['nullable', 'email', 'max:100'],

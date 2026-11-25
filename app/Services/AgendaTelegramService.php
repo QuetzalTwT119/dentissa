@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Rules\TelefonoMexico;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
 use Carbon\Carbon;
@@ -302,7 +303,7 @@ class AgendaTelegramService
     {
         $reglas = match ($campo) {
             'nombre', 'apellido' => ['required', 'string', 'max:100'],
-            'telefono' => ['required', 'string', 'max:20', 'regex:/^(?:\\+?52[\\s().-]*)?(?:[0-9][\\s().-]*){10}$/'],
+            'telefono' => ['required', 'string', 'max:20', 'regex:/^(?:\\+?52[\\s().-]*)?(?:[0-9][\\s().-]*){10}$/', new TelefonoMexico],
             'email' => ['required', 'email', 'max:100'],
         };
         $validador = Validator::make([$campo => trim($texto)], [$campo => $reglas]);

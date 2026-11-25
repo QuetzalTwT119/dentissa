@@ -76,7 +76,7 @@ class CitaPublicaTest extends TestCase
             'hora' => '09:00',
             'nombre' => 'Ana',
             'apellido' => 'Prueba',
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => 'ana.publica@example.test',
             'acepta_aviso' => '1',
             'motivo' => 'Consulta de prueba',
@@ -95,7 +95,7 @@ class CitaPublicaTest extends TestCase
             ->assertSee('Volver al inicio');
 
         $paciente = Paciente::where('email', 'ana.publica@example.test')->firstOrFail();
-        $this->assertSame('5555555555', $paciente->telefono);
+        $this->assertSame('5544332211', $paciente->telefono);
         $cita = Cita::where('id_paciente', $paciente->id)->firstOrFail();
 
         $this->assertSame(EstadoCita::Confirmada, $cita->estado);

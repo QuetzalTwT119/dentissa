@@ -28,7 +28,7 @@ class AuditoriaAtomicaTest extends TestCase
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => 'paciente-auditoria-transaccion@example.test',
         ]);
 
@@ -73,7 +73,7 @@ class AuditoriaAtomicaTest extends TestCase
             'hora' => '09:00',
             'nombre' => 'Paciente',
             'apellido' => 'QA',
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => 'paciente-auditoria@example.test',
             'acepta_aviso' => '1',
         ])
@@ -91,7 +91,7 @@ class AuditoriaAtomicaTest extends TestCase
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => 'paciente-cancelacion-auditoria@example.test',
         ]);
         $servicio = Servicio::create(['nombre' => 'Servicio QA', 'activo' => true]);
@@ -130,7 +130,7 @@ class AuditoriaAtomicaTest extends TestCase
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => 'paciente-auditoria@example.test',
         ]);
 
@@ -158,7 +158,7 @@ class AuditoriaAtomicaTest extends TestCase
         $paciente = Paciente::create([
             'nombre' => 'Paciente',
             'apellido' => 'QA',
-            'telefono' => '5555555555',
+            'telefono' => '5544332211',
             'email' => 'paciente-historial-auditoria@example.test',
         ]);
         $historial = HistorialClinico::create([
