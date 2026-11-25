@@ -152,7 +152,7 @@
                     <x-input-label for="cedula_profesional" value="Cédula profesional" />
                     <x-text-input id="cedula_profesional" name="cedula_profesional" type="text" inputmode="numeric" maxlength="20" class="mt-1 block w-full"
                                   :value="old('cedula_profesional', $user->cedula_profesional)" autocomplete="off" />
-                    <p class="mt-1 text-xs text-muted">Sale en tus recetas. Sin ella no se pueden imprimir.</p>
+                    <p class="mt-1 text-xs text-muted">Sale en tus recetas.{{ config('dentissa.recetas.exigir_cedula') ? ' Sin ella no se pueden imprimir.' : '' }}</p>
                     <x-input-error class="mt-2" :messages="$errors->get('cedula_profesional')" />
                 </div>
                 <div>

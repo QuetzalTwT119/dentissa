@@ -22,7 +22,6 @@ return [
         'pagos' => (bool) env('DENTISSA_MODULO_PAGOS', false),
     ],
 
-
     /*
     |--------------------------------------------------------------------------
     | Configuración de disponibilidad de citas
@@ -155,6 +154,14 @@ return [
     | con DENTISSA_2FA_ADMIN=false; con pacientes reales debe quedar en true.
     |
     */
+
+    // Recetas en PDF (25/11/2026): exigir la cédula profesional está apagado
+    // TEMPORALMENTE, mientras la doctora la captura en Mi perfil. Apagado, la
+    // receta se imprime y omite la línea de la cédula si está vacía. Para volver
+    // a exigirla: DENTISSA_RECETA_EXIGE_CEDULA=true en Railway.
+    'recetas' => [
+        'exigir_cedula' => filter_var(env('DENTISSA_RECETA_EXIGE_CEDULA', false), FILTER_VALIDATE_BOOL),
+    ],
 
     'seguridad' => [
         'dos_pasos_admin_obligatorio' => filter_var(env('DENTISSA_2FA_ADMIN', true), FILTER_VALIDATE_BOOL),

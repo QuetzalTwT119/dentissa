@@ -737,6 +737,11 @@ las veía nadie.
 - La portada calcula la lista una vez en `routes/web.php` y pasa `totalOfertas`:
   el botón dice «Ver todas las promociones (N)» cuando no caben todas.
 - Pruebas: `PromocionesPublicasTest` (5).
+**Receta sin cédula, temporal (H-102, 25/11/2026).** `config('dentissa.recetas.exigir_cedula')`
+(`DENTISSA_RECETA_EXIGE_CEDULA`, por omisión `false`). Apagado,
+`HistorialClinicoController::receta` imprime aunque quien atendió no tenga cédula y
+`pdf/receta.blade.php` omite sus dos líneas. Para volver a exigirla, se pone `true` en
+Railway; no hay que tocar código. Prueba: `RecetaPdfTest`.
 
 **QA del panel en producción (H-98, 25/11/2026).** Hallazgos corregidos:
 

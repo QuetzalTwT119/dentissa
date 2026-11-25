@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\TipoImagen;
 use App\Http\Controllers\Controller;
+use App\Models\HistoriaClinica;
 use App\Models\HistorialClinico;
 use App\Models\Imagen;
 use App\Models\Paciente;
@@ -177,9 +178,10 @@ class HistorialClinicoController extends Controller
     }
 
     /**
-     * Receta en PDF de una consulta (24/11/2026). Necesita medicamentos y la
-     * cédula profesional de quien atendió (Mi perfil). Se abre en el navegador
-     * para imprimirla y queda en Control de actividades.
+     * Receta en PDF de una consulta (24/11/2026). Necesita medicamentos y quién
+     * atendió; la cédula profesional (Mi perfil) solo se exige si
+     * dentissa.recetas.exigir_cedula está encendido (25/11/2026: apagado
+     * temporalmente). Se abre en el navegador y queda en Control de actividades.
      */
     public function receta(Request $request, Paciente $paciente, HistorialClinico $historial, AuditoriaService $auditoria): HttpResponse|RedirectResponse
     {
@@ -191,14 +193,14 @@ class HistorialClinicoController extends Controller
         }
 
         $doctor = $historial->doctor;
-        if (! $doctor || blank($doctor->cedula_profesional)) {
+        if (! $doctor || (config('dentissa.recetas.exigir_cedula') && blank($doctor->cedula_profesional))) {
             $quien = $doctor ? "{$doctor->nombre} {$doctor->apellido}" : 'quien atendió';
 
             return $volver->with('error', "Para imprimir la receta falta la cédula profesional de {$quien}: se agrega en Mi perfil.");
         }
 
         $historia = $paciente->historiaClinica;
-        $alergias = $historia ? \App\Models\HistoriaClinica::nombres($historia->alergias, \App\Models\HistoriaClinica::ALERGIAS) : [];
+        $alergias = $historia ? HistoriaClinica::nombres($historia->alergias, HistoriaClinica::ALERGIAS) : [];
         if ($historia && filled($historia->alergias_otras)) {
             $alergias[] = trim($historia->alergias_otras);
         }
