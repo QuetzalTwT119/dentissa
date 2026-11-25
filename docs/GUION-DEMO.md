@@ -40,7 +40,9 @@ números que registraste (hasta 5).
      `https://dentissa-production-11db.up.railway.app/webhooks/whatsapp`
      y suscrito a `messages`;
    - el celular del presentador A registrado como destinatario de prueba.
-4. Ejecutar el seeder de demostración. Las contraseñas viven solo en las
+4. Ejecutar el seeder de demostración y, **el mismo día de la demo**,
+   `DemoDatosSeeder` para que ninguna pantalla salga vacía
+   (`DESPLIEGUE-RAILWAY.md`). Las contraseñas viven solo en las
    variables privadas de Railway; nunca se escriben en diapositivas ni se
    dicen en voz alta.
 5. **Verificación en dos pasos:** el presentador B inicia sesión como

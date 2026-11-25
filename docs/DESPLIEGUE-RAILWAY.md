@@ -137,6 +137,22 @@ Antes de generar un dominio público:
   php artisan db:seed --class=DemoPresentacionSeeder --force
   ```
 
+  Para que agenda, expedientes, testimonios, mensajes y avisos no salgan
+  vacíos, ejecutar después, con el mismo indicador en `true`:
+
+  ```bash
+  php artisan db:seed --class=DemoDatosSeeder --force
+  ```
+
+  Crea 12 pacientes ficticios (`demo.*@example.invalid`, teléfonos 555), unas
+  90 citas de tres semanas atrás a dos adelante, historial, historia clínica,
+  odontograma, planes, pagos, testimonios, mensajes, preguntas frecuentes y una
+  oferta. Las citas futuras quedan con el recordatorio marcado como enviado
+  (nunca se manda WhatsApp ni correo a esos números), los avisos de la campana
+  quedan atendidos y hoy deja libre de 8:00 a 11:00 para agendar en vivo. Las
+  fechas se calculan desde el día en que se ejecuta: correrlo el mismo día de
+  la demo. Si ya existen los pacientes demo, no crea nada.
+
   Después cambiar el indicador a `false` y quitar las variables de contraseña.
   No copiar credenciales al README, al chat ni a Git. El catálogo que inserta usa
   los tratamientos y duraciones reales de la clínica, sin precios. Si se vuelve a
