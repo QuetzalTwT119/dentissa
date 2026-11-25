@@ -41,14 +41,16 @@
                         <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
                     </div>
 
-                    <div>
+                    {{-- 25/11/2026: debajo dice qué puede hacer el rol elegido (RolUsuario::descripcion). --}}
+                    <div x-data="{ rol: @js(old('rol', 'asistente')), permisos: @js(collect($rolesAsignables)->mapWithKeys(fn ($r) => [$r->value => $r->descripcion()])) }">
                         <x-input-label for="rol" value="Rol" />
-                        <x-select id="rol" name="rol" class="mt-1.5">
+                        <x-select id="rol" name="rol" class="mt-1.5" x-model="rol" aria-describedby="rol-permisos">
                             {{-- Roles del mapa de permisos (22/11/2026); super_admin solo lo da otra super_admin. --}}
                             @foreach ($rolesAsignables as $rol)
                                 <option value="{{ $rol->value }}" @selected(old('rol', 'asistente') === $rol->value)>{{ $rol->etiqueta() }}</option>
                             @endforeach
                         </x-select>
+                        <p id="rol-permisos" class="mt-1.5 text-xs text-muted" x-text="permisos[rol]" data-permisos-rol>{{ \App\Enums\RolUsuario::tryFrom(old('rol', 'asistente'))?->descripcion() }}</p>
                         <x-input-error :messages="$errors->get('rol')" class="mt-2" />
                     </div>
 

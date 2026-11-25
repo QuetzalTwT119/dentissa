@@ -237,13 +237,14 @@ class PacienteHistorialTest extends TestCase
             ->assertSessionHas('status', 'Aún no hay historia clínica ni consultas para generar el PDF.');
     }
 
-    public function test_un_asistente_no_puede_acceder_al_modulo_administrativo_de_pacientes(): void
+    public function test_un_asistente_ve_el_directorio_pero_no_el_historial(): void
     {
+        // 25/11/2026: recepción ve la lista de pacientes; las consultas, no.
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
+        $paciente = Paciente::create(['nombre' => 'Ana', 'apellido' => 'Prueba', 'telefono' => '5511223344']);
 
-        $this->actingAs($asistente)
-            ->get(route('admin.pacientes.index'))
-            ->assertForbidden();
+        $this->actingAs($asistente)->get(route('admin.pacientes.index'))->assertOk();
+        $this->actingAs($asistente)->get(route('admin.pacientes.historial.index', $paciente))->assertForbidden();
     }
 
     private function crearPaciente(string $nombre = 'Paciente', string $apellido = 'QA'): Paciente

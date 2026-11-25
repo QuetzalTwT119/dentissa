@@ -4,7 +4,7 @@ $usuario = auth()->user();
 $puede = fn (string $modulo) => $usuario->puede($modulo);
 // Sin expediente pero con cuestionario (la asistente): enlace directo (22/11/2026).
 $soloHistorias = $puede('historia_clinica') && ! $puede('pacientes');
-$gestion = $puede('pacientes') || $puede('usuarios') || $puede('reportes') || $puede('pagos') || $puede('mensajes') || $puede('control_actividades');
+$gestion = $puede('directorio_pacientes') || $puede('usuarios') || $puede('reportes') || $puede('pagos') || $puede('mensajes') || $puede('control_actividades');
 $notificacionesNuevas = $usuario->notificacionesSistema()->whereNull('vista_en')->count();
 // Panel de la campana: primero lo que pide una acción, luego lo informativo.
 $avisosPorAtender = $usuario->notificacionesSistema()->porAtender()->with('cita.paciente')->latest('id')->limit(5)->get();
@@ -40,7 +40,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 @if ($gestion)
                 <x-nav-dropdown :active="request()->routeIs('admin.pacientes.*') || request()->routeIs('admin.usuarios.*') || request()->routeIs('admin.reportes.*') || request()->routeIs('admin.pagos.*') || request()->routeIs('admin.mensajes.*') || request()->routeIs('admin.auditoria.*')">
                     <x-slot name="label">Gestión</x-slot>
-                    @if ($puede('pacientes'))
+                    @if ($puede('directorio_pacientes'))
                     <x-dropdown-link :href="route('admin.pacientes.index')">Pacientes</x-dropdown-link>
                     @endif
                     @if ($puede('usuarios'))
@@ -215,7 +215,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 @if ($gestion)
                 <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-label text-brand-700/80">Gestión</p>
                 @endif
-                @if ($puede('pacientes'))
+                @if ($puede('directorio_pacientes'))
                 <x-responsive-nav-link :href="route('admin.pacientes.index')" :active="request()->routeIs('admin.pacientes.*')">Pacientes</x-responsive-nav-link>
                 @endif
                 @if ($puede('usuarios'))

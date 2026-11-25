@@ -154,12 +154,12 @@ class PagosTest extends TestCase
         $doctor = User::factory()->create(['rol' => RolUsuario::Doctor]);
         $this->actingAs($doctor)->get(route('admin.pagos.index'))->assertOk();
 
+        // 25/11/2026: la asistente cobra en recepción.
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
-        $this->actingAs($asistente)->get(route('admin.pagos.index'))->assertForbidden();
-        $this->actingAs($asistente)->post(route('admin.pagos.store'), ['id_paciente' => $this->paciente->id, 'monto' => 1, 'metodo' => 'efectivo', 'fecha' => '2026-11-24'])->assertForbidden();
+        $this->actingAs($asistente)->get(route('admin.pagos.index'))->assertOk();
 
-        // En la Agenda, la asistente no ve "Registrar pago".
+        // En la Agenda, la asistente ve "Registrar pago".
         $this->cita();
-        $this->actingAs($asistente)->get(route('citas.index', ['estado' => 'completada', 'fecha' => '2026-11-24']))->assertOk()->assertDontSee('data-registrar-pago', false);
+        $this->actingAs($asistente)->get(route('citas.index', ['estado' => 'completada', 'fecha' => '2026-11-24']))->assertOk()->assertSee('data-registrar-pago', false);
     }
 }

@@ -30,7 +30,7 @@ destinatario ni requiere que cada usuario conecte su propio Google.
 La navegación interna muestra la marca (el logotipo con la firma **Dra. Melissa
 López**, igual que en la portada), un acceso a **Inicio**, otro a
 la **Agenda** y otro al **Asistente**. En administración, **Gestión** agrupa
-Pacientes, Usuarios, Reportes, Mensajes y Control de actividades; los
+Pacientes, Usuarios, Reportes, Pagos, Mensajes y Control de actividades (cada rol ve solo los suyos); los
 menús **Catálogo**, **Contenido** y **Configuración** reúnen el resto de las
 secciones. El menú completo se ve en computadora, laptop, TV y proyector (desde
 1024 px de ancho; en las más chicas solo se ve el círculo del logotipo y tu foto). En celular y tableta, usa el botón de menú (☰) para encontrar las
@@ -40,13 +40,19 @@ columnas dentro de un área que puedes desplazar lateralmente; los filtros y
 controles de carga se acomodan en varias filas para facilitar el toque.
 **Roles del personal** (desde el 22/11/2026):
 - **Doctora titular** (la dueña): entra a todo.
-- **Doctor** (doctores asociados): por ahora, lo mismo que la doctora titular,
-  salvo que no puede desactivar, eliminar ni crear una cuenta de Doctora titular.
-- **Asistente** (desde el 24/11/2026): el panel de inicio, la **Agenda** (crear, confirmar,
-  reagendar y cancelar citas), el **Asistente de agenda**, la **campana** de avisos e
-  **Historias clínicas** (el cuestionario). No ve el expediente (consultas, notas privadas,
-  recetas, consentimientos), Usuarios, Reportes, Catálogo, Contenido, Configuración ni Mi perfil.
-  Para cambiar su contraseña usa "¿La olvidaste?" en la pantalla de acceso.
+- **Doctor** (doctores asociados, desde el 25/11/2026): **solo lo clínico**. Agenda,
+  pacientes con su **expediente** (consultas, recetas, planes, consentimientos),
+  historias clínicas, cobros, la campana y **Mi perfil**. No entra a Usuarios,
+  Configuración y horarios, Catálogo y precios, Contenido de la portada, Reportes,
+  Mensajes ni Control de actividades.
+- **Asistente** (recepción, desde el 25/11/2026): la **Agenda** (crear, confirmar,
+  reagendar y cancelar citas) y su asistente, la campana, **Mi perfil**, el
+  **directorio de Pacientes** (registrar pacientes y corregir sus datos de contacto),
+  **Historias clínicas** (el cuestionario), **cobros** y **Mensajes** de contacto. Al
+  registrar un paciente pasa directo a su cuestionario. **No ve el expediente**:
+  consultas, notas privadas, recetas, planes ni consentimientos.
+- Al crear un usuario (Usuarios → Nuevo usuario), debajo de **Rol** aparece qué
+  puede hacer el rol elegido.
 
 El menú solo muestra lo que cada rol puede abrir.
 

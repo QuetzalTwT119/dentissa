@@ -83,12 +83,15 @@ class PacienteNuevoTest extends TestCase
         $this->assertNull(Paciente::sole()->email);
     }
 
-    public function test_la_asistente_no_registra_pacientes(): void
+    public function test_la_asistente_registra_pacientes_y_va_al_cuestionario(): void
     {
+        // 25/11/2026: recepción da de alta; sin expediente, la lleva a la historia clínica.
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
 
-        $this->actingAs($asistente)->get(route('admin.pacientes.create'))->assertForbidden();
-        $this->actingAs($asistente)->post(route('admin.pacientes.store'), $this->datos())->assertForbidden();
-        $this->assertSame(0, Paciente::count());
+        $this->actingAs($asistente)->get(route('admin.pacientes.create'))->assertOk();
+        $respuesta = $this->actingAs($asistente)->post(route('admin.pacientes.store'), $this->datos());
+
+        $paciente = Paciente::sole();
+        $respuesta->assertRedirect(route('admin.pacientes.historia.edit', $paciente));
     }
 }

@@ -16,13 +16,16 @@
 |
 | "roles": qué módulos tiene cada rol. '*' = todos.
 |   - super_admin: la doctora dueña; todo.
-|   - doctor: por ahora exactamente lo que tenía el antiguo "admin".
-|     Para restringirlo más adelante, quita módulos de su lista.
-|   - asistente: el panel de inicio, la Agenda con su asistente y la campana
-|     (24/11/2026: es quien agenda, confirma y reagenda) y la historia clínica
-|     (cuestionario de salud, 22/11/2026). No ve consultas, notas privadas ni
-|     el expediente.
-|     Para habilitarle algo más, agrega el módulo a su lista.
+|   - doctor (25/11/2026): solo lo clínico. Agenda, pacientes con expediente,
+|     historia clínica y cobros. No administra el consultorio: usuarios,
+|     configuración y horarios, catálogo y precios, contenido de la portada,
+|     reportes, mensajes ni control de actividades.
+|   - asistente (25/11/2026): recepción. Agenda, alta y datos de contacto de
+|     pacientes (directorio_pacientes, SIN expediente, consultas ni recetas),
+|     cuestionario de historia clínica, cobros y mensajes de contacto.
+|   - Los tres tienen "cuenta" (Mi perfil y verificación en dos pasos): antes
+|     la asistente no podía cambiar su contraseña.
+|     Para habilitarle algo más a un rol, agrega el módulo a su lista.
 |
 | Cerrar sesión no es un módulo: siempre está disponible.
 */
@@ -34,6 +37,12 @@ return [
         'cuenta' => ['profile.*', 'dos-pasos.*'],
         'notificaciones' => ['notificaciones.*'],
         'agenda' => ['citas.*', 'asistente-agenda.*'],
+        // Directorio (25/11/2026): lista, alta y datos de contacto. Va antes de
+        // "pacientes" (el expediente), que se queda con el resto de admin.pacientes.*.
+        'directorio_pacientes' => [
+            'admin.pacientes.index', 'admin.pacientes.create', 'admin.pacientes.store',
+            'admin.pacientes.edit', 'admin.pacientes.update',
+        ],
         // Cuestionario de historia clínica; va antes de "pacientes" porque sus rutas
         // también empiezan con admin.pacientes.* (22/11/2026).
         'historia_clinica' => ['admin.historias.*', 'admin.pacientes.historia.*'],
@@ -55,14 +64,15 @@ return [
     'roles' => [
         'super_admin' => ['*'],
 
-        // Igual que el antiguo "admin" (todas las rutas del panel). Temporal.
+        // Doctores asociados: solo lo clínico (25/11/2026; antes todo, "temporal").
         'doctor' => [
-            'inicio', 'cuenta', 'notificaciones', 'agenda', 'historia_clinica', 'pacientes', 'usuarios', 'reportes', 'pagos',
-            'mensajes', 'control_actividades', 'catalogo', 'contenido', 'configuracion',
+            'inicio', 'cuenta', 'notificaciones', 'agenda', 'directorio_pacientes', 'pacientes', 'historia_clinica', 'pagos',
         ],
 
-        // Inicio, Agenda y campana (24/11/2026) y cuestionario de historia clínica (22/11/2026).
-        'asistente' => ['inicio', 'agenda', 'notificaciones', 'historia_clinica'],
+        // Recepción (25/11/2026): agenda, directorio sin expediente, cuestionario, cobros y mensajes.
+        'asistente' => [
+            'inicio', 'cuenta', 'notificaciones', 'agenda', 'directorio_pacientes', 'historia_clinica', 'pagos', 'mensajes',
+        ],
     ],
 
 ];

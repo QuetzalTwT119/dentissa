@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\RolUsuario;
+use App\Models\Paciente;
 use App\Models\User;
 use App\Support\Permisos;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,6 +23,15 @@ class PermisosPorModuloTest extends TestCase
         parent::setUp();
         // Pagos está oculto por omisión (24/11/2026); aquí se revisa con todo encendido.
         config(['dentissa.modulos.pagos' => true]);
+        $this->paciente = Paciente::create(['nombre' => 'Ana', 'apellido' => 'Prueba', 'telefono' => '5511223344']);
+    }
+
+    private Paciente $paciente;
+
+    /** URL de la página de un módulo; las del expediente llevan al paciente de prueba. */
+    private function url(string $pagina): string
+    {
+        return str_starts_with($pagina, 'admin.pacientes.historial') ? route($pagina, $this->paciente) : route($pagina);
     }
 
     /** Páginas GET representativas de cada módulo (sin parámetros). */
@@ -31,7 +41,9 @@ class PermisosPorModuloTest extends TestCase
         'notificaciones' => 'notificaciones.index',
         'agenda' => 'citas.index',
         'historia_clinica' => 'admin.historias.index',
-        'pacientes' => 'admin.pacientes.index',
+        // 25/11/2026: el directorio (lista y alta) se separó del expediente.
+        'directorio_pacientes' => 'admin.pacientes.index',
+        'pacientes' => 'admin.pacientes.historial.index',
         'usuarios' => 'admin.usuarios.index',
         'reportes' => 'admin.reportes.index',
         'pagos' => 'admin.pagos.index',
@@ -60,19 +72,20 @@ class PermisosPorModuloTest extends TestCase
         $this->assertEqualsCanonicalizing(array_keys(self::PAGINAS), array_keys(config('permisos.modulos')));
     }
 
-    public function test_super_admin_y_doctor_entran_a_todo_y_la_asistente_al_inicio_y_la_historia_clinica(): void
+    public function test_cada_rol_entra_solo_a_sus_modulos(): void
     {
+        // 25/11/2026: el doctor, solo lo clínico; la asistente, recepción.
         $roles = [
             RolUsuario::SuperAdmin->value => array_keys(self::PAGINAS),
-            RolUsuario::Doctor->value => array_keys(self::PAGINAS),   // igual que el antiguo admin
-            RolUsuario::Asistente->value => ['inicio', 'agenda', 'notificaciones', 'historia_clinica'],
+            RolUsuario::Doctor->value => ['inicio', 'cuenta', 'notificaciones', 'agenda', 'directorio_pacientes', 'pacientes', 'historia_clinica', 'pagos'],
+            RolUsuario::Asistente->value => ['inicio', 'cuenta', 'notificaciones', 'agenda', 'directorio_pacientes', 'historia_clinica', 'pagos', 'mensajes'],
         ];
 
         foreach ($roles as $rol => $permitidos) {
             $usuario = User::factory()->create(['rol' => $rol]);
 
             foreach (self::PAGINAS as $modulo => $pagina) {
-                $respuesta = $this->actingAs($usuario)->get(route($pagina));
+                $respuesta = $this->actingAs($usuario)->get($this->url($pagina));
                 $esperado = in_array($modulo, $permitidos, true);
 
                 $this->assertSame($esperado, $respuesta->status() === 200, "$rol → $pagina (".$respuesta->status().')');
@@ -88,19 +101,22 @@ class PermisosPorModuloTest extends TestCase
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
         $html = $this->actingAs($asistente)->get(route('dashboard'))->assertOk()->getContent();
 
-        foreach (['admin.pacientes.index', 'admin.usuarios.index', 'admin.servicios.index', 'admin.ofertas.index', 'admin.configuracion', 'profile.edit', 'ofertas.index', 'galeria.index'] as $pagina) {
+        foreach (['admin.usuarios.index', 'admin.servicios.index', 'admin.ofertas.index', 'admin.configuracion', 'admin.reportes.index', 'ofertas.index', 'galeria.index'] as $pagina) {
             $this->assertStringNotContainsString('href="'.route($pagina).'"', $html, "La asistente no debe ver el enlace a $pagina");
         }
-        // 24/11/2026: Agenda, su asistente y la campana sí.
-        foreach (['citas.index', 'asistente-agenda.create', 'notificaciones.index'] as $pagina) {
+        // Agenda, su asistente y la campana (24/11/2026); directorio, perfil, cobros y mensajes (25/11/2026).
+        foreach (['citas.index', 'asistente-agenda.create', 'notificaciones.index', 'admin.pacientes.index', 'profile.edit', 'admin.pagos.index', 'admin.mensajes.index'] as $pagina) {
             $this->assertStringContainsString('href="'.route($pagina), $html, "La asistente debe ver $pagina");
         }
         $this->assertStringContainsString('action="'.route('logout').'"', $html, 'Cerrar sesión siempre disponible');
 
         $doctor = User::factory()->create(['rol' => RolUsuario::Doctor]);
         $html = $this->actingAs($doctor)->get(route('dashboard'))->assertOk()->getContent();
-        foreach (['citas.index', 'admin.pacientes.index', 'admin.usuarios.index', 'admin.servicios.index', 'admin.configuracion', 'profile.edit'] as $pagina) {
+        foreach (['citas.index', 'admin.pacientes.index', 'profile.edit', 'admin.pagos.index'] as $pagina) {
             $this->assertStringContainsString('href="'.route($pagina), $html, "El doctor debe ver $pagina");
+        }
+        foreach (['admin.usuarios.index', 'admin.servicios.index', 'admin.configuracion', 'admin.reportes.index', 'admin.auditoria.index'] as $pagina) {
+            $this->assertStringNotContainsString('href="'.route($pagina).'"', $html, "El doctor no debe ver $pagina");
         }
     }
 
@@ -116,7 +132,7 @@ class PermisosPorModuloTest extends TestCase
         $titular = User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'activo' => true]);
         $doctor = User::factory()->create(['rol' => RolUsuario::Doctor, 'activo' => true]);
 
-        // El doctor no la desactiva, no la elimina y no crea otra cuenta titular.
+        // 25/11/2026: el doctor ya no administra usuarios: ni la desactiva, ni la elimina, ni crea cuentas.
         $this->actingAs($doctor)->patch(route('admin.usuarios.activo.toggle', $titular))->assertForbidden();
         $this->actingAs($doctor)->delete(route('admin.usuarios.destroy', $titular))->assertForbidden();
         $this->assertTrue($titular->fresh()->activo);
@@ -124,11 +140,8 @@ class PermisosPorModuloTest extends TestCase
         $this->actingAs($doctor)->post(route('admin.usuarios.store'), [
             'nombre' => 'Otra', 'apellido' => 'Titular', 'email' => 'otra@example.test', 'telefono' => '7551020089',
             'rol' => 'super_admin', 'password' => 'Clinica2026A', 'password_confirmation' => 'Clinica2026A',
-        ])->assertSessionHasErrors('rol');
-
-        $html = $this->actingAs($doctor)->get(route('admin.usuarios.create'))->getContent();
-        $this->assertStringNotContainsString('value="super_admin"', $html);
-        $this->assertStringContainsString('value="doctor"', $html);
+        ])->assertForbidden();
+        $this->actingAs($doctor)->get(route('admin.usuarios.create'))->assertForbidden();
 
         // La titular sí puede crear un doctor y otra titular.
         $this->actingAs($titular)->get(route('admin.usuarios.create'))->assertSee('value="super_admin"', false);

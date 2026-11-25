@@ -10,6 +10,7 @@ use App\Models\LogAuditoria;
 use App\Models\Paciente;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 /**
@@ -193,7 +194,9 @@ class HistoriaClinicaTest extends TestCase
         // Menú y lista con el estado de cada paciente.
         $this->actingAs($asistente)->get(route('dashboard'))->assertOk()
             ->assertSee(route('admin.historias.index'), false)
-            ->assertDontSee(route('admin.pacientes.index'), false);
+            // 25/11/2026: ve el directorio, pero no el expediente.
+            ->assertSee(route('admin.pacientes.index'), false)
+            ->assertDontSee(route('admin.pacientes.historial.index', $this->paciente), false);
         $this->actingAs($asistente)->get(route('admin.historias.index'))->assertOk()
             ->assertSee('Ana Martínez')->assertSee('Beto Ruiz')
             ->assertSee('Pendiente')->assertSee('Llenar cuestionario');
@@ -209,13 +212,12 @@ class HistoriaClinicaTest extends TestCase
         $this->assertSame($asistente->id, $this->paciente->fresh()->historiaClinica->actualizado_por);
         $this->actingAs($asistente)->get(route('admin.historias.index'))->assertSee('Llena')->assertSee('Ver o editar');
 
-        // Lo demás del expediente sigue cerrado.
+        // Lo demás del expediente sigue cerrado (25/11/2026: la lista y los datos
+        // de contacto ya son de recepción, módulo directorio_pacientes).
         foreach ([
-            route('admin.pacientes.index'),
             route('admin.pacientes.historial.index', $this->paciente),
             route('admin.pacientes.historial.create', $this->paciente),
             route('admin.pacientes.historial.pdf', $this->paciente),
-            route('admin.pacientes.edit', $this->paciente),
         ] as $url) {
             $this->actingAs($asistente)->get($url)->assertForbidden();
         }
@@ -225,8 +227,8 @@ class HistoriaClinicaTest extends TestCase
     {
         // Mediodía fijo (25/11/2026): la agenda muestra el día de hoy, y entre las
         // 00:00 y la 01:00 "hace una hora" caía en ayer y la prueba fallaba en CI.
-        \Illuminate\Support\Carbon::setTestNow(now()->setTime(12, 0));
-        $this->beforeApplicationDestroyed(fn () => \Illuminate\Support\Carbon::setTestNow());
+        Carbon::setTestNow(now()->setTime(12, 0));
+        $this->beforeApplicationDestroyed(fn () => Carbon::setTestNow());
 
         $cita = Cita::create(['id_paciente' => $this->paciente->id, 'fecha_hora' => now()->subHour()->startOfHour(), 'duracion_estimada' => 30, 'estado' => 'completada']);
 
