@@ -73,7 +73,9 @@
 
         {{-- Bloqueos que aún no terminan --}}
         <x-admin.card>
-            <h3 class="border-b border-line px-5 py-4 text-sm font-semibold text-ink sm:px-6">Próximos bloqueos</h3>
+            <h3 class="border-b border-line px-5 py-4 text-sm font-semibold text-ink sm:px-6">Próximos bloqueos
+                @if ($bloqueos->total() > 0)<span class="font-normal text-muted">({{ $bloqueos->total() }})</span>@endif
+            </h3>
             @if ($bloqueos->isEmpty())
                 <p class="px-5 py-8 text-center text-sm text-muted sm:px-6" data-sin-bloqueos>No hay días ni horas bloqueados.</p>
             @else
@@ -94,6 +96,8 @@
                         </li>
                     @endforeach
                 </ul>
+                {{-- 25/11/2026: paginados de 5 en 5. --}}
+                <x-pagination-summary :items="$bloqueos" label="bloqueos" posicion="abajo" data-paginacion-bloqueos />
             @endif
         </x-admin.card>
     </div>

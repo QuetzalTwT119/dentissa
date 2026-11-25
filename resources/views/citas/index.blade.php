@@ -19,7 +19,7 @@
     <x-slot name="header">
         <x-admin.header
             badge="Control de Agenda"
-            title="Citas"
+            title="Agenda"
             subtitle="Las citas de cada día, en orden de hora, con su siguiente paso a un clic."
         >
             <x-slot name="actions">

@@ -16,6 +16,9 @@ use Illuminate\Contracts\View\View;
  */
 class ConfiguracionController extends Controller
 {
+    /** Próximos bloqueos por página (25/11/2026). */
+    public const BLOQUEOS_POR_PAGINA = 5;
+
     private const ORDEN_SEMANA = [1, 2, 3, 4, 5, 6, 0];
 
     public function index(): View
@@ -36,7 +39,11 @@ class ConfiguracionController extends Controller
             'mision' => $contacto['mision'] ?? '',
             'vision' => $contacto['vision'] ?? '',
             'horarios' => collect(self::ORDEN_SEMANA)->map(fn (int $dia) => $horarios->get($dia))->values(),
-            'bloqueos' => BloqueoAgenda::vigentes()->with('creadoPor:id,nombre,apellido')->get(),
+            // 25/11/2026: paginados (con los festivos eran más de 15 y alargaban la página).
+            'bloqueos' => BloqueoAgenda::vigentes()->with('creadoPor:id,nombre,apellido')
+                ->paginate(self::BLOQUEOS_POR_PAGINA, ['*'], 'bloqueos')
+                ->withQueryString()
+                ->fragment('bloqueos'),
         ]);
     }
 }

@@ -23,7 +23,7 @@ class NavegacionResponsivaTest extends TestCase
             ->assertSee('Dra. Melissa López')
             ->assertSee('Inicio')
             ->assertSee('Agenda')
-            ->assertSee('Gestión')
+            ->assertSee('Administración')
             ->assertSee('id="mobile-navigation-menu"', false)
             ->assertSee('overflow-y-auto overscroll-contain', false)
             // Menú completo desde 1024 px (laptop, TV, proyector); antes solo desde 1536 px.
@@ -37,7 +37,7 @@ class NavegacionResponsivaTest extends TestCase
             ->assertSee('Reportes')
             ->assertSee('Control de actividades')
             ->assertSee('Catálogo')
-            ->assertSee('Contenido')
+            ->assertSee('Sitio web')
             ->assertSee('Configuración')
             ->assertSee(route('admin.auditoria.index'));
     }

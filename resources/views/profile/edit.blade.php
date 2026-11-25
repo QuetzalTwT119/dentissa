@@ -58,6 +58,7 @@
                             </span>
                             Contraseña
                         </a>
+                        @if (auth()->user()->puede('dos_pasos'))
                         <a href="{{ route('dos-pasos.show') }}" class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-soft transition hover:bg-cream hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:w-full">
                             <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-cream text-muted" aria-hidden="true">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path stroke-linecap="round" d="M11 18.5h2"/></svg>
@@ -67,6 +68,7 @@
                                 <span class="ml-auto rounded-full bg-sage-50 px-2 py-0.5 text-caption font-semibold text-sage-700">Activa</span>
                             @endif
                         </a>
+                        @endif
                     </div>
                 </nav>
 

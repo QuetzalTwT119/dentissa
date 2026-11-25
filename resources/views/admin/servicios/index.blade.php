@@ -2,7 +2,7 @@
     <x-slot name="header">
         <x-admin.header
             badge="Catálogo Dental"
-            title="Servicios"
+            title="Especialidades"
             subtitle="Catálogo de áreas de atención y especialidades odontológicas."
         >
         </x-admin.header>

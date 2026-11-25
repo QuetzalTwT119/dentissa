@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Models\HorarioAtencion;
 use App\Models\Servicio;
 use App\Models\Tratamiento;
-use App\Support\Iniciales;
 use App\Support\Dev\CasosExtremos;
+use App\Support\Iniciales;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ViewErrorBag;
@@ -43,7 +43,7 @@ class CasosExtremosInterfazTest extends TestCase
 
         $html = view('citas.index', ['citas' => CasosExtremos::citas($conjunto), 'filtros' => []])->render();
 
-        $this->assertStringContainsString('Citas', $html);
+        $this->assertStringContainsString('Agenda', $html);
         if ($conjunto === 'peor') {
             $this->assertStringContainsString(e(CasosExtremos::APELLIDO_LARGO), $html);
             $this->assertStringContainsString(e(CasosExtremos::TRATAMIENTO_LARGO), $html);

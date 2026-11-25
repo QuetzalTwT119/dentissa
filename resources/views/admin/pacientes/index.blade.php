@@ -4,7 +4,7 @@
 @endphp
 <x-app-layout>
     <x-slot name="header">
-        <x-admin.header badge="Gestión Clínica" title="Directorio de Pacientes" description="Directorio oficial de pacientes, tutores e historiales clínicos." />
+        <x-admin.header badge="Gestión Clínica" title="Pacientes" description="Directorio oficial de pacientes, tutores e historiales clínicos." />
     </x-slot>
 
     <div class="panel-pagina py-8 sm:py-10">

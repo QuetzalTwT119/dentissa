@@ -57,7 +57,10 @@ class User extends Authenticatable
     /** Quien ve historiales clínicos (módulo "pacientes") debe usar dos pasos. */
     public function debeUsarDosPasos(): bool
     {
+        // 25/11/2026: con el módulo dos_pasos apagado no se exige (no habría
+        // dónde activarla y el panel quedaría en un ciclo de redirecciones).
         return $this->puede('pacientes')
+            && $this->puede('dos_pasos')
             && (bool) config('dentissa.seguridad.dos_pasos_admin_obligatorio');
     }
 
