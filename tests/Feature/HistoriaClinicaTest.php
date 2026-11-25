@@ -223,6 +223,11 @@ class HistoriaClinicaTest extends TestCase
 
     public function test_cita_completada_ofrece_registrar_su_consulta(): void
     {
+        // Mediodía fijo (25/11/2026): la agenda muestra el día de hoy, y entre las
+        // 00:00 y la 01:00 "hace una hora" caía en ayer y la prueba fallaba en CI.
+        \Illuminate\Support\Carbon::setTestNow(now()->setTime(12, 0));
+        $this->beforeApplicationDestroyed(fn () => \Illuminate\Support\Carbon::setTestNow());
+
         $cita = Cita::create(['id_paciente' => $this->paciente->id, 'fecha_hora' => now()->subHour()->startOfHour(), 'duracion_estimada' => 30, 'estado' => 'completada']);
 
         $this->actingAs($this->doctora)->get(route('citas.index', ['estado' => 'completada']))->assertOk()

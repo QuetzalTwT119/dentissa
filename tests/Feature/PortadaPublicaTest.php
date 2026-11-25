@@ -120,4 +120,36 @@ class PortadaPublicaTest extends TestCase
         // Impar: la última ocupa todo el ancho.
         $this->assertStringContainsString('md:col-span-5', $html);
     }
+
+    /** 25/11/2026 (QA en producción): el pie listaba tratamientos que no existían en el catálogo. */
+    public function test_el_pie_muestra_las_especialidades_reales_del_catalogo(): void
+    {
+        \App\Models\Servicio::query()->update(['activo' => false]);
+        \App\Models\Servicio::create(['nombre' => 'Especialidad Real Uno', 'activo' => true, 'orden' => 1]);
+        \App\Models\Servicio::create(['nombre' => 'Especialidad Real Dos', 'activo' => true, 'orden' => 2]);
+
+        $html = $this->get('/')->assertOk()->getContent();
+        $pie = substr($html, strrpos($html, '<footer'));
+
+        $this->assertStringContainsString('Especialidad Real Uno', $pie);
+        $this->assertStringContainsString('Especialidad Real Dos', $pie);
+        $this->assertStringNotContainsString('Resinas Biocompatibles', $pie);
+        $this->assertStringNotContainsString('Extracciones Suaves', $pie);
+    }
+
+    /** 25/11/2026 (QA en producción): en celular el teléfono del inicio quedaba bajo el botón flotante de WhatsApp. */
+    public function test_en_celular_el_telefono_del_inicio_va_debajo_del_boton(): void
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression('/<a[^>]*class="[^"]*\bw-full\b[^"]*\bsm:w-auto\b[^"]*"[^>]*data-hero-telefono/', $html);
+    }
+
+    /** 25/11/2026 (QA en producción): las fotos pesaban ~650 KB cada una (5 MB la portada). */
+    public function test_las_fotos_de_la_portada_son_ligeras(): void
+    {
+        foreach (glob(public_path('images/dentissa/*.jpg')) as $foto) {
+            $this->assertLessThan(150 * 1024, filesize($foto), basename($foto).' pesa más de 150 KB: comprímela antes de subirla.');
+        }
+    }
 }

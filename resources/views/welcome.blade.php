@@ -203,7 +203,8 @@
                         <span>Agendar mi cita</span>
                         <span class="transition-transform duration-200 ease-out group-hover:translate-x-0.5">{!! $iconoFlecha !!}</span>
                     </a>
-                    <a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-11 flex-col justify-center rounded-lg text-footnote text-muted transition-colors hover:text-brand-700">
+                    {{-- 25/11/2026: en celular va debajo del botón; a la derecha lo tapaban los botones flotantes (WhatsApp y asistente). --}}
+                    <a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-11 w-full flex-col justify-center rounded-lg text-footnote text-muted transition-colors hover:text-brand-700 sm:w-auto" data-hero-telefono>
                         ¿Prefieres llamar?
                         <span class="text-callout font-semibold tabular-nums text-ink">{{ $contacto['telefono'] }}</span>
                     </a>
@@ -543,7 +544,11 @@
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Tratamientos</h3>
                     <ul class="mt-4 space-y-1 text-sm text-white/70">
-                        @foreach (['Valoración Integral', 'Limpieza Profiláctica', 'Resinas Biocompatibles', 'Extracciones Suaves'] as $tratamiento)
+                        {{-- 25/11/2026: las especialidades reales del catálogo (antes una lista fija con
+                             tratamientos que no existían). Sin catálogo, la lista de fábrica. --}}
+                        @foreach (($servicios ?? collect())->isNotEmpty()
+                            ? $servicios->take(5)->pluck('nombre')
+                            : ['Valoración Integral', 'Limpieza Profiláctica', 'Resinas Biocompatibles', 'Extracciones Suaves'] as $tratamiento)
                             <li><a href="#servicios" class="inline-flex min-h-11 items-center transition-colors hover:text-white">{{ $tratamiento }}</a></li>
                         @endforeach
                     </ul>

@@ -39,7 +39,13 @@ del texto.
 prototipos frente a una versión con reserva integrada y otra centrada en la
 doctora. Usa `public/images/dentissa/hero-inicio.jpg` (1376×768, con
 `fetchpriority="high"` y `width`/`height` para no mover el contenido al
-cargar). En escritorio la foto ocupa del 44 % al borde derecho y su orilla se
+cargar). **Peso de las fotos (H-97, 25/11/2026):** las de `images/dentissa/`
+pesaban ~650 KB cada una (4.7 MB la portada); se recomprimieron con GD a JPEG
+progresivo calidad 80 (tratamientos a 800×800, inicio a 1376×768) y quedaron en
+0.6 MB en total. `PortadaPublicaTest` falla si alguna pasa de 150 KB: comprime
+cualquier foto nueva antes de subirla. En celular, "¿Prefieres llamar?" va
+debajo del botón principal (`w-full sm:w-auto`) porque a la derecha lo tapaban
+los botones flotantes de WhatsApp y del asistente. En escritorio la foto ocupa del 44 % al borde derecho y su orilla se
 funde con el color crema; el texto se limita al 40 % izquierdo para no tapar a
 las personas. En celular y tableta la foto va arriba. Solo el texto tiene
 animación de entrada (`.hero-entra` en `app.css`); la foto no se anima porque es
