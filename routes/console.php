@@ -51,6 +51,12 @@ Schedule::command('dentissa:bloquear-festivos --avisar')
     ->monthlyOn(1, '06:00')
     ->withoutOverlapping();
 
+// Citas olvidadas «En curso» (25/11/2026): al empezar cada día se completan
+// las del día anterior que nadie cerró, y se avisa en la campana.
+Schedule::command('dentissa:cerrar-citas-en-curso')
+    ->dailyAt('00:05')
+    ->withoutOverlapping();
+
 Artisan::command('dentissa:respaldo-llave', function () {
     $this->warn('Esta llave descifra todos los respaldos. Guárdala en un gestor de contraseñas y en DENTISSA_RESPALDO_CLAVE; si se pierde, los respaldos no se pueden recuperar. No la compartas ni la subas a Git.');
     $this->line(CifradoRespaldo::generarLlave());

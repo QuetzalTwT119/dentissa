@@ -743,6 +743,25 @@ Pruebas: `NotificacionesQaTest` (6, todas fallan con el código anterior).
   todas las vistas para que no vuelva.
 
 Pruebas: `QaPanelProduccionTest` (10).
+
+**Citas «En curso» olvidadas (H-99, 25/11/2026).** Una cita solo pasa a «En curso»
+cuando alguien presiona Iniciar con el paciente presente; si al día siguiente
+sigue así, se atendió y nadie presionó Completar. Antes la agenda solo mostraba un
+aviso ámbar y el día contaba mal en Reportes.
+
+- Comando `dentissa:cerrar-citas-en-curso` (`--simular` solo lista): pasa a
+  `Completada` las citas `EnCurso` de días anteriores. Las de hoy no las toca. El
+  `update` vuelve a filtrar por estado, así que no pisa un cambio hecho al mismo
+  tiempo. Sin pendientes no hace nada (se puede correr las veces que sea).
+- Avisa con `alertaSistema` (evento `citas_en_curso_cerradas`, mensaje limitado a
+  255 caracteres por MySQL) a quien tiene el módulo de configuración.
+- Programado en `routes/console.php` cada día a las 00:05 (`withoutOverlapping`) y
+  ejecutado al arrancar en `scripts/start-production.sh`, antes de `supervisord`;
+  si falla, el arranque sigue.
+- No queda en la bitácora: `AuditoriaService::registrar` solo registra acciones de
+  usuarios; el rastro es el aviso en la campana.
+
+Pruebas: `CerrarCitasEnCursoTest` (4).
 - Las clases `avatar-tono-N` y `aviso-tono-*` se escriben fuera de `@layer` en
   `app.css`: se arman en PHP y Tailwind eliminaría las que no ve escritas.
 
