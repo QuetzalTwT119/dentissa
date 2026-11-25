@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\EstadoCita;
 use App\Enums\EstadoTestimonio;
 use App\Enums\TipoConsulta;
+use App\Models\BloqueoAgenda;
 use App\Models\Cita;
 use App\Models\HistorialClinico;
 use App\Models\HorarioAtencion;
@@ -119,25 +120,44 @@ class ReporteService
         ];
     }
 
+    /**
+     * Qué parte del tiempo de atención quedó ocupada por citas.
+     *
+     * 25/11/2026 (QA en producción daba 0.6 %): antes dividía el número de citas
+     * *completadas* entre espacios de 30 minutos, aunque una cita dura de 30 a 120
+     * minutos y casi todas seguían «Confirmada». Ahora se comparan minutos:
+     * duración de las citas que ocupan el horario (todas menos las canceladas)
+     * entre los minutos de atención del periodo, sin contar los días bloqueados
+     * completos (festivos, vacaciones).
+     */
     private function ocupacion(Carbon $inicio, Carbon $fin): array
     {
-        $intervalo = config('dentissa.intervalo_minutos');
-        $capacidadTotal = 0;
+        $minutosDisponibles = 0;
+        $cursor = $inicio->copy()->startOfDay();
+        $horariosPorDia = HorarioAtencion::where('abierto', true)->get()->keyBy('dia_semana');
 
-        foreach ($this->horariosEnRango($inicio, $fin) as $horario) {
-            $minutosDia = max(($horario->hora_cierre - $horario->hora_apertura) * 60, 0);
-            $slotsDia = $intervalo > 0 ? intdiv($minutosDia, $intervalo) : 0;
-            $capacidadTotal += $slotsDia * $horario->capacidad_simultanea;
+        while ($cursor->lte($fin->copy()->startOfDay())) {
+            $horario = $horariosPorDia->get($cursor->dayOfWeek);
+            $cerrado = BloqueoAgenda::delDia($cursor->toDateString())->whereNull('hora_inicio')->exists();
+
+            if ($horario && ! $cerrado) {
+                $minutosDisponibles += max(($horario->hora_cierre - $horario->hora_apertura) * 60, 0)
+                    * max((int) $horario->capacidad_simultanea, 1);
+            }
+
+            $cursor->addDay();
         }
 
-        $citasAtendidas = Cita::whereBetween('fecha_hora', [$inicio, $fin])
-            ->where('estado', EstadoCita::Completada)
-            ->count();
+        $citas = Cita::whereBetween('fecha_hora', [$inicio, $fin])
+            ->where('estado', '!=', EstadoCita::Cancelada)
+            ->get(['estado', 'duracion_estimada']);
+        $minutosOcupados = (int) $citas->sum(fn (Cita $cita) => (int) $cita->duracion_estimada);
 
         return [
-            'capacidad_total' => $capacidadTotal,
-            'citas_atendidas' => $citasAtendidas,
-            'tasa_ocupacion' => $capacidadTotal > 0 ? round($citasAtendidas / $capacidadTotal * 100, 1) : 0,
+            'capacidad_total' => $minutosDisponibles,
+            'minutos_ocupados' => $minutosOcupados,
+            'citas_atendidas' => $citas->where('estado', EstadoCita::Completada)->count(),
+            'tasa_ocupacion' => $minutosDisponibles > 0 ? min(round($minutosOcupados / $minutosDisponibles * 100, 1), 100.0) : 0,
         ];
     }
 

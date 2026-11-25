@@ -46,9 +46,7 @@
                     <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <x-primary-button>Guardar cambios</x-primary-button>
 
-                        <a href="{{ route('admin.casos.index') }}">
-                            <x-secondary-button type="button">Cancelar</x-secondary-button>
-                        </a>
+                        <x-boton-cancelar href="{{ route('admin.casos.index') }}" />
                     </div>
                 </form>
             </x-admin.card>

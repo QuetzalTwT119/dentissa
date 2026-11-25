@@ -719,6 +719,30 @@ hasta cinco avisos (scopes `porAtender()` e `informativas()`).
   Además, un error al guardar el aviso de una persona ya no deja sin aviso a las demás.
 
 Pruebas: `NotificacionesQaTest` (6, todas fallan con el código anterior).
+
+**QA del panel en producción (H-98, 25/11/2026).** Hallazgos corregidos:
+
+- **Avisos de testimonio:** `TestimonioController` (aprobar, rechazar, eliminar) da
+  por atendidos los avisos `testimonio_nuevo` cuando ya no queda ninguno pendiente.
+- **Celulares imposibles:** `App\Rules\TelefonoMexico` rechaza números que empiezan
+  con 0 o 1 o que son un dígito repetido (se guardó un «0000000000»). Se aplica en
+  nuevo y editar paciente, agenda en línea, Telegram y datos del consultorio.
+- **Tasa de ocupación:** `ReporteService::ocupacion()` comparaba citas *completadas*
+  con espacios de 30 min (daba 0.6 %). Ahora: minutos de citas no canceladas entre
+  minutos de atención (horario × pacientes a la vez), sin los días bloqueados
+  completos. Devuelve `capacidad_total` (minutos), `minutos_ocupados` y
+  `citas_atendidas`; Reportes muestra «N h con citas de M h de atención».
+- **Duración obligatoria:** un tratamiento necesita de 15 a 480 minutos; con 0 la
+  cita no ocupaba tiempo y se podían encimar varias.
+- **Nueva cita:** pacientes en orden alfabético, enlace «Registrar paciente nuevo»
+  (si puede `pacientes`) y aviso cuando la especialidad no tiene tratamientos.
+- **Agenda:** el nombre abre el expediente (solo con módulo `pacientes`) y el
+  teléfono es un enlace `tel:`.
+- **Botón dentro de enlace:** 26 lugares usaban un botón dentro de un `<a>` (HTML
+  inválido). Componentes `x-boton-enlace` y `x-boton-cancelar`; una prueba revisa
+  todas las vistas para que no vuelva.
+
+Pruebas: `QaPanelProduccionTest` (10).
 - Las clases `avatar-tono-N` y `aviso-tono-*` se escriben fuera de `@layer` en
   `app.css`: se arman en PHP y Tailwind eliminaría las que no ve escritas.
 

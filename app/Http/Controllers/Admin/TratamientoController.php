@@ -152,11 +152,17 @@ class TratamientoController extends Controller
         return $request->validate([
             'nombre' => ['required', 'string', 'max:150', Rule::unique('tratamientos', 'nombre')->ignore($ignoreId)],
             'descripcion' => ['nullable', 'string'],
-            'duracion_estimada' => ['nullable', 'integer', 'min:0'],
+            // 25/11/2026 (QA en producción): obligatoria. Con 0 o vacía la cita no ocupa
+            // tiempo en la agenda y se podían encimar varias a la misma hora.
+            'duracion_estimada' => ['required', 'integer', 'min:15', 'max:480'],
             // Se muestra al paciente. Se puede guardar sin precio, pero no publicar.
             'precio_referencia' => ['nullable', 'numeric', 'min:1', 'max:999999'],
             'sesiones_requeridas' => ['integer', 'min:1'],
             'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ], [
+            'duracion_estimada.required' => 'Escribe cuántos minutos dura: es lo que ocupa en la agenda.',
+            'duracion_estimada.min' => 'La duración mínima es de 15 minutos.',
+            'duracion_estimada.max' => 'La duración máxima es de 480 minutos (8 horas).',
         ]);
     }
 }

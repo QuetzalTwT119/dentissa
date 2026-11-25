@@ -84,7 +84,8 @@ class ReporteExcelService
         $filas[] = ['Citas completadas', $reporte['eficiencia']['citas_completadas']];
         $filas[] = ['Eficiencia (citas por bloque de 1.5 h)', $reporte['eficiencia']['eficiencia']];
         $filas[] = ['Citas completadas por hora', $reporte['eficiencia']['citas_por_hora']];
-        $filas[] = ['Capacidad total', $reporte['ocupacion']['capacidad_total']];
+        $filas[] = ['Minutos de atención disponibles', $reporte['ocupacion']['capacidad_total']];
+        $filas[] = ['Minutos ocupados por citas', $reporte['ocupacion']['minutos_ocupados'] ?? 0];
         $filas[] = ['Citas atendidas', $reporte['ocupacion']['citas_atendidas']];
         $filas[] = ['Tasa de ocupación (%)', $reporte['ocupacion']['tasa_ocupacion']];
 

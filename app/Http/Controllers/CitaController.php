@@ -214,7 +214,8 @@ class CitaController extends Controller
             ->orderBy('orden')
             ->get();
 
-        $pacientes = Paciente::select('id', 'nombre', 'apellido')->get()->map(fn (Paciente $p) => [
+        // Orden alfabético, igual que el Asistente de agenda (QA en producción, 25/11/2026).
+        $pacientes = Paciente::select('id', 'nombre', 'apellido')->orderBy('nombre')->orderBy('apellido')->get()->map(fn (Paciente $p) => [
             'id' => $p->id,
             'nombre' => $p->nombre_completo,
         ])->values();

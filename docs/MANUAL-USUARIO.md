@@ -317,6 +317,14 @@ una sola vez cada 12 horas por número, y el sistema no guarda lo que escribió.
 
 ## 3. Gestión interna de citas
 
+**Desde cada cita** (desde el 25/11/2026): toca el **nombre del paciente** para
+abrir su expediente (solo quien tiene acceso a Pacientes) y su **teléfono** para
+llamarle desde el celular. En **Nueva cita** los pacientes salen en orden
+alfabético; si el paciente no está, usa **Registrar paciente nuevo**. Si eliges
+una especialidad sin tratamientos, el sistema lo avisa: agrégalos en Catálogo →
+Servicios. Cada tratamiento necesita una **duración de 15 a 480 minutos**, porque
+es el tiempo que ocupa en la agenda.
+
 ### Vista de lista o de semana
 
 A la derecha del título de `/citas` hay un selector **Lista | Semana**:
@@ -830,6 +838,11 @@ En **Reportes**, el administrador selecciona las fechas **Desde** y **Hasta**
 y pulsa **Filtrar**. El panel resume pacientes, citas por estado, tratamientos
 más solicitados, consultas clínicas y métricas de ocupación/eficiencia. Si no
 hay citas completadas, las métricas correspondientes pueden mostrar cero.
+
+**Tasa de ocupación** (desde el 25/11/2026): qué parte del horario de atención
+estuvo ocupada por citas, contando todas menos las canceladas. Debajo dice, por
+ejemplo, «40 h con citas de 180 h de atención». Los festivos y los días
+bloqueados completos no cuentan como horario disponible.
 El rango solo permite fechas hasta hoy; el selector bloquea fechas futuras y el
 sistema también las rechaza si se envían manualmente.
 El total histórico de pacientes y el conteo del catálogo activo son acumulados

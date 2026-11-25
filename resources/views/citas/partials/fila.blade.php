@@ -31,9 +31,27 @@
         @endif
     </div>
 
+    {{-- 25/11/2026 (QA en producción): el nombre abre el expediente y el teléfono marca;
+         antes la doctora tenía que ir a Pacientes y buscarlo durante la consulta. --}}
+    @php
+        $verExpediente = $cita->paciente && auth()->user()?->puede('pacientes');
+        $telefonoMarcable = preg_replace('/[^\d+]/', '', (string) $cita->paciente?->telefono);
+    @endphp
     <div role="cell" class="fila-cita-paciente min-w-0">
-        <p @class(['font-semibold text-ink [overflow-wrap:anywhere]', 'line-through' => $inactiva])>{{ $cita->paciente?->nombre_completo ?? 'Paciente' }}</p>
-        <p class="text-xs text-muted tabular-nums [overflow-wrap:anywhere]">{{ $cita->paciente?->telefono ?: ($cita->paciente?->email ?: '—') }}</p>
+        <p @class(['font-semibold text-ink [overflow-wrap:anywhere]', 'line-through' => $inactiva])>
+            @if ($verExpediente)
+                <a href="{{ route('admin.pacientes.historial.index', $cita->paciente) }}" class="underline-offset-2 hover:text-brand-700 hover:underline" data-cita-expediente>{{ $cita->paciente->nombre_completo }}</a>
+            @else
+                {{ $cita->paciente?->nombre_completo ?? 'Paciente' }}
+            @endif
+        </p>
+        <p class="text-xs text-muted tabular-nums [overflow-wrap:anywhere]">
+            @if ($telefonoMarcable !== '')
+                <a href="tel:{{ $telefonoMarcable }}" class="underline-offset-2 hover:text-brand-700 hover:underline" data-cita-llamar>{{ $cita->paciente->telefono }}</a>
+            @else
+                {{ $cita->paciente?->email ?: '—' }}
+            @endif
+        </p>
     </div>
 
     <div role="cell" class="fila-cita-tratamiento min-w-0">
