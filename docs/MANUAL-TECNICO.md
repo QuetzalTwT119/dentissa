@@ -720,6 +720,24 @@ hasta cinco avisos (scopes `porAtender()` e `informativas()`).
 
 Pruebas: `NotificacionesQaTest` (6, todas fallan con el código anterior).
 
+**Página pública de promociones (H-100, 25/11/2026).** La portada muestra como
+máximo `Oferta::MAXIMO_PORTADA` (24) y había más publicadas, así que algunas no
+las veía nadie.
+
+- `Oferta::vigentesConLugar()` devuelve todas las que ve el público (publicadas,
+  agendables, con lugar, primero las que vencen antes); `paraPortada()` toma las
+  primeras 24 de esa misma lista, así las reglas son una sola.
+- Ruta pública `GET /promociones` (`promociones.index`) →
+  `PromocionPublicaController` (invocable) → `promociones/index.blade.php`. Se
+  llama así porque `/ofertas` ya es la vista del personal. Filtro opcional
+  `?especialidad={id}`; solo se ofrecen especialidades activas con alguna
+  promoción, y un id desconocido muestra todas.
+- La tarjeta vive en `partials/tarjeta-oferta.blade.php` y la usan el carrusel y
+  la página, para que se vean igual.
+- La portada calcula la lista una vez en `routes/web.php` y pasa `totalOfertas`:
+  el botón dice «Ver todas las promociones (N)» cuando no caben todas.
+- Pruebas: `PromocionesPublicasTest` (5).
+
 **QA del panel en producción (H-98, 25/11/2026).** Hallazgos corregidos:
 
 - **Avisos de testimonio:** `TestimonioController` (aprobar, rechazar, eliminar) da
@@ -882,8 +900,23 @@ cambia `users.rol` de `enum` a `string(20)` y pasa las cuentas `admin` a `super_
 - `modulos`: cada módulo agrupa nombres de ruta (con comodines): `inicio`, `cuenta`
   (Mi perfil y dos pasos), `notificaciones`, `agenda`, `pacientes`, `usuarios`,
   `reportes`, `mensajes`, `control_actividades`, `catalogo`, `contenido`, `configuracion`.
-- `roles`: `super_admin` → `*`; `doctor` → todos los módulos (igual que el antiguo
-  admin, temporal); `asistente` → solo `inicio`.
+- `roles`: `super_admin` → `*`.
+  **25/11/2026 (H-101):** `doctor` → `inicio, cuenta, notificaciones, agenda,
+  directorio_pacientes, pacientes, historia_clinica, pagos` (solo lo clínico; antes
+  todo, «temporal»). `asistente` → `inicio, cuenta, notificaciones, agenda,
+  directorio_pacientes, historia_clinica, pagos, mensajes` (recepción; antes no tenía
+  `cuenta` y no podía cambiar su contraseña).
+- Módulo nuevo `directorio_pacientes`: `admin.pacientes.index|create|store|edit|update`
+  (lista, alta y datos de contacto). Va **antes** de `pacientes`, que se queda con el
+  expediente (historial, recetas, planes, exploración, consentimientos), porque
+  `moduloDeRuta()` devuelve el primero que coincide. El menú y el panel de inicio
+  enlazan Pacientes con `directorio_pacientes`; la lista oculta los enlaces al
+  expediente sin `pacientes`; `PacienteController::store` lleva a quien no tiene
+  expediente al cuestionario (`admin.pacientes.historia.edit`).
+- `RolUsuario::descripcion()` explica cada rol en Usuarios → Nuevo usuario
+  (`data-permisos-rol`). Las alertas del sistema (`configuracion`) ahora llegan solo a
+  la titular. Los dos pasos siguen obligatorios solo para quien tiene `pacientes`.
+- Pruebas: `PermisosPerfilesTest` (4) y las de permisos existentes actualizadas.
 - Para quitarle algo a `doctor` o darle algo a `asistente`, se edita su lista; no hay
   que tocar rutas, menús ni controladores.
 

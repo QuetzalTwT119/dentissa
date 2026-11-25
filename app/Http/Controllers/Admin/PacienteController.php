@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Rules\TelefonoMexico;
 use App\Http\Controllers\Controller;
 use App\Models\Paciente;
+use App\Rules\TelefonoMexico;
 use App\Services\AuditoriaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -89,7 +89,16 @@ class PacienteController extends Controller
             return $paciente;
         });
 
-        return Redirect::route('admin.pacientes.historial.index', $paciente)
+        // 25/11/2026: la asistente registra pacientes pero no ve el expediente;
+        // la llevamos al cuestionario de historia clínica (o a la lista).
+        $usuario = $request->user();
+        $destino = match (true) {
+            $usuario->puede('pacientes') => route('admin.pacientes.historial.index', $paciente),
+            $usuario->puede('historia_clinica') => route('admin.pacientes.historia.edit', $paciente),
+            default => route('admin.pacientes.index'),
+        };
+
+        return Redirect::to($destino)
             ->with('success', "{$paciente->nombre_completo} quedó registrado. Ya puedes llenar su historia clínica.");
     }
 

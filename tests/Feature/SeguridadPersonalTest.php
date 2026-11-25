@@ -166,10 +166,11 @@ class SeguridadPersonalTest extends TestCase
             ->assertSessionHasErrors('current_password');
         $this->assertTrue($admin->fresh()->tieneDosPasos());
 
-        // 22/11/2026: la asistente solo tiene el panel de inicio; Mi perfil y dos pasos no.
+        // 25/11/2026: la asistente ya tiene Mi perfil. Como no ve expedientes, los dos
+        // pasos no son obligatorios para ella y puede apagarlos con su contraseña.
         $this->actingAs($asistente)->delete(route('dos-pasos.desactivar'), ['current_password' => 'password'])
-            ->assertForbidden();
-        $this->assertTrue($asistente->fresh()->tieneDosPasos());
+            ->assertSessionHasNoErrors();
+        $this->assertFalse($asistente->fresh()->tieneDosPasos());
     }
 
     // ── Verificación en dos pasos: al iniciar sesión ──────────────────────

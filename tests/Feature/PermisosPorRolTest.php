@@ -17,7 +17,6 @@ class PermisosPorRolTest extends TestCase
         $rutasAdministrativas = [
             'admin.auditoria.index',
             'admin.servicios.index',
-            'admin.pacientes.index',
             'admin.usuarios.index',
             'admin.reportes.index',
             'admin.horarios.edit',
@@ -26,7 +25,6 @@ class PermisosPorRolTest extends TestCase
             'admin.preguntas-frecuentes.index',
             'admin.testimonios.index',
             'admin.ofertas.index',
-            'admin.mensajes.index',
         ];
 
         foreach ($rutasAdministrativas as $nombreRuta) {

@@ -55,7 +55,7 @@
                                     @endforeach
                                 </x-select>
                                 <x-input-error :messages="$errors->get('id_paciente')" class="mt-2" />
-                                @if (auth()->user()->puede('pacientes'))
+                                @if (auth()->user()->puede('directorio_pacientes'))
                                     {{-- 25/11/2026: antes no había forma de llegar desde aquí a registrar a alguien nuevo. --}}
                                     <p class="mt-2 text-sm text-ink-soft" data-nuevo-paciente>
                                         ¿No está en la lista?

@@ -38,9 +38,10 @@ class DashboardVisualTest extends TestCase
             // 24/11/2026: la asistente tiene la Agenda; sigue sin botones a secciones cerradas.
             ->assertSee(route('citas.index'), false)
             ->assertDontSee('data-solo-inicio', false)
-            ->assertDontSee(route('admin.pacientes.index'), false)
+            // 25/11/2026: directorio de pacientes y Mi perfil sí; configuración no.
+            ->assertSee(route('admin.pacientes.index'), false)
             ->assertDontSee(route('admin.configuracion'), false)
-            ->assertDontSee(route('profile.edit'), false)
+            ->assertSee(route('profile.edit'), false)
             ->assertDontSee('Portal de Paciente')
             ->assertDontSee('Ver mis citas');
     }

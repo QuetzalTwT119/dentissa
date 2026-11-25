@@ -39,7 +39,7 @@
                                               maxlength="20" required placeholder="10 dígitos; +52 opcional" autocomplete="off" />
                                 <p class="mt-1 text-xs text-muted">Por aquí le llegan sus confirmaciones y recordatorios de WhatsApp.</p>
                                 <x-input-error :messages="$errors->get('telefono')" class="mt-2" />
-                                @if (session('paciente_existente'))
+                                @if (session('paciente_existente') && auth()->user()->puede('pacientes'))
                                     <a href="{{ route('admin.pacientes.historial.index', session('paciente_existente')) }}" class="link mt-1 inline-block text-sm" data-paciente-existente>Abrir su expediente</a>
                                 @endif
                             </div>

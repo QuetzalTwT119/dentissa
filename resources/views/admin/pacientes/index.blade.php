@@ -1,3 +1,7 @@
+@php
+    // 25/11/2026: la asistente ve el directorio pero no el expediente (config/permisos.php).
+    $puedeExpediente = auth()->user()->puede('pacientes');
+@endphp
 <x-app-layout>
     <x-slot name="header">
         <x-admin.header badge="Gestión Clínica" title="Directorio de Pacientes" description="Directorio oficial de pacientes, tutores e historiales clínicos." />
@@ -58,20 +62,27 @@
                                 {{ $paciente->telefono ?? '—' }}
                             </td>
                             <td class="px-6 py-4 text-center">
-                                {{-- El número también abre el historial (22/11/2026). --}}
+                                {{-- El número también abre el historial (22/11/2026). Sin expediente
+                                     (asistente, 25/11/2026) solo se muestra el número. --}}
+                                @if ($puedeExpediente)
                                 <a href="{{ route('admin.pacientes.historial.index', $paciente) }}"
                                    title="Ver las consultas de {{ $paciente->nombre }}" aria-label="{{ $paciente->historial_clinico_count }} {{ $paciente->historial_clinico_count === 1 ? 'consulta' : 'consultas' }}: ver el historial de {{ $paciente->nombre }}"
                                    class="inline-flex min-h-11 min-w-[2.75rem] items-center justify-center rounded-full border border-line bg-cream px-2.5 text-xs font-semibold text-ink transition hover:border-brand-300 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:min-h-8" data-consultas>
                                     {{ number_format($paciente->historial_clinico_count, 0, '.', ',') }}
                                 </a>
+                                @else
+                                <span class="text-xs font-semibold text-ink-soft">{{ number_format($paciente->historial_clinico_count, 0, '.', ',') }}</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-right">
                                 {{-- Solo íconos, como en todas las listas (22/11/2026): 📋 historial y ✎ editar. --}}
                                 <x-admin.acciones-fila :editar="route('admin.pacientes.edit', $paciente)" que="el paciente" :nombre="$paciente->nombre_completo">
+                                    @if ($puedeExpediente)
                                     <a href="{{ route('admin.pacientes.historial.index', $paciente) }}" title="Historial clínico" aria-label="Historial clínico de {{ $paciente->nombre_completo }}" data-ver-historial
                                        class="grid h-11 w-11 place-items-center rounded-full text-brand-600 transition-colors duration-150 hover:bg-brand-50 hover:text-brand-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 lg:h-9 lg:w-9">
                                         <x-icon name="expediente" />
                                     </a>
+                                    @endif
                                 </x-admin.acciones-fila>
                             </td>
                         </tr>
