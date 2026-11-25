@@ -4,20 +4,20 @@ use App\Enums\TipoImagen;
 use App\Http\Controllers\Admin\AuditoriaController;
 use App\Http\Controllers\Admin\BloqueoAgendaController;
 use App\Http\Controllers\Admin\CasoController;
+use App\Http\Controllers\Admin\ConfiguracionController;
 use App\Http\Controllers\Admin\ConsentimientoController;
-use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
+use App\Http\Controllers\Admin\DatosConsultorioController;
 use App\Http\Controllers\Admin\ExploracionClinicaController;
 use App\Http\Controllers\Admin\FotoInicioController;
+use App\Http\Controllers\Admin\GaleriaController as AdminGaleriaController;
 use App\Http\Controllers\Admin\HistoriaClinicaController;
 use App\Http\Controllers\Admin\HistorialClinicoController;
 use App\Http\Controllers\Admin\HorarioController;
 use App\Http\Controllers\Admin\MensajeContactoController as AdminMensajeContactoController;
-use App\Http\Controllers\Admin\ConfiguracionController;
-use App\Http\Controllers\Admin\DatosConsultorioController;
 use App\Http\Controllers\Admin\OfertaController as AdminOfertaController;
+use App\Http\Controllers\Admin\PacienteController;
 use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\PlanTratamientoController;
-use App\Http\Controllers\Admin\PacienteController;
 use App\Http\Controllers\Admin\PreguntaFrecuenteController;
 use App\Http\Controllers\Admin\ReporteController;
 use App\Http\Controllers\Admin\ServicioController;
@@ -28,16 +28,18 @@ use App\Http\Controllers\AsistenteAgendaController;
 use App\Http\Controllers\AsistentePacienteController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\CitaPublicaController;
+use App\Http\Controllers\Dev\CasosExtremosController;
 use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\DosPasosController;
 use App\Http\Controllers\GaleriaController;
 use App\Http\Controllers\HistorialImagenController;
 use App\Http\Controllers\MensajeContactoController;
-use App\Http\Controllers\TestimonioPublicoController;
 use App\Http\Controllers\NotificacionSistemaController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PromocionPublicaController;
 use App\Http\Controllers\RespuestaRecordatorioController;
+use App\Http\Controllers\TestimonioPublicoController;
 use App\Http\Controllers\WhatsappWebhookController;
 use App\Models\Caso;
 use App\Models\DatosConsultorio;
@@ -48,6 +50,7 @@ use App\Models\PreguntaFrecuente;
 use App\Models\Servicio;
 use App\Models\Testimonio;
 use App\Services\RespuestaRecordatorioService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 
@@ -137,6 +140,10 @@ Route::post('/asistente-paciente/responder', [AsistentePacienteController::class
     ->name('asistente-paciente.responder');
 
 Route::get('/', function () {
+    // Todas las vigentes una sola vez: el carrusel toma las primeras y el enlace
+    // "Ver todas las promociones" dice cuántas hay en total (25/11/2026).
+    $ofertasVigentes = Oferta::vigentesConLugar();
+
     return view('welcome', [
         'canLogin' => Route::has('login'),
         'estadoConsultorio' => HorarioAtencion::estadoActual(),
@@ -149,7 +156,8 @@ Route::get('/', function () {
             ->orderBy('id')
             ->get(),
         // Publicadas, con tratamiento agendable y con lugar (las agotadas ya no se anuncian).
-        'ofertas' => Oferta::paraPortada(),
+        'ofertas' => $ofertasVigentes->take(Oferta::MAXIMO_PORTADA)->values(),
+        'totalOfertas' => $ofertasVigentes->count(),
         'testimonios' => Testimonio::with('paciente:id,nombre,apellido')
             ->where('estado', 'aprobado')
             ->orderByDesc('fecha_publicacion')
@@ -173,6 +181,10 @@ Route::get('/', function () {
         'pacientesALaVez' => (int) (HorarioAtencion::where('abierto', true)->max('capacidad_simultanea') ?: 1),
     ]);
 });
+
+// Página pública con todas las promociones (25/11/2026): la portada muestra
+// como máximo Oferta::MAXIMO_PORTADA. "/ofertas" ya es la vista del personal.
+Route::get('/promociones', PromocionPublicaController::class)->name('promociones.index');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -228,7 +240,7 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     // 22/11/2026: "Auditoría" se llama "Control de actividades"; la dirección de antes redirige.
     Route::get('control-de-actividades', [AuditoriaController::class, 'index'])->name('auditoria.index');
     // Conserva los filtros (?accion=…) de un enlace guardado.
-    Route::get('auditoria', fn (\Illuminate\Http\Request $request) => redirect()->route('admin.auditoria.index', $request->query(), 301))->name('auditoria.anterior');
+    Route::get('auditoria', fn (Request $request) => redirect()->route('admin.auditoria.index', $request->query(), 301))->name('auditoria.anterior');
     Route::patch('servicios/{servicio}/tratamientos', [ServicioController::class, 'syncTratamientos'])->name('servicios.tratamientos.sync');
     Route::patch('servicios/{servicio}/mover/{direccion}', [ServicioController::class, 'mover'])
         ->whereIn('direccion', ['arriba', 'abajo'])->name('servicios.mover');
@@ -342,6 +354,6 @@ require __DIR__.'/auth.php';
  * Dibuja las pantallas con datos "peor caso" en memoria; no existe fuera de local.
  */
 if (app()->environment('local')) {
-    Route::get('/dev/casos-extremos/{pantalla}', \App\Http\Controllers\Dev\CasosExtremosController::class)
+    Route::get('/dev/casos-extremos/{pantalla}', CasosExtremosController::class)
         ->name('dev.casos-extremos');
 }

@@ -720,6 +720,24 @@ hasta cinco avisos (scopes `porAtender()` e `informativas()`).
 
 Pruebas: `NotificacionesQaTest` (6, todas fallan con el código anterior).
 
+**Página pública de promociones (H-100, 25/11/2026).** La portada muestra como
+máximo `Oferta::MAXIMO_PORTADA` (24) y había más publicadas, así que algunas no
+las veía nadie.
+
+- `Oferta::vigentesConLugar()` devuelve todas las que ve el público (publicadas,
+  agendables, con lugar, primero las que vencen antes); `paraPortada()` toma las
+  primeras 24 de esa misma lista, así las reglas son una sola.
+- Ruta pública `GET /promociones` (`promociones.index`) →
+  `PromocionPublicaController` (invocable) → `promociones/index.blade.php`. Se
+  llama así porque `/ofertas` ya es la vista del personal. Filtro opcional
+  `?especialidad={id}`; solo se ofrecen especialidades activas con alguna
+  promoción, y un id desconocido muestra todas.
+- La tarjeta vive en `partials/tarjeta-oferta.blade.php` y la usan el carrusel y
+  la página, para que se vean igual.
+- La portada calcula la lista una vez en `routes/web.php` y pasa `totalOfertas`:
+  el botón dice «Ver todas las promociones (N)» cuando no caben todas.
+- Pruebas: `PromocionesPublicasTest` (5).
+
 **QA del panel en producción (H-98, 25/11/2026).** Hallazgos corregidos:
 
 - **Avisos de testimonio:** `TestimonioController` (aprobar, rechazar, eliminar) da

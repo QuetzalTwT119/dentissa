@@ -503,6 +503,12 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
   dentro de sus fechas (beneficio, tratamiento, imagen si tiene, vigencia y
   lugares que quedan). Las que están **En revisión** u **Ocultas** solo se ven
   en el panel.
+- Debajo del carrusel está el botón **Ver todas las promociones** (si hay más
+  de las que caben, dice cuántas son en total). Abre la página
+  **/promociones**: todas las ofertas publicadas en cuadrícula, con filtros por
+  especialidad (Todas, Odontología General, Estética…). Cada tarjeta tiene
+  **Pedir info** (WhatsApp) y **Agendar** (con la oferta ya aplicada). Se
+  puede compartir el enlace, incluso ya filtrado.
 - **Crear una oferta** (Contenido → Ofertas → Nueva oferta): se llenan
   **título** (5 a 120 letras), **Beneficio para el paciente**, la **cantidad**,
   **descripción** (20 a 300 letras) y **Válida hasta** (hoy o después). La

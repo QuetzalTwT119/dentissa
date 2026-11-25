@@ -143,6 +143,15 @@ class Oferta extends Model
      */
     public static function paraPortada()
     {
+        return self::vigentesConLugar()->take(self::MAXIMO_PORTADA)->values();
+    }
+
+    /**
+     * Todas las que ve el público, sin el tope de la portada (25/11/2026, página
+     * /promociones): publicadas, con lugar y las que vencen primero.
+     */
+    public static function vigentesConLugar()
+    {
         return self::with('tratamiento:id,nombre')
             ->publicadas()
             ->conLugaresUsados()
@@ -150,7 +159,6 @@ class Oferta extends Model
             ->orderBy('id')
             ->get()
             ->reject(fn (self $oferta) => $oferta->lugaresQuedan() === 0)
-            ->take(self::MAXIMO_PORTADA)
             ->values();
     }
 
