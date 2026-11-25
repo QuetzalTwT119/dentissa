@@ -4,7 +4,8 @@ $usuario = auth()->user();
 $puede = fn (string $modulo) => $usuario->puede($modulo);
 // Sin expediente pero con cuestionario (la asistente): enlace directo (22/11/2026).
 $soloHistorias = $puede('historia_clinica') && ! $puede('pacientes');
-$gestion = $puede('directorio_pacientes') || $puede('usuarios') || $puede('reportes') || $puede('pagos') || $puede('mensajes') || $puede('control_actividades');
+// 25/11/2026: Pacientes pasó al menú principal; "Administración" agrupa lo del consultorio.
+$gestion = $puede('usuarios') || $puede('reportes') || $puede('pagos') || $puede('mensajes') || $puede('control_actividades');
 $notificacionesNuevas = $usuario->notificacionesSistema()->whereNull('vista_en')->count();
 // Panel de la campana: primero lo que pide una acción, luego lo informativo.
 $avisosPorAtender = $usuario->notificacionesSistema()->porAtender()->with('cita.paciente')->latest('id')->limit(5)->get();
@@ -26,8 +27,12 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
             @if ($puede('agenda'))
             <a href="{{ route('citas.index') }}" @class([$clasesEnlaceActivo => request()->routeIs('citas.*'), $clasesEnlace => ! request()->routeIs('citas.*')]) @if(request()->routeIs('citas.*')) aria-current="page" @endif>Agenda</a>
             @endif
-            @if ($puede('agenda'))
+            @if ($puede('asistente_agenda'))
             <a href="{{ route('asistente-agenda.create') }}" @class([$clasesEnlaceActivo => request()->routeIs('asistente-agenda.*'), $clasesEnlace => ! request()->routeIs('asistente-agenda.*')]) @if(request()->routeIs('asistente-agenda.*')) aria-current="page" @endif>Asistente</a>
+            @endif
+            @if ($puede('directorio_pacientes'))
+            @php $enPacientes = request()->routeIs('admin.pacientes.*') && ! request()->routeIs('admin.pacientes.historia.*'); @endphp
+            <a href="{{ route('admin.pacientes.index') }}" @class([$clasesEnlaceActivo => $enPacientes, $clasesEnlace => ! $enPacientes]) @if($enPacientes) aria-current="page" @endif>Pacientes</a>
             @endif
             @if ($soloHistorias)
             @php $enHistorias = request()->routeIs('admin.historias.*') || request()->routeIs('admin.pacientes.historia.*'); @endphp
@@ -38,11 +43,8 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
             @if ($gestion || $puede('catalogo') || $puede('contenido') || $puede('configuracion'))
                 <span class="mx-1 h-6 w-px bg-line xl:mx-2" aria-hidden="true"></span>
                 @if ($gestion)
-                <x-nav-dropdown :active="request()->routeIs('admin.pacientes.*') || request()->routeIs('admin.usuarios.*') || request()->routeIs('admin.reportes.*') || request()->routeIs('admin.pagos.*') || request()->routeIs('admin.mensajes.*') || request()->routeIs('admin.auditoria.*')">
-                    <x-slot name="label">Gestión</x-slot>
-                    @if ($puede('directorio_pacientes'))
-                    <x-dropdown-link :href="route('admin.pacientes.index')">Pacientes</x-dropdown-link>
-                    @endif
+                <x-nav-dropdown :active="request()->routeIs('admin.usuarios.*') || request()->routeIs('admin.reportes.*') || request()->routeIs('admin.pagos.*') || request()->routeIs('admin.mensajes.*') || request()->routeIs('admin.auditoria.*')">
+                    <x-slot name="label">Administración</x-slot>
                     @if ($puede('usuarios'))
                     <x-dropdown-link :href="route('admin.usuarios.index')">Usuarios</x-dropdown-link>
                     @endif
@@ -65,7 +67,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 <x-nav-dropdown :active="request()->routeIs('admin.servicios.*') || request()->routeIs('admin.tratamientos.*')">
                     <x-slot name="label">Catálogo</x-slot>
                     @if ($puede('catalogo'))
-                    <x-dropdown-link :href="route('admin.servicios.index')">Servicios</x-dropdown-link>
+                    <x-dropdown-link :href="route('admin.servicios.index')">Especialidades</x-dropdown-link>
                     @endif
                     @if ($puede('catalogo'))
                     <x-dropdown-link :href="route('admin.tratamientos.index')">Tratamientos</x-dropdown-link>
@@ -75,7 +77,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
 
                 @if ($puede('contenido'))
                 <x-nav-dropdown :active="request()->routeIs('admin.ofertas.*') || request()->routeIs('admin.testimonios.*') || request()->routeIs('admin.galeria.*') || request()->routeIs('admin.casos.*') || request()->routeIs('admin.preguntas-frecuentes.*')">
-                    <x-slot name="label">Contenido</x-slot>
+                    <x-slot name="label">Sitio web</x-slot>
                     @if ($puede('contenido'))
                     <x-dropdown-link :href="route('admin.ofertas.index')">Ofertas</x-dropdown-link>
                     @endif
@@ -202,8 +204,11 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
             @if ($puede('agenda'))
             <x-responsive-nav-link :href="route('citas.index')" :active="request()->routeIs('citas.*')">Agenda</x-responsive-nav-link>
             @endif
-            @if ($puede('agenda'))
+            @if ($puede('asistente_agenda'))
             <x-responsive-nav-link :href="route('asistente-agenda.create')" :active="request()->routeIs('asistente-agenda.*')">Asistente</x-responsive-nav-link>
+            @endif
+            @if ($puede('directorio_pacientes'))
+            <x-responsive-nav-link :href="route('admin.pacientes.index')" :active="request()->routeIs('admin.pacientes.*') && ! request()->routeIs('admin.pacientes.historia.*')">Pacientes</x-responsive-nav-link>
             @endif
             @if ($soloHistorias)
             <x-responsive-nav-link :href="route('admin.historias.index')" :active="request()->routeIs('admin.historias.*') || request()->routeIs('admin.pacientes.historia.*')">Historias clínicas</x-responsive-nav-link>
@@ -213,10 +218,7 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
             @endif
             @if ($gestion || $puede('catalogo') || $puede('contenido') || $puede('configuracion'))
                 @if ($gestion)
-                <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-label text-brand-700/80">Gestión</p>
-                @endif
-                @if ($puede('directorio_pacientes'))
-                <x-responsive-nav-link :href="route('admin.pacientes.index')" :active="request()->routeIs('admin.pacientes.*')">Pacientes</x-responsive-nav-link>
+                <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-label text-brand-700/80">Administración</p>
                 @endif
                 @if ($puede('usuarios'))
                 <x-responsive-nav-link :href="route('admin.usuarios.index')" :active="request()->routeIs('admin.usuarios.*')">Usuarios</x-responsive-nav-link>
@@ -234,10 +236,10 @@ $clasesEnlaceActivo = 'inline-flex min-h-11 items-center rounded-full bg-brand-5
                 <x-responsive-nav-link :href="route('admin.auditoria.index')" :active="request()->routeIs('admin.auditoria.*')">Control de actividades</x-responsive-nav-link>
                 @endif
                 @if ($puede('catalogo') || $puede('contenido'))
-                <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-label text-brand-700/80">Catálogo y contenido</p>
+                <p class="col-span-full px-3 pt-3 text-xs font-semibold uppercase tracking-label text-brand-700/80">Catálogo y sitio web</p>
                 @endif
                 @if ($puede('catalogo'))
-                <x-responsive-nav-link :href="route('admin.servicios.index')" :active="request()->routeIs('admin.servicios.*')">Servicios</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.servicios.index')" :active="request()->routeIs('admin.servicios.*')">Especialidades</x-responsive-nav-link>
                 @endif
                 @if ($puede('catalogo'))
                 <x-responsive-nav-link :href="route('admin.tratamientos.index')" :active="request()->routeIs('admin.tratamientos.*')">Tratamientos</x-responsive-nav-link>

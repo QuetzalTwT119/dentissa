@@ -22,7 +22,7 @@ class DashboardVisualTest extends TestCase
             ->assertSee('Accesos rápidos')
             ->assertSee('Agendar cita')
             ->assertSee('Pacientes')
-            ->assertSee('Gestión')
+            ->assertSee('Administración')
             // Marca global (22/11/2026): la misma firma que la portada.
             ->assertSee('data-marca', false)
             ->assertSee('Dra. Melissa López');

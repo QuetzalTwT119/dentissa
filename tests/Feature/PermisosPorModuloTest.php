@@ -38,8 +38,10 @@ class PermisosPorModuloTest extends TestCase
     private const PAGINAS = [
         'inicio' => 'dashboard',
         'cuenta' => 'profile.edit',
+        'dos_pasos' => 'dos-pasos.show',
         'notificaciones' => 'notificaciones.index',
         'agenda' => 'citas.index',
+        'asistente_agenda' => 'asistente-agenda.create',
         'historia_clinica' => 'admin.historias.index',
         // 25/11/2026: el directorio (lista y alta) se separó del expediente.
         'directorio_pacientes' => 'admin.pacientes.index',
@@ -77,8 +79,8 @@ class PermisosPorModuloTest extends TestCase
         // 25/11/2026: el doctor, solo lo clínico; la asistente, recepción.
         $roles = [
             RolUsuario::SuperAdmin->value => array_keys(self::PAGINAS),
-            RolUsuario::Doctor->value => ['inicio', 'cuenta', 'notificaciones', 'agenda', 'directorio_pacientes', 'pacientes', 'historia_clinica', 'pagos'],
-            RolUsuario::Asistente->value => ['inicio', 'cuenta', 'notificaciones', 'agenda', 'directorio_pacientes', 'historia_clinica', 'pagos', 'mensajes'],
+            RolUsuario::Doctor->value => ['inicio', 'cuenta', 'dos_pasos', 'notificaciones', 'agenda', 'asistente_agenda', 'directorio_pacientes', 'pacientes', 'historia_clinica', 'pagos'],
+            RolUsuario::Asistente->value => ['inicio', 'cuenta', 'dos_pasos', 'notificaciones', 'agenda', 'asistente_agenda', 'directorio_pacientes', 'historia_clinica', 'pagos', 'mensajes'],
         ];
 
         foreach ($roles as $rol => $permitidos) {

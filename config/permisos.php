@@ -34,9 +34,12 @@ return [
 
     'modulos' => [
         'inicio' => ['dashboard'],
-        'cuenta' => ['profile.*', 'dos-pasos.*'],
+        'cuenta' => ['profile.*'],
+        // 25/11/2026: separados para apagarlos con dentissa.modulos.*.
+        'dos_pasos' => ['dos-pasos.*'],
         'notificaciones' => ['notificaciones.*'],
-        'agenda' => ['citas.*', 'asistente-agenda.*'],
+        'agenda' => ['citas.*'],
+        'asistente_agenda' => ['asistente-agenda.*'],
         // Directorio (25/11/2026): lista, alta y datos de contacto. Va antes de
         // "pacientes" (el expediente), que se queda con el resto de admin.pacientes.*.
         'directorio_pacientes' => [
@@ -66,12 +69,14 @@ return [
 
         // Doctores asociados: solo lo clínico (25/11/2026; antes todo, "temporal").
         'doctor' => [
-            'inicio', 'cuenta', 'notificaciones', 'agenda', 'directorio_pacientes', 'pacientes', 'historia_clinica', 'pagos',
+            'inicio', 'cuenta', 'dos_pasos', 'notificaciones', 'agenda', 'asistente_agenda', 'directorio_pacientes', 'pacientes',
+            'historia_clinica', 'pagos',
         ],
 
         // Recepción (25/11/2026): agenda, directorio sin expediente, cuestionario, cobros y mensajes.
         'asistente' => [
-            'inicio', 'cuenta', 'notificaciones', 'agenda', 'directorio_pacientes', 'historia_clinica', 'pagos', 'mensajes',
+            'inicio', 'cuenta', 'dos_pasos', 'notificaciones', 'agenda', 'asistente_agenda', 'directorio_pacientes',
+            'historia_clinica', 'pagos', 'mensajes',
         ],
     ],
 

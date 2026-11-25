@@ -28,11 +28,13 @@ prototipo, la clínica puede usar Gmail API como canal emisor; eso no cambia el
 destinatario ni requiere que cada usuario conecte su propio Google.
 
 La navegación interna muestra la marca (el logotipo con la firma **Dra. Melissa
-López**, igual que en la portada), un acceso a **Inicio**, otro a
-la **Agenda** y otro al **Asistente**. En administración, **Gestión** agrupa
-Pacientes, Usuarios, Reportes, Pagos, Mensajes y Control de actividades (cada rol ve solo los suyos); los
-menús **Catálogo**, **Contenido** y **Configuración** reúnen el resto de las
-secciones. El menú completo se ve en computadora, laptop, TV y proyector (desde
+López**, igual que en la portada) y, desde el 25/11/2026: **Inicio**, **Agenda**,
+**Pacientes**, **Administración** (Usuarios, Reportes y Control de actividades),
+**Catálogo** (Especialidades y Tratamientos), **Sitio web** (Ofertas, Testimonios y
+Preguntas frecuentes: lo que ven los pacientes en la portada) y **Configuración**. Cada
+pantalla se titula igual que su enlace (la Agenda ya no dice «Citas»). Cada rol ve solo
+lo suyo. El **Asistente de agenda**, **Mensajes de contacto** y la **verificación en dos
+pasos** están ocultos por ahora; se encienden en Railway sin tocar código. El menú completo se ve en computadora, laptop, TV y proyector (desde
 1024 px de ancho; en las más chicas solo se ve el círculo del logotipo y tu foto). En celular y tableta, usa el botón de menú (☰) para encontrar las
 mismas opciones y la campana para abrir una vista rápida de notificaciones.
 En el teléfono, los listados anchos conservan sus
@@ -548,6 +550,8 @@ fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
   cambiar "Válida hasta".
 - **Configuración** (menú del panel, solo administradores) es una sola página
   con dos bloques, cada uno con su botón de guardar:
+  - **Próximos bloqueos** (Configuración): se muestran de 5 en 5, con el total junto al
+    título y páginas abajo.
   - **Datos del consultorio:** teléfono, WhatsApp de contacto ("Es el mismo
     número que el teléfono" o uno distinto), correo, dirección y nombre del negocio en Google Maps (opcional). Lo que se
     guarde se ve de inmediato en la portada, el pie, "¿Prefieres llamar?", la

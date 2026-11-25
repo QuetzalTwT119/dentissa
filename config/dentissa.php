@@ -20,6 +20,15 @@ return [
         // Pagos e ingresos (24/11/2026): hecho pero oculto por decisión del usuario
         // ("no se va a ocupar"). Apagado, nadie tiene el módulo "pagos" (Permisos).
         'pagos' => (bool) env('DENTISSA_MODULO_PAGOS', false),
+        // 25/11/2026 (pedido del usuario para la presentación), ocultos y listos
+        // para encenderse sin tocar código:
+        // - Asistente de agenda: la pantalla se veía vacía.
+        // - Mensajes de contacto: la portada no tiene formulario, nunca llegan.
+        // - Verificación en dos pasos: oculta mientras no se use. Apagada, nadie
+        //   la ve en Mi perfil y tampoco se exige al entrar.
+        'asistente_agenda' => (bool) env('DENTISSA_MODULO_ASISTENTE_AGENDA', false),
+        'mensajes' => (bool) env('DENTISSA_MODULO_MENSAJES', false),
+        'dos_pasos' => (bool) env('DENTISSA_MODULO_DOS_PASOS', false),
     ],
 
     /*

@@ -30,6 +30,11 @@
         <env name="DENTISSA_ASISTENTE_IA_HABILITADA" value="false" force="true"/>
         <!-- SeguridadPersonalTest la enciende; el resto de la suite entra sin el reto. -->
         <env name="DENTISSA_2FA_ADMIN" value="false" force="true"/>
+        <!-- 25/11/2026: ocultos en producción por omisión; las pruebas los revisan encendidos
+             (MenuDemoTest comprueba que por omisión estén apagados). -->
+        <env name="DENTISSA_MODULO_ASISTENTE_AGENDA" value="true" force="true"/>
+        <env name="DENTISSA_MODULO_MENSAJES" value="true" force="true"/>
+        <env name="DENTISSA_MODULO_DOS_PASOS" value="true" force="true"/>
         <env name="MAIL_MAILER" value="array" force="true"/>
         <env name="QUEUE_CONNECTION" value="sync" force="true"/>
         <env name="SESSION_DRIVER" value="array" force="true"/>

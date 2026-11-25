@@ -750,6 +750,24 @@ marcaba un punto en la calle. Nueva columna `datos_consultorio.nombre_maps` (mig
 mapa embebido y en «Cómo llegar»; vacío, solo la dirección. Se edita en Configuración →
 Datos del consultorio y queda en la bitácora. Prueba: `DatosConsultorioTest`.
 
+**Menú y módulos ocultos para la presentación (H-104, 25/11/2026).**
+- Interruptores nuevos en `config('dentissa.modulos')`, **apagados por omisión**:
+  `asistente_agenda` (`DENTISSA_MODULO_ASISTENTE_AGENDA`), `mensajes`
+  (`DENTISSA_MODULO_MENSAJES`; la portada no tiene formulario que llame a
+  `contacto.store`) y `dos_pasos` (`DENTISSA_MODULO_DOS_PASOS`). Se apoyan en
+  `Permisos::rolPuede()`: apagado, nadie tiene el módulo, el menú no lo muestra y la ruta
+  da 403.
+- `config/permisos.php`: `asistente-agenda.*` sale de `agenda` a su propio módulo y
+  `dos-pasos.*` sale de `cuenta`. `User::debeUsarDosPasos()` exige además `dos_pasos`,
+  para que un `DENTISSA_2FA_ADMIN=true` con el módulo apagado no deje al panel en un ciclo.
+- Menú: Inicio · Agenda · Pacientes · Administración · Catálogo (Especialidades,
+  Tratamientos) · Sitio web · Configuración. Títulos alineados: `citas.index` → «Agenda»,
+  pacientes → «Pacientes», servicios → «Especialidades»; tarjetas del inicio iguales.
+- `ConfiguracionController`: «Próximos bloqueos» paginados (`BLOQUEOS_POR_PAGINA = 5`,
+  parámetro `bloqueos`, ancla `#bloqueos`).
+- `phpunit.xml` enciende los tres módulos para el resto de la suite; `MenuDemoTest` (4)
+  los revisa apagados, como en producción.
+
 **QA del panel en producción (H-98, 25/11/2026).** Hallazgos corregidos:
 
 - **Avisos de testimonio:** `TestimonioController` (aprobar, rechazar, eliminar) da
