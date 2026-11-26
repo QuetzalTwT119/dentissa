@@ -146,15 +146,9 @@
                 @endif
             </div>
 
-            {{-- Receta en PDF (24/11/2026): datos que salen en cada receta. Solo quien ve expedientes. --}}
+            {{-- Receta en PDF (24/11/2026): la especialidad sale en cada receta. Solo quien ve
+                 expedientes. 26/11/2026: la cédula se captura en Configuración → Cédulas profesionales. --}}
             @if ($user->puede('pacientes'))
-                <div data-cedula>
-                    <x-input-label for="cedula_profesional" value="Cédula profesional" />
-                    <x-text-input id="cedula_profesional" name="cedula_profesional" type="text" inputmode="numeric" maxlength="20" class="mt-1 block w-full"
-                                  :value="old('cedula_profesional', $user->cedula_profesional)" autocomplete="off" />
-                    <p class="mt-1 text-xs text-muted">Sale en tus recetas.{{ config('dentissa.recetas.exigir_cedula') ? ' Sin ella no se pueden imprimir.' : '' }}</p>
-                    <x-input-error class="mt-2" :messages="$errors->get('cedula_profesional')" />
-                </div>
                 <div>
                     <x-input-label for="especialidad" value="Especialidad (opcional)" />
                     <x-text-input id="especialidad" name="especialidad" type="text" maxlength="100" class="mt-1 block w-full"

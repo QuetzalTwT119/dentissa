@@ -13,7 +13,8 @@ use Tests\TestCase;
 
 /**
  * Receta en PDF (24/11/2026): sale de una consulta con medicamentos y lleva la
- * cédula profesional de quien atendió (Mi perfil).
+ * cédula profesional de quien atendió (Configuración → Cédulas profesionales,
+ * 26/11/2026; antes Mi perfil).
  */
 class RecetaPdfTest extends TestCase
 {
@@ -80,7 +81,7 @@ class RecetaPdfTest extends TestCase
         config(['dentissa.recetas.exigir_cedula' => true]);
         $this->doctora->update(['cedula_profesional' => null]);
         $this->actingAs($this->doctora)->get(route('admin.pacientes.historial.receta', [$this->paciente, $this->consulta()]))
-            ->assertSessionHas('error', fn (string $mensaje) => str_contains($mensaje, 'cédula profesional') && str_contains($mensaje, 'Mi perfil'));
+            ->assertSessionHas('error', fn (string $mensaje) => str_contains($mensaje, 'cédula profesional') && str_contains($mensaje, 'Configuración'));
     }
 
     /** 25/11/2026: exigir la cédula está apagado temporalmente (por omisión). */
@@ -101,21 +102,50 @@ class RecetaPdfTest extends TestCase
         $this->actingAs($this->doctora)->get(route('admin.pacientes.historial.receta', [$otro, $this->consulta()]))->assertNotFound();
     }
 
-    public function test_la_cedula_se_guarda_en_mi_perfil(): void
+    /**
+     * 26/11/2026 (decisión del usuario): la cédula se captura en Configuración →
+     * Cédulas profesionales, una por doctor; Mi perfil ya no la tiene.
+     */
+    public function test_la_cedula_se_captura_en_configuracion_y_no_en_mi_perfil(): void
     {
-        $this->actingAs($this->doctora)->get(route('profile.edit'))->assertOk()->assertSee('data-cedula', false);
+        $doctor = User::factory()->create(['rol' => RolUsuario::Doctor, 'nombre' => 'Luis', 'apellido' => 'Paz']);
+        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente, 'nombre' => 'Rosa', 'apellido' => 'Gil']);
 
+        // Configuración lista a quienes atienden consultas, no a la asistente.
+        $this->actingAs($this->doctora)->get(route('admin.configuracion'))->assertOk()
+            ->assertSee('Cédulas profesionales')
+            ->assertSee('name="cedulas['.$doctor->id.']"', false)
+            ->assertSee('name="cedulas['.$this->doctora->id.']"', false)
+            ->assertDontSee('name="cedulas['.$asistente->id.']"', false);
+
+        $this->actingAs($this->doctora)->put(route('admin.consultorio.cedulas'), ['cedulas' => [
+            $this->doctora->id => '87654321',
+            $doctor->id => ' 11223344 ',
+            $asistente->id => '99999999', // No atiende consultas: se ignora.
+        ]])->assertRedirect(route('admin.configuracion').'#cedulas')->assertSessionHasNoErrors();
+
+        $this->assertSame('87654321', $this->doctora->fresh()->cedula_profesional);
+        $this->assertSame('11223344', $doctor->fresh()->cedula_profesional);
+        $this->assertNull($asistente->fresh()->cedula_profesional);
+        $this->assertSame(2, LogAuditoria::where('accion', 'cedula.actualizada')->count());
+
+        // Formato inválido.
+        $this->actingAs($this->doctora)->put(route('admin.consultorio.cedulas'), ['cedulas' => [$doctor->id => '12 34/56']])
+            ->assertSessionHasErrors('cedulas.'.$doctor->id);
+
+        // Mi perfil ya no la muestra ni la cambia; la especialidad sí se queda.
+        $this->actingAs($this->doctora)->get(route('profile.edit'))->assertOk()
+            ->assertDontSee('name="cedula_profesional"', false)
+            ->assertSee('name="especialidad"', false);
         $this->actingAs($this->doctora)->patch(route('profile.update'), [
             'nombre' => $this->doctora->nombre, 'apellido' => $this->doctora->apellido, 'telefono' => '5512345678', 'email' => $this->doctora->email,
-            'cedula_profesional' => '87654321', 'especialidad' => 'Ortodoncista',
+            'cedula_profesional' => '00000000', 'especialidad' => 'Ortodoncista',
         ])->assertSessionHasNoErrors();
-
         $this->assertSame('87654321', $this->doctora->fresh()->cedula_profesional);
         $this->assertSame('Ortodoncista', $this->doctora->fresh()->especialidad);
 
-        // La asistente no la ve (no atiende consultas).
-        $asistente = User::factory()->create(['rol' => RolUsuario::Asistente]);
-        $this->actingAs($asistente)->get(route('profile.edit'));
-        $this->assertFalse($asistente->puede('pacientes'));
+        // Solo quien tiene Configuración (la titular) la cambia.
+        $this->actingAs($doctor)->put(route('admin.consultorio.cedulas'), ['cedulas' => [$doctor->id => '55555555']])->assertForbidden();
+        $this->assertSame('11223344', $doctor->fresh()->cedula_profesional);
     }
 }

@@ -737,6 +737,16 @@ las veía nadie.
 - La portada calcula la lista una vez en `routes/web.php` y pasa `totalOfertas`:
   el botón dice «Ver todas las promociones (N)» cuando no caben todas.
 - Pruebas: `PromocionesPublicasTest` (5).
+**Cédulas en Configuración (H-105, 26/11/2026).** Decisión del usuario: la cédula ya no se
+captura en Mi perfil. `Admin\CedulaProfesionalController` (invocable, `PUT
+admin/consultorio/cedulas`, ruta `admin.consultorio.cedulas`, módulo `configuracion`)
+guarda `cedulas[{id}]` solo de usuarios activos con el módulo `pacientes`
+(`CedulaProfesionalController::doctores()`); ignora otros ids, valida
+`[0-9A-Za-z-]`, máximo 20, y deja `cedula.actualizada` en la bitácora por cada cambio.
+Vista `admin/configuracion/_cedulas.blade.php` (ancla `#cedulas`). Mi perfil ya no
+muestra ni acepta `cedula_profesional` (`ProfileUpdateRequest`); la especialidad sigue
+ahí. El aviso de la receta sin cédula apunta a Configuración. Prueba: `RecetaPdfTest`.
+
 **Receta sin cédula, temporal (H-102, 25/11/2026).** `config('dentissa.recetas.exigir_cedula')`
 (`DENTISSA_RECETA_EXIGE_CEDULA`, por omisión `false`). Apagado,
 `HistorialClinicoController::receta` imprime aunque quien atendió no tenga cédula y

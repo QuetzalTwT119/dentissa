@@ -4,6 +4,7 @@ use App\Enums\TipoImagen;
 use App\Http\Controllers\Admin\AuditoriaController;
 use App\Http\Controllers\Admin\BloqueoAgendaController;
 use App\Http\Controllers\Admin\CasoController;
+use App\Http\Controllers\Admin\CedulaProfesionalController;
 use App\Http\Controllers\Admin\ConfiguracionController;
 use App\Http\Controllers\Admin\ConsentimientoController;
 use App\Http\Controllers\Admin\DatosConsultorioController;
@@ -334,6 +335,8 @@ Route::middleware(['auth', 'permiso', 'no-cache'])->prefix('admin')->name('admin
     Route::put('horarios', [HorarioController::class, 'update'])->name('horarios.update');
     Route::redirect('consultorio', '/admin/configuracion#consultorio')->name('consultorio.edit');
     Route::put('consultorio', [DatosConsultorioController::class, 'update'])->name('consultorio.update');
+    // 26/11/2026: cédulas profesionales de los doctores (antes en Mi perfil).
+    Route::put('consultorio/cedulas', CedulaProfesionalController::class)->name('consultorio.cedulas');
     // Días u horas bloqueados (24/11/2026), en Configuración.
     Route::post('bloqueos', [BloqueoAgendaController::class, 'store'])->name('bloqueos.store');
     Route::delete('bloqueos/{bloqueo}', [BloqueoAgendaController::class, 'destroy'])->name('bloqueos.destroy');
