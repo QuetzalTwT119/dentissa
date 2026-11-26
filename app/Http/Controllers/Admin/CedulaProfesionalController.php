@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\RolUsuario;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\AuditoriaService;
@@ -19,7 +20,10 @@ use Illuminate\Support\Facades\Redirect;
  */
 class CedulaProfesionalController extends Controller
 {
-    /** Quienes atienden consultas: los que tienen el expediente (módulo "pacientes"). */
+    /**
+     * Quienes atienden consultas: los que tienen el expediente (módulo "pacientes").
+     * La doctora titular primero; luego en orden alfabético.
+     */
     public static function doctores(): Collection
     {
         return User::query()
@@ -27,7 +31,9 @@ class CedulaProfesionalController extends Controller
             ->whereIn('rol', Permisos::valoresCon('pacientes'))
             ->orderBy('nombre')
             ->orderBy('apellido')
-            ->get(['id', 'nombre', 'apellido', 'rol', 'cedula_profesional']);
+            ->get(['id', 'nombre', 'apellido', 'rol', 'cedula_profesional'])
+            ->sortBy(fn (User $doctor) => $doctor->rol === RolUsuario::SuperAdmin ? 0 : 1)
+            ->values();
     }
 
     public function __invoke(Request $request, AuditoriaService $auditoria): RedirectResponse
