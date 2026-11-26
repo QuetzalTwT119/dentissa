@@ -1028,8 +1028,10 @@ octubre en los años de transmisión del Poder Ejecutivo Federal.
 
 ### 12.5 Cédulas profesionales
 
-Muestra una línea por cada doctor activo que atiende consultas, con su nombre, su rol y un
-campo para la cédula profesional. La cédula de cada doctor aparece en sus recetas y
+Muestra una tabla con una fila por cada doctor activo que atiende consultas (la doctora
+titular primero), con sus iniciales, nombre, rol, el campo de la cédula y su estado:
+**Capturada** (verde) o **Falta** (ámbar), que cambia al escribir. Al pie se indica cuántas
+cédulas faltan. La cédula de cada doctor aparece en sus recetas y
 consentimientos en PDF; no se publica en la portada. Solo se aceptan números, letras y
 guiones (máximo 20 caracteres). El guardado solicita confirmación y cada cambio queda
 registrado en el Control de actividades.

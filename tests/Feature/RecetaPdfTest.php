@@ -111,12 +111,15 @@ class RecetaPdfTest extends TestCase
         $doctor = User::factory()->create(['rol' => RolUsuario::Doctor, 'nombre' => 'Luis', 'apellido' => 'Paz']);
         $asistente = User::factory()->create(['rol' => RolUsuario::Asistente, 'nombre' => 'Rosa', 'apellido' => 'Gil']);
 
-        // Configuración lista a quienes atienden consultas, no a la asistente.
+        // Configuración lista a quienes atienden consultas, no a la asistente; la
+        // titular primero aunque su nombre vaya después en el alfabeto, y cada
+        // fila dice si ya tiene cédula (la titular sí, Luis no).
         $this->actingAs($this->doctora)->get(route('admin.configuracion'))->assertOk()
             ->assertSee('Cédulas profesionales')
-            ->assertSee('name="cedulas['.$doctor->id.']"', false)
-            ->assertSee('name="cedulas['.$this->doctora->id.']"', false)
-            ->assertDontSee('name="cedulas['.$asistente->id.']"', false);
+            ->assertSeeInOrder(['name="cedulas['.$this->doctora->id.']"', 'name="cedulas['.$doctor->id.']"'], false)
+            ->assertDontSee('name="cedulas['.$asistente->id.']"', false)
+            ->assertSee('Capturada')
+            ->assertSee('Falta 1 cédula.');
 
         $this->actingAs($this->doctora)->put(route('admin.consultorio.cedulas'), ['cedulas' => [
             $this->doctora->id => '87654321',
