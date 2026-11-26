@@ -34,8 +34,8 @@ class ProfileUpdateRequest extends FormRequest
                 'dimensions:max_width=3000,max_height=3000',
             ],
             'quitar_foto' => ['nullable', 'boolean'],
-            // Receta en PDF (24/11/2026): la cédula profesional sale en cada receta.
-            'cedula_profesional' => ['nullable', 'string', 'max:20', 'regex:/^[0-9A-Za-z-]+$/'],
+            // Receta en PDF (24/11/2026). La cédula ya no se cambia aquí (26/11/2026):
+            // se captura en Configuración → Cédulas profesionales.
             'especialidad' => ['nullable', 'string', 'max:100'],
         ];
     }
