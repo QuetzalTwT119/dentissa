@@ -152,4 +152,20 @@ class PortadaPublicaTest extends TestCase
             $this->assertLessThan(150 * 1024, filesize($foto), basename($foto).' pesa más de 150 KB: comprímela antes de subirla.');
         }
     }
+
+    /**
+     * 26/11/2026: textos para pacientes, no de manual técnico, y el menú dice
+     * «El consultorio» (la sección no tiene fotos de instalaciones).
+     */
+    public function test_la_filosofia_y_el_menu_hablan_en_lenguaje_de_paciente(): void
+    {
+        $this->get('/')->assertOk()
+            ->assertSee('El consultorio')
+            ->assertDontSee('>Instalaciones<', false)
+            ->assertSee('Tu cita empieza a tiempo:')
+            ->assertSee('Instrumental estéril en cada consulta:')
+            ->assertSee('Tu expediente, siempre a la mano:')
+            ->assertDontSee('Bloqueo dinámico')
+            ->assertDontSee('dentro del sistema de la clínica');
+    }
 }

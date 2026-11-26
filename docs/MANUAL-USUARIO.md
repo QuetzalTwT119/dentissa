@@ -386,7 +386,7 @@ un carrusel de tarjetas con fotografía:
   historia clínica.
 - **La clínica** muestra la misión y la visión capturadas en **Configuración → Datos del
   consultorio**; si se borran, se restablece el texto predeterminado.
-- **Instalaciones** («El consultorio») muestra las fotografías activas de
+- **El consultorio** (antes «Instalaciones» en el menú) muestra las fotografías activas de
   **Sitio web → Galería**, en su orden. Si no existe ninguna, se presentan dos
   ilustraciones informativas: «Un paciente a la vez» (o «Citas con hora exacta» cuando se
   atiende a más de un paciente por horario) y «Te avisamos un día antes».
@@ -420,7 +420,7 @@ un carrusel de tarjetas con fotografía:
 
 ### 5.6 Navegación del portal
 
-Los enlaces **Inicio**, **Tratamientos**, **La Clínica**, **Instalaciones**,
+Los enlaces **Inicio**, **Tratamientos**, **La Clínica**, **El consultorio**,
 **Testimonios** y **Contacto** desplazan la página hasta la sección correspondiente sin
 recargarla, y el enlace de la sección visible se resalta automáticamente.
 

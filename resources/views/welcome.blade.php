@@ -51,7 +51,7 @@
             ['#inicio', 'Inicio'],
             ['#servicios', 'Tratamientos'],
             ['#nosotros', 'La Clínica'],
-            ['#galeria', 'Instalaciones'],
+            ['#galeria', 'El consultorio'],
             ['#testimonios', 'Testimonios'],
             ['#contacto', 'Contacto'],
         ];
@@ -87,9 +87,9 @@
         ];
 
         $compromisos = [
-            ['Historial clínico digital:', 'Información gestionada de forma confidencial dentro del sistema de la clínica.'],
-            ['Bioseguridad y esterilización de grado clínico:', 'Instrumental empacado y esterilizado individualmente, abierto siempre ante tu presencia.'],
-            ['Puntualidad en tu agenda:', 'Bloqueo dinámico de horarios para evitar esperas innecesarias en sala de recepción.'],
+            ['Tu expediente, siempre a la mano:', 'guardamos tu historia y tus tratamientos de forma privada; solo los ve el personal que te atiende.'],
+            ['Instrumental estéril en cada consulta:', 'se esteriliza y empaca por separado, y lo abrimos frente a ti.'],
+            ['Tu cita empieza a tiempo:', 'reservamos tu horario solo para ti, para que no esperes en la sala.'],
         ];
 
     @endphp
