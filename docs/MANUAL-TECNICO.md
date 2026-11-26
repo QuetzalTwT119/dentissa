@@ -626,6 +626,12 @@ testimonios, primera visita, preguntas, ubicación y agenda. Puntos técnicos:
 - Ilustraciones SVG propias en `public/images/ilustraciones/` como respaldo de la galería.
 - Navegación con *scroll-spy* (`aria-current="location"`) actualizada en
   `requestAnimationFrame`.
+- Descripción y vista previa al compartir: `partials/meta-compartir` agrega `description`,
+  `canonical` (página actual sin parámetros), Open Graph y Twitter en la portada,
+  `/promociones` y `/agendar-cita`, cada una con título y descripción propios. La imagen
+  `images/dentissa/vista-previa.jpg` (1200 × 630, < 300 KB, logotipo y nombre sobre la foto
+  de inicio de fábrica) es fija; si se cambia la foto de inicio, conviene regenerarla.
+  Prueba: `VistaPreviaCompartirTest`.
 
 ### 11.4 Testimonios
 

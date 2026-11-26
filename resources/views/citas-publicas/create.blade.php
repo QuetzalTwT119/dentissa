@@ -8,6 +8,10 @@
         @include('partials.favicon')
 
         <title>Agendar cita — Dentissa Odontología Integral</title>
+        @include('partials.meta-compartir', [
+            'titulo' => 'Agenda tu cita — Dentissa | Dra. Melissa López N.',
+            'descripcion' => 'Elige el tratamiento, el día y la hora en línea. Te confirmamos por WhatsApp y te recordamos un día antes.',
+        ])
 
         <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="/fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
