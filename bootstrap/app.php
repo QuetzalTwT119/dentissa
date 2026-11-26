@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Exceptions\AuditoriaNoDisponible;
 use App\Http\Middleware\CabecerasSeguridad;
