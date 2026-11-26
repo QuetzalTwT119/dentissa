@@ -179,7 +179,7 @@ class HistorialClinicoController extends Controller
 
     /**
      * Receta en PDF de una consulta (24/11/2026). Necesita medicamentos y quién
-     * atendió; la cédula profesional (Mi perfil) solo se exige si
+     * atendió; la cédula profesional (Configuración, 26/11/2026) solo se exige si
      * dentissa.recetas.exigir_cedula está encendido (25/11/2026: apagado
      * temporalmente). Se abre en el navegador y queda en Control de actividades.
      */
@@ -196,7 +196,7 @@ class HistorialClinicoController extends Controller
         if (! $doctor || (config('dentissa.recetas.exigir_cedula') && blank($doctor->cedula_profesional))) {
             $quien = $doctor ? "{$doctor->nombre} {$doctor->apellido}" : 'quien atendió';
 
-            return $volver->with('error', "Para imprimir la receta falta la cédula profesional de {$quien}: se agrega en Mi perfil.");
+            return $volver->with('error', "Para imprimir la receta falta la cédula profesional de {$quien}: la doctora titular la agrega en Configuración → Cédulas profesionales.");
         }
 
         $historia = $paciente->historiaClinica;

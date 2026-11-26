@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Observers\AuditoriaObserver;
 use App\Services\Respaldo\DestinoRespaldo;
 use App\Services\Respaldo\GoogleDriveDestino;
+use App\Support\BitacoraPendiente;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
@@ -36,8 +37,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Una bitácora pendiente por petición; se escribe al terminar (BitacoraPendiente).
-        $this->app->scoped(\App\Support\BitacoraPendiente::class);
-        $this->app->terminating(fn () => $this->app->make(\App\Support\BitacoraPendiente::class)->escribir());
+        $this->app->scoped(BitacoraPendiente::class);
+        $this->app->terminating(fn () => $this->app->make(BitacoraPendiente::class)->escribir());
 
         // Destino de los respaldos cifrados. Las pruebas lo cambian por uno en memoria.
         $this->app->bind(DestinoRespaldo::class, GoogleDriveDestino::class);
@@ -90,6 +91,13 @@ class AppServiceProvider extends ServiceProvider
      */
     private function configurarLimiteAgendaPublica(): void
     {
+        // Login de la app móvil (26/11/2026): 5 intentos por minuto por correo e IP,
+        // y 20 por IP, para que no se puedan probar contraseñas sin parar.
+        RateLimiter::for('app-login', fn (Request $request) => [
+            Limit::perMinute(5)->by('app-login|'.strtolower((string) $request->input('email')).'|'.$request->ip()),
+            Limit::perMinute(20)->by('app-login-ip|'.$request->ip()),
+        ]);
+
         RateLimiter::for('agendar-cita', function (Request $request) {
             $avisar = fn (Request $request) => redirect()
                 ->route('citas.publica.create')

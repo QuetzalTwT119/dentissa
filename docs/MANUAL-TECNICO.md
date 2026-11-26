@@ -407,6 +407,13 @@ repite en servidor la restricción de fecha mínima, independientemente del atri
   arranque de producción (`scripts/start-production.sh`, sin detenerlo si falla) y
   mensualmente con `--avisar` (aviso `festivos_con_citas`).
 
+- `Admin\CedulaProfesionalController` (invocable, `PUT admin/consultorio/cedulas`, ruta
+  `admin.consultorio.cedulas`, módulo `configuracion`) guarda `cedulas[{id}]` solo de
+  usuarios activos con el módulo `pacientes` (`CedulaProfesionalController::doctores()`),
+  ignora otros identificadores, valida `[0-9A-Za-z-]` con máximo 20 caracteres y registra
+  `cedula.actualizada` por cada cambio. Vista `admin/configuracion/_cedulas.blade.php`
+  (ancla `#cedulas`). `ProfileUpdateRequest` ya no acepta `cedula_profesional`.
+
 ### 7.7 Vistas de la agenda
 
 **Lista diaria** (`GET /citas?fecha=`): una consulta por día, pestañas de la semana con
@@ -561,7 +568,7 @@ constituye la aceptación. Las ofertas no se aplican en este canal. El token res
 | Historia clínica | `historias_clinicas` (1:1). Listas JSON con solo las claves marcadas; catálogos en constantes de `HistoriaClinica`. `alertas()` produce el aviso `x-aviso-clinico` (alergias, `RIESGO_PERSONALES`, embarazo, reacción a anestesia). El formulario reemplaza la historia completa. |
 | Exploración y odontograma | `exploraciones_clinicas` (1:N, orden descendente). `indiceOleary()` = superficies con placa ÷ (dientes × 4) × 100 (aceptable ≤ 20 %). Odontograma JSON diente FDI → estado (`ESTADOS_DIENTE`: rojo por tratar, azul existente). `ExploracionClinicaController` descarta renglones vacíos y dientes inexistentes; cada exploración parte de la anterior. |
 | Consultas | `HistorialClinicoController`; fecha, tipo y motivo obligatorios en cliente y servidor; `dientes`; `notas_doctor` nunca se renderiza en PDF. |
-| Receta | `HistorialClinicoController@receta` (`admin.pacientes.historial.receta`): exige medicamentos; la cédula de `id_doctor` solo se exige si `config('dentissa.recetas.exigir_cedula')` es verdadero (por omisión no, y `pdf/receta` omite esas líneas); toma edad y alergias de la historia; tamaño carta vía `stream()`; bitácora `receta.generada`. |
+| Receta | `HistorialClinicoController@receta` (`admin.pacientes.historial.receta`): exige medicamentos; la cédula de `id_doctor` solo se exige si `config('dentissa.recetas.exigir_cedula')` es verdadero (por omisión no, y `pdf/receta` omite esas líneas); la cédula se captura en Configuración (`Admin\CedulaProfesionalController`, ver apartado 7.6), ya no en Mi perfil; toma edad y alergias de la historia; tamaño carta vía `stream()`; bitácora `receta.generada`. |
 | Consentimiento | `ConsentimientoController` (`admin.pacientes.consentimientos.create|store|pdf`); textos base en `Consentimiento::BENEFICIOS|RIESGOS|ALTERNATIVAS`; `pdf.consentimiento` con los elementos de la NOM-004-SSA3-2012 y firmas autógrafas. |
 | Plan de tratamiento | `PlanTratamientoController` (`admin.pacientes.planes.*`); `PlanTratamiento::avance()` derivado de `hecho_en`; bitácora `plan.creado|actualizado|paso_hecho|paso_pendiente`. |
 | Alta de paciente | `admin.pacientes.create|store`: teléfono normalizado y único, correo único, `acepta_aviso` obligatorio; quien no tiene módulo `pacientes` es redirigido al cuestionario. |

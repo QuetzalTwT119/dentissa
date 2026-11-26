@@ -38,7 +38,7 @@ class ProfileController extends Controller
             $request,
             'perfil.actualizado',
             $user,
-            ['nombre', 'apellido', 'email', 'telefono', 'cedula_profesional', 'especialidad'],
+            ['nombre', 'apellido', 'email', 'telefono', 'especialidad'],
             function () use ($request, $user) {
                 $user->fill($request->safe()->except(['foto_perfil', 'quitar_foto']));
 

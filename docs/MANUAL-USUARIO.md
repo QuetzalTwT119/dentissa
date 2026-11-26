@@ -225,8 +225,8 @@ Desde el menú de usuario, la opción **Perfil** permite:
 
 - actualizar nombre, apellido, teléfono y correo electrónico;
 - cambiar la contraseña, para lo cual se solicita la contraseña actual;
-- capturar la **cédula profesional**, requerida para imprimir recetas (solo para quienes
-  atienden consultas);
+- capturar la **especialidad**, que aparece en las recetas (solo para quienes atienden
+  consultas; la cédula profesional se registra en **Configuración**, apartado 12.5);
 - administrar la verificación en dos pasos;
 - cambiar o quitar la fotografía de perfil.
 
@@ -784,7 +784,8 @@ documento listo para imprimir con: nombre, cédula profesional y especialidad de
 atiende; fecha; nombre, edad y alergias del paciente; diagnóstico; medicamentos; línea de
 firma; y, al pie, la dirección y el teléfono del consultorio.
 
-> La cédula profesional se captura una sola vez en **Mi perfil**. De manera temporal, la
+> La cédula profesional de cada doctor la registra la doctora titular en **Configuración →
+> Cédulas profesionales** (apartado 12.5). De manera temporal, la
 > receta se genera aunque la cédula no se haya capturado; en ese caso, el documento omite
 > esa línea, que aparece automáticamente una vez registrada. El equipo técnico puede
 > volver a exigir la cédula desde la configuración del servidor. Cada receta impresa
@@ -1025,6 +1026,14 @@ octubre en los años de transmisión del Poder Ejecutivo Federal.
 - Si un festivo ya tenía citas, no se bloquea y la campana indica las fechas afectadas
   para reagendar las citas o mantener el día abierto.
 
+### 12.5 Cédulas profesionales
+
+Muestra una línea por cada doctor activo que atiende consultas, con su nombre, su rol y un
+campo para la cédula profesional. La cédula de cada doctor aparece en sus recetas y
+consentimientos en PDF; no se publica en la portada. Solo se aceptan números, letras y
+guiones (máximo 20 caracteres). El guardado solicita confirmación y cada cambio queda
+registrado en el Control de actividades.
+
 ## 13. Cuentas del personal
 
 En **Administración → Usuarios**, la doctora titular puede **crear** cuentas, **activarlas o
@@ -1236,7 +1245,7 @@ emite facturas.
 | No es posible activar un tratamiento | No tiene precio. | Capturar el precio y activarlo. |
 | No aparece **Iniciar** en una cita | No es el día de la cita, ya concluyó su horario o existe otra cita en curso. | Completar la cita en curso o utilizar **Atendida** / **No asistió**. |
 | Una oferta publicada no se ve en la portada | Venció, su tratamiento está inactivo, se agotaron los lugares o excede el límite del carrusel. | Consultar el símbolo ⚠ de la oferta. |
-| La receta no muestra la cédula, o no se genera | Falta la cédula profesional (si el sistema está configurado para exigirla, no se genera). | Capturarla en **Mi perfil**. |
+| La receta no muestra la cédula, o no se genera | Falta la cédula profesional (si el sistema está configurado para exigirla, no se genera). | La doctora titular la captura en **Configuración → Cédulas profesionales**. |
 | No aparece Asistente, Mensajes, Galería, Casos o la verificación en dos pasos | El módulo está oculto. | Solicitar su habilitación al equipo técnico (apartado 2.2). |
 | No es posible eliminar un usuario | Es la cuenta propia o registró consultas. | Desactivar la cuenta. |
 | El bot de Telegram no responde | El proceso del bot no está activo. | Utilizar el portal web y notificar al equipo técnico. |

@@ -3,9 +3,11 @@
 use App\Exceptions\AuditoriaNoDisponible;
 use App\Http\Middleware\CabecerasSeguridad;
 use App\Http\Middleware\CerrarSesionUsuarioInactivo;
-use App\Http\Middleware\VerificarPermiso;
 use App\Http\Middleware\ExigirDosPasos;
 use App\Http\Middleware\NoCachearRespuesta;
+use App\Http\Middleware\VerificarDispositivoIot;
+use App\Http\Middleware\VerificarPermiso;
+use App\Http\Middleware\VerificarTokenApp;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -31,6 +33,9 @@ return Application::configure(basePath: dirname(__DIR__))
             // Permiso por módulo según config/permisos.php (22/11/2026; antes "role:admin").
             'permiso' => VerificarPermiso::class,
             'no-cache' => NoCachearRespuesta::class,
+            // API de la app y del ESP32 (26/11/2026).
+            'app.token' => VerificarTokenApp::class,
+            'iot.dispositivo' => VerificarDispositivoIot::class,
         ]);
 
         // Meta no envía token CSRF: el webhook valida la firma HMAC de la app.
@@ -60,4 +65,3 @@ return Application::configure(basePath: dirname(__DIR__))
             fn (Request $request) => $request->is('disponibilidad', 'disponibilidad/*'),
         );
     })->create();
-

@@ -38,6 +38,8 @@ class ConfiguracionController extends Controller
             'nombreMaps' => $contacto['nombre_maps'] ?? '',
             'mision' => $contacto['mision'] ?? '',
             'vision' => $contacto['vision'] ?? '',
+            // 26/11/2026: cédulas profesionales (antes en Mi perfil).
+            'doctores' => CedulaProfesionalController::doctores(),
             'horarios' => collect(self::ORDEN_SEMANA)->map(fn (int $dia) => $horarios->get($dia))->values(),
             // 25/11/2026: paginados (con los festivos eran más de 15 y alargaban la página).
             'bloqueos' => BloqueoAgenda::vigentes()->with('creadoPor:id,nombre,apellido')
