@@ -9,10 +9,13 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="theme-color" content="#fbf7f3">
-        <meta name="description" content="Promociones vigentes en Dentissa, consultorio de la Dra. Melissa López. Agenda en línea con la promoción aplicada.">
         @include('partials.favicon')
 
         <title>Promociones — Dentissa Odontología Integral</title>
+        @include('partials.meta-compartir', [
+            'titulo' => 'Promociones — Dentissa | Dra. Melissa López N.',
+            'descripcion' => 'Promociones vigentes en el consultorio de la Dra. Melissa López. Agenda en línea con la promoción ya aplicada.',
+        ])
 
         <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="/fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>

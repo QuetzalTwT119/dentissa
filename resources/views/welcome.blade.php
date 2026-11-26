@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#fbf7f3">
     @include('partials.favicon')
     <title>Dentissa — Odontología Integral | Dra. Melissa López N.</title>
+    @include('partials.meta-compartir')
 
     <!-- Tipografía local: Figtree (texto), Fraunces (títulos), Fraunces itálica (firma) -->
     <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
