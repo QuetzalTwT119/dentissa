@@ -16,7 +16,7 @@ use Illuminate\Notifications\Notifiable;
 // Los campos dos_pasos_* no están en Fillable: solo los escribe
 // DosPasosService con forceFill, nunca un formulario.
 #[Fillable(['nombre', 'apellido', 'email', 'telefono', 'cedula_profesional', 'especialidad', 'password', 'rol', 'foto_perfil', 'activo'])]
-#[Hidden(['password', 'remember_token', 'dos_pasos_secreto', 'dos_pasos_recuperacion'])]
+#[Hidden(['password', 'remember_token', 'dos_pasos_secreto', 'dos_pasos_recuperacion', 'app_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -32,6 +32,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'ultimo_acceso' => 'datetime',
+            'app_token_expira_en' => 'datetime',
             'password' => 'hashed',
             'rol' => RolUsuario::class,
             'activo' => 'boolean',

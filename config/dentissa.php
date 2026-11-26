@@ -175,6 +175,12 @@ return [
         'exigir_cedula' => filter_var(env('DENTISSA_RECETA_EXIGE_CEDULA', false), FILTER_VALIDATE_BOOL),
     ],
 
+    // IoT de la sala de espera (26/11/2026): clave que manda el ESP32 en
+    // «X-Dispositivo-Clave». Vacía, sus rutas quedan cerradas.
+    'iot' => [
+        'clave_dispositivo' => env('DENTISSA_IOT_CLAVE', ''),
+    ],
+
     'seguridad' => [
         'dos_pasos_admin_obligatorio' => filter_var(env('DENTISSA_2FA_ADMIN', true), FILTER_VALIDATE_BOOL),
         // Nombre que verá el personal en su app de autenticación.
