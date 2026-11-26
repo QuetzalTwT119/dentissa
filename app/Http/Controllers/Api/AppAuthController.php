@@ -39,7 +39,7 @@ class AppAuthController extends Controller
             : ($user->getRawOriginal('rol') ?? $user->rol);
         $rol = strtolower(trim((string) $rolRaw));
 
-        if (!in_array($rol, ['admin', 'asistente'], true)) {
+        if (!in_array($rol, ['super_admin', 'doctor', 'asistente'], true)) {
             return response()->json([
                 'ok' => false,
                 'mensaje' => 'Acceso exclusivo para personal de la clínica.',
