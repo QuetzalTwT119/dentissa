@@ -1,993 +1,1278 @@
-# Manual de usuario de Dentissa
+# Manual de Usuario de Dentissa
 
-## Revisión de cambios de la portada
+## 1. Presentación
 
-Antigravity trabaja en la misma carpeta que Dentissa. Cuando termine un cambio visual, abre PowerShell en `C:\laragon\www\dentissa` y ejecuta `powershell -ExecutionPolicy Bypass -File .\scripts\antigravity.ps1`. El sistema revisa automáticamente la portada y después actualiza la aplicación local. Finalmente abre `http://localhost:8000` para revisar el resultado.
+### 1.1 Propósito del documento
 
-## 1. Acceso
+El presente manual describe la operación del sistema Dentissa, plataforma web para la
+gestión integral del consultorio odontológico de la Dra. Melissa López N. Su finalidad es
+que el personal de la clínica pueda utilizar cada módulo de forma correcta, segura y
+uniforme, y que conozca las reglas de negocio que el sistema aplica de manera automática.
 
-> Nota para la clínica: el contenedor de validación `qa` es una herramienta
-> interna del equipo técnico. No modifica citas, pacientes ni historiales y no
-> requiere ninguna acción del personal clínico.
+### 1.2 Alcance
 
-Abre <http://localhost:8000>. El personal de la clínica inicia sesión desde
-`/login`. Los pacientes pueden agendar desde el formulario público sin crear
-una cuenta.
-La pantalla de acceso combina una fotografía del consultorio con el nombre e
-identidad de la clínica, el formulario de inicio de sesión y un enlace para
-volver al sitio público. Usa **Recuérdame**
-solo en un dispositivo de confianza; si no recuerdas la contraseña, abre
-**¿Olvidaste tu contraseña?** para solicitar un enlace de recuperación.
-Escribe el correo asociado a tu cuenta y revisa también la carpeta de correo no
-deseado. La confirmación es genérica por seguridad; si el mensaje no llega,
-comprueba que sea el correo registrado y solicita un nuevo enlace después de
-unos minutos.
+El manual abarca:
 
-El enlace se envía a la dirección asociada a esa cuenta de Dentissa. En el
-prototipo, la clínica puede usar Gmail API como canal emisor; eso no cambia el
-destinatario ni requiere que cada usuario conecte su propio Google.
+- el portal público, en el que los pacientes consultan información y agendan citas sin
+  necesidad de crear una cuenta;
+- el panel interno del personal: agenda, pacientes y expediente clínico, catálogo,
+  contenido de la portada, configuración, usuarios, reportes y control de actividades;
+- las notificaciones internas y los mensajes que el sistema envía a los pacientes;
+- las medidas de seguridad que el personal debe observar.
 
-La navegación interna muestra la marca (el logotipo con la firma **Dra. Melissa
-López**, igual que en la portada) y, desde el 25/11/2026: **Inicio**, **Agenda**,
-**Pacientes**, **Administración** (Usuarios, Reportes y Control de actividades),
-**Catálogo** (Especialidades y Tratamientos), **Sitio web** (Ofertas, Testimonios y
-Preguntas frecuentes: lo que ven los pacientes en la portada) y **Configuración**. Cada
-pantalla se titula igual que su enlace (la Agenda ya no dice «Citas»). Cada rol ve solo
-lo suyo. El **Asistente de agenda**, **Mensajes de contacto** y la **verificación en dos
-pasos** están ocultos por ahora; se encienden en Railway sin tocar código. El menú completo se ve en computadora, laptop, TV y proyector (desde
-1024 px de ancho; en las más chicas solo se ve el círculo del logotipo y tu foto). En celular y tableta, usa el botón de menú (☰) para encontrar las
-mismas opciones y la campana para abrir una vista rápida de notificaciones.
-En el teléfono, los listados anchos conservan sus
-columnas dentro de un área que puedes desplazar lateralmente; los filtros y
-controles de carga se acomodan en varias filas para facilitar el toque.
-**Roles del personal** (desde el 22/11/2026):
-- **Doctora titular** (la dueña): entra a todo.
-- **Doctor** (doctores asociados, desde el 25/11/2026): **solo lo clínico**. Agenda,
-  pacientes con su **expediente** (consultas, recetas, planes, consentimientos),
-  historias clínicas, cobros, la campana y **Mi perfil**. No entra a Usuarios,
-  Configuración y horarios, Catálogo y precios, Contenido de la portada, Reportes,
-  Mensajes ni Control de actividades.
-- **Asistente** (recepción, desde el 25/11/2026): la **Agenda** (crear, confirmar,
-  reagendar y cancelar citas) y su asistente, la campana, **Mi perfil**, el
-  **directorio de Pacientes** (registrar pacientes y corregir sus datos de contacto),
-  **Historias clínicas** (el cuestionario), **cobros** y **Mensajes** de contacto. Al
-  registrar un paciente pasa directo a su cuestionario. **No ve el expediente**:
-  consultas, notas privadas, recetas, planes ni consentimientos.
-- Al crear un usuario (Usuarios → Nuevo usuario), debajo de **Rol** aparece qué
-  puede hacer el rol elegido.
+La instalación, la configuración del servidor y el despliegue se documentan por separado
+en el Manual Técnico.
 
-El menú solo muestra lo que cada rol puede abrir.
+### 1.3 Destinatarios
 
-Los listados de registros muestran **20 elementos por página de forma predeterminada**. En el pie del listado puedes elegir **20** o **50** registros por página. Cuando
-hay más resultados, al final aparecen los botones **Anterior**, los números de
-página y **Siguiente**; los filtros actuales se conservan al cambiar de página.
-
-Desde el menú de usuario abre **Perfil** para actualizar nombre, apellido,
-teléfono y correo, o para cambiar la contraseña confirmando la actual. La
-desactivación de cuentas se administra desde **Gestión → Usuarios**; el perfil
-no ofrece eliminar ni desactivar la propia cuenta, para proteger la continuidad
-de la clínica y sus registros.
-
-La **foto de perfil** está dentro de **Información personal**, a la derecha (arriba en
-celular). Pulsa **Elegir foto** o **Cambiar foto** y escoge una imagen JPG, PNG o WebP de
-hasta 5 MB: verás una **vista previa** grande y otra pequeña de "así se verá en el menú"
-**antes de guardar**. La foto se guarda con el mismo botón **Guardar** que tus datos.
-**Quitar foto** muestra tus iniciales en la vista previa y se aplica también al pulsar
-**Guardar** (**No quitarla** lo deshace). Solo la cuenta que inició sesión puede ver su
-imagen. El rol aparece con su nombre: Doctora titular, Doctor o Asistente.
-
-El inicio del administrador reúne accesos rápidos para agendar citas,
-consultar pacientes, administrar servicios y
-contenido, y gestionar usuarios. Las cuentas de asistente ven un inicio más
-sencillo con accesos a sus citas y al asistente de agenda. El sitio también
-puede instalarse como aplicación compatible; si se pierde la conexión, muestra
-una pantalla para reintentar al volver a estar en línea.
-
-Para regresar: en los formularios usa **Cancelar** (vuelve a la pantalla anterior sin
-guardar). Las pantallas que no tienen Cancelar, como el expediente del paciente,
-muestran arriba del título el enlace **← Volver a …**.
-
-### Demostración escolar en Railway
-
-Para la presentación, el administrador y su ayudante usarán cuentas ficticias
-separadas que prepara el equipo desde las variables privadas de Railway. Las
-credenciales no se escriben en este manual ni se reutilizan las cuentas locales
-de Docker. El administrador gestiona usuarios, pacientes, citas, historial,
-catálogo, contenido y seguimiento; el ayudante opera los flujos permitidos por
-su rol. Para el recorrido público se puede agendar una cita con datos
-completamente ficticios. El paciente precargado es «Paciente Demostración» y no
-tiene historial clínico.
-
-El asistente de Telegram solo responde mientras el proceso del bot esté activo
-en el entorno. Si no responde, utiliza el portal web y no compartas ni solicites
-el token del bot; es una credencial privada de configuración.
-
-Los nombres, teléfonos y correos del paciente demo son de prueba. El catálogo
-demo usa los tratamientos y duraciones reales de la clínica (Valoración 30 min,
-Limpieza Dental, Retiro de Caries y Extracción Dental 1 hora, y Blanqueamiento
-Dental 1 hora y media) con **precios de demostración** (Valoración $300,
-Limpieza $600, Retiro de Caries $700, Extracción $900 y Blanqueamiento $3,500):
-un tratamiento sin precio no se publica. La clínica debe confirmarlos o
-corregirlos en Catálogo → Tratamientos antes de recibir pacientes reales. Al terminar la exposición, el equipo
-debe apagar o eliminar el servicio de Railway desde el panel.
-
-
-
-La página principal presenta una portada cálida para Dentissa con fotografía,
-servicios, galería y un acceso directo a la agenda.
-
-Lo primero que se ve es la bienvenida: la fotografía del consultorio a la
-derecha (arriba en el celular), el mensaje "Una consulta sin prisas, explicada
-paso a paso" y dos formas de contacto:
-
-- **Agendar mi valoración** abre la agenda en línea.
-- **¿Prefieres llamar?** muestra el teléfono del consultorio; en el celular,
-  al tocarlo se marca directamente. Es el mismo número del pie de página
-  (lo cambia la doctora en **Configuración → Datos del consultorio**).
-- Debajo aparece si el consultorio está abierto en este momento, por ejemplo
-  "Abierto hoy hasta las 18:00" o "Cerrado ahora · abre el lunes a las 8:00".
-  Se calcula con la hora de la clínica a partir de **Horarios**: si el
-  administrador cambia el horario, la portada lo refleja sin más pasos.
-  El **pie de página** muestra también el horario de la semana (por ejemplo
-  "Lunes a viernes de 8:00 a 18:00 hrs"); los días cerrados no aparecen.
-
-Después de los tratamientos, **Tu primera visita** explica el proceso en 3 pasos:
-elegir horario, recibir la confirmación y el recordatorio por WhatsApp, y la
-primera consulta con la historia clínica. Antes del pie, **Ubicación** muestra la
-dirección con un **mapa de Google**; **Cómo llegar** abre la ruta en Google Maps y
-**Escribir por WhatsApp** abre el chat. La dirección se cambia en
-**Configuración → Datos del consultorio**; si se deja vacía, el mapa no aparece.
-Si escribes también el **Nombre del negocio en Google Maps** (tal como aparece en
-Maps, por ejemplo «Dentiluna»), el mapa y **Cómo llegar** abren la **ficha del
-consultorio** con su foto, horario y teléfono, y no solo un punto en la calle.
-
-La portada también muestra:
-
-- **Misión y Visión** en "La clínica". Se cambian en **Configuración → Datos del
-  consultorio**; si se borran, vuelve el texto de fábrica.
-- **Casos antes y después**, con lo capturado en **Contenido → Casos**: la primera foto
-  que subas es "Antes" y la segunda "Después". Solo salen los casos activos con foto.
-- En cada oferta, **Pedir info** abre WhatsApp con el nombre de la oferta ya escrito.
-- Un **botón verde de WhatsApp** fijo abajo a la derecha, encima del asistente.
-- **Instalaciones** («El consultorio») usa las fotos activas de **Contenido → Galería**, en
-  su orden. Si no hay ninguna, se ven dos ilustraciones con lo que de verdad hace el
-  consultorio: «Un paciente a la vez» (o «Citas con hora exacta» si en Horarios se atiende a
-  más de uno) y «Te avisamos un día antes» (el recordatorio por WhatsApp).
-- **Foto de inicio** (desde el 25/11/2026): la foto grande del inicio es de catálogo; no es
-  la doctora ni el consultorio. En **Contenido → Galería → Foto de inicio de la portada**
-  se sube una foto real (JPG, PNG o WebP de hasta 5 MB, horizontal) y se ve de inmediato.
-  **Quitar y usar la de fábrica** regresa a la original.
-- La tarjeta de **La clínica** y la del instrumental en Tratamientos usan ilustraciones del
-  consultorio; ya no hay fotos de tazas, uniformes ni textos de «boutique», porque el
-  consultorio no vende productos.
-- **Preguntas frecuentes**: las activas de **Contenido → Preguntas frecuentes**; al tocar
-  una pregunta se abre su respuesta. Antes de publicar, revisa que no quede ninguna de prueba.
-  En **Configuración → Horarios de atención**, **Pacientes a la vez** (un solo campo para todos los días, al final del bloque) es cuántos pacientes se pueden
-  atender a la misma hora (1 si hay un solo sillón o dentista; el consultorio usa 1). Los campos de número solo se escriben, sin flechas. Los horarios se ofrecen cada
-  30 minutos y la última cita del día es la que **termina** a la hora de cierre: con cierre a
-  las 18:00, una valoración de 30 min se puede agendar hasta las 17:30 y una limpieza de
-  60 min hasta las 17:00. Los 15 minutos de limpieza de los tratamientos largos o
-  quirúrgicos solo se reservan entre una cita y la siguiente.
-
-Más abajo, **Tratamientos para tu salud y armonía** muestra las especialidades
-activas en una fila de tarjetas con foto:
-
-- Cada tarjeta dice **Agenda en línea** (tiene tratamientos activos; al tocarla
-  se abre la agenda con esa especialidad ya elegida) o **Agenda por teléfono**
-  (al tocarla se marca el número del consultorio).
-- En computadora se ven 3 tarjetas y se avanza con las flechas **‹ ›** a los
-  lados, una tarjeta por clic; al llegar al final regresa a la primera. En el
-  celular se desliza con el dedo. Los puntos de abajo indican en qué parte vas.
-- La foto y la descripción salen de **Catálogo › Servicios**: si se sube una
-  imagen o se escribe una descripción ahí, la portada las usa; si no, usa las
-  aprobadas por defecto. Para que una especialidad se agende en línea basta con
-  darle al menos un tratamiento activo.
-
-Los botones **Agendar mi valoración** y **Elegir fecha y horario** (al final
-de la portada) abren el flujo público validado; ahí se seleccionan tratamiento,
-fecha y hora antes de solicitar la cita. La portada no crea citas por sí misma ni usa
-teléfonos, correos, horarios, calificaciones o testimonios como si ya fueran
-datos oficiales. La clínica debe aprobar ese contenido antes de publicarlo.
-
-La navegación **Inicio**, **Tratamientos**, **La Clínica**, **Instalaciones**,
-**Testimonios** y **Contacto** se desplaza suavemente a su sección sin recargar
-la página; el enlace de la sección actual se resalta automáticamente en rosa,
-tanto en escritorio como en el menú móvil.
-
-## 2. Agendamiento público
-
-El proceso tiene 4 pasos. Arriba siempre se ve "Paso X de 4".
-
-1. Abre `/agendar-cita`.
-2. **Selección clínica:** elige la especialidad. La lista cambia por los
-   tratamientos de esa especialidad, cada uno con su duración aproximada y su
-   precio (el precio también aparece en el resumen de la cita). **El pago se
-   realiza en el consultorio el día de la cita**; así lo dicen la agenda, la
-   confirmación y los correos. Si
-   cambias de opinión, pulsa el recuadro de la especialidad para volver a la
-   lista. Solo aparecen las especialidades que tienen tratamientos activos.
-3. **Fecha y hora:** se muestra el calendario del mes.
-   - Los días con lugar tienen un **punto verde**; con **punto durazno**
-     quedan pocos lugares (3 o menos). Los días tachados ya no tienen
-     horarios; los días grises son pasados o el consultorio no abre.
-   - Cambia de mes con las flechas **‹ ›** (hasta 12 meses adelante).
-   - Los pasos son: tipo de atención → día → hora → datos. Las horas libres
-     aparecen en cuadrícula; tocar otra vez el día o la hora elegidos los quita. El correo es opcional (sin correo se avisa por WhatsApp); el
-     celular de 10 dígitos es obligatorio.
-   - Al pulsar un día aparecen sus horarios, cada uno con su hora de término
-     (por ejemplo, "09:30 a 10:15"). En el celular aparecen debajo del
-     calendario.
-   - Elige un horario y pulsa **Revisar resumen**. Debajo aparece el horario
-     regular, tomado de la configuración de **Horarios** del consultorio.
-4. **Confirmación:** revisa el tratamiento, la fecha y la hora. Pulsa
-   **Continuar a mis datos**.
-5. **Datos de contacto:** arriba aparece un recordatorio de la cita
-   (tratamiento, fecha y hora); **Cambiar** regresa a elegir fecha y hora.
-   Escribe nombre, apellido, teléfono y correo, y acepta el aviso de
-   privacidad. El motivo es opcional, de hasta 1000 caracteres.
-   - El teléfono es el de WhatsApp, a 10 dígitos; se acomoda solo como
-     "55 1234 5678" mientras lo escribes.
-   - Cada dato se revisa al pasar al siguiente campo: si algo falta, aparece
-     el mensaje debajo (por ejemplo "Faltan 6 dígitos…"); cuando ya está
-     bien, aparece una palomita verde.
-6. Pulsa **Agendar cita**. El botón cambia a "Agendando…" y se desactiva
-   mientras se guarda, para no crear la cita dos veces.
-7. Aparece la pantalla **"¡Listo! Tu cita quedó confirmada"** con el resumen.
-
-En cualquier paso, **Atrás** regresa al anterior sin perder lo elegido. Los
-botones para avanzar se activan cuando el paso está completo. En el celular,
-**Atrás** y el botón para avanzar quedan fijos en la parte de abajo de la
-pantalla.
-
-Si falta un dato o tiene un error, al pulsar **Agendar cita** no se envía nada:
-arriba del formulario aparece un aviso como "Revisa los 2 datos marcados para
-poder agendar tu cita", el cursor salta al primer dato con error y cada campo
-marcado en rojo muestra su mensaje en español. Si el error lo detecta el
-consultorio al guardar, el formulario vuelve con los mismos avisos y conserva
-lo que ya estaba bien.
-
-El resumen muestra la fecha completa (por ejemplo, "miércoles 18 de noviembre
-de 2026") y el calendario solo permite elegir desde el día de hoy según la hora
-de la clínica, aunque se agende tarde por la noche.
-
-Para evitar citas falsas, el formulario acepta hasta 5 envíos por minuto y 20
-por hora desde la misma conexión. Si se supera, aparece el aviso **"Recibimos
-varios intentos seguidos. Espera un minuto e inténtalo de nuevo."** y los datos
-escritos se conservan; basta esperar y volver a pulsar **Agendar cita**.
-
-En pantallas amplias, junto al formulario aparece un indicador compacto del paso
-actual y un resumen que se actualiza con el servicio, tratamiento, fecha y hora
-seleccionados. En móvil, ese panel se acomoda debajo del formulario para mantener
-los controles cómodos. Al elegir un servicio, su nombre permanece visible sobre
-los tratamientos para conservar el contexto; el mismo recuadro permite volver
-a elegir otro servicio.
-
-### Aviso de privacidad
-
-Antes de **Agendar cita**, el paciente debe marcar la casilla **He leído y
-acepto el aviso de privacidad**. Sin esa casilla la cita no se guarda y aparece
-el mensaje "Para agendar necesitamos que aceptes el aviso de privacidad". El
-enlace abre el aviso en otra pestaña, así que lo capturado no se pierde. En
-Telegram, el resumen antes de confirmar enlaza el aviso, y tocar **Confirmar
-cita** equivale a aceptarlo. El sistema guarda cuándo aceptó cada paciente y
-qué versión del aviso aceptó.
-
-El aviso completo está en **/aviso-de-privacidad** y se enlaza desde el pie de
-la portada y de los correos. **Antes de usar el sistema con pacientes
-reales:** la clínica debe llenar sus datos (responsable, domicilio y correo para
-solicitudes), y un abogado o la clínica deben revisar el texto. Mientras eso no
-ocurra, la página muestra "Borrador pendiente de revisión legal" y resalta los
-datos que faltan.
-
-El sistema crea o reutiliza el paciente por correo, bloquea el horario y crea
-la cita en estado **Confirmada**. La pantalla muestra la confirmación con el
-tratamiento, la fecha y la hora, para que el paciente pueda guardarlos; no hace
-falta que el personal pulse una segunda vez **Confirmar**.
-
-### Recordatorio un día antes
-
-El **día hábil anterior** a la cita, **una hora después de abrir** el consultorio, el
-paciente recibe un recordatorio por correo y, cuando WhatsApp está configurado, también por
-WhatsApp (desde el 24/11/2026; antes salía 24 horas antes). "Día hábil" es un día abierto en
-**Horarios de atención** que no esté bloqueado completo. Ejemplo con horario de lunes a
-viernes de 9:00 a 18:00: una cita del martes a las 19:00 se recuerda el **lunes a las
-10:00**; una del lunes, el **viernes a las 10:00**. Así el mensaje nunca llega de noche ni en
-día cerrado, y si el paciente cancela o reagenda, el personal lo ve en horario de trabajo. El
-correo trae tres botones:
-
-| Botón | Qué pasa |
+| Perfil | Uso principal del manual |
 |---|---|
-| **Sí, asistiré** | La cita queda confirmada y en la agenda aparece **✓ Paciente confirmó asistencia**. |
-| **Quiero reagendar** | Se libera el horario y el paciente recibe un enlace que abre la agenda en línea **directo en el calendario**, con su mismo tratamiento: **solo elige el nuevo día y la hora** y pulsa **Confirmar cambio de cita** (no vuelve a escribir sus datos ni puede cambiar el tratamiento). Recibe "Tu cita se movió al…", la doctora ve en la campana **Nuevo horario del paciente** y en la Agenda la cita vieja dice **↻ Reagendada por el paciente → nueva fecha**. El enlace es personal, dura 7 días y sirve una sola vez. |
-| **No podré asistir, cancelar cita** | La cita se cancela y el horario queda libre para otro paciente. |
+| Doctora titular | Operación completa y administración del consultorio. |
+| Doctores asociados | Operación clínica: agenda y expediente de los pacientes. |
+| Asistente | Recepción: agenda, registro de pacientes y cuestionario de historia clínica. |
 
-Abrir un botón no cambia nada por sí solo: se abre una página que muestra la
-cita y pide confirmar la respuesta con otro botón. Desde esa página el paciente
-puede elegir otra respuesta. Si la cita ya pasó o ya se canceló, la página
-indica que ya no admite cambios y muestra el teléfono del consultorio.
+No se requieren conocimientos técnicos. Basta con saber utilizar un navegador web.
 
-Las citas que se agendan **después** del momento del recordatorio (por ejemplo, el
-viernes por la tarde para el lunes) no reciben recordatorio, porque el paciente acaba de
-recibir su confirmación. Si el
-personal reagenda una cita, el paciente recibe un recordatorio nuevo para la
-nueva fecha.
+### 1.4 Convenciones del documento
 
-El mensaje de WhatsApp trae los mismos tres botones. Al pulsar uno, la cita
-cambia igual que con el correo y el paciente recibe una respuesta en el mismo
-chat: la confirmación o, si pidió reagendar o canceló, el enlace para elegir
-otro horario. Para que funcione, el sistema debe estar en línea y Meta debe
-haber aprobado la plantilla del recordatorio. Si el botón ya no se puede aplicar (por
-ejemplo, la cita se borró), el paciente recibe un mensaje que le pide comunicarse con el
-consultorio. Los botones solo funcionan con citas del sistema en línea (Railway): un
-recordatorio de prueba enviado desde una computadora local no cambia la cita local.
+- Los nombres de botones, menús y campos se escriben en **negritas**, tal como aparecen en
+  pantalla (por ejemplo, **Guardar cambios**).
+- La ruta de un menú se indica con flechas: **Administración → Usuarios → Nuevo usuario**.
+- Las direcciones web del sistema se escriben en formato de código, por ejemplo `/citas`.
+- Los recuadros con sangría contienen notas o advertencias que deben leerse antes de
+  continuar con el procedimiento.
+- Cada procedimiento indica sus pasos en orden y, al final, el **resultado esperado**.
 
-El número de WhatsApp de los recordatorios no lo atiende nadie. Si un paciente
-le escribe un mensaje (texto, audio o foto), recibe una respuesta automática
-con el teléfono del consultorio y el enlace para agendar. La respuesta llega
-una sola vez cada 12 horas por número, y el sistema no guarda lo que escribió.
+### 1.5 Requisitos de uso
 
-## 3. Gestión interna de citas
+| Requisito | Detalle |
+|---|---|
+| Dispositivo | Computadora, laptop, tableta, teléfono celular, televisión o proyector. |
+| Navegador | Versión actual de Google Chrome, Microsoft Edge, Mozilla Firefox o Safari. |
+| Conexión | Acceso a Internet (o a la red local del consultorio en la instalación local). |
+| Cuenta | Cuenta de personal creada por la doctora titular. Los pacientes no requieren cuenta. |
+| Verificación en dos pasos | Aplicación gratuita Google Authenticator o Microsoft Authenticator, cuando la verificación esté habilitada. |
 
-**Desde cada cita** (desde el 25/11/2026): toca el **nombre del paciente** para
-abrir su expediente (solo quien tiene acceso a Pacientes) y su **teléfono** para
-llamarle desde el celular. En **Nueva cita** los pacientes salen en orden
-alfabético; si el paciente no está, usa **Registrar paciente nuevo**. Si eliges
-una especialidad sin tratamientos, el sistema lo avisa: agrégalos en Catálogo →
-Servicios. Cada tratamiento necesita una **duración de 15 a 480 minutos**, porque
-es el tiempo que ocupa en la agenda.
+### 1.6 Direcciones de acceso
 
-### Vista de lista o de semana
+| Entorno | Dirección | Observaciones |
+|---|---|---|
+| Demostración en línea | https://dentissa-production-11db.up.railway.app | Contiene exclusivamente datos ficticios. |
+| Instalación local del consultorio | http://localhost:8000 | Disponible en la computadora donde se ejecuta el sistema. |
 
-A la derecha del título de `/citas` hay un selector **Lista | Semana**:
+## 2. Conceptos generales
 
-- **Lista** (predeterminada): las citas de **un día a la vez**, en orden de
-  hora. Se abre en el día de hoy.
-  - Arriba hay una pestaña por día de la semana con cuántas citas tiene y
-    cuántas faltan **por confirmar** (en ámbar). Toca una pestaña para ver ese
-    día; las flechas **‹ ›** (o "Semana anterior / siguiente" en el celular)
-    cambian de semana e **Ir a hoy** regresa al día actual.
-  - El conteo dice cuántas citas quedan **por atender** y, aparte, cuántas ya se
-    **atendieron**, se cancelaron o no asistieron ("1 por atender · 2 atendidas ·
-    1 cancelada"); un día con solo canceladas lo indica en su pestaña en lugar de
-    "0 citas". Las ya cerradas se pliegan en un renglón ("2 atendidas · 1
-    cancelada") con **Mostrar**.
-  - Si una cita quedó **En curso** de un día anterior (nadie presionó
-    **Completar**), el sistema la completa solo cada noche (00:05) y te deja un
-    aviso en la campana: «Se completaron N citas olvidadas», con los días.
-    Revisa que tengan su consulta en el historial. Mientras tanto, arriba sale
-    un aviso ámbar con el día por si prefieres completarla tú en ese momento.
-  - Al confirmar, iniciar, completar, cancelar o marcar "no asistió" te quedas
-    en el **mismo día** (y vista) donde estabas; al crear o reagendar una cita
-    la agenda se abre en el día de esa cita.
-  - Mientras queden citas por atender, las ya completadas, canceladas o sin
-    asistencia se agrupan en un renglón ("4 ya atendidas o canceladas");
-    pulsa **Mostrar** para verlas.
-  - La cita en curso aparece resaltada con una franja rosa.
-  - **Buscar en todas las fechas** encuentra a un paciente (nombre, teléfono,
-    correo), servicio o tratamiento en cualquier fecha, agrupado por día.
-    **Todas las fechas** muestra el historial completo, 20 o 50 por página.
-  - **Estado** filtra las citas del día elegido (o de la búsqueda).
-  - En el celular, cada cita es una tarjeta: hora y paciente arriba,
-    tratamiento en medio y los botones abajo, sin desplazarse de lado.
-- **Semana**: un mapa de lunes a sábado que muestra qué tan llena está cada
-  parte de la semana. Cada día se divide en bloques de 2 horas:
-  - **Blanco:** libre. **Rosa claro:** tiene citas pero aún hay lugar.
-    **Rosa:** lleno. Los bloques que ya pasaron se ven más tenues.
-  - Al tocar un bloque aparece su detalle (a la derecha en computadora, abajo
-    en el celular): el horario del día, **Dónde cabe una cita** con las horas
-    libres y la lista de citas de ese bloque. Al tocar una hora libre se abre
-    **Agendar cita** con esa fecha ya elegida; al tocar una cita se abre su
-    edición, donde están las acciones.
-  - Al entrar se abre el bloque actual o, si hoy ya terminó, el siguiente.
-  - Un día cerrado que tenga citas muestra **Cerrado · N citas**; al tocarlo
-    aparecen esas citas.
-  - Usa **←**, **Hoy** y **→** para cambiar de semana. El enlace de la página
-    conserva la semana, así que se puede recargar o compartir.
-  - Las horas libres son una guía: al agendar, el sistema vuelve a revisar el
-    horario con la duración del tratamiento elegido.
+### 2.1 Perfiles de usuario y permisos
 
-Desde `/citas`, el personal puede:
+El sistema reconoce tres perfiles de personal. El menú de cada persona muestra únicamente
+las secciones que su perfil puede abrir; si se intenta acceder a una dirección no
+permitida, el sistema niega el acceso.
 
-- crear una cita seleccionando paciente, servicio y tratamiento, y después el
-  día y la hora en el mismo calendario de la agenda pública;
-- las citas nuevas creadas aquí quedan confirmadas en cuanto el horario se
-  reserva; las citas históricas que sigan agendadas conservan la opción de
-  confirmación manual;
-- reagendar una cita a otro horario disponible con ese calendario (el horario
-  actual de la cita cuenta como libre mientras se reagenda);
-- iniciar la atención de una cita confirmada;
-- marcar una cita confirmada como **No asistió**, solo desde la hora programada;
-- completar una cita;
-- cancelarla indicando un motivo opcional;
-- buscar por nombre o apellido del paciente, teléfono, correo, servicio o
-  tratamiento, y combinar la búsqueda con los filtros por fecha y estado. La
-  lista se actualiza automáticamente tras dejar de escribir; no es necesario
-  pulsar un botón de búsqueda.
+| Módulo | Doctora titular | Doctor | Asistente |
+|---|---|---|---|
+| Inicio, Mi perfil y notificaciones | Sí | Sí | Sí |
+| Agenda | Sí | Sí | Sí |
+| Asistente de agenda (cuando el módulo está habilitado) | Sí | Sí | Sí |
+| Directorio de pacientes (alta y datos de contacto) | Sí | Sí | Sí |
+| Historia clínica (cuestionario) | Sí | Sí | Sí |
+| Expediente clínico (consultas, notas privadas, recetas, planes, consentimientos, exploración y odontograma) | Sí | Sí | No |
+| Cobros (cuando el módulo de pagos está habilitado) | Sí | Sí | Sí |
+| Mensajes de contacto (cuando el módulo está habilitado) | Sí | No | Sí |
+| Usuarios | Sí | No | No |
+| Catálogo y precios | Sí | No | No |
+| Contenido de la portada | Sí | No | No |
+| Configuración, horarios y bloqueos | Sí | No | No |
+| Reportes | Sí | No | No |
+| Control de actividades | Sí | No | No |
 
-El filtro de fecha permite consultar citas pasadas, de hoy o futuras; no crea ni
-modifica citas. La fecha futura es válida aquí porque la agenda incluye
-reservas próximas.
+Al crear una cuenta (**Administración → Usuarios → Nuevo usuario**), el sistema muestra
+debajo del campo **Rol** una descripción de lo que el perfil seleccionado puede hacer.
 
-Estados principales:
+### 2.2 Módulos opcionales
+
+Algunos módulos están implementados, pero se mantienen **ocultos de forma predeterminada**.
+Mientras un módulo está oculto, no aparece en el menú para ningún perfil y su dirección
+responde con acceso denegado. El equipo técnico los habilita desde la configuración del
+servidor, sin modificar el sistema.
+
+| Módulo | Estado predeterminado | Apartado de este manual |
+|---|---|---|
+| Asistente de agenda | Oculto | 17.1 |
+| Mensajes de contacto | Oculto | 18 |
+| Verificación en dos pasos | Oculta | 3.3 |
+| Galería | Oculta | 11.3 |
+| Casos antes y después | Oculto | 11.3 |
+| Pagos e ingresos | Oculto | 20 |
+
+Los pacientes no tienen cuenta: agendan desde el portal público con su nombre y su
+teléfono celular.
+
+### 2.3 Diferencia entre cita y consulta
+
+| Concepto | Definición | Dónde se gestiona |
+|---|---|---|
+| Cita | Reservación de un horario en la agenda: día, hora, tratamiento y estado. | Agenda (`/citas`). |
+| Consulta | Nota médica que documenta la atención brindada al paciente. | Expediente del paciente. |
+
+Completar una cita **no** crea la consulta de manera automática; esta debe registrarse en
+el expediente del paciente (véase el apartado 9.6).
+
+### 2.4 Estados de una cita
+
+| Estado | Significado |
+|---|---|
+| Agendada | Cita histórica pendiente de confirmación manual. Las citas nuevas ya no utilizan este estado. |
+| Confirmada | Horario reservado. Es el estado inicial de toda cita creada en línea, por Telegram o desde el panel. |
+| En curso | La atención del paciente ha iniciado. |
+| Completada | La atención concluyó. |
+| Cancelada | La cita se anuló y su horario quedó disponible. |
+| No asistió | El paciente no se presentó a la cita. |
+
+Flujo de estados:
 
 ```text
-Reserva pública, Telegram o interna → Confirmada → En curso → Completada
-                                     │
-                                     ├→ Reagendada → Confirmada
-                                     ├→ No asistió
-                                     └→ Cancelada
+Reserva pública, Telegram o panel → Confirmada → En curso → Completada
+                                       │
+                                       ├→ (reagendar) → Confirmada en el nuevo horario
+                                       ├→ No asistió
+                                       └→ Cancelada
 
-Cita histórica pendiente → Agendada → Confirmada o Cancelada
+Cita histórica → Agendada → Confirmada o Cancelada
 ```
 
-**Iniciar** aparece solo el **día de la cita** y mientras no haya terminado su
-horario. Como la doctora atiende a un paciente a la vez, no deja iniciar otra
-cita mientras una siga **En curso**: primero se completa la anterior (con
-"Pacientes a la vez" en 2, deja dos).
-Si ya pasó la hora de fin de una cita y nadie la atendió en el sistema, ya no
-sale **Iniciar**: salen **Atendida** (la marca completada en un paso) y **No
-asistió**, a la vista. Antes de su hora no se puede marcar ninguna de las dos.
-La agenda muestra una acción principal según el estado y agrupa
-opciones secundarias en el botón **Acciones**. El menú muestra sus opciones con
-iconos y separa visualmente la cancelación. Las acciones disponibles dependen
-del estado actual de la cita: **Acciones** aparece solo en citas agendadas o
-confirmadas. En la agenda, la acción principal y el menú **Acciones** se
-presentan alineados en una misma línea para ubicarlos rápidamente. Una cita **En
-curso** muestra únicamente **Completar**, y los estados finales muestran **Sin
-acciones**.
-La inasistencia no se puede registrar antes de la fecha y hora programadas; por
-eso **Marcar inasistencia** solo aparece en **Más acciones** de una cita
-agendada o confirmada cuando ya empezó su hora (y como botón **No asistió** a la
-vista cuando ya terminó).
-Antes de marcarla, el sistema pide confirmación porque el cambio no se puede
-deshacer; cancelar también solicita un motivo opcional y confirmación.
-Después de una acción válida, la agenda muestra el estado actualizado y un
-aviso de confirmación; si la operación no procede, muestra el motivo del error.
-En pantallas angostas, la tabla conserva las acciones en una sola línea y permite
-desplazamiento horizontal para consultar sus columnas sin comprimir los controles.
-Las listas administrativas siguen una regla según su tamaño:
+Los estados **Completada**, **Cancelada** y **No asistió** son finales: una vez
+registrados, la cita ya no admite acciones.
 
-- **Tablas cortas** (Pacientes, Usuarios, Servicios, Testimonios, Preguntas
-  frecuentes, Casos y Horarios): nunca se desplazan de lado. En celular y
-  tableta cada registro es una tarjeta: el nombre arriba, cada dato con el
-  título de su columna y los botones abajo. En computadora son tablas normales.
-- **Tablas largas** (Control de actividades, Mensajes de contacto, Ofertas y Tratamientos):
-  conservan sus columnas y se desplazan de lado solo cuando no caben. La
-  primera columna se queda fija y arriba aparece "Desliza para ver más
-  columnas".
+## 3. Acceso al sistema
 
-Los formularios con campos relacionados se apilan en móvil y se vuelven a
-distribuir en columnas al tener más espacio.
+### 3.1 Inicio de sesión
 
-Al agendar o reagendar, el sistema vuelve a comprobar que el servicio y el
-tratamiento estén activos, que el tratamiento pertenezca al servicio y que la
-fecha/hora sea futura. Si el horario ya fue ocupado, se debe elegir otro.
+1. Abra la dirección del sistema y seleccione el acceso del personal, o escriba
+   directamente `/login`.
+2. Capture su **correo electrónico** y su **contraseña**.
+3. Marque **Recuérdame** únicamente si utiliza un dispositivo personal y de confianza.
+4. Pulse **Iniciar sesión**.
+5. Si la verificación en dos pasos está activa, capture el código de seis dígitos
+   (véase el apartado 3.3).
 
-## 3.1 Catálogo: servicios y tratamientos
+**Resultado esperado:** el sistema muestra la pantalla de **Inicio** correspondiente a su
+perfil.
 
-- **Servicios** (especialidades del carrusel): en **Editar servicio** se cambia
-  el nombre, la descripción, la foto (con vista previa de la tarjeta) y **qué
-  tratamientos se pueden agendar**. **Nuevo servicio** es la misma pantalla, así que al
-  crearlo ya se eligen su foto y sus tratamientos. Un servicio nuevo queda **Disponible**: se
-  muestra en la portada y se puede agendar en línea, en el panel, en el asistente y por Telegram.
-  Para ocultarlo (o volver a mostrarlo) usa el interruptor **Disponible** de la lista; es el
-  único lugar donde se cambia. Las citas ya agendadas no cambian. Si editas uno oculto, la
-  pantalla te lo recuerda. El orden en que salen en la portada se acomoda con
-  las flechas ↑ ↓ de la columna **Orden en la portada**. La lista se puede buscar por nombre y filtrar por
-  activos o inactivos; mientras haya un filtro, el número sigue siendo su lugar
-  real en el carrusel y, para cambiar el orden, hay que quitar el filtro.
-- **Tratamientos**: el formulario pide **Nombre**, **Duración** (cuánto ocupa en
-  la agenda) y **Precio** (el paciente lo ve al agendar). Se puede guardar sin
-  precio mientras la clínica lo confirma, pero **no se publica** hasta tenerlo. A la
-  derecha, **Así lo verá el paciente** muestra la opción tal como aparece en la
-  agenda en línea y en qué especialidad está (eso se cambia en el servicio).
-- **Activar o desactivar un tratamiento**: con el interruptor de la columna
-  **Estado** en la lista. Activar y desactivar piden confirmación; desactivar
-  avisa si una especialidad se quedaría sin tratamientos (pasaría a "Agenda por
-  teléfono"). **Sin precio no se puede activar**: la fila dice "Falta precio".
-- **El mismo interruptor en todas las listas** (Servicios, Tratamientos, Casos,
-  Galería, Preguntas frecuentes y Usuarios): la columna **Estado** muestra si
-  está encendido y se cambia ahí mismo, sin entrar a Editar. Siempre pide
-  confirmación y dice qué pasará (por ejemplo, "Dejará de mostrarse en la
-  portada"). Tu propia cuenta sale atenuada con ⓘ: no puedes desactivarte.
-- **Íconos de las acciones** (columna Acciones, a la derecha): ✎ editar, 🗑 eliminar,
-  ojo = publicar, ojo tachado = ocultar, pulgar arriba = aprobar, pulgar abajo = rechazar,
-  sobre abierto = marcar leído, sobre cerrado = marcar sin leer, 📋 = historial clínico del
-  paciente (también se abre tocando su número de consultas). Al pasar el mouse dicen qué
-  hacen y siempre piden confirmación. Si un ícono sale apagado con ⚠, esa acción no se
-  puede hacer; toca el ⚠ para ver por qué. El ⓘ gris solo explica.
-- Las confirmaciones (eliminar, cancelar una cita, desactivar…) usan la ventana
-  de Dentissa; se cancelan con **Esc**, con **Cancelar** o tocando fuera.
-- En cada lista, arriba se ve cuántos registros hay y cuántos mostrar por página
-  (izquierda) y el botón **Nuevo …** (derecha). Las **páginas** están abajo, al
-  centro ("Página 1 de 1" si solo hay una).
-- Después de crear, guardar o eliminar aparece un **aviso abajo a la derecha**
-  que dice qué pasó (verde) o qué falta (rojo). El verde se va solo; el rojo se
-  cierra con la ×.
-- Si falta un dato obligatorio (marcado con \*) o tiene un formato incorrecto,
-  el mensaje aparece en rojo **debajo del campo** y el cursor salta al primero.
+La pantalla de acceso presenta una fotografía del consultorio, el nombre y la identidad
+de la clínica, el formulario de inicio de sesión y un enlace para regresar al sitio
+público.
 
-## 3.2 Promociones y testimonios en la portada
+### 3.2 Recuperación de contraseña
 
-- En la portada, sección **Ofertas** (un carrusel que se desliza, hasta 24,
-  primero las que vencen antes), solo aparecen las ofertas **Publicadas**
-  dentro de sus fechas (beneficio, tratamiento, imagen si tiene, vigencia y
-  lugares que quedan). Las que están **En revisión** u **Ocultas** solo se ven
-  en el panel.
-- Debajo del carrusel está el botón **Ver todas las promociones** (si hay más
-  de las que caben, dice cuántas son en total). Abre la página
-  **/promociones**: todas las ofertas publicadas en cuadrícula, con filtros por
-  especialidad (Todas, Odontología General, Estética…). Cada tarjeta tiene
-  **Pedir info** (WhatsApp) y **Agendar** (con la oferta ya aplicada). Se
-  puede compartir el enlace, incluso ya filtrado.
-- **Crear una oferta** (Contenido → Ofertas → Nueva oferta): se llenan
-  **título** (5 a 120 letras), **Beneficio para el paciente**, la **cantidad**,
-  **descripción** (20 a 300 letras) y **Válida hasta** (hoy o después). La
-  oferta cuenta desde el día en que se crea. **Tratamiento al que aplica** está
-  a la vista (opcional): sin tratamiento, la oferta solo se anuncia y no se
-  aplica al agendar. Lugares e imagen están en **Más detalles (opcional)**.
-  Si guardas sin llenar algo obligatorio, cada campo dice qué falta (en
-  Beneficio: "Elige una opción") y el cursor va al primero.
-  - **Beneficio para el paciente** tiene 3 opciones: **Descuento**, **Precio
-    especial** o **Gratis**. La elegida se ve con fondo rosa claro y borde rosa.
-    Al tocar otra, la anterior se desmarca; al tocar la elegida, se quita (al
-    guardar pedirá "Elige el beneficio para el paciente").
-  - **Descuento** es siempre en **%** (el símbolo aparece dentro del campo).
-    Para un monto en pesos usa **Precio especial**.
-  - **Tratamiento al que aplica:** solo aparecen los que se agendan en línea
-    (activos y dentro de una especialidad activa). Si después se desactiva, la
-    oferta deja de verse en la portada, la lista muestra un símbolo ⚠ junto al
-    tratamiento (al pasar el mouse o tocarlo explica qué pasa y qué hacer) y no
-    se puede publicar hasta activarlo o cambiarlo.
-  - Título y descripción **no aceptan enlaces, correos, código ni letras
-    repetidas** (por ejemplo "!!!!!!").
-  - Cómo se ve cada opción en la portada: **Descuento** "20" → **−20%**;
-    **Precio especial** "2800" →
-    **Precio especial $2,800**; **Gratis** → sin cantidad, **Gratis**.
-- **Publicar:** al guardar, la oferta queda **En revisión** (aviso amarillo en
-  la lista) y no se ve en la portada. Revísala y toca **✓ Publicar** en su
-  fila; el sistema pide confirmar. Una vencida no se puede publicar hasta
-  cambiar "Válida hasta".
-- **Configuración** (menú del panel, solo administradores) es una sola página
-  con dos bloques, cada uno con su botón de guardar:
-  - **Próximos bloqueos** (Configuración): se muestran de 5 en 5, con el total junto al
-    título y páginas abajo.
-  - **Datos del consultorio:** teléfono, WhatsApp de contacto ("Es el mismo
-    número que el teléfono" o uno distinto), correo, dirección y nombre del negocio en Google Maps (opcional). Lo que se
-    guarde se ve de inmediato en la portada, el pie, "¿Prefieres llamar?", la
-    página del recordatorio y la respuesta automática del bot. Úsalo si se
-    pierde o cambia el celular. Pide confirmación y queda en Control de actividades. El
-    número del bot de WhatsApp no se cambia aquí (se configura en Meta).
-  - **Horarios de atención:** los días, las horas y cuántos pacientes se atienden a la vez (un solo valor).
-  - **Días u horas bloqueados** (desde el 24/11/2026): para vacaciones, un curso, un
-    imprevisto o mantenimiento. Elige **Desde**, opcionalmente **Hasta**, deja **Todo el día**
-    o quítalo para bloquear solo unas horas (**De** / **A**, en un solo día), escribe el
-    **motivo** (solo lo ve el personal) y pulsa **Bloquear**. Esos horarios dejan de
-    ofrecerse en la agenda en línea y en Nueva cita; los días completos se ven cerrados en el
-    calendario. Si en ese tiempo ya hay citas activas, el sistema avisa cuáles: primero
-    reagéndalas o cancélalas. En **Próximos bloqueos** se ve la lista y la 🗑 los quita
-    (vuelven a ofrecerse). Todo queda en Control de actividades.
-  - **Días festivos** (desde el 24/11/2026): el sistema bloquea solo los días en que el
-    consultorio no trabaja: 1 de enero, primer lunes de febrero, tercer lunes de marzo,
-    1 de mayo, 16 de septiembre, 2 de noviembre, tercer lunes de noviembre, 12, 24, 25 y
-    31 de diciembre (y el 1 de octubre cuando hay cambio de Presidente). Aparecen en
-    **Próximos bloqueos** con el motivo «Festivo: …» y la nota «Festivo puesto por el
-    sistema». Si vas a trabajar uno de esos días, quítalo con la 🗑: no se volverá a poner.
-    Si un festivo ya tenía citas, no se bloquea y la campana avisa cuáles fechas son, para
-    que las reagendes o lo dejes abierto.
-- **Guardar cambios** (en cualquier pantalla de editar) aparece apagado hasta
-  que cambias algo; si regresas todo como estaba, se vuelve a apagar. Al
-  guardar, el sistema sigue pidiendo confirmar. Para salir sin guardar usa
-  **Cancelar**, junto a "Guardar".
-- **Ofertas al agendar (desde el 23/11/2026):** la oferta **solo se aplica si
-  el paciente entra desde su tarjeta**, pulsando "Agendar" en la portada: la
-  agenda abre con ese tratamiento, la etiqueta (por ejemplo "Oferta −20%"), un
-  aviso con la vigencia y la oferta en el resumen. Si agenda el mismo tratamiento
-  por el camino normal, **no** lleva oferta ni gasta un lugar. Si la fecha de su
-  cita es posterior a "Válida hasta", el resumen avisa que ya no aplica. Al
-  **reagendar** desde el recordatorio se conserva la oferta que ya tenía (si
-  sigue vigente), pero no se gana una nueva.
-- **La doctora aplica el descuento al cobrar:** la cita guarda la oferta. En la
-  agenda (lista, semana y detalle) aparece "Oferta −20% · título" y la campana
-  dice "Con oferta «…»". El sistema no cobra ni calcula el total.
-- **Lugares:** cada cita agendada con la oferta ocupa un lugar; cancelar o
-  marcar "No asistió" lo libera. Sin lugares, la oferta deja de anunciarse en
-  la portada y las citas nuevas ya no la llevan.
-- **Publicada, no se ve** (rosa, con ⚠): está publicada pero no aparece en la
-  portada ni al agendar. El ⚠ dice por qué: venció, su tratamiento está
-  inactivo, ya no tiene lugares o no cabe entre las 24 del carrusel.
-- **Buscar y filtrar:** Ofertas, Tratamientos, Preguntas frecuentes, Casos y
-  Galería tienen arriba el buscador y los filtros de estado (los mismos que
-  Pacientes o Usuarios); se aplican solos y "Limpiar filtros" los quita.
-- **Ocultar:** en una oferta **Publicada**, el botón de encendido la oculta de
-  la portada; sigue en la lista como **Oculta** para editarla o publicarla otra
-  vez con ✓.
-- **Editar una publicada:** si cambias lo que ve el paciente, vuelve a
-  **En revisión** hasta que la publiques de nuevo.
-- **Testimonios:** el paciente escribe el suyo en la portada (**Comparte tu
-  experiencia**) con el teléfono o correo con el que agendó. Llega como
-  **pendiente**, la campana avisa al personal y, al **aprobarlo** en Contenido →
-  Testimonios, se publica con su nombre y la inicial de su apellido.
-- La clínica **no crea ni edita** testimonios: solo los **aprueba**, **rechaza**
-  (se quedan en la lista como "Rechazado", sin publicarse, y se pueden aprobar
-  después) o **elimina** (se borran para siempre, por ejemplo si el paciente lo pide).
-- Los testimonios largos muestran unas líneas y el botón **Leer completo**, en la
-  portada y en el panel, para leerlos enteros antes de aprobarlos. El buscador de
-  la lista encuentra por nombre del paciente o por lo que escribió, y se combina
-  con el filtro de estado.
+1. En la pantalla de acceso, pulse **¿Olvidaste tu contraseña?**
+2. Escriba el correo asociado a su cuenta y pulse el botón de envío.
+3. Revise su bandeja de entrada y, en su caso, la carpeta de correo no deseado.
+4. Abra el enlace recibido y defina una nueva contraseña.
 
-## 4. Asistente de agenda
+> Por motivos de seguridad, el mensaje de confirmación es genérico: no revela si el
+> correo existe en el sistema. Si el enlace no llega, verifique que el correo sea el
+> registrado y solicite un nuevo enlace después de unos minutos.
 
-En `/asistente-agenda`, el personal selecciona los datos de la cita. El
-asistente consulta disponibilidad y propone horarios. No guarda nada hasta
-pulsar **Confirmar y agendar**. Se pueden buscar horarios para hoy o fechas
-futuras; las fechas pasadas se rechazan también en el servidor.
+El enlace se envía siempre a la dirección registrada en la cuenta de Dentissa. El canal
+de envío que utilice la clínica no modifica al destinatario ni exige que cada usuario
+vincule una cuenta propia de Google.
 
-## 5. Asistente para pacientes y preguntas frecuentes
+### 3.3 Verificación en dos pasos
 
-El asistente flotante responde con preguntas frecuentes activas y sus respuestas
-aprobadas. En desarrollo o en la prueba de prototipo, se puede habilitar un
-modelo de IA privado para reconocer otras formas de preguntar y elegir una FAQ
-o un servicio del catálogo. La aplicación muestra el texto aprobado original;
-el modelo no redacta la respuesta. El bot de Telegram es independiente del
-asistente web.
-Para precios sin una FAQ que hable de ellos, síntomas, medicamentos y
-diagnósticos, el chat pide reformular la duda o contactar al consultorio.
-En la portada, al agendar una cita y en las páginas del portal, el acceso queda
-fijo en la esquina inferior derecha. Plegado muestra el diente; al pasar el
-cursor o enfocarlo con teclado aparece el nombre **Dentissa Asistente**. En
-pantallas táctiles, tócalo para abrir el chat. El panel se despliega encima del
-acceso. En el celular, el botón se esconde mientras bajas por la página, para
-no tapar botones como **Continuar** o **Agendar cita**, y vuelve a aparecer en
-cuanto subes un poco. En la agenda pública, el flujo principal se presenta primero.
+La verificación en dos pasos agrega, además de la contraseña, un código de seis dígitos
+que genera una aplicación del teléfono celular (Google Authenticator o Microsoft
+Authenticator). Cuando la clínica la habilita, es **obligatoria para la doctora titular**,
+por tener acceso a los expedientes clínicos, y **opcional y recomendada** para el resto
+del personal.
 
-El chat también puede consultar horarios: escribe que buscas una cita, elige el
-servicio y tratamiento tal como aparecen en las listas y proporciona una fecha.
-Acepta `hoy`, `mañana`, `DD/MM/AAAA`, `DD-MM-AAAA` o `AAAA-MM-DD`. Muestra los
-horarios disponibles, pero la reserva se confirma en **Agendar cita**.
-Si solo preguntas por el horario de atención (por ejemplo, "¿a qué hora
-abren?"), el chat responde con el horario configurado sin iniciar una reserva;
-una pregunta frecuente aprobada sobre el horario tiene prioridad. Durante la
-búsqueda de horarios, cada paso indica que se puede escribir **cancelar** (o
-**salir**) para terminarla; si en medio de la búsqueda se pregunta por el
-horario de atención, el chat lo responde y conserva el paso actual. La búsqueda
-vence sola a los 15 minutos sin actividad.
+> Actualmente el módulo de verificación en dos pasos se encuentra oculto (véase el
+> apartado 2.2) y su obligatoriedad para la doctora titular, deshabilitada. Ambos deben
+> habilitarse antes de registrar pacientes reales.
 
-El inicio, las ofertas, la galería y la agenda pública se adaptan al
-ancho de la pantalla: las tarjetas pasan a una o varias columnas según el
-espacio disponible y los formularios conservan sus controles a lo ancho. La barra
-de desplazamiento se oculta por estética, pero la página sigue desplazándose con
-rueda, teclado o gestos. En teléfonos, el formulario reduce espacios y los
-campos conservan un área cómoda para tocar. En escritorio, el formulario usa
-el ancho disponible y deja un margen exterior estrecho para el acceso flotante.
-La
-portada tiene una composición editorial: mensaje principal y agenda a la
-izquierda, fotografía de la clínica a la derecha y acceso directo a la agenda.
-Los servicios se recorren en un carrusel continuo con
-imágenes alineadas y tarjetas de altura uniforme. Contacto conserva el fondo claro
-de la marca y presenta el botón de agenda separado de las tarjetas de
-información; no muestra una tarjeta de contacto vacía si no hay datos
-configurados. En la portada el asistente flotante permanece visible sobre las
-tarjetas informativas. El acceso combina el ícono dental de la marca y el nombre
-en una sola cápsula horizontal, sin una etiqueta suelta debajo. El chat abierto
-queda más compacto y se reduce el espacio inferior y lateral que no aporta al
-contenido. Los datos de
-contacto se marcan como ficticios mientras `DENTISSA_MODO_DEMO=true`; en ese
-modo los números, correos y Telegram no son enlaces accionables. Antes de abrir
-el sitio a pacientes, configura `DENTISSA_MODO_DEMO=false` y completa los datos
-reales. Telegram usa `DENTISSA_TELEGRAM_URL` fuera de la demostración. Nunca
-presentes teléfonos, direcciones, horarios, credenciales o testimonios de
-ejemplo como información real.
+**Procedimiento de activación:**
 
-El personal administrador gestiona las FAQs desde **Contenido → Preguntas
-frecuentes**. En cada registro debe escribir información verificada y aprobada;
-no hace falta anticipar todas las palabras que podría usar un paciente. Las
-formas alternativas son opcionales. Para que una FAQ pueda usarse como fuente
-debe estar activa y visible. El prototipo también consulta los servicios y
-tratamientos activos del catálogo, sin que el personal tenga que volver a
-capturarlos en preguntas frecuentes.
+1. Abra **Mi perfil → Verificación en dos pasos**. Si su perfil la requiere y aún no la ha
+   activado, el sistema lo dirige a esta pantalla de forma automática.
+2. Escanee el código QR con la aplicación del celular o, si no es posible, capture la
+   clave que aparece debajo del código.
+3. Escriba el código de seis dígitos que muestra la aplicación y confirme.
+4. Guarde los **ocho códigos de recuperación** que el sistema presenta.
 
-Antes de publicar cambios, probar preguntas directas, paráfrasis, errores leves,
-temas sin información disponible y consultas clínicas. Para el prototipo se
-puede conectar el chat web con Ollama mediante la red privada de Railway; esto
-no conecta ni modifica el bot de Telegram. Si Railway duerme Ollama por
-inactividad, la primera consulta puede tardar o mostrar una respuesta de
-respaldo mientras el servicio despierta. Si el modelo no responde o no puede
-apoyarse en una respuesta activa, el chat conserva su mensaje de respaldo.
+> Los códigos de recuperación se muestran una sola vez. Consérvelos en un lugar seguro.
+> Cada código permite iniciar sesión una única vez en caso de extravío del celular. Desde
+> la misma pantalla es posible generar códigos nuevos confirmando la contraseña; los
+> anteriores quedan inutilizados.
 
-## 6. Pacientes e historial clínico
+**Inicio de sesión con verificación:** después de la contraseña aparece la pantalla
+**Un paso más**. Capture el código vigente de la aplicación o un código de recuperación.
+El código debe ingresarse dentro de los cinco minutos siguientes; de lo contrario, será
+necesario iniciar sesión nuevamente. Si el código es rechazado, verifique que la fecha y
+la hora del celular estén configuradas en modo automático.
 
-**Historia clínica (cuestionario).** Cada paciente tiene una, en su expediente (📋): es la
-primera sección, arriba de las consultas. La primera vez aparece **Llenar cuestionario**;
-después, **Ver o editar**. Incluye datos generales, antecedentes familiares y personales,
-alergias, medicamentos, embarazo y lactancia (solo si el sexo es femenino), antecedentes
-dentales, hábitos y observaciones. **Nada es obligatorio**: se llena lo que se sepa y se
-completa en otra visita. Las alergias y condiciones de riesgo (coagulación, corazón,
-presión alta, diabetes, embarazo…) salen en un **aviso rojo** arriba del expediente y al
-registrar cada consulta, para verlas antes de atender. La historia también sale en el PDF.
+### 3.4 Políticas de sesión y contraseña
 
-El cuestionario también pide **estado civil**, **contacto de emergencia** (nombre, parentesco
-y teléfono), **médico de cabecera**, si está **en tratamiento médico** y, entre los
-antecedentes, gastritis, otras enfermedades respiratorias y cirugías previas.
+| Política | Comportamiento del sistema |
+|---|---|
+| Longitud y composición | La contraseña debe tener al menos 10 caracteres e incluir mayúsculas, minúsculas y números. |
+| Cambio de contraseña | Al cambiarla, se cierran las sesiones abiertas en otros equipos. |
+| Inactividad | Tras 30 minutos sin actividad, la sesión se cierra automáticamente. |
+| Cuenta desactivada | La persona es expulsada del sistema en su siguiente acción, aun cuando hubiera marcado **Recuérdame**. |
+| Visualización | El icono 👁 muestra la contraseña capturada; debajo de **Confirmar** el sistema indica en tiempo real si ambas coinciden. |
 
-**Exploración clínica y odontograma (solo doctora y doctores).** En el expediente, debajo de
-la historia clínica, está **Hacer exploración** (la primera) o **Nueva exploración** (los
-controles). Incluye:
+### 3.5 Mi perfil
 
-- **Examen de la boca:** labios, lengua, paladar, encías, ganglios… marca "Normal" o escribe
-  el hallazgo.
-- **ATM** (mandíbula) y **encías**: escribe en qué dientes hay sangrado, inflamación, sarro…
-- **Higiene oral** e **índice de O'Leary**: escribe los dientes presentes y las superficies con
-  placa; el porcentaje se calcula solo (verde si es 20 % o menos).
-- **Problemas de la pulpa** e **interpretación radiográfica**, un renglón por diente
-  (**+ Agregar diente**).
-- **Odontograma:** elige un estado (Cariado, Obturado, Extracción indicada…) y toca los
-  dientes; tocar otra vez con el mismo estado lo quita. **Rojo** = por tratar, **azul** = ya
-  está o ya se hizo. Los dientes de leche están en su propia sección. Una exploración nueva
-  trae el odontograma de la anterior para cambiar solo lo nuevo.
-- **Otros hallazgos** y **diagnósticos definitivos.**
+Desde el menú de usuario, la opción **Perfil** permite:
 
-El expediente muestra el resumen de la última (higiene, O'Leary y dientes por estado) y la
-lista de exploraciones anteriores; la última sale en el PDF. Cada consulta tiene ahora el
-campo **Diente(s) tratados**.
+- actualizar nombre, apellido, teléfono y correo electrónico;
+- cambiar la contraseña, para lo cual se solicita la contraseña actual;
+- capturar la **especialidad**, que aparece en las recetas (solo para quienes atienden
+  consultas; la cédula profesional se registra en **Configuración**, apartado 12.5);
+- administrar la verificación en dos pasos;
+- cambiar o quitar la fotografía de perfil.
 
-**Cita y consulta.** Al completar una cita en la Agenda aparece **Registrar consulta**: abre
-la consulta nueva con esa cita y su fecha ya elegidas. La columna de Pacientes se llama
-"Consultas en expediente" (las notas médicas registradas, no las citas).
+**Fotografía de perfil:**
 
-**La asistente** también llena la historia clínica: en su menú aparece **Historias
-clínicas**, una lista de pacientes con buscador que dice si cada uno la tiene **Llena** o
-**Pendiente**, con el botón **Llenar cuestionario** o **Ver o editar**. Ella no ve las
-consultas, las notas privadas, los adjuntos ni el PDF.
+1. En **Información personal**, pulse **Elegir foto** o **Cambiar foto**.
+2. Seleccione una imagen JPG, PNG o WebP de hasta 5 MB.
+3. Revise la vista previa amplia y la vista reducida que muestra cómo aparecerá en el menú.
+4. Pulse **Guardar**; la fotografía se guarda junto con los datos personales.
 
-**Nueva consulta** va en una sola columna: fecha, tipo y cita arriba, y cada pregunta en su
-propio renglón con espacio para escribir.
+**Quitar foto** muestra las iniciales en la vista previa y se aplica al pulsar
+**Guardar**; **No quitarla** revierte la acción. La fotografía solo es visible para la
+cuenta propietaria.
 
-Desde `/admin/pacientes`:
+El perfil no permite eliminar ni desactivar la propia cuenta. La desactivación se realiza
+desde **Administración → Usuarios** y nadie puede cambiar su propio rol, con el fin de que la
+clínica nunca se quede sin una persona que administre el panel.
 
-- **Plan de tratamiento** (desde el 24/11/2026): para tratamientos de varias citas (ortodoncia,
-  rehabilitación…). En el expediente, **Plan de tratamiento → Nuevo plan**: ponle un nombre y
-  después agrega sus **pasos** (procedimiento, dientes y costo; al elegir un tratamiento del
-  catálogo se sugiere su precio). Cada paso se marca como **hecho** con el círculo (guarda la
-  fecha) y se puede volver a pendiente. El **avance** (%) y el **costo del plan** se calculan
-  solos. Cuando todos están hechos, el sistema sugiere cambiar el estado a **Terminado**. El
-  expediente muestra cada plan con su barra de avance.
-- **Consentimiento informado** (desde el 24/11/2026): en el expediente, sección **Consentimientos informados → Nuevo consentimiento**. Escribe el **procedimiento** (sugiere los tratamientos del catálogo), los dientes si aplica, y revisa los textos de **beneficios**, **riesgos** y **alternativas** (vienen escritos de partida; ajústalos a lo que le explicaste). Al guardar aparece **Abrir para imprimir**: es una carta con los datos del consultorio, paciente, edad, alergias, procedimiento, lo que se le explicó, y espacios para la firma del paciente o su representante, de quien atiende y de dos testigos. Se firma a mano y se guarda en el archivo del paciente. Cada uno queda en la lista para volver a imprimirlo.
-- **Receta en PDF** (desde el 24/11/2026): en el expediente, cada consulta con **medicamentos recetados** muestra **Receta**. Se abre lista para imprimir, con tu nombre, **cédula profesional**, especialidad, fecha, nombre y edad del paciente, sus **alergias**, el diagnóstico, los medicamentos y la línea de firma; al pie, la dirección y el teléfono del consultorio. La cédula la captura **la doctora titular** en **Configuración → Cédulas profesionales**, una línea por cada doctor (desde el 26/11/2026; antes en Mi perfil). Sale en las recetas y los consentimientos en PDF de ese doctor; no se publica en la portada. **Desde el 25/11/2026, temporalmente,** la receta se imprime aunque falte la cédula (sale sin esa línea); cuando la captures, aparece sola. Cada receta impresa queda en Control de actividades.
-- **Nuevo paciente** (desde el 24/11/2026): registra a alguien que llegó sin cita, o para llenarle la historia clínica antes. Pide nombre, apellido, celular (obligatorios), correo (opcional) y confirmar que **aceptó el aviso de privacidad**. Si el celular ya está registrado, avisa de quién es y ofrece **Abrir su expediente** en lugar de duplicarlo. Al guardar se abre su expediente. Cuando después agende en línea con ese celular, el sistema lo reconoce.
+## 4. Navegación e interfaz
 
-1. Buscar por una parte del nombre, correo o teléfono, o seleccionar un paciente de la lista.
-2. Abrir **Editar** (✎) para corregir su nombre, apellido, teléfono celular y correo. Nombre, apellido y **teléfono celular son obligatorios** (por el teléfono se le avisa por WhatsApp y se le reconoce al agendar); el correo es opcional y debe ser único. El teléfono debe tener diez dígitos, con código `+52` opcional.
-3. Abrir el **historial** (📋), o tocar su número de consultas.
-4. Pulsar **Nueva consulta**.
-5. Completar los campos indicados como **obligatorios**: fecha, tipo y motivo. Diagnóstico, tratamiento, medicamentos, observaciones y notas privadas son opcionales; la cita relacionada también es opcional cuando aparece.
-6. Guardar la consulta.
-7. Consultar, editar o eliminar las consultas. El PDF se habilita cuando existe al menos una consulta.
+### 4.1 Menú principal
 
-**Cita y consulta no son lo mismo:** la cita es la reservación de la Agenda (día, hora y
-estado); la consulta es la nota médica del expediente. Completar una cita no crea la
-consulta: hay que registrarla en el historial del paciente.
+La barra superior muestra la marca del consultorio (logotipo con la firma
+**Dra. Melissa López**) y los accesos siguientes. Cada pantalla se titula igual que su
+enlace en el menú.
 
-El historial clínico está reservado al administrador. El campo **Notas privadas del doctor**
-es visible para el administrador y no se incluye en el PDF descargable.
+| Elemento del menú | Contenido |
+|---|---|
+| Inicio | Pantalla de inicio con accesos rápidos. |
+| Agenda | Citas en vista de lista o de semana. |
+| Asistente | Asistente de agenda (solo cuando el módulo está habilitado). |
+| Pacientes | Directorio de pacientes y expediente. El perfil de asistente ve en su lugar **Historias clínicas**. |
+| Administración | Usuarios, Reportes, Pagos e ingresos y Mensajes (cuando están habilitados) y Control de actividades. |
+| Catálogo | Especialidades y Tratamientos. |
+| Sitio web | Ofertas, Testimonios y Preguntas frecuentes (lo que ven los pacientes en la portada); Galería y Casos cuando están habilitados. |
+| Configuración | Datos del consultorio, Horarios de atención y Días u horas bloqueados. |
 
-Durante las pruebas se deben usar datos ficticios. No se deben subir imágenes,
-documentos ni datos médicos reales al entorno de desarrollo.
+El menú completo se muestra en pantallas de 1024 píxeles de ancho o más (computadora,
+laptop, televisión y proyector). En pantallas menores se muestran únicamente el logotipo y
+la fotografía del usuario; el resto de las opciones se encuentra en el botón de menú (☰).
+La campana abre una vista rápida de las notificaciones.
 
-## 6.1 Cuentas del personal
+### 4.2 Pantalla de inicio
 
-En **Usuarios**, el administrador solo puede hacer tres cosas: **crear** una cuenta
-(Nuevo usuario), **activarla o desactivarla** (interruptor de la columna Estado) y
-**eliminarla** (papelera). También puede filtrar por rol y estado. Los datos y la
-contraseña de cada cuenta los corrige su dueño en **Mi perfil**. Los pacientes se
-gestionan desde **Pacientes**, en una sección distinta.
+La doctora titular dispone de accesos rápidos para agendar citas, consultar pacientes,
+administrar servicios y contenido, y gestionar usuarios. Los demás perfiles ven un inicio
+simplificado con accesos a sus citas y al asistente de agenda.
 
-- **Eliminar** pide confirmación y no se puede deshacer. No se puede eliminar la
-  cuenta propia, ni una cuenta que registró consultas clínicas: borrarla eliminaría
-  esas consultas del historial de los pacientes. En ese caso la papelera sale
-  apagada con ⚠ y lo indicado es **desactivarla**.
-- **Cambiar el rol de alguien:** si la cuenta no tiene consultas, elimínala y créala
-  de nuevo con el rol correcto; si tiene consultas, desactívala y crea una cuenta nueva.
+### 4.3 Listados
 
-Para cambiar el correo de la cuenta actual, abre **Perfil** desde el menú de
-usuario, edita **Correo electrónico** en **Información personal** y guarda.
-Para crear otra cuenta administrativa, entra a **Gestión → Usuarios → Nuevo
-usuario**, captura los datos, selecciona **Admin**, escribe una contraseña
-segura y guarda. El correo debe ser único. Nadie puede cambiar su propio rol ni
-eliminar su propia cuenta, así la clínica nunca se queda sin quien administre el
-panel. Al escribir una contraseña nueva,
-el 👁 muestra lo que escribiste y, debajo de **Confirmar**, el sistema te dice al momento si
-las dos coinciden.
+- Cada listado muestra, en la parte superior izquierda, el total de registros y el
+  selector de registros por página (**20** de forma predeterminada, o **50**); en la
+  parte superior derecha, el botón **Nuevo …**.
+- La paginación se ubica al centro, en la parte inferior, con los botones **Anterior**,
+  los números de página y **Siguiente**. Los filtros activos se conservan al cambiar de
+  página.
+- Los buscadores y filtros se aplican automáticamente al dejar de escribir; **Limpiar
+  filtros** los restablece.
+- **Tablas cortas** (Pacientes, Usuarios, Servicios, Testimonios, Preguntas frecuentes,
+  Casos y Horarios): en celular y tableta cada registro se presenta como tarjeta, con el
+  nombre en la parte superior, cada dato con el título de su columna y los botones al
+  final.
+- **Tablas extensas** (Control de actividades, Mensajes de contacto, Ofertas y
+  Tratamientos): conservan sus columnas y se desplazan horizontalmente solo cuando no
+  caben. La primera columna permanece fija y se muestra la indicación «Desliza para ver
+  más columnas».
 
-### Seguridad de la cuenta
+### 4.4 Iconos de acción
 
-- **Contraseñas:** al crear o cambiar una contraseña, debe tener al menos 10
-  caracteres, con mayúsculas, minúsculas y números. Al cambiarla, se cierran
-  las sesiones abiertas en otros equipos.
-- **Inactividad:** después de 30 minutos sin usar el panel, la sesión se cierra
-  sola. Vuelve a iniciar sesión.
-- **Cuentas desactivadas:** al desactivar una cuenta en **Usuarios**, esa
-  persona sale del sistema en su siguiente clic, aunque tuviera "Recordarme".
+| Icono | Acción |
+|---|---|
+| ✎ | Editar el registro. |
+| 🗑 | Eliminar el registro. |
+| Ojo | Publicar. |
+| Ojo tachado | Ocultar. |
+| Pulgar arriba / pulgar abajo | Aprobar / rechazar. |
+| Sobre abierto / sobre cerrado | Marcar como leído / marcar como no leído. |
+| 📋 | Abrir el expediente clínico del paciente. |
+| ⚠ (icono apagado) | La acción no está disponible; al tocar el símbolo se explica el motivo. |
+| ⓘ | Información adicional; no ejecuta ninguna acción. |
 
-### Verificación en dos pasos
+Al colocar el cursor sobre un icono se muestra una descripción de su función.
 
-Además de la contraseña, al entrar se pide un código de 6 dígitos que genera
-una app gratuita en tu celular (Google Authenticator o Microsoft
-Authenticator). **Es obligatoria para el administrador**, porque puede ver
-historiales clínicos; para la asistente es opcional y recomendada.
+### 4.5 Interruptor de estado
 
-**Para activarla:** **Perfil → Verificación en dos pasos**. Escanea el código QR
-con la app (o escribe la clave que aparece debajo) y escribe el código de 6
-dígitos que muestra la app. Si eres administrador y aún no la activas, el
-sistema te lleva a esa pantalla automáticamente.
+Las listas de Servicios, Tratamientos, Casos, Galería, Preguntas frecuentes y Usuarios
+incluyen un interruptor en la columna **Estado** que permite activar o desactivar el
+registro sin entrar a su edición. El sistema siempre solicita confirmación e indica la
+consecuencia del cambio (por ejemplo, «Dejará de mostrarse en la portada»). La cuenta
+propia aparece atenuada con ⓘ, ya que nadie puede desactivarse a sí mismo.
 
-**Códigos de recuperación:** al activarla verás 8 códigos. **Guárdalos en un
-lugar seguro: no se vuelven a mostrar.** Si pierdes el celular, cada uno sirve
-una sola vez para entrar. Desde la misma pantalla puedes generar códigos
-nuevos con tu contraseña; los anteriores dejan de servir.
+### 4.6 Confirmaciones, avisos y formularios
 
-**Al iniciar sesión:** después de la contraseña aparece **Un paso más**.
-Escribe el código actual de la app o un código de recuperación. Tienes 5
-minutos; si se pasa el tiempo, vuelve a iniciar sesión. Si el código no
-funciona, revisa que la hora de tu celular esté en automático.
+- Las acciones sensibles (eliminar, cancelar una cita, desactivar, entre otras) abren una
+  ventana de confirmación propia del sistema. Puede cerrarse con **Esc**, con
+  **Cancelar** o pulsando fuera de ella.
+- Tras crear, guardar o eliminar, aparece un aviso en la esquina inferior derecha: verde
+  cuando la operación fue exitosa (se oculta solo) o rojo cuando falta información (se
+  cierra con ×).
+- Los campos obligatorios se marcan con asterisco (\*). Si un dato falta o es incorrecto,
+  el mensaje aparece en rojo debajo del campo y el cursor se coloca en el primer error.
+- **Guardar cambios** permanece deshabilitado hasta que se modifica algún dato, y vuelve a
+  deshabilitarse si se restablecen los valores originales.
+- Los botones que guardan información muestran un texto de espera (por ejemplo,
+  «Agendando…») y se bloquean para impedir envíos duplicados.
+- Para salir de un formulario sin guardar, utilice **Cancelar**. Las pantallas que no
+  tienen este botón, como el expediente del paciente, muestran el enlace
+  **← Volver a …** sobre el título.
 
-## 6.2 Pagos e ingresos
+### 4.7 Adaptación a dispositivos y accesibilidad
 
-> **Oculto.** El 24/11/2026 se decidió no usarlo por ahora: no aparece en el menú, el
-> expediente ni la Agenda. Lo que sigue describe cómo funciona si se enciende
-> (`DENTISSA_MODULO_PAGOS=true`).
+- El sistema se adapta a todos los tamaños de pantalla, desde teléfono celular hasta
+  televisión o proyector.
+- En el celular, ningún texto mide menos de 12 píxeles y los botones tienen al menos
+  44 píxeles de alto. El teléfono no amplía la página al escribir en un campo, y en
+  equipos con muesca el contenido no queda oculto.
+- Las animaciones se limitan a las que ayudan a comprender una acción (cambio de paso al
+  agendar, confirmación de la cita, avisos y menús). Si el dispositivo tiene activada la
+  opción «reducir movimiento», se suavizan o se suprimen.
+- El sitio puede instalarse como aplicación en el dispositivo. Si se pierde la conexión,
+  se muestra una pantalla para reintentar cuando se restablezca.
 
-Desde el 24/11/2026 se registra lo que cada paciente paga en el consultorio (solo el
-registro: el cobro sigue siendo en persona; no hay pago en línea ni factura).
+## 5. Portal público
 
-- **Registrar un pago:** en la Agenda, una cita **completada** sin pago muestra **$ Registrar
-  pago** (llega con la cita elegida y su precio estimado como monto sugerido). También desde
-  el expediente, sección **Pagos → Registrar pago** (por ejemplo, un anticipo o un abono sin
-  cita). Se indica monto, forma de pago (efectivo, tarjeta o transferencia), fecha (hoy o
-  antes) y, si quieres, la cita y un concepto.
-- **En el expediente** se ve cuánto ha pagado el paciente y, si hay citas completadas con
-  precio, cuánto falta **por cobrar (estimado)**: suma del precio de esas citas (con su
-  oferta) menos lo pagado. Es una referencia; lo que cuenta es lo registrado.
-- **Gestión → Pagos e ingresos:** total cobrado del periodo (por omisión, el mes en curso),
-  lo de cada forma de pago y la lista de pagos, con filtros **Desde**, **Hasta** y **Forma
-  de pago**. Un pago capturado por error se quita con la 🗑.
-- Lo ven la doctora titular y los doctores; la asistente no. Registrar y eliminar pagos
-  queda en Control de actividades.
+La página principal presenta la información del consultorio y el acceso a la agenda en
+línea. Sus secciones, en orden de aparición, son las siguientes.
 
-## 7. Reportes administrativos
+### 5.1 Bienvenida
 
-En **Reportes**, el administrador selecciona las fechas **Desde** y **Hasta**
-y pulsa **Filtrar**. El panel resume pacientes, citas por estado, tratamientos
-más solicitados, consultas clínicas y métricas de ocupación/eficiencia. Si no
-hay citas completadas, las métricas correspondientes pueden mostrar cero.
+- Fotografía principal (a la derecha en computadora y arriba en el celular) y el mensaje
+  «Una consulta sin prisas, explicada paso a paso».
+- **Agendar mi valoración**: abre la agenda en línea.
+- **¿Prefieres llamar?**: muestra el teléfono del consultorio; en el celular, permite
+  marcarlo directamente.
+- Indicador de disponibilidad, por ejemplo «Abierto hoy hasta las 18:00» o «Cerrado ahora
+  · abre el lunes a las 8:00». Se calcula con la hora local de la clínica a partir de
+  **Horarios de atención**, por lo que cualquier cambio de horario se refleja de inmediato.
 
-**Tasa de ocupación** (desde el 25/11/2026): qué parte del horario de atención
-estuvo ocupada por citas, contando todas menos las canceladas. Debajo dice, por
-ejemplo, «40 h con citas de 180 h de atención». Los festivos y los días
-bloqueados completos no cuentan como horario disponible.
-El rango solo permite fechas hasta hoy; el selector bloquea fechas futuras y el
-sistema también las rechaza si se envían manualmente.
-El total histórico de pacientes y el conteo del catálogo activo son acumulados
-actuales; las citas, nuevos pacientes, consultas y métricas operativas sí usan
-el rango seleccionado. Los mismos alcances se indican en las descargas.
+### 5.2 Tratamientos
 
-Los botones permiten descargar un PDF o un libro de **Excel** (`.xlsx`). El
-libro incluye los indicadores y resúmenes en una hoja con etiquetas en español;
-se puede abrir y editar en Excel o LibreOffice Calc.
+La sección **Tratamientos para tu salud y armonía** muestra las especialidades activas en
+un carrusel de tarjetas con fotografía:
 
-## 8. Control de actividades
+- Cada tarjeta indica **Agenda en línea** (la especialidad tiene tratamientos activos y, al
+  pulsarla, abre la agenda con esa especialidad seleccionada) o **Agenda por teléfono**
+  (al pulsarla, marca el número del consultorio).
+- En computadora se muestran tres tarjetas; las flechas **‹ ›** avanzan una tarjeta por
+  pulsación y, al llegar al final, regresan a la primera. En el celular se desliza con el
+  dedo. Los puntos inferiores indican la posición.
+- La fotografía y la descripción provienen de **Catálogo → Especialidades**; si no se
+  capturan, se utilizan las predeterminadas.
 
-El administrador puede abrir **Configuración → Control de actividades** para consultar los
-cambios realizados por cuentas del administrador o de las asistentes. La vista
-permite filtrar por fechas, usuario y acción. **Ver cambios** abre una ventana con
-qué se hizo, quién y cuándo, y una tabla con cada dato que cambió, cómo estaba **Antes** y cómo quedó **Después**, en
-palabras (por ejemplo, Estado: Confirmada → En curso). Si algo se creó solo se ve cómo
-quedó, y si se borró, lo que tenía. La ventana se cierra con **Cerrar**, con Esc o tocando fuera. Es de solo lectura; las asistentes no tienen acceso. Las
-solicitudes iniciadas por pacientes desde el portal o Telegram no aparecen en
-la bitácora. Los registros anteriores de esos canales se conservan en la base
-de datos, pero no se muestran como cambios del personal. Se registran cambios
-de citas, pacientes e historial clínico, usuarios, perfil,
-catálogo, contenido público, horarios y mensajes de contacto. No se guardan
-contraseñas ni notas clínicas; al editar un paciente, la auditoría indica qué
-campos cambiaron, pero no copia sus valores de teléfono o correo. Las consultas,
-descargas y acciones de pacientes
-no se consideran cambios del personal.
+### 5.3 Primera visita, la clínica e instalaciones
 
-Cada cambio aparece **una sola vez**, con la hora de México y el nombre y rol
-de quien lo hizo. La dirección de la página es
-`/admin/control-de-actividades`; si tienes guardada la anterior (`/admin/auditoria`),
-te lleva sola a la nueva.
+- **Tu primera visita** explica el proceso en tres pasos: elegir horario, recibir la
+  confirmación y el recordatorio por WhatsApp, y acudir a la primera consulta con la
+  historia clínica.
+- **La clínica** muestra la misión y la visión capturadas en **Configuración → Datos del
+  consultorio**; si se borran, se restablece el texto predeterminado.
+- **Instalaciones** («El consultorio») muestra las fotografías activas de
+  **Sitio web → Galería**, en su orden. Si no existe ninguna, se presentan dos
+  ilustraciones informativas: «Un paciente a la vez» (o «Citas con hora exacta» cuando se
+  atiende a más de un paciente por horario) y «Te avisamos un día antes».
 
-## 11. Notificaciones internas
+### 5.4 Ofertas, casos y testimonios
 
-Administradores y asistentes pueden abrir **Notificaciones** desde el ícono de
-campana. El contador muestra cuántos avisos son **nuevos** desde la última vez
-que se abrió la campana; no equivale a los avisos pendientes de atender. La bandeja
-resume el total, separa avisos en **Todas**, **Pendientes** y **Leídas**, y
-permite cambiar un aviso leído de vuelta a pendiente. También permite marcar
-todas las pendientes como leídas. Cada aviso muestra su fecha, estado y acceso
-a la cita relacionada. Al pulsar la campana se abre una vista rápida sin salir
-de la página actual; **Ver todas las notificaciones** abre la bandeja completa.
+- **Ofertas**: carrusel con hasta 24 promociones publicadas y vigentes, ordenadas por
+  fecha de vencimiento. Cada una incluye **Pedir info** (abre WhatsApp con el nombre de la
+  oferta) y **Agendar** (abre la agenda con la oferta aplicada). El botón **Ver todas las
+  promociones** abre `/promociones`, con todas las ofertas publicadas y filtros por
+  especialidad; el enlace puede compartirse, incluso filtrado.
+- **Casos antes y después**: casos activos con fotografía de **Sitio web → Casos**. La
+  primera imagen se presenta como «Antes» y la segunda como «Después».
+- **Testimonios**: opiniones aprobadas por la clínica. El paciente puede enviar la suya
+  desde **Comparte tu experiencia**, identificándose con el teléfono o el correo con el que
+  agendó.
 
-La vista rápida tiene dos partes:
+### 5.5 Preguntas frecuentes, ubicación y contacto
 
-- **Por atender**: lo que necesita que alguien haga algo (un paciente canceló o
-  pidió reagendar, una inasistencia, un respaldo que falló, un **testimonio por
-  aprobar** o un **festivo que no se bloqueó por tener citas**). Cada aviso trae
-  su botón: **Ver en la agenda** (abre el día de esa cita), **Revisar testimonios**
-  o **Ver bloqueos**; además **Llamar** (marca al paciente desde el celular) y
-  **Ya lo atendí**, que lo pasa a informativas cuando ya lo resolviste. Si no hay
-  nada, verás "No hay nada pendiente".
-- **Informativas**: confirmaciones, citas nuevas y cambios. Están plegadas;
-  tócalas para abrirlas.
+- **Preguntas frecuentes**: se muestran las activas; al pulsar una pregunta se despliega
+  su respuesta.
+- **Ubicación**: dirección del consultorio con mapa de Google. **Cómo llegar** abre la ruta
+  en Google Maps y **Escribir por WhatsApp** abre la conversación. Si además se captura el
+  **Nombre del negocio en Google Maps**, el mapa y **Cómo llegar** abren la ficha del
+  consultorio (con su fotografía, horario y teléfono) en lugar de un punto en la calle. Si
+  la dirección se deja vacía en la configuración, el mapa no se muestra.
+- **Pie de página**: teléfono, horario semanal (por ejemplo, «Lunes a viernes de 8:00 a
+  18:00 hrs»; los días cerrados se omiten) y enlace al aviso de privacidad.
+- Un botón verde de WhatsApp permanece fijo en la esquina inferior derecha, encima del
+  asistente virtual.
 
-Cada aviso muestra un círculo con las **iniciales del paciente** (el mismo
-paciente conserva siempre su color) y una insignia pequeña con lo que pasó:
-calendario (cita nueva o cambio), palomita (confirmó o se completó), tache
-(canceló o no asistió) o flechas (pidió reagendar). Los avisos del sistema,
-como un respaldo, usan un recuadro punteado porque no vienen de un paciente. La bandeja informa cuando se registra, reagenda,
-confirma, cancela, inicia o completa una cita, o cuando se registra una
-inasistencia. Las solicitudes hechas desde el
-portal o Telegram también avisan al personal; estos avisos no se agregan a la
-auditoría como si los hubiera realizado un empleado. Cada persona ve sus
-propios avisos y puede marcarlos como leídos individualmente o todos a la vez.
-Al abrir la campana, los avisos se registran como **vistos** y el contador de
-novedades queda en cero, pero conservan su estado pendiente y su punto rosa
-hasta que se abra el aviso o se marque como leído. El centro completo agrupa los avisos por **Hoy**, **Ayer** y
-**Anteriores**, y etiqueta el tipo de cambio; cancelaciones e inasistencias se
-destacan para facilitar el seguimiento. Al abrir un aviso desde esa lista o desde el aviso emergente,
-el sistema lleva a la cita relacionada sin cerrar la sesión.
-Las respuestas de los pacientes al recordatorio también llegan aquí:
-**Respuesta del paciente** cuando confirma que asistirá, y **Cancelación del
-paciente** u **Horario liberado** (destacados) cuando cancela o pide reagendar.
-Solo el administrador recibe **Respaldo fallido** (destacado, también por
-correo) si la copia de seguridad nocturna no se completó. Ese aviso no se debe
-ignorar: avisa al equipo técnico el mismo día, porque mientras siga fallando no
-hay copia reciente de citas ni historiales. La copia se guarda cifrada en la
-carpeta **Dentissa respaldos** del Google Drive de la clínica: no se debe
-mover, renombrar ni borrar a mano, y abrirla en Drive no muestra nada legible
-(es normal). Una vez al mes, el equipo técnico comprueba que la copia más
-reciente se puede recuperar sin tocar los datos en uso.
-Con la sesión abierta, la notificación aparece al instante en un aviso
-emergente y el contador se actualiza sin recargar la página. Si el canal en
-vivo se desconecta temporalmente, el sistema revisa novedades cada pocos
-segundos como respaldo. En la bandeja de notificaciones, el control **Activar
-sonido** habilita una señal breve al llegar un aviso y guarda la preferencia en
-ese navegador; el primer clic también confirma el sonido. Se puede silenciar
-desde el mismo control.
+### 5.6 Navegación del portal
 
-Los avisos son internos del sistema y no dependen de WhatsApp ni envían un
-mensaje externo al paciente.
+Los enlaces **Inicio**, **Tratamientos**, **La Clínica**, **Instalaciones**,
+**Testimonios** y **Contacto** desplazan la página hasta la sección correspondiente sin
+recargarla, y el enlace de la sección visible se resalta automáticamente.
 
-## 12. Experiencia visual y navegación boutique
+> El portal no crea citas por sí mismo. Teléfonos, correos, horarios, calificaciones y
+> testimonios solo deben publicarse una vez que la clínica los haya verificado y aprobado.
 
-Dentissa cuenta con una interfaz visual unificada con paleta cálida (rosa `#d75078`, durazno `#f2b0a6`, fondo `#FAF6F6`, texto `#2D2526` y verde salvia `#4E8D72`), pensada para transmitir tranquilidad y profesionalismo tanto a los pacientes como al equipo de la clínica:
+## 6. Agendamiento en línea
 
-1. **Navegación fluida y adaptativa:**
-   - En computadoras de escritorio, la barra superior permanece accesible con accesos directos claros a Inicio, Agenda, Asistente y a los menús agrupados de Gestión, Catálogo, Contenido y Configuración.
-   - En celulares y tablets, el botón de menú con ícono de tres líneas permite desplegar todas las secciones en un panel vertical accesible sin saturar la pantalla.
-2. **Tablas que se adaptan a su tamaño:**
-   - Las tablas cortas se convierten en tarjetas en celular y tableta, sin desplazamiento lateral; las largas (por ejemplo Control de actividades) se desplazan de lado lo mínimo, con la primera columna fija para no perder de qué registro se trata.
-3. **Formularios confortables y claros:**
-   - Los campos de captura cuentan con bordes suaves, enfoque en color rosa de marca y mensajes de ayuda legibles para evitar errores durante el registro de datos clínicos o citas.
-4. **Asistente flotante no invasivo:**
-   - El widget del asistente virtual se reposiciona dinámicamente para nunca tapar botones de acción, formularios ni tarjetas de selección.
-5. **Textos y botones cómodos en el celular:**
-   - Ningún texto mide menos de 12 px y los botones y enlaces miden al menos
-     44 px de alto, el tamaño recomendado para el dedo.
-   - Al escribir en un campo, el celular no hace zoom.
-   - En teléfonos con muesca, el contenido no queda debajo de ella.
-6. **Avisos y estados claros:**
-   - Los avisos de éxito, error, advertencia e información tienen el mismo
-     diseño en todo el sistema.
-   - Los botones que guardan muestran un texto de espera (por ejemplo
-     "Agendando…") y no se pueden pulsar dos veces.
-   - Los mensajes de error de los formularios están en español.
-7. **Movimiento con propósito:**
-   - Solo se anima lo que ayuda a entender qué pasó: el cambio entre pasos al
-     agendar, la confirmación de la cita, los avisos emergentes y el menú de
-     acciones.
-   - Si el celular o la computadora tiene activada la opción "reducir
-     movimiento", estas animaciones se suavizan o desaparecen.
-8. **Nombre de la doctora:** "Dra. Melissa López" se muestra con la tipografía
-   Fraunces itálica en la portada, el encabezado y el acceso.
+### 6.1 Procedimiento para el paciente
+
+El proceso consta de cuatro pasos; la parte superior indica en todo momento «Paso X de 4».
+
+1. Abrir `/agendar-cita` o pulsar **Agendar mi valoración**.
+2. **Selección clínica:** elegir la especialidad y, a continuación, el tratamiento. Cada
+   tratamiento muestra su duración aproximada y su precio. Para cambiar de especialidad,
+   se pulsa el recuadro de la especialidad elegida. Solo se muestran las especialidades
+   con tratamientos activos.
+3. **Fecha y hora:** seleccionar un día en el calendario y, después, un horario libre.
+   Cada horario indica su hora de término (por ejemplo, «09:30 a 10:15»). Pulsar
+   **Revisar resumen**.
+4. **Confirmación:** revisar tratamiento, fecha y hora, y pulsar **Continuar a mis datos**.
+5. **Datos de contacto:** capturar nombre, apellido, teléfono celular (obligatorio) y
+   correo electrónico (opcional); el motivo de la consulta es opcional, con un máximo de
+   1000 caracteres. Marcar **He leído y acepto el aviso de privacidad**. El enlace
+   **Cambiar** permite regresar a la selección de fecha y hora.
+6. Pulsar **Agendar cita**. El botón cambia a «Agendando…» y se bloquea mientras se guarda.
+
+**Resultado esperado:** aparece la pantalla **«¡Listo! Tu cita quedó confirmada»** con el
+resumen de la cita. La cita queda en estado **Confirmada**, sin que el personal tenga que
+confirmarla nuevamente.
+
+### 6.2 Lectura del calendario
+
+| Indicación | Significado |
+|---|---|
+| Punto verde | El día tiene horarios disponibles. |
+| Punto durazno | Quedan tres lugares o menos. |
+| Día tachado | Ya no hay horarios disponibles. |
+| Día gris | Fecha pasada o día en que el consultorio no abre. |
+
+- Las flechas **‹ ›** cambian de mes, hasta doce meses en adelante.
+- El calendario solo permite elegir a partir del día actual según la hora de la clínica,
+  aunque se agende de noche.
+- Pulsar nuevamente el día o la hora seleccionados anula la selección.
+- Debajo del calendario se muestra el horario regular del consultorio.
+
+### 6.3 Validaciones de los datos
+
+- El teléfono corresponde al número de WhatsApp, a diez dígitos, y se da formato
+  automáticamente mientras se escribe (por ejemplo, «55 1234 5678»).
+- Cada dato se valida al pasar al siguiente campo: si es incorrecto, aparece el mensaje
+  debajo (por ejemplo, «Faltan 6 dígitos…»); si es correcto, se muestra una palomita verde.
+- Si al pulsar **Agendar cita** existen errores, no se envía la información: aparece un
+  aviso como «Revisa los 2 datos marcados para poder agendar tu cita», el cursor se coloca
+  en el primer error y cada campo señalado muestra su mensaje en español.
+- Si el servidor detecta un error al guardar, el formulario regresa con los mismos avisos
+  y conserva los datos correctos.
+- Sin la aceptación del aviso de privacidad, la cita no se guarda y se muestra el mensaje
+  «Para agendar necesitamos que aceptes el aviso de privacidad».
+
+### 6.4 Reglas aplicadas por el sistema
+
+- **Pago:** se realiza en el consultorio el día de la cita; así se indica en la agenda, en
+  la confirmación y en los correos. El sistema no procesa pagos en línea.
+- **Identificación del paciente:** el sistema crea un registro nuevo o reutiliza el
+  existente y bloquea el horario en el mismo momento en que crea la cita.
+- **Protección contra abuso:** se aceptan hasta 5 envíos por minuto y 20 por hora desde
+  una misma conexión. Al superarse, aparece el aviso «Recibimos varios intentos seguidos.
+  Espera un minuto e inténtalo de nuevo.», y los datos capturados se conservan.
+- **Ofertas:** una oferta solo se aplica si el paciente ingresa desde su tarjeta (véase el
+  apartado 11.1).
+
+### 6.5 Navegación del formulario
+
+**Atrás** regresa al paso anterior sin perder lo seleccionado, y los botones de avance se
+habilitan cuando el paso está completo. En el celular, ambos botones permanecen fijos en
+la parte inferior. En pantallas amplias, junto al formulario se muestra un resumen que se
+actualiza con el servicio, el tratamiento, la fecha y la hora elegidos; en el celular, ese
+resumen se ubica debajo del formulario.
+
+### 6.6 Aviso de privacidad
+
+El aviso completo se publica en `/aviso-de-privacidad` y se enlaza desde el pie de la
+portada y desde los correos. Al marcar la casilla, el sistema registra la fecha de
+aceptación y la versión del aviso aceptada. En Telegram, el resumen previo a la
+confirmación enlaza el aviso y pulsar **Confirmar cita** equivale a aceptarlo.
+
+> Antes de operar con pacientes reales, la clínica debe capturar sus datos de responsable,
+> domicilio y correo para solicitudes, y el texto debe ser revisado por un abogado o por
+> la propia clínica. Mientras ello no ocurra, la página muestra la leyenda «Borrador
+> pendiente de revisión legal» y resalta los datos faltantes.
+
+## 7. Recordatorios y respuestas del paciente
+
+### 7.1 Momento de envío
+
+El recordatorio se envía el **día hábil anterior** a la cita, **una hora después de la
+apertura** del consultorio, por correo electrónico y, cuando WhatsApp está configurado,
+también por WhatsApp. Se considera día hábil aquel que está abierto en **Horarios de
+atención** y no tiene un bloqueo de día completo.
+
+| Horario del consultorio | Cita | Envío del recordatorio |
+|---|---|---|
+| Lunes a viernes, 9:00 a 18:00 | Martes a las 19:00 | Lunes a las 10:00 |
+| Lunes a viernes, 9:00 a 18:00 | Lunes | Viernes a las 10:00 |
+
+Con esta regla, el mensaje nunca llega de noche ni en un día cerrado, y las respuestas
+del paciente se reciben en horario de trabajo.
+
+- Las citas agendadas después del momento del recordatorio no lo reciben, puesto que el
+  paciente acaba de obtener su confirmación.
+- Si el personal reagenda una cita, se programa un recordatorio nuevo para la nueva fecha.
+
+### 7.2 Opciones de respuesta
+
+| Opción | Efecto |
+|---|---|
+| **Sí, asistiré** | La cita permanece confirmada y la agenda muestra **✓ Paciente confirmó asistencia**. |
+| **Quiero reagendar** | Se libera el horario y el paciente recibe un enlace que abre la agenda directamente en el calendario, con el mismo tratamiento. Solo elige el nuevo día y la nueva hora y pulsa **Confirmar cambio de cita**, sin volver a capturar sus datos. |
+| **No podré asistir, cancelar cita** | La cita se cancela y el horario queda disponible. |
+
+- Abrir una opción desde el correo no modifica la cita por sí mismo: se muestra una página
+  con los datos de la cita que solicita confirmar la respuesta. Desde ella es posible
+  elegir otra opción.
+- Si la cita ya pasó o fue cancelada, la página indica que ya no admite cambios y muestra
+  el teléfono del consultorio.
+- El enlace de reagendamiento es personal, tiene vigencia de siete días y solo puede
+  utilizarse una vez. El paciente recibe el mensaje «Tu cita se movió al…»; la campana del
+  personal muestra **Nuevo horario del paciente** y la cita anterior aparece en la agenda
+  como **↻ Reagendada por el paciente → nueva fecha**.
+- Al reagendar se conserva la oferta que la cita tenía, siempre que siga vigente.
+
+### 7.3 Respuestas por WhatsApp
+
+El mensaje de WhatsApp contiene las mismas tres opciones. Al pulsar una, la cita cambia de
+la misma manera y el paciente recibe una respuesta en la conversación: la confirmación o,
+si pidió reagendar o canceló, el enlace para elegir otro horario. Si la opción ya no puede
+aplicarse (por ejemplo, porque la cita fue eliminada), se le solicita comunicarse con el
+consultorio.
+
+> Para que las respuestas por WhatsApp funcionen, el sistema debe estar publicado en línea
+> y Meta debe haber aprobado la plantilla del recordatorio. Un recordatorio de prueba
+> enviado desde una instalación local no modifica las citas locales.
+
+### 7.4 Respuesta automática
+
+El número de WhatsApp que envía los recordatorios no es atendido por personal. Si un
+paciente escribe (texto, audio o imagen), recibe una respuesta automática con el teléfono
+del consultorio y el enlace para agendar. Esta respuesta se envía como máximo una vez cada
+12 horas por número, y el sistema no almacena el contenido del mensaje recibido.
+
+## 8. Agenda interna
+
+La agenda se encuentra en `/citas`. A la derecha del título, el selector **Lista |
+Semana** cambia la forma de visualización.
+
+### 8.1 Vista de lista
+
+Es la vista predeterminada y muestra las citas de un solo día, en orden de hora,
+comenzando por el día actual.
+
+- **Pestañas de días:** una por cada día de la semana, con el número de citas y, en ámbar,
+  las que están por confirmar. Las flechas **‹ ›** (o «Semana anterior / siguiente» en el
+  celular) cambian de semana e **Ir a hoy** regresa al día actual.
+- **Conteo del día:** indica cuántas citas quedan por atender y, por separado, cuántas se
+  atendieron, se cancelaron o no asistieron (por ejemplo, «1 por atender · 2 atendidas · 1
+  cancelada»). Las citas cerradas se agrupan en un renglón con el botón **Mostrar**.
+- **Cita en curso:** se resalta con una franja de color.
+- **Buscar en todas las fechas:** localiza un paciente (nombre, apellido, teléfono o
+  correo), servicio o tratamiento en cualquier fecha, agrupando los resultados por día. La
+  búsqueda se ejecuta al dejar de escribir. **Todas las fechas** muestra el historial
+  completo, con 20 o 50 registros por página.
+- **Estado:** filtra las citas del día elegido o de la búsqueda.
+- En el celular, cada cita es una tarjeta con la hora y el paciente arriba, el tratamiento
+  en medio y los botones abajo.
+
+Tras confirmar, iniciar, completar, cancelar o registrar una inasistencia, la agenda
+permanece en el mismo día y en la misma vista. Al crear o reagendar una cita, la agenda se
+abre en el día de esa cita.
+
+Desde cada cita, el nombre del paciente abre su expediente (si el perfil tiene acceso) y
+el teléfono permite llamarle desde el celular.
+
+### 8.2 Vista semanal
+
+Presenta un mapa de lunes a sábado dividido en bloques de dos horas:
+
+| Color del bloque | Significado |
+|---|---|
+| Blanco | Libre. |
+| Rosa claro | Con citas, pero con lugar disponible. |
+| Rosa | Lleno. |
+| Tono atenuado | Bloque que ya transcurrió. |
+
+- Al seleccionar un bloque se muestra su detalle (a la derecha en computadora y debajo en
+  el celular): horario del día, **Dónde cabe una cita** con las horas libres y la lista de
+  citas del bloque.
+- Pulsar una hora libre abre **Agendar cita** con esa fecha seleccionada; pulsar una cita
+  abre su edición, donde se encuentran las acciones.
+- Al ingresar, se abre el bloque actual o, si el día terminó, el siguiente.
+- Un día cerrado que tenga citas muestra **Cerrado · N citas**.
+- **←**, **Hoy** y **→** cambian de semana. La dirección de la página conserva la semana,
+  por lo que puede recargarse o compartirse.
+
+> Las horas libres de la vista semanal son orientativas: al agendar, el sistema vuelve a
+> verificar el horario con la duración del tratamiento elegido.
+
+### 8.3 Crear una cita
+
+1. Pulse **Nueva cita**.
+2. Seleccione el paciente (la lista está en orden alfabético). Si el paciente no existe,
+   utilice **Registrar paciente nuevo**.
+3. Seleccione el servicio y el tratamiento. Si la especialidad no tiene tratamientos, el
+   sistema lo advierte; deben agregarse en **Catálogo → Especialidades**.
+4. Elija el día y la hora en el calendario, que funciona igual que el de la agenda pública.
+5. Guarde la cita.
+
+**Resultado esperado:** la cita queda en estado **Confirmada** y la agenda se abre en el
+día correspondiente.
+
+### 8.4 Reagendar una cita
+
+Abra la cita, seleccione la opción para reagendar y elija un nuevo horario disponible en
+el calendario. Mientras se reagenda, el horario actual de la propia cita se considera
+libre. El paciente recibe un recordatorio nuevo para la nueva fecha.
+
+### 8.5 Acciones disponibles según el estado
+
+| Estado | Acción principal | Otras acciones |
+|---|---|---|
+| Agendada | **Confirmar** | Menú **Acciones**: reagendar, cancelar e inasistencia (cuando procede). |
+| Confirmada | **Iniciar** (el día de la cita) | Menú **Acciones**: reagendar, cancelar e inasistencia (cuando procede). |
+| En curso | **Completar** | Ninguna. |
+| Completada, Cancelada o No asistió | Sin acciones | Ninguna. |
+
+Reglas de las acciones:
+
+- **Iniciar** solo aparece el día de la cita y mientras no haya concluido su horario. No
+  es posible iniciar otra cita mientras exista una **En curso**, salvo que el valor
+  **Pacientes a la vez** sea mayor que uno.
+- **Marcar inasistencia** aparece en el menú de acciones solo a partir de la hora
+  programada. Una vez concluido el horario de la cita sin que se haya atendido, desaparece
+  **Iniciar** y se muestran a la vista **Atendida** (completa la cita en un solo paso) y
+  **No asistió**.
+- Registrar una inasistencia solicita confirmación, ya que no puede deshacerse. Cancelar
+  solicita un motivo opcional y confirmación.
+- Al completar una cita aparece **Registrar consulta**, que abre una consulta nueva con
+  esa cita y su fecha preseleccionadas.
+- Tras cada acción, la agenda muestra el estado actualizado y un aviso de confirmación; si
+  la operación no procede, se muestra el motivo.
+
+### 8.6 Cierre automático de citas olvidadas
+
+Si una cita permanece **En curso** de un día anterior porque nadie pulsó **Completar**, el
+sistema la completa automáticamente cada noche a las 00:05 y deja un aviso en la campana
+(«Se completaron N citas olvidadas», con los días correspondientes). Mientras tanto, la
+agenda muestra un aviso ámbar para que el personal pueda completarla manualmente. Se
+recomienda verificar que esas citas tengan su consulta registrada en el expediente.
+
+### 8.7 Validaciones al agendar o reagendar
+
+El sistema verifica que el servicio y el tratamiento estén activos, que el tratamiento
+pertenezca al servicio y que la fecha y hora sean futuras. Si el horario fue ocupado en el
+intervalo, se solicita elegir otro. El filtro de fecha de la agenda permite consultar
+citas pasadas, actuales o futuras sin modificarlas.
+
+## 9. Pacientes y expediente clínico
+
+### 9.1 Directorio de pacientes
+
+El directorio se encuentra en **Pacientes** (`/admin/pacientes`). Permite buscar
+por una parte del nombre, el correo o el teléfono. La columna «Consultas en expediente»
+indica el número de notas médicas registradas (no el número de citas).
+
+### 9.2 Registrar un paciente
+
+Este procedimiento se utiliza para pacientes que llegan sin cita o para capturar su
+historia clínica con anticipación.
+
+1. Pulse **Nuevo paciente**.
+2. Capture nombre, apellido y teléfono celular (obligatorios) y, opcionalmente, el correo.
+3. Confirme que el paciente **aceptó el aviso de privacidad**.
+4. Pulse **Guardar**.
+
+**Resultado esperado:** se abre el expediente del paciente; en el perfil de asistente, se
+abre directamente su cuestionario de historia clínica. Si el celular ya está registrado,
+el sistema indica a quién pertenece y ofrece **Abrir su expediente** para evitar
+duplicados. Cuando el paciente agende en línea con ese número, el sistema lo reconocerá.
+
+### 9.3 Editar los datos de contacto
+
+Pulse ✎ en el paciente. Nombre, apellido y teléfono celular son obligatorios, ya que el
+teléfono se utiliza para los avisos por WhatsApp y para reconocer al paciente al agendar.
+El teléfono debe tener diez dígitos, con el prefijo `+52` opcional. El correo es opcional
+y no puede repetirse entre pacientes.
+
+### 9.4 Historia clínica (cuestionario)
+
+La historia clínica es la primera sección del expediente (📋). La primera vez se muestra
+**Llenar cuestionario** y, posteriormente, **Ver o editar**. Comprende:
+
+- datos generales, estado civil, contacto de emergencia (nombre, parentesco y teléfono) y
+  médico de cabecera;
+- antecedentes familiares y personales, incluidos gastritis, otras enfermedades
+  respiratorias y cirugías previas, y si el paciente se encuentra en tratamiento médico;
+- alergias y medicamentos;
+- embarazo y lactancia (solo si el sexo registrado es femenino);
+- antecedentes dentales, hábitos y observaciones.
+
+Ningún campo es obligatorio: se captura la información disponible y se completa en
+visitas posteriores. Las alergias y las condiciones de riesgo (coagulación, padecimientos
+cardiacos, hipertensión, diabetes, embarazo, entre otras) se muestran en un **aviso rojo**
+en la parte superior del expediente y al registrar cada consulta. La historia clínica se
+incluye en el PDF del expediente.
+
+El perfil de asistente accede al cuestionario desde **Historias clínicas**, un listado con
+buscador que indica si cada paciente la tiene **Llena** o **Pendiente**. La asistente no
+tiene acceso a las consultas, las notas privadas, los adjuntos ni el PDF.
+
+### 9.5 Exploración clínica y odontograma
+
+Disponible para la doctora titular y los doctores. Debajo de la historia clínica se
+encuentra **Hacer exploración** (la primera) o **Nueva exploración** (controles
+posteriores). Incluye:
+
+| Apartado | Captura |
+|---|---|
+| Examen de la boca | Labios, lengua, paladar, encías, ganglios y demás estructuras: «Normal» o descripción del hallazgo. |
+| ATM y encías | Dientes con sangrado, inflamación, sarro u otros hallazgos. |
+| Higiene oral e índice de O'Leary | Dientes presentes y superficies con placa; el porcentaje se calcula automáticamente (en verde si es igual o menor al 20 %). |
+| Problemas pulpares e interpretación radiográfica | Un renglón por diente, mediante **+ Agregar diente**. |
+| Odontograma | Se elige un estado (Cariado, Obturado, Extracción indicada, etc.) y se seleccionan los dientes. **Rojo** indica pendiente de tratar y **azul**, existente o ya realizado. Los dientes temporales tienen su propia sección. |
+| Otros hallazgos y diagnósticos definitivos | Texto libre. |
+
+Seleccionar de nuevo un diente con el mismo estado elimina la marca. Cada exploración nueva
+parte del odontograma de la anterior, de modo que solo se registran los cambios. El
+expediente muestra el resumen de la última exploración (higiene, O'Leary y dientes por
+estado) y la lista de exploraciones anteriores; la más reciente se incluye en el PDF.
+
+### 9.6 Consultas
+
+1. Abra el expediente (📋) o pulse el número de consultas del paciente.
+2. Pulse **Nueva consulta**.
+3. Capture los campos obligatorios: **fecha**, **tipo** y **motivo**.
+4. Capture, si corresponde, diagnóstico, tratamiento, diente(s) tratados, medicamentos,
+   observaciones y notas privadas, y relacione la cita cuando aparezca disponible.
+5. Pulse **Guardar**.
+
+**Resultado esperado:** la consulta aparece en el historial del paciente, desde donde
+puede consultarse, editarse o eliminarse. El formulario se presenta en una sola columna,
+con cada pregunta en su propio renglón.
+
+El campo **Notas privadas del doctor** solo es visible para el personal clínico y no se
+incluye en el PDF descargable. El PDF del expediente se habilita cuando existe al menos
+una consulta.
+
+### 9.7 Receta en PDF
+
+Cada consulta con medicamentos registrados muestra el botón **Receta**, que abre un
+documento listo para imprimir con: nombre, cédula profesional y especialidad de quien
+atiende; fecha; nombre, edad y alergias del paciente; diagnóstico; medicamentos; línea de
+firma; y, al pie, la dirección y el teléfono del consultorio.
+
+> La cédula profesional de cada doctor la registra la doctora titular en **Configuración →
+> Cédulas profesionales** (apartado 12.5). De manera temporal, la
+> receta se genera aunque la cédula no se haya capturado; en ese caso, el documento omite
+> esa línea, que aparece automáticamente una vez registrada. El equipo técnico puede
+> volver a exigir la cédula desde la configuración del servidor. Cada receta impresa
+> queda registrada en el Control de actividades.
+
+### 9.8 Consentimiento informado
+
+1. En el expediente, abra **Consentimientos informados → Nuevo consentimiento**.
+2. Capture el **procedimiento** (el sistema sugiere los tratamientos del catálogo) y, si
+   aplica, los dientes involucrados.
+3. Revise y ajuste los textos predeterminados de **beneficios**, **riesgos** y
+   **alternativas**, de acuerdo con lo explicado al paciente.
+4. Guarde y pulse **Abrir para imprimir**.
+
+**Resultado esperado:** se genera una carta con los datos del consultorio y del paciente
+(incluidas edad y alergias), el procedimiento, la información explicada y los espacios
+para la firma autógrafa del paciente o su representante, de quien atiende y de dos
+testigos. El documento firmado se archiva físicamente en el expediente del paciente; el
+consentimiento queda en la lista para reimprimirse cuando sea necesario.
+
+### 9.9 Plan de tratamiento
+
+Se utiliza para tratamientos de varias sesiones (ortodoncia, rehabilitación, entre otros).
+
+1. En el expediente, abra **Plan de tratamiento → Nuevo plan** y asigne un nombre.
+2. Agregue los **pasos**: procedimiento, dientes y costo. Al elegir un tratamiento del
+   catálogo, se sugiere su precio.
+3. Marque cada paso como **hecho** mediante el círculo correspondiente; el sistema
+   registra la fecha. Un paso puede regresar a pendiente.
+
+El **avance** (porcentaje) y el **costo del plan** se calculan automáticamente. Cuando
+todos los pasos están concluidos, el sistema sugiere cambiar el estado del plan a
+**Terminado**. El expediente muestra cada plan con su barra de avance.
+
+### 9.10 Confidencialidad
+
+> Durante las pruebas y la demostración deben utilizarse exclusivamente datos ficticios.
+> No deben cargarse imágenes, documentos ni datos médicos reales en entornos de
+> desarrollo o demostración.
+
+## 10. Catálogo
+
+### 10.1 Especialidades
+
+En **Catálogo → Especialidades**, la pantalla de edición de la especialidad permite modificar el nombre,
+la descripción, la fotografía (con vista previa de la tarjeta) y los tratamientos que
+pueden agendarse. La pantalla de alta utiliza el mismo formulario.
+
+- Un servicio nuevo queda **Disponible**: se muestra en la portada y puede agendarse en
+  línea, desde el panel, desde el asistente y por Telegram.
+- El interruptor **Disponible** de la lista es el único medio para ocultarlo o mostrarlo.
+  Las citas ya agendadas no se modifican. Al editar un servicio oculto, la pantalla lo
+  recuerda.
+- El orden en la portada se ajusta con las flechas ↑ ↓ de la columna **Orden en la
+  portada**. Con un filtro activo, el número conserva la posición real y, para reordenar,
+  es necesario quitar el filtro.
+- Para que una especialidad se agende en línea, basta con que tenga al menos un
+  tratamiento activo.
+
+### 10.2 Tratamientos
+
+El formulario solicita **Nombre**, **Duración** (tiempo que ocupa en la agenda, de 15 a
+480 minutos) y **Precio** (visible para el paciente al agendar). El panel **Así lo verá el
+paciente** muestra la presentación en la agenda en línea y la especialidad a la que
+pertenece.
+
+- Un tratamiento puede guardarse sin precio mientras la clínica lo confirma, pero **no
+  puede activarse ni publicarse** sin él; su fila muestra «Falta precio».
+- Activar o desactivar un tratamiento solicita confirmación. Si al desactivarlo una
+  especialidad quedaría sin tratamientos, el sistema advierte que pasará a «Agenda por
+  teléfono».
+
+### 10.3 Asignación de horarios según la duración
+
+- Los horarios se ofrecen cada 30 minutos.
+- La última cita del día es aquella que **termina** a la hora de cierre. Con cierre a las
+  18:00, una valoración de 30 minutos puede agendarse hasta las 17:30 y una limpieza de
+  60 minutos, hasta las 17:00.
+- Los tratamientos largos o quirúrgicos reservan 15 minutos de preparación entre una cita y
+  la siguiente.
+
+### 10.4 Catálogo de la demostración
+
+La demostración utiliza los tratamientos y las duraciones reales de la clínica con precios
+de demostración:
+
+| Tratamiento | Duración | Precio de demostración |
+|---|---|---|
+| Valoración | 30 minutos | $300 |
+| Limpieza dental | 1 hora | $600 |
+| Retiro de caries | 1 hora | $700 |
+| Extracción dental | 1 hora | $900 |
+| Blanqueamiento dental | 1 hora 30 minutos | $3,500 |
+
+> La clínica debe confirmar o corregir estos precios en **Catálogo → Tratamientos** antes
+> de recibir pacientes reales.
+
+## 11. Contenido de la portada
+
+### 11.1 Ofertas
+
+**Crear una oferta** (**Sitio web → Ofertas → Nueva oferta**):
+
+1. Capture el **título** (de 5 a 120 caracteres).
+2. Seleccione el **Beneficio para el paciente**: **Descuento** (siempre en porcentaje),
+   **Precio especial** (monto en pesos) o **Gratis** (sin cantidad). La opción elegida se
+   resalta; pulsarla de nuevo la deselecciona.
+3. Capture la **cantidad**, cuando el beneficio la requiera.
+4. Capture la **descripción** (de 20 a 300 caracteres).
+5. Indique **Válida hasta** (la fecha actual o posterior). La vigencia inicia el día de
+   creación.
+6. Opcionalmente, seleccione el **Tratamiento al que aplica**. Sin tratamiento, la oferta
+   solo se anuncia y no se aplica al agendar. Solo se listan tratamientos que se agendan
+   en línea.
+7. Opcionalmente, en **Más detalles**, defina el número de lugares y una imagen.
+8. Guarde.
+
+| Beneficio | Captura | Presentación en la portada |
+|---|---|---|
+| Descuento | 20 | −20% |
+| Precio especial | 2800 | Precio especial $2,800 |
+| Gratis | — | Gratis |
+
+> El título y la descripción no admiten enlaces, correos electrónicos, código ni
+> caracteres repetidos (por ejemplo, «!!!!!!»).
+
+**Ciclo de publicación:**
+
+| Estado | Visible en la portada | Observaciones |
+|---|---|---|
+| En revisión | No | Estado inicial al guardar y tras editar datos visibles para el paciente. |
+| Publicada | Sí | Se publica con **✓ Publicar**, previa confirmación. |
+| Publicada, no se ve (⚠) | No | Venció, su tratamiento está inactivo, se agotaron los lugares o no cabe entre las 24 del carrusel. El símbolo ⚠ explica el motivo. |
+| Oculta | No | Se oculta con el interruptor; puede editarse y publicarse de nuevo con ✓. |
+
+Una oferta vencida no puede publicarse hasta modificar **Válida hasta**. Si su tratamiento
+se desactiva, la lista muestra ⚠ junto al tratamiento y la oferta no puede publicarse
+hasta reactivarlo o cambiarlo.
+
+**Aplicación al agendar:**
+
+- La oferta solo se aplica si el paciente ingresa desde su tarjeta, pulsando **Agendar**:
+  la agenda se abre con el tratamiento, la etiqueta (por ejemplo, «Oferta −20%»), un aviso
+  de vigencia y la oferta en el resumen. Si agenda el mismo tratamiento por el camino
+  habitual, no se aplica la oferta ni se consume un lugar.
+- Si la fecha de la cita es posterior a la vigencia, el resumen advierte que la oferta ya
+  no aplica.
+- Cada cita con oferta ocupa un lugar; cancelarla o registrar una inasistencia lo libera.
+  Sin lugares, la oferta deja de anunciarse.
+- La cita guarda la oferta: la agenda muestra «Oferta −20% · título» y la campana indica
+  «Con oferta «…»». **El sistema no cobra ni calcula totales; la doctora aplica el
+  descuento al cobrar.**
+
+### 11.2 Testimonios
+
+- El paciente envía su testimonio desde la portada. Este llega como **pendiente** y la
+  campana avisa al personal.
+- La clínica no crea ni edita testimonios: solo los **aprueba** (se publican con el nombre
+  y la inicial del apellido), los **rechaza** (permanecen en la lista como «Rechazado» y
+  pueden aprobarse después) o los **elimina** de forma definitiva, por ejemplo, a
+  solicitud del paciente.
+- Los testimonios extensos muestran algunas líneas y el botón **Leer completo**. El
+  buscador localiza por nombre del paciente o por el contenido del texto.
+
+### 11.3 Galería, foto de inicio y casos
+
+- **Galería:** las fotografías activas se muestran en la sección «El consultorio», en el
+  orden definido.
+- **Foto de inicio de la portada:** la fotografía principal predeterminada es de catálogo
+  y no corresponde a la doctora ni al consultorio. En **Sitio web → Galería → Foto de
+  inicio de la portada** puede cargarse una fotografía real (JPG, PNG o WebP, hasta 5 MB,
+  en orientación horizontal), que se aplica de inmediato. **Quitar y usar la de fábrica**
+  restablece la original.
+- **Casos:** la primera fotografía cargada corresponde a «Antes» y la segunda a «Después».
+  Solo se publican los casos activos con fotografía.
+
+### 11.4 Preguntas frecuentes
+
+En **Sitio web → Preguntas frecuentes** se registran preguntas y respuestas verificadas y
+aprobadas por la clínica. Una pregunta solo se utiliza en la portada y en el asistente
+virtual si está activa y visible. Las formas alternativas de formular la pregunta son
+opcionales; no es necesario anticipar todas las palabras que podría utilizar un paciente.
+
+> Antes de publicar, verifique que no permanezca ninguna pregunta de prueba.
+
+## 12. Configuración
+
+**Configuración** es una página exclusiva de la doctora titular con bloques
+independientes, cada uno con su botón de guardado.
+
+### 12.1 Datos del consultorio
+
+Teléfono, WhatsApp de contacto («Es el mismo número que el teléfono» o uno distinto),
+correo, dirección, nombre del negocio en Google Maps (opcional, tal como aparece en Maps),
+misión y visión. Los cambios se reflejan de inmediato en la portada, el
+pie de página, **¿Prefieres llamar?**, la página del recordatorio y la respuesta automática
+de WhatsApp. El guardado solicita confirmación y queda registrado en el Control de
+actividades.
+
+> El número desde el que se envían los recordatorios de WhatsApp no se modifica aquí; se
+> administra en la plataforma de Meta.
+
+### 12.2 Horarios de atención
+
+Define los días y horas de apertura y el valor **Pacientes a la vez**, único para todos los
+días, que indica cuántos pacientes pueden atenderse en un mismo horario (1 cuando existe un
+solo sillón o un solo dentista; el consultorio utiliza 1). Los campos numéricos se
+capturan con el teclado.
+
+### 12.3 Días u horas bloqueados
+
+Se utiliza para vacaciones, cursos, imprevistos o mantenimiento.
+
+1. Indique **Desde** y, opcionalmente, **Hasta**.
+2. Mantenga **Todo el día** o desmárquelo para bloquear solo un intervalo (**De** / **A**,
+   dentro de un mismo día).
+3. Capture el **motivo** (visible únicamente para el personal).
+4. Pulse **Bloquear**.
+
+**Resultado esperado:** esos horarios dejan de ofrecerse en la agenda en línea y en
+**Nueva cita**, y los días completos aparecen cerrados en el calendario. Si existen citas
+activas en el periodo, el sistema las enumera y deben reagendarse o cancelarse primero.
+La sección **Próximos bloqueos** lista los bloqueos vigentes de cinco en cinco, con el
+total junto al título y la paginación al pie; la 🗑 los elimina y los horarios vuelven a
+ofrecerse. Todas las operaciones quedan registradas.
+
+### 12.4 Días festivos
+
+El sistema bloquea automáticamente los días en que el consultorio no labora: 1 de enero,
+primer lunes de febrero, tercer lunes de marzo, 1 de mayo, 16 de septiembre, 2 de
+noviembre, tercer lunes de noviembre, y 12, 24, 25 y 31 de diciembre, además del 1 de
+octubre en los años de transmisión del Poder Ejecutivo Federal.
+
+- Los festivos aparecen en **Próximos bloqueos** con el motivo «Festivo: …» y la nota
+  «Festivo puesto por el sistema».
+- Si la clínica decide laborar un festivo, puede quitarlo con la 🗑; el sistema no
+  volverá a bloquearlo.
+- Si un festivo ya tenía citas, no se bloquea y la campana indica las fechas afectadas
+  para reagendar las citas o mantener el día abierto.
+
+### 12.5 Cédulas profesionales
+
+Muestra una línea por cada doctor activo que atiende consultas, con su nombre, su rol y un
+campo para la cédula profesional. La cédula de cada doctor aparece en sus recetas y
+consentimientos en PDF; no se publica en la portada. Solo se aceptan números, letras y
+guiones (máximo 20 caracteres). El guardado solicita confirmación y cada cambio queda
+registrado en el Control de actividades.
+
+## 13. Cuentas del personal
+
+En **Administración → Usuarios**, la doctora titular puede **crear** cuentas, **activarlas o
+desactivarlas** (interruptor de la columna Estado) y **eliminarlas**. El listado puede
+filtrarse por rol y estado. Los datos personales y la contraseña de cada cuenta los
+actualiza su titular en **Mi perfil**.
+
+**Crear una cuenta:**
+
+1. Abra **Administración → Usuarios → Nuevo usuario**.
+2. Capture los datos de la persona; el correo no puede repetirse.
+3. Seleccione el **Rol** y revise la descripción de permisos que se muestra.
+4. Defina una contraseña que cumpla la política del apartado 3.4.
+5. Guarde.
+
+**Reglas:**
+
+- La eliminación solicita confirmación y no puede deshacerse. No es posible eliminar la
+  cuenta propia ni una cuenta que haya registrado consultas clínicas, ya que ello
+  eliminaría dichas consultas del historial de los pacientes; en ese caso, la 🗑 aparece
+  deshabilitada con ⚠ y lo procedente es **desactivar** la cuenta.
+- Para cambiar el rol de una persona: si la cuenta no tiene consultas, se elimina y se
+  crea de nuevo con el rol correcto; si las tiene, se desactiva y se crea una cuenta nueva.
+
+## 14. Reportes
+
+En **Administración → Reportes**, seleccione las fechas **Desde** y **Hasta** y pulse
+**Filtrar**.
+
+| Indicador | Alcance |
+|---|---|
+| Citas por estado, pacientes nuevos, tratamientos más solicitados y consultas clínicas | Rango de fechas seleccionado. |
+| Tasa de ocupación | Rango seleccionado. Proporción del horario de atención ocupada por citas, sin contar las canceladas (por ejemplo, «40 h con citas de 180 h de atención»). Los festivos y los días bloqueados completos no se consideran horario disponible. |
+| Total histórico de pacientes y catálogo activo | Acumulado a la fecha. |
+
+- El rango solo admite fechas hasta el día actual; el selector bloquea las fechas futuras
+  y el sistema las rechaza si se envían manualmente.
+- Si no existen citas completadas, algunos indicadores pueden mostrar cero.
+- Los botones de descarga generan un **PDF** o un libro de **Excel** (`.xlsx`) con los
+  indicadores y resúmenes, con etiquetas en español, compatible con Excel y LibreOffice
+  Calc. Ambos indican el alcance de cada dato.
+
+## 15. Control de actividades
+
+Disponible para la doctora titular en **Configuración → Control de actividades**
+(`/admin/control-de-actividades`; la dirección anterior `/admin/auditoria` redirige
+automáticamente). Es una bitácora de solo lectura de los cambios realizados por el
+personal.
+
+- **Filtros:** fechas, usuario y acción.
+- **Ver cambios:** muestra qué se hizo, quién y cuándo, y una tabla con cada dato
+  modificado en sus valores **Antes** y **Después**, expresados en lenguaje natural (por
+  ejemplo, «Estado: Confirmada → En curso»). En una creación solo se muestra el resultado y
+  en una eliminación, el contenido previo.
+- Cada cambio aparece una sola vez, con la hora de México y el nombre y rol de quien lo
+  realizó.
+
+| Se registra | No se registra |
+|---|---|
+| Cambios en citas, pacientes, historial clínico, usuarios, perfil, catálogo, contenido público, horarios, bloqueos, configuración y mensajes de contacto; impresión de recetas. | Contraseñas, contenido de las notas clínicas, valores de teléfono o correo de los pacientes (solo se indica qué campo cambió), consultas de información, descargas y acciones realizadas por los pacientes desde el portal o Telegram. |
+
+## 16. Notificaciones internas
+
+La campana del menú abre una vista rápida de los avisos sin abandonar la página. El
+contador indica los avisos **nuevos** desde la última apertura, no los pendientes de
+atender.
+
+### 16.1 Vista rápida
+
+- **Por atender:** avisos que requieren una acción (cancelación o solicitud de
+  reagendamiento, inasistencia, respaldo fallido, testimonio por aprobar o festivo no
+  bloqueado por tener citas). Cada uno incluye su botón (**Ver en la agenda**, **Revisar
+  testimonios** o **Ver bloqueos**), además de **Llamar** y **Ya lo atendí**, que lo
+  traslada a informativas. Si no hay pendientes, se muestra «No hay nada pendiente».
+- **Informativas:** confirmaciones, citas nuevas y cambios, agrupadas y plegadas.
+- **Ver todas las notificaciones** abre la bandeja completa.
+
+Cada aviso muestra un círculo con las iniciales del paciente (cada paciente conserva su
+color) y una insignia que indica el tipo de evento: calendario (cita nueva o cambio),
+palomita (confirmación o cita completada), tache (cancelación o inasistencia) o flechas
+(solicitud de reagendamiento). Los avisos del sistema, como los de respaldo, utilizan un
+recuadro punteado.
+
+### 16.2 Bandeja completa
+
+- Pestañas **Todas**, **Pendientes** y **Leídas**; agrupación por **Hoy**, **Ayer** y
+  **Anteriores**.
+- Permite marcar avisos como leídos de forma individual o masiva, y devolver un aviso
+  leído a pendiente.
+- Al abrir la campana, los avisos se marcan como vistos y el contador vuelve a cero, pero
+  conservan su estado pendiente hasta abrirse o marcarse como leídos.
+- Al abrir un aviso, el sistema conduce a la cita relacionada.
+- **Activar sonido** habilita una señal breve al recibir avisos y guarda la preferencia en
+  el navegador.
+
+### 16.3 Eventos notificados
+
+Registro, reagendamiento, confirmación, cancelación, inicio y cierre de citas;
+inasistencias; solicitudes del portal y de Telegram; respuestas al recordatorio
+(**Respuesta del paciente**, **Cancelación del paciente**, **Horario liberado**); nuevos
+testimonios; festivos no bloqueados; citas cerradas automáticamente; y, solo para la
+doctora titular, **Respaldo fallido**.
+
+Con la sesión abierta, los avisos aparecen al instante y el contador se actualiza sin
+recargar la página. Si el canal en tiempo real se interrumpe, el sistema consulta
+novedades cada pocos segundos. Los avisos son internos: no envían mensajes al paciente.
+
+## 17. Asistentes virtuales
+
+### 17.1 Asistente de agenda (personal)
+
+> Módulo oculto de forma predeterminada (véase el apartado 2.2).
+
+En `/asistente-agenda`, el personal selecciona los datos de la cita y el asistente
+consulta la disponibilidad y propone horarios. No se guarda nada hasta pulsar
+**Confirmar y agendar**. Se aceptan fechas a partir del día actual; las fechas pasadas se
+rechazan.
+
+### 17.2 Asistente para pacientes
+
+El asistente flotante, identificado como **Dentissa Asistente**, se ubica en la esquina
+inferior derecha de la portada, la agenda pública y las páginas del portal.
+
+- Responde con las preguntas frecuentes activas y sus respuestas aprobadas, y con los
+  servicios y tratamientos activos del catálogo.
+- Consulta horarios: el paciente indica que busca una cita, elige servicio y tratamiento y
+  proporciona una fecha en alguno de los formatos `hoy`, `mañana`, `DD/MM/AAAA`,
+  `DD-MM-AAAA` o `AAAA-MM-DD`. El asistente muestra los horarios disponibles, pero la
+  reserva se confirma en **Agendar cita**.
+- Ante preguntas sobre el horario de atención, responde con el horario configurado; una
+  pregunta frecuente aprobada sobre el tema tiene prioridad.
+- Durante una búsqueda, la palabra **cancelar** (o **salir**) la termina. La búsqueda vence
+  tras 15 minutos de inactividad.
+- Ante preguntas sobre precios sin respuesta aprobada, síntomas, medicamentos o
+  diagnósticos, solicita reformular la duda o contactar al consultorio.
+- En el celular, el botón se oculta al desplazarse hacia abajo para no cubrir otros
+  controles, y reaparece al desplazarse hacia arriba.
+
+De manera opcional, puede habilitarse un modelo de inteligencia artificial privado que
+reconoce otras formas de preguntar y elige la respuesta aprobada más adecuada. El modelo
+no redacta respuestas: el sistema muestra siempre el texto aprobado. Si el servicio de IA
+tarda en responder o no está disponible, se muestra un mensaje de respaldo.
+
+> Antes de publicar cambios en las preguntas frecuentes, se recomienda probar preguntas
+> directas, paráfrasis, errores ortográficos leves, temas sin información disponible y
+> consultas clínicas.
+
+### 17.3 Bot de Telegram
+
+El bot de Telegram permite a los pacientes agendar y es independiente del asistente web.
+Solo responde mientras su proceso se encuentra activo en el servidor. Si no responde, debe
+utilizarse el portal web.
+
+> El token del bot es una credencial privada: no debe compartirse ni solicitarse.
+
+## 18. Mensajes de contacto
+
+La sección **Administración → Mensajes** concentra los mensajes enviados desde el formulario de
+contacto. Permite marcarlos como leídos o no leídos (sobre abierto / sobre cerrado) y
+filtrarlos. Está disponible para la doctora titular y la asistente cuando el módulo está
+habilitado; de forma predeterminada se encuentra oculto, ya que la portada actual no incluye
+un formulario de contacto.
+
+## 19. Respaldos de la información
+
+El sistema realiza cada noche una copia de seguridad cifrada que se almacena en la carpeta
+**Dentissa respaldos** del Google Drive de la clínica.
+
+- La carpeta no debe moverse, renombrarse ni modificarse manualmente. Su contenido no es
+  legible al abrirse en Drive, lo cual es normal por estar cifrado.
+- Si la copia no se completa, la doctora titular recibe el aviso **Respaldo fallido** en
+  la campana y por correo. **Este aviso debe atenderse el mismo día**, notificando al
+  equipo técnico, ya que mientras persista la falla no existe una copia reciente de
+  citas ni historiales.
+- Una vez al mes, el equipo técnico verifica que la copia más reciente pueda recuperarse,
+  sin afectar los datos en uso.
+
+## 20. Módulo de pagos e ingresos (opcional)
+
+> Este módulo está deshabilitado por decisión de la clínica: no aparece en el menú, en el
+> expediente ni en la agenda. Lo siguiente describe su funcionamiento en caso de que el
+> equipo técnico lo habilite.
+
+El módulo registra los pagos realizados en el consultorio. No procesa pagos en línea ni
+emite facturas.
+
+- **Registrar un pago:** desde la agenda, una cita completada sin pago muestra **$
+  Registrar pago**, con la cita y su precio estimado como monto sugerido. También puede
+  registrarse desde el expediente (**Pagos → Registrar pago**), por ejemplo, para un
+  anticipo o un abono sin cita. Se indica monto, forma de pago (efectivo, tarjeta o
+  transferencia), fecha (actual o anterior) y, opcionalmente, la cita y un concepto.
+- **Expediente:** muestra el total pagado y, si existen citas completadas con precio, el
+  saldo **por cobrar (estimado)**: suma del precio de esas citas, con su oferta, menos lo
+  pagado. Es una referencia; lo que prevalece es lo registrado.
+- **Administración → Pagos e ingresos:** total cobrado del periodo (de forma predeterminada, el
+  mes en curso), desglose por forma de pago y lista de pagos, con filtros **Desde**,
+  **Hasta** y **Forma de pago**. Un pago capturado por error se elimina con la 🗑.
+- El registro y la eliminación de pagos quedan en el Control de actividades.
+
+## 21. Solución de problemas frecuentes
+
+| Situación | Causa probable | Acción recomendada |
+|---|---|---|
+| No llega el correo de recuperación | Correo distinto al registrado o filtro de correo no deseado. | Revisar la carpeta de correo no deseado y solicitar un nuevo enlace después de unos minutos. |
+| El código de verificación es rechazado | Hora del celular desincronizada o código vencido. | Configurar la hora del celular en automático y capturar un código nuevo. |
+| La sesión se cerró sola | Inactividad de 30 minutos o cuenta desactivada. | Iniciar sesión nuevamente o consultar a la doctora titular. |
+| No aparece una sección del menú | El perfil no tiene permiso para ese módulo. | Consultar la tabla del apartado 2.1. |
+| Una especialidad indica «Agenda por teléfono» | No tiene tratamientos activos. | Activar al menos un tratamiento con precio en el catálogo. |
+| No es posible activar un tratamiento | No tiene precio. | Capturar el precio y activarlo. |
+| No aparece **Iniciar** en una cita | No es el día de la cita, ya concluyó su horario o existe otra cita en curso. | Completar la cita en curso o utilizar **Atendida** / **No asistió**. |
+| Una oferta publicada no se ve en la portada | Venció, su tratamiento está inactivo, se agotaron los lugares o excede el límite del carrusel. | Consultar el símbolo ⚠ de la oferta. |
+| La receta no muestra la cédula, o no se genera | Falta la cédula profesional (si el sistema está configurado para exigirla, no se genera). | La doctora titular la captura en **Configuración → Cédulas profesionales**. |
+| No aparece Asistente, Mensajes, Galería, Casos o la verificación en dos pasos | El módulo está oculto. | Solicitar su habilitación al equipo técnico (apartado 2.2). |
+| No es posible eliminar un usuario | Es la cuenta propia o registró consultas. | Desactivar la cuenta. |
+| El bot de Telegram no responde | El proceso del bot no está activo. | Utilizar el portal web y notificar al equipo técnico. |
+| Aviso **Respaldo fallido** | Falla en la copia nocturna. | Notificar al equipo técnico el mismo día. |
+
+## 22. Uso en la demostración
+
+Para la presentación del proyecto se utiliza el entorno en línea con datos ficticios.
+
+- La doctora titular y la asistente utilizan cuentas de demostración independientes,
+  preparadas por el equipo técnico mediante variables privadas del servidor. Las
+  credenciales no se incluyen en este manual ni se reutilizan las de la instalación local.
+- Los nombres, teléfonos y correos de los pacientes son ficticios. El paciente precargado
+  «Paciente Demostración» no tiene historial clínico. El recorrido público puede realizarse
+  agendando una cita con datos completamente ficticios.
+- Mientras el modo de demostración esté activo, los datos de contacto se identifican como
+  ficticios y los números, correos y enlaces de Telegram no son accionables.
+- Al concluir la exposición, el equipo técnico debe apagar o eliminar el servicio en línea.
+
+### 22.1 Lista de verificación antes de operar con pacientes reales
+
+1. Desactivar el modo de demostración y capturar los datos reales del consultorio.
+2. Habilitar el módulo de verificación en dos pasos y su obligatoriedad para la doctora
+   titular.
+3. Completar los datos del responsable en el aviso de privacidad y obtener su revisión
+   legal.
+4. Confirmar los precios de todos los tratamientos.
+5. Sustituir la fotografía de inicio y revisar galería, casos, testimonios y preguntas
+   frecuentes, eliminando cualquier contenido de prueba.
+6. Verificar que el respaldo nocturno se ejecute correctamente.
