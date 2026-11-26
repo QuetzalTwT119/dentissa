@@ -139,7 +139,12 @@ En producción, `docker/supervisord-dentissa.conf` define los programas `web`, `
 **Recursos estáticos.** Las tipografías Figtree (texto) y Fraunces (títulos; 500, 600 y 500
 itálica) se sirven desde `public/fonts/` y se precargan, lo que elimina la dependencia de un
 proveedor externo de fuentes. `server.php` asigna caché de larga duración a fuentes y
-scripts y de un día a imágenes. El favicon se define una sola vez en
+scripts y de un día a imágenes. Solo entrega directamente las extensiones de su lista
+(imágenes, fuentes, CSS/JS, `.txt`, `.html`, `.xml` y `.webmanifest`, que cubren
+`robots.txt`, `offline.html` y el manifiesto PWA); cualquier otro archivo de `public/`
+(`.php`, `.htaccess`, `build/manifest.json`) pasa a Laravel y responde 404. Si se agrega
+un archivo público con otra extensión, hay que sumarla a la lista o no se servirá. La
+prueba `tests/Unit/ServidorArchivosPublicosTest.php` lo vigila. El favicon se define una sola vez en
 `resources/views/partials/favicon.blade.php`.
 
 ## 4. Entorno de desarrollo
