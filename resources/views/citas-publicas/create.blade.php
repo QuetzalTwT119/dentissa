@@ -96,13 +96,13 @@
                     paso: {{ $errors->any() ? 3 : ($reagendar ?? null ? 1 : 0) }},
                     pasos: ['Tipo de atención', 'Día', 'Hora', {{ Js::from(($reagendar['sin_datos'] ?? false) ? 'Confirmar' : 'Datos') }}],
                     encabezados: [
-                        { etiqueta: 'Selección clínica', titulo: '¿Qué tipo de atención necesitas?', texto: 'Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.' },
-                        { etiqueta: 'Calendario', titulo: '¿Qué día te queda mejor?', texto: 'Los días con punto tienen lugar. La agenda se confirma en tiempo real con el consultorio.' },
-                        { etiqueta: 'Horario', titulo: '¿A qué hora?', texto: 'Estas son las horas libres del día que elegiste.' },
+                        { etiqueta: 'Tipo de atención', titulo: '¿Qué tipo de atención necesitas?', texto: 'Selecciona la especialidad para consultar la agenda disponible de la Dra. Melissa López.' },
+                        { etiqueta: 'Día', titulo: '¿Qué día te queda mejor?', texto: 'Los días con punto tienen lugar. La agenda se confirma en tiempo real con el consultorio.' },
+                        { etiqueta: 'Hora', titulo: '¿A qué hora?', texto: 'Estas son las horas libres del día que elegiste.' },
                         @if ($reagendar['sin_datos'] ?? false)
                         { etiqueta: 'Confirmar', titulo: 'Confirma tu cambio de cita', texto: 'Revisa el nuevo día y la hora. Tus datos son los mismos de tu cita anterior.' },
                         @else
-                        { etiqueta: 'Datos de contacto', titulo: 'Datos para agendar', texto: 'Los usamos para confirmar tu cita médica y enviarte recordatorios.' },
+                        { etiqueta: 'Datos', titulo: 'Datos para agendar', texto: 'Los usamos para confirmar tu cita médica y enviarte recordatorios.' },
                         @endif
                     ],
                     servicios: @js($servicios),
@@ -199,7 +199,7 @@
                             <p class="eyebrow flex-wrap gap-x-2 gap-y-1">
                                 <span class="whitespace-nowrap" x-text="`Paso ${paso + 1} de ${pasos.length}`">Paso 1 de 5</span>
                                 <span aria-hidden="true">·</span>
-                                <span class="whitespace-nowrap" x-text="encabezados[paso].etiqueta">Selección clínica</span>
+                                <span class="whitespace-nowrap" x-text="encabezados[paso].etiqueta">Tipo de atención</span>
                             </p>
                             <h1 class="mt-3 text-title-2 text-ink lg:mt-2"
                                 x-text="paso === 0 && servicioSeleccionado ? 'Elige un tratamiento' : encabezados[paso].titulo">¿Qué tipo de atención necesitas?</h1>

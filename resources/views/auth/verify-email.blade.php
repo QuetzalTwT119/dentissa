@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout titulo="Verificar correo">
     <div class="mb-6">
         <p class="eyebrow">Verificación de cuenta</p>
         <h2 class="mt-3 text-title-1 text-ink">Verifica tu correo</h2>

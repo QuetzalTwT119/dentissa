@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout titulo="Verificación en dos pasos">
     <div class="mb-8">
         <p class="eyebrow">Verificación en dos pasos</p>
         <h2 class="mt-3 text-title-1 text-ink">Un paso más</h2>

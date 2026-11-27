@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout titulo="Confirmar contraseña">
     <div class="mb-6">
         <p class="eyebrow">Área protegida</p>
         <h2 class="mt-3 text-title-1 text-ink">Confirmar contraseña</h2>

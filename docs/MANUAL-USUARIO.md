@@ -436,7 +436,7 @@ recargarla, y el enlace de la sección visible se resalta automáticamente.
 El proceso consta de cuatro pasos; la parte superior indica en todo momento «Paso X de 4».
 
 1. Abrir `/agendar-cita` o pulsar **Agendar mi cita**.
-2. **Selección clínica:** elegir la especialidad y, a continuación, el tratamiento. Cada
+2. **Tipo de atención:** elegir la especialidad y, a continuación, el tratamiento. Cada
    tratamiento muestra su duración aproximada y su precio. Para cambiar de especialidad,
    se pulsa el recuadro de la especialidad elegida. Solo se muestran las especialidades
    con tratamientos activos.

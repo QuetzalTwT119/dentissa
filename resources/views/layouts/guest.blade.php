@@ -9,7 +9,7 @@
         <meta name="robots" content="noindex, nofollow">
         @include('partials.favicon')
 
-        <title>Acceso · Melissa López N. — Odontología Integral</title>
+        <title>{{ $titulo ?? 'Acceso' }} · Melissa López N. — Odontología Integral</title>
 
         <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="/fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
