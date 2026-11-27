@@ -261,7 +261,8 @@ class AsistenteIaLocalTest extends TestCase
         Http::assertNothingSent();
     }
 
-    public function test_chat_respeta_el_paso_actual_de_agenda_aunque_el_texto_coincida_con_una_faq(): void
+    /** 27/11/2026: antes se quedaba en el paso de agenda; ahora responde la FAQ y cierra la búsqueda. */
+    public function test_con_busqueda_abierta_una_faq_cierra_la_busqueda_y_se_responde(): void
     {
         PreguntaFrecuente::create([
             'pregunta' => '¿Cuál es la dirección del consultorio?',
@@ -284,7 +285,10 @@ class AsistenteIaLocalTest extends TestCase
             'consulta' => '¿Cuál es la dirección del consultorio?',
             'conversacion_id' => $conversacion,
         ])->assertOk()
-            ->assertJsonFragment(['respuesta' => "No identifiqué ese tipo de atención. Escríbelo tal como aparece aquí:\n\n\n\nSi quieres salir, escribe \"cancelar\"."]);
+            ->assertJsonFragment(['respuesta' => 'El consultorio está en Avenida Ejemplo 123.']);
+
+        // La búsqueda quedó cerrada: lo siguiente ya no se toma como respuesta del paso.
+        $this->assertFalse(app(\App\Services\AsistenteAgendaService::class)->tieneConsultaEnCurso('web:'.$conversacion));
 
         Http::assertNothingSent();
     }

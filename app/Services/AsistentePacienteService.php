@@ -72,6 +72,36 @@ class AsistentePacienteService
         ];
     }
 
+    /**
+     * 27/11/2026: "me duele una muela", "se me hinchó", "me golpeé un diente"… no
+     * coincidían con ninguna pregunta y el paciente recibía "No pude identificar".
+     * Ahora van a la pregunta de urgencias aprobada (o, si no existe, a llamar).
+     * No da orientación clínica: solo dice cómo contactar al consultorio.
+     *
+     * @return array{encontrada: true, respuesta: string, pregunta: string}|null
+     */
+    public function respuestaUrgencia(string $consulta): ?array
+    {
+        $texto = Str::ascii(Str::lower($consulta));
+
+        if (! Str::contains($texto, ['duele', 'dolor', 'hinch', 'inflam', 'sangr', 'golpe', 'urgencia', 'emergencia', 'se me rompio', 'se me cayo', 'absceso', 'pus'])) {
+            return null;
+        }
+
+        $urgencias = PreguntaFrecuente::query()
+            ->where('activa', true)
+            ->where('pregunta', 'like', '%rgencia%')
+            ->orderBy('orden')
+            ->first();
+
+        return [
+            'encontrada' => true,
+            'pregunta' => $urgencias?->pregunta ?? '¿Atienden urgencias?',
+            'respuesta' => $urgencias?->respuesta
+                ?? 'Si tienes dolor fuerte, inflamación o un golpe en un diente, llama o escribe al consultorio al '.config('dentissa.contacto.telefono').' para darte un espacio lo antes posible.',
+        ];
+    }
+
     /** @return array{encontrada: false, respuesta: string, ambigua?: bool} */
     private function respuestaSinCoincidencia(bool $ambigua = false): array
     {

@@ -125,10 +125,12 @@ class DatosConsultorioTest extends TestCase
     }
 
     /**
-     * 25/11/2026: con solo la dirección, Google Maps marcaba un punto en la calle.
-     * Con el nombre del negocio, el mapa y «Cómo llegar» abren su ficha.
+     * 25/11/2026: el nombre del negocio abría su ficha en Maps.
+     * 27/11/2026: si el negocio no está dado de alta en Google, el nombre mandaba el
+     * mapa al mar; ahora el mapa y «Cómo llegar» usan solo la dirección y el nombre
+     * va en un enlace aparte a la ficha.
      */
-    public function test_el_nombre_en_google_maps_abre_la_ficha_del_negocio(): void
+    public function test_el_mapa_usa_la_direccion_y_el_nombre_va_en_un_enlace_aparte(): void
     {
         $admin = $this->admin();
         $direccion = 'Juan Francisco Noyola 2443, Cultura Purépecha, 60950 Cdad. Lázaro Cárdenas, Mich.';
@@ -141,10 +143,11 @@ class DatosConsultorioTest extends TestCase
         $this->guardar($admin, ['telefono' => '7551131833', 'direccion' => $direccion, 'nombre_maps' => ' Dentiluna '])->assertSessionHasNoErrors();
         $this->assertSame('Dentiluna', DatosConsultorio::sole()->nombre_maps);
 
-        $busqueda = urlencode('Dentiluna, '.$direccion);
         $html = $this->get('/')->assertOk()->getContent();
-        $this->assertStringContainsString('https://maps.google.com/maps?q='.$busqueda.'&amp;z=16&amp;output=embed', $html);
-        $this->assertStringContainsString('https://www.google.com/maps/dir/?api=1&amp;destination='.$busqueda, $html);
+        $this->assertStringContainsString('https://maps.google.com/maps?q='.urlencode($direccion).'&amp;z=16&amp;output=embed', $html);
+        $this->assertStringContainsString('https://www.google.com/maps/dir/?api=1&amp;destination='.urlencode($direccion).'"', $html);
+        $this->assertStringContainsString('https://www.google.com/maps/search/?api=1&amp;query='.urlencode('Dentiluna, '.$direccion), $html);
+        $this->assertStringContainsString('Ver Dentiluna en Google Maps', $html);
         // La dirección escrita en la portada no cambia.
         $this->assertStringContainsString('<span data-direccion>'.e($direccion).'</span>', $html);
 

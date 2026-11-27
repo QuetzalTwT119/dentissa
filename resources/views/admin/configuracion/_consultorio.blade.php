@@ -64,7 +64,7 @@
                 <div>
                     <x-input-label for="nombre_maps" value="Nombre del negocio en Google Maps (opcional)" />
                     <x-text-input id="nombre_maps" name="nombre_maps" class="mt-1.5 block w-full" :value="old('nombre_maps', $nombreMaps ?? '')" maxlength="100" placeholder="Tal como aparece en Google Maps" aria-describedby="nombre-maps-ayuda" />
-                    <p id="nombre-maps-ayuda" class="mt-1 text-xs text-muted">Así el mapa de la portada y «Cómo llegar» abren la ficha del consultorio (foto, horario y teléfono) y no solo un punto en la calle.</p>
+                    <p id="nombre-maps-ayuda" class="mt-1 text-xs text-muted">Solo si el consultorio ya está dado de alta en Google Maps: la portada agrega el enlace «Ver … en Google Maps» a su ficha. El mapa y «Cómo llegar» siempre usan la dirección.</p>
                     <x-input-error :messages="$errors->get('nombre_maps')" class="mt-2" />
                 </div>
 
@@ -82,14 +82,7 @@
                     </div>
                 </div>
 
-                {{-- 27/11/2026: pie de la portada. Vacíos, el pie no muestra esa línea ni ese ícono. --}}
-                <div>
-                    <x-input-label for="cofepris" value="Clave de COFEPRIS (opcional)" />
-                    <x-text-input id="cofepris" name="cofepris" class="mt-1.5 block w-full" :value="old('cofepris', $cofepris ?? '')" maxlength="60" aria-describedby="cofepris-ayuda" />
-                    <p id="cofepris-ayuda" class="mt-1 text-xs text-muted">Si el consultorio tiene aviso o permiso de publicidad, la clave sale en el pie de la portada junto al responsable sanitario.</p>
-                    <x-input-error :messages="$errors->get('cofepris')" class="mt-2" />
-                </div>
-
+                {{-- 27/11/2026: redes del pie de la portada. Vacías, el pie no muestra ese ícono. --}}
                 <fieldset>
                     <legend class="text-sm font-semibold text-ink">Redes sociales (opcional)</legend>
                     <p class="mt-1 text-xs text-muted">Pega el enlace completo del perfil. Solo salen en el pie de la portada las que tengan enlace.</p>

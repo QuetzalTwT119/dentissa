@@ -275,7 +275,7 @@ En Railway, los valores se definen como variables privadas del servicio. Los arc
 ### 5.3 Configuración en base de datos
 
 `datos_consultorio` (fila única: teléfono, WhatsApp, correo, dirección, `nombre_maps`,
-misión, visión, `cofepris`, `instagram`, `facebook`, `tiktok` desde el 27/11/2026, foto de
+misión, visión, `instagram`, `facebook`, `tiktok` desde el 27/11/2026, foto de
 inicio) se aplica sobre `config('dentissa.contacto')` en
 `AppServiceProvider::boot()` mediante `DatosConsultorio::aplicarAConfiguracion()`, con caché
 `datos_consultorio` invalidada al guardar. Un campo vacío o la tabla sin migrar conservan

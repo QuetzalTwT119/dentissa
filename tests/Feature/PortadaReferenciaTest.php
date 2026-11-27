@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 /**
  * Mejoras de la portada con ideas de sitios de clínicas de referencia
- * (27/11/2026, H-114): pie con "Tu visita", datos sanitarios y redes; preguntas
+ * (27/11/2026, H-114): pie con "Tu visita" y redes (sin datos sanitarios); preguntas
  * en tarjetas; llamar desde el encabezado; barra de promoción y calificación.
  */
 class PortadaReferenciaTest extends TestCase
@@ -36,18 +36,15 @@ class PortadaReferenciaTest extends TestCase
         $this->assertStringContainsString('href="#ubicacion"', $pie);
     }
 
-    public function test_el_pie_muestra_responsable_sanitario_y_cofepris_solo_si_existen(): void
+    /** Decisión del usuario: el pie no lleva responsable sanitario ni clave COFEPRIS, aunque haya cédula. */
+    public function test_el_pie_no_muestra_responsable_sanitario_ni_cofepris(): void
     {
-        $sinDatos = $this->get('/')->assertOk()->getContent();
-        $this->assertStringNotContainsString('data-pie-responsable', $sinDatos);
-        $this->assertStringNotContainsString('data-pie-cofepris', $sinDatos);
-
         User::factory()->create(['rol' => RolUsuario::SuperAdmin, 'nombre' => 'Melissa', 'apellido' => 'López', 'cedula_profesional' => '1234567']);
-        config(['dentissa.contacto.cofepris' => '213300201A9999']);
 
         $this->get('/')->assertOk()
-            ->assertSee('Responsable sanitario: Melissa López · Cédula profesional 1234567')
-            ->assertSee('Clave COFEPRIS: 213300201A9999');
+            ->assertDontSee('Responsable sanitario')
+            ->assertDontSee('COFEPRIS')
+            ->assertDontSee('1234567');
     }
 
     public function test_las_redes_solo_salen_si_tienen_enlace(): void
@@ -63,7 +60,7 @@ class PortadaReferenciaTest extends TestCase
             ->assertDontSee('aria-label="Facebook (se abre en otra pestaña)"', false);
     }
 
-    public function test_la_doctora_guarda_cofepris_y_redes_con_enlaces_validos(): void
+    public function test_la_doctora_guarda_redes_con_enlaces_validos(): void
     {
         $admin = User::factory()->create(['rol' => RolUsuario::SuperAdmin]);
         $base = ['telefono' => '7551131833', 'mismo_whatsapp' => '1'];
@@ -72,21 +69,20 @@ class PortadaReferenciaTest extends TestCase
             ->assertSessionHasErrors('instagram');
 
         $this->actingAs($admin)->put(route('admin.consultorio.update'), $base + [
-            'cofepris' => ' 213300201A1111 ',
             'instagram' => 'https://www.instagram.com/consultorio',
             'facebook' => 'https://www.facebook.com/consultorio',
             'tiktok' => 'https://www.tiktok.com/@consultorio',
         ])->assertSessionHasNoErrors();
 
         $fila = DatosConsultorio::fila();
-        $this->assertSame('213300201A1111', $fila->cofepris);
         $this->assertSame('https://www.tiktok.com/@consultorio', $fila->tiktok);
 
         DatosConsultorio::aplicarAConfiguracion();
         $this->assertSame('https://www.facebook.com/consultorio', config('dentissa.contacto.facebook'));
 
         $this->actingAs($admin)->get(route('admin.configuracion'))->assertOk()
-            ->assertSee('Clave de COFEPRIS (opcional)')
+            ->assertDontSee('COFEPRIS')
+            ->assertSee('Redes sociales (opcional)')
             ->assertSee('value="https://www.instagram.com/consultorio"', false);
     }
 
