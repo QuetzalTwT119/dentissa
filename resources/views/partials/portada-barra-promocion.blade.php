@@ -35,7 +35,7 @@
          class="relative bg-brand-700 text-white" data-barra-promocion>
         {{-- En celular una sola línea (el nombre se corta con "…") para no empujar
              "Agendar mi cita" abajo del borde. --}}
-        <div class="mx-auto flex min-h-9 max-w-7xl items-center justify-center pl-3 pr-11 text-xs sm:min-h-10 sm:px-12 sm:text-sm">
+        <div class="mx-auto flex min-h-9 max-w-7xl 2xl:max-w-[88rem] items-center justify-center pl-3 pr-11 text-xs sm:min-h-10 sm:px-12 sm:text-sm">
             <a href="{{ route('promociones.index') }}" class="flex min-h-9 min-w-0 items-center gap-x-2 font-semibold underline-offset-4 hover:underline">
                 <span class="min-w-0 truncate">{{ $ofertaBarra->titulo }} · {{ $ofertaBarra->etiquetaBeneficio() }}</span>
                 <span class="shrink-0 rounded-full bg-white/15 px-2 py-0.5 font-medium tabular-nums" x-text="texto" aria-live="off">Hasta el {{ $fin->translatedFormat('j \d\e F') }}</span>

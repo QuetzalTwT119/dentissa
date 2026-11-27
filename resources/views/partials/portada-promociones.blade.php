@@ -11,7 +11,7 @@
 --}}
 @if ($ofertas->isNotEmpty())
     <section id="promociones" class="border-y border-line/80 bg-white" aria-labelledby="titulo-promociones">
-    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <div class="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div class="max-w-2xl">
             <p class="eyebrow">Promociones</p>
             <h2 id="titulo-promociones" class="mt-4 text-title-1 text-ink">Ofertas</h2>

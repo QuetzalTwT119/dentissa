@@ -418,6 +418,8 @@ un carrusel de tarjetas con fotografía:
   la que termina primero con su cuenta regresiva y lleva a **Promociones**. El paciente puede
   cerrarla y no vuelve a salir en esa visita.
 - **Llamar** (ícono de teléfono junto al menú, solo en el celular): abre la llamada al consultorio.
+- **Teléfono en el encabezado** (pantallas de 1536 px o más): el número con ícono junto a
+  «Acceso del personal»; en esas pantallas el sitio también se ve más ancho.
 - **Preguntas frecuentes**: en computadora el título se queda a la vista mientras se recorren
   las preguntas, con los botones **Escribir por WhatsApp** y **Preguntar al asistente**.
 - **Asistente virtual**: responde con las preguntas frecuentes aprobadas (no usa inteligencia

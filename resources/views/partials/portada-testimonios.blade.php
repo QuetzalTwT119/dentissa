@@ -5,7 +5,7 @@
     TestimonioPublicoController). Se publica con nombre e inicial del apellido.
 --}}
 <section id="testimonios" class="border-y border-line/80 bg-peach-50/60">
-    <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <div class="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div class="mx-auto max-w-2xl text-center">
             <p class="eyebrow justify-center">Experiencias de pacientes</p>
             <h2 class="mt-4 text-title-1 text-ink">Sonrisas que hablan por nosotros</h2>

@@ -10,7 +10,7 @@
         ->take(3);
 @endphp
 @if ($casosConFoto->isNotEmpty())
-    <section id="casos" aria-labelledby="titulo-casos" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28" data-casos>
+    <section id="casos" aria-labelledby="titulo-casos" class="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 py-20 sm:px-6 lg:px-8 lg:py-28" data-casos>
         <div class="max-w-2xl">
             <p class="eyebrow">Resultados reales</p>
             <h2 id="titulo-casos" class="mt-4 text-title-1 text-ink">Casos antes y después</h2>

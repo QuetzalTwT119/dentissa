@@ -15,7 +15,7 @@
     $fichaUrl = urlencode("{$nombreMaps}, {$direccion}");
 @endphp
 @if ($direccion !== '')
-    <section id="ubicacion" aria-labelledby="titulo-ubicacion" class="mx-auto max-w-7xl px-4 pt-20 sm:px-6 lg:px-8 lg:pt-28" data-ubicacion>
+    <section id="ubicacion" aria-labelledby="titulo-ubicacion" class="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 pt-20 sm:px-6 lg:px-8 lg:pt-28" data-ubicacion>
         <div class="max-w-2xl">
             <p class="eyebrow">Ubicación</p>
             <h2 id="titulo-ubicacion" class="mt-4 text-title-1 text-ink">Visítanos en el consultorio</h2>
