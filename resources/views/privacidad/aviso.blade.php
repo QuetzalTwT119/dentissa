@@ -7,6 +7,8 @@
         @include('partials.favicon')
 
         <title>Aviso de privacidad — Dentissa Odontología Integral</title>
+        <meta name="description" content="Cómo cuida el consultorio de la Dra. Melissa López N. tus datos personales y de salud: qué recabamos, para qué los usamos y cómo ejercer tus derechos ARCO.">
+        <link rel="canonical" href="{{ route('privacidad.aviso') }}">
 
         <link rel="preload" href="/fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="/fonts/fraunces-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>

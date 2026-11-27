@@ -178,11 +178,17 @@
         <section id="inicio" aria-labelledby="titulo-inicio" class="relative overflow-hidden lg:flex lg:min-h-[min(46rem,calc(100dvh-4.5rem))] lg:items-center">
             {{-- 26/11/2026: en celular 2:1 (antes 4:3); en un 360×640 el botón "Agendar mi cita" quedaba abajo del borde. --}}
             <div class="relative aspect-[2/1] sm:aspect-[16/9] lg:absolute lg:inset-y-0 lg:left-[44%] lg:right-0 lg:aspect-auto">
-                {{-- 25/11/2026: la de fábrica es de catálogo; la doctora sube la real en Contenido → Galería. --}}
-                <img src="{{ ($fotoInicio ?? null) ? asset('storage/'.$fotoInicio) : asset('images/dentissa/hero-inicio.jpg') }}"
-                     alt="{{ ($fotoInicio ?? null) ? 'El consultorio de la Dra. Melissa López' : 'Una dentista conversa con su paciente en el sillón dental' }}"
-                     width="1376" height="768" fetchpriority="high"
-                     class="absolute inset-0 h-full w-full object-cover object-[70%_40%] lg:object-[72%_40%]">
+                {{-- 25/11/2026: la de fábrica es de catálogo; la doctora sube la real en Contenido → Galería.
+                     26/11/2026: la de fábrica va en WebP (52 KB en vez de 97 KB) con el JPG de respaldo. --}}
+                <picture>
+                    @unless ($fotoInicio ?? null)
+                        <source type="image/webp" srcset="{{ asset('images/dentissa/hero-inicio.webp') }}">
+                    @endunless
+                    <img src="{{ ($fotoInicio ?? null) ? asset('storage/'.$fotoInicio) : asset('images/dentissa/hero-inicio.jpg') }}"
+                         alt="{{ ($fotoInicio ?? null) ? 'El consultorio de la Dra. Melissa López' : 'Una dentista conversa con su paciente en el sillón dental' }}"
+                         width="1376" height="768" fetchpriority="high"
+                         class="absolute inset-0 h-full w-full object-cover object-[70%_40%] lg:object-[72%_40%]">
+                </picture>
                 <div aria-hidden="true" class="absolute inset-0 hidden bg-[linear-gradient(90deg,rgb(var(--c-cream))_0%,rgb(var(--c-cream)/0.7)_12%,rgb(var(--c-cream)/0)_32%)] lg:block"></div>
             </div>
 
