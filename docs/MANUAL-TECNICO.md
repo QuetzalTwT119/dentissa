@@ -687,13 +687,13 @@ ni controladores.
 
 | Control | Implementación |
 |---|---|
-| Fuerza bruta | Bloqueo tras 5 intentos de inicio de sesión; reto 2FA con `throttle` 5/min. |
+| Fuerza bruta | Bloqueo tras 5 intentos por correo e IP (`LoginRequest`) y, desde el 27/11/2026, 20 por minuto por IP (`throttle:20,1` en `POST /login`); reto 2FA con `throttle` 5/min. |
 | Sesión | Regeneración al autenticar; driver `database`; `SESSION_LIFETIME=30`; `SESSION_ENCRYPT=true`. |
 | Cuenta desactivada | `CerrarSesionUsuarioInactivo` en el grupo `web` invalida la sesión en la siguiente petición. |
 | Política de contraseñas | `Password::defaults()`: mínimo 10, mayúsculas, minúsculas y números. |
 | Cambio de contraseña | Elimina las demás sesiones y rota `remember_token`. |
-| Recuperación | Respuesta genérica idéntica para correos existentes e inexistentes (sin enumeración). |
-| Cabeceras | `CabecerasSeguridad`: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` y HSTS solo sobre HTTPS. |
+| Recuperación | Respuesta genérica idéntica para correos existentes e inexistentes (sin enumeración). `POST /forgot-password` y `POST /reset-password` con `throttle:6,1` (27/11/2026) para no gastar la cuota de Gmail. |
+| Cabeceras | `CabecerasSeguridad`: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` y HSTS solo sobre HTTPS. Quita `X-Powered-By`; en el contenedor, `expose_php = Off` (`zz-seguridad.ini` en el Dockerfile). |
 | Fotos de perfil | Disco privado (`storage/app/private/profile-photos`), servidas solo a la cuenta propietaria; JPG/PNG/WebP ≤ 5 MB y ≤ 3000×3000 px; vista previa local con `URL.createObjectURL`. |
 
 ### 12.3 Verificación en dos pasos (TOTP)

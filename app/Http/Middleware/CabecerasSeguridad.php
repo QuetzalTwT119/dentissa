@@ -28,6 +28,14 @@ class CabecerasSeguridad
         $respuesta->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $respuesta->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
+        // 27/11/2026: no anunciar la versión de PHP (le da pistas a un atacante).
+        // En producción también va expose_php=Off en el Dockerfile; esto cubre
+        // cualquier entorno donde PHP la siga agregando.
+        $respuesta->headers->remove('X-Powered-By');
+        if (! headers_sent()) {
+            header_remove('X-Powered-By');
+        }
+
         if ($request->isSecure()) {
             $respuesta->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
