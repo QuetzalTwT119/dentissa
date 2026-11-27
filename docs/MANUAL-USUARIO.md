@@ -982,8 +982,8 @@ Teléfono, WhatsApp de contacto («Es el mismo número que el teléfono» o uno 
 correo, dirección, nombre del negocio en Google Maps (opcional, tal como aparece en Maps),
 misión y visión. Los cambios se reflejan de inmediato en la portada, el
 pie de página, **¿Prefieres llamar?**, la página del recordatorio y la respuesta automática
-de WhatsApp. El guardado solicita confirmación y queda registrado en el Control de
-actividades.
+de WhatsApp. Si el correo queda vacío, el pie de página no lo muestra. El guardado
+solicita confirmación y queda registrado en el Control de actividades.
 
 > El número desde el que se envían los recordatorios de WhatsApp no se modifica aquí; se
 > administra en la plataforma de Meta.
