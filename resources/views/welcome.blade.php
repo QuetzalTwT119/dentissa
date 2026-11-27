@@ -94,10 +94,12 @@
 
     @endphp
 
+    @include('partials.portada-barra-promocion')
+
     <!-- ============ Navegación ============ -->
     <header x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-40 pt-[env(safe-area-inset-top)] border-b border-line/70 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <nav class="flex h-[4.5rem] items-center justify-between gap-4" aria-label="Navegación principal">
+            <nav class="flex h-[4.5rem] items-center justify-between gap-2 sm:gap-4" aria-label="Navegación principal">
 
                 <!-- Marca global (x-marca) -->
                 <x-marca :href="url('/')" aria-label="Dra. Melissa López, Odontología Integral: ir al inicio" />
@@ -110,12 +112,20 @@
                 </div>
 
                 <!-- Acciones -->
-                <div class="flex shrink-0 items-center gap-2">
+                <div class="flex shrink-0 items-center gap-1.5 sm:gap-2">
                     <a href="{{ $urlPortal }}" class="hidden min-h-11 items-center rounded-full px-4 text-sm font-semibold text-ink-soft transition-colors hover:text-brand-700 sm:inline-flex">{{ $textoPortal }}</a>
 
                     <a href="{{ route('citas.publica.create') }}" class="btn-brand !hidden sm:!inline-flex">
                         {!! $iconoCalendario !!}
                         <span>Agendar Cita</span>
+                    </a>
+
+                    {{-- 27/11/2026: llamar sin bajar en el celular (en un 360×640 el teléfono de la
+                         bienvenida queda abajo del borde); desde 640 px ya se ve "Agendar Cita". --}}
+                    <a href="{{ $contacto['telefono_enlace'] }}" data-llamar-encabezado
+                       aria-label="Llamar al consultorio: {{ $contacto['telefono'] }}"
+                       class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line bg-white text-brand-600 transition-colors hover:text-brand-700 max-[359px]:hidden sm:hidden">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 5.5A2.5 2.5 0 0 1 5.5 3h1.6a1 1 0 0 1 .95.68l1.2 3.6a1 1 0 0 1-.5 1.2l-1.8.9a11 11 0 0 0 5.6 5.6l.9-1.8a1 1 0 0 1 1.2-.5l3.6 1.2a1 1 0 0 1 .68.95v1.6A2.5 2.5 0 0 1 18.5 21h-.5C9.7 21 3 14.3 3 6v-.5z"/></svg>
                     </a>
 
                     <!-- Botón de menú (móvil y tablet) -->
@@ -177,7 +187,12 @@
         --}}
         <section id="inicio" aria-labelledby="titulo-inicio" class="relative overflow-hidden lg:flex lg:min-h-[min(46rem,calc(100dvh-4.5rem))] lg:items-center">
             {{-- 26/11/2026: en celular 2:1 (antes 4:3); en un 360×640 el botón "Agendar mi cita" quedaba abajo del borde. --}}
-            <div class="relative aspect-[2/1] sm:aspect-[16/9] lg:absolute lg:inset-y-0 lg:left-[44%] lg:right-0 lg:aspect-auto">
+            {{-- 27/11/2026: con la barra de promoción arriba, 5:2 en celular para que el botón siga a la vista. --}}
+            <div @class([
+                'relative sm:aspect-[16/9] lg:absolute lg:inset-y-0 lg:left-[44%] lg:right-0 lg:aspect-auto',
+                'aspect-[5/2]' => $ofertaBarra ?? null,
+                'aspect-[2/1]' => ! ($ofertaBarra ?? null),
+            ])>
                 {{-- 25/11/2026: la de fábrica es de catálogo; la doctora sube la real en Contenido → Galería.
                      26/11/2026: la de fábrica va en WebP (52 KB en vez de 97 KB) con el JPG de respaldo. --}}
                 <picture>
@@ -535,9 +550,10 @@
     {{-- 26/11/2026: 10rem abajo para que WhatsApp y el asistente flotantes no tapen el texto final. --}}
     <footer id="contacto" class="bg-[#2b2224] pb-[calc(10rem+env(safe-area-inset-bottom))] pt-16 text-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 gap-10 border-b border-white/10 pb-12 sm:grid-cols-2 lg:grid-cols-4">
+            {{-- 27/11/2026: cinco columnas con "Tu visita" (antes cuatro). --}}
+            <div class="grid grid-cols-2 gap-x-6 gap-y-10 border-b border-white/10 pb-12 lg:grid-cols-5 lg:gap-8">
 
-                <div class="space-y-4 sm:col-span-2 lg:col-span-1">
+                <div class="col-span-2 space-y-4 lg:col-span-1">
                     <div class="flex items-center gap-3">
                         <img src="{{ asset('images/9.jpg') }}" alt="Logo Dentissa" class="h-11 w-11 shrink-0 rounded-full bg-white object-contain p-0.5">
                         <div>
@@ -548,6 +564,22 @@
                     <p class="max-w-sm text-callout text-white/65">
                         Atención odontológica integral, estética y preventiva en un ambiente cálido y seguro.
                     </p>
+                </div>
+
+                {{-- 27/11/2026: atajos para planear la visita (idea de sitios de clínicas de referencia). --}}
+                <div data-pie-tu-visita>
+                    <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Tu visita</h3>
+                    <ul class="mt-4 space-y-1 text-sm text-white/70">
+                        <li><a href="{{ route('citas.publica.create') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-white">Agendar cita</a></li>
+                        <li><a href="{{ route('promociones.index') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-white">Promociones</a></li>
+                        @if (($faqs ?? collect())->isNotEmpty())
+                            <li><a href="#preguntas" class="inline-flex min-h-11 items-center transition-colors hover:text-white">Preguntas frecuentes</a></li>
+                        @endif
+                        @if (filled($contacto['direccion'] ?? null))
+                            <li><a href="#ubicacion" class="inline-flex min-h-11 items-center transition-colors hover:text-white">Cómo llegar</a></li>
+                        @endif
+                        <li><a href="{{ route('privacidad.aviso') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-white">Aviso de privacidad</a></li>
+                    </ul>
                 </div>
 
                 <div>
@@ -563,7 +595,7 @@
                     </ul>
                 </div>
 
-                <div>
+                <div class="col-span-2 sm:col-span-1">
                     <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Horarios</h3>
                     <ul class="mt-4 space-y-2 text-sm text-white/70">
                         @forelse ($horarioSemanal ?? [] as $linea)
@@ -575,7 +607,7 @@
                     </ul>
                 </div>
 
-                <div>
+                <div class="col-span-2 sm:col-span-1">
                     <h3 class="text-xs font-semibold uppercase tracking-label text-peach-200">Contacto y citas</h3>
                     <ul class="mt-4 space-y-1 text-sm text-white/70">
                         <li><a href="{{ $contacto['telefono_enlace'] }}" class="inline-flex min-h-11 items-center transition-colors hover:text-white">{{ $contacto['telefono'] }}</a></li>
@@ -594,9 +626,42 @@
                 </div>
             </div>
 
-            <div class="flex flex-col items-center justify-between gap-3 pt-6 text-center text-xs text-white/60 sm:flex-row sm:text-left">
-                <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
-                <p><a href="{{ route('privacidad.aviso') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-white">Aviso de privacidad</a></p>
+            @php
+                // 27/11/2026: solo las redes con enlace en Configuración → Datos del consultorio.
+                $redes = array_filter([
+                    'Instagram' => ['url' => $contacto['instagram'] ?? null, 'icono' => '<rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/>'],
+                    'Facebook' => ['url' => $contacto['facebook'] ?? null, 'icono' => '<path fill="currentColor" d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.8 1.4-3.8 3.9v2.3H8v3h2.5V21h3z"/>'],
+                    'TikTok' => ['url' => $contacto['tiktok'] ?? null, 'icono' => '<path fill="currentColor" d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v3a7 7 0 0 1-3.9-1.3v6.1a5.6 5.6 0 1 1-5.6-5.6c.3 0 .6 0 .9.1v3.1a2.6 2.6 0 1 0 1.8 2.4V3h2.9z"/>'],
+                ], fn ($red) => filled($red['url']));
+            @endphp
+
+            <div class="flex flex-col items-center justify-between gap-4 pt-6 text-center text-xs text-white/60 lg:flex-row lg:items-start lg:text-left">
+                <div class="space-y-1.5">
+                    <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
+                    {{-- 27/11/2026: datos sanitarios (como en sitios de clínicas de referencia); cada línea
+                         sale solo si el dato está capturado en Configuración. --}}
+                    @if ($responsableSanitario ?? null)
+                        <p data-pie-responsable>Responsable sanitario: {{ trim($responsableSanitario->nombre.' '.$responsableSanitario->apellido) }} · Cédula profesional {{ $responsableSanitario->cedula_profesional }}</p>
+                    @endif
+                    @if (filled($contacto['cofepris'] ?? null))
+                        <p data-pie-cofepris>Clave COFEPRIS: {{ $contacto['cofepris'] }}</p>
+                    @endif
+                </div>
+                <div class="flex flex-col items-center gap-2 sm:flex-row sm:gap-5">
+                    @if ($redes)
+                        <ul class="flex items-center gap-1" data-pie-redes>
+                            @foreach ($redes as $nombre => $red)
+                                <li>
+                                    <a href="{{ $red['url'] }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $nombre }} (se abre en otra pestaña)"
+                                       class="inline-flex h-11 w-11 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white">
+                                        <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">{!! $red['icono'] !!}</svg>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    <a href="{{ route('privacidad.aviso') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-white">Aviso de privacidad</a>
+                </div>
             </div>
         </div>
     </footer>

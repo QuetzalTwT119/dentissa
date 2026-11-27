@@ -10,6 +10,20 @@
             <p class="eyebrow justify-center">Experiencias de pacientes</p>
             <h2 class="mt-4 text-title-1 text-ink">Sonrisas que hablan por nosotros</h2>
             <p class="mt-4 text-callout text-muted">Opiniones reales de pacientes, publicadas con su autorización y revisadas por la clínica.</p>
+
+            {{-- 27/11/2026: calificación promedio de todas las opiniones aprobadas (idea de sitios
+                 de referencia; sin reseñas de Google, que requieren conectar una cuenta). --}}
+            @if ((int) ($calificacion->total ?? 0) > 0)
+                @php
+                    $promedio = round((float) $calificacion->promedio, 1);
+                    $llenas = (int) round($promedio);
+                    $totalOpiniones = (int) $calificacion->total;
+                @endphp
+                <p class="mt-5 inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2 text-sm text-ink-soft shadow-2xs" data-calificacion-promedio>
+                    <span class="tracking-label text-amber-500" aria-hidden="true">{{ str_repeat('★', $llenas) }}<span class="text-line">{{ str_repeat('★', 5 - $llenas) }}</span></span>
+                    <span><strong class="font-semibold tabular-nums text-ink">{{ number_format($promedio, 1) }}</strong> de 5 · promedio de {{ $totalOpiniones }} {{ $totalOpiniones === 1 ? 'opinión' : 'opiniones' }}</span>
+                </p>
+            @endif
         </div>
 
         @if ($testimonios->isNotEmpty())
