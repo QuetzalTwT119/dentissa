@@ -15,8 +15,25 @@
     $recorte = ['2' => 'line-clamp-2', '3' => 'line-clamp-3', '4' => 'line-clamp-4', '5' => 'line-clamp-5'][(string) $lineas] ?? 'line-clamp-5';
 @endphp
 
-{{-- init() con "this": asignar "cortado" desde x-init/$nextTick no avisaba a la vista. --}}
-<div x-data="{ abierto: false, cortado: false, init() { this.$nextTick(() => { this.cortado = this.$refs.texto.scrollHeight > this.$refs.texto.clientHeight + 1 }) } }"
+{{-- init() con "this": asignar "cortado" desde x-init/$nextTick no avisaba a la vista.
+     26/11/2026: se medía una sola vez, antes de cargar las letras y de que el carrusel
+     diera su ancho final, y salía "Leer completo" en opiniones cortas. Ahora se vuelve
+     a medir al cargar las letras y cada vez que cambia el tamaño del texto (sin medir
+     mientras está abierto, porque entonces nunca está cortado). --}}
+<div x-data="{
+        abierto: false,
+        cortado: false,
+        medir() {
+            if (this.abierto) return;
+            const p = this.$refs.texto;
+            this.cortado = p.scrollHeight > p.clientHeight + 1;
+        },
+        init() {
+            this.$nextTick(() => this.medir());
+            document.fonts?.ready.then(() => this.medir());
+            if (window.ResizeObserver) new ResizeObserver(() => this.medir()).observe(this.$refs.texto);
+        },
+     }"
      {{ $attributes->merge(['class' => 'min-w-0']) }}>
     <p x-ref="texto" class="whitespace-pre-line break-words {{ $recorte }}" :class="abierto && '!line-clamp-none'">{{ $comillas ? '“'.$texto.'”' : $texto }}</p>
     <button type="button" x-show="cortado" x-cloak x-on:click="abierto = ! abierto" :aria-expanded="abierto.toString()"

@@ -176,7 +176,8 @@
             tableta la foto va arriba y el texto debajo.
         --}}
         <section id="inicio" aria-labelledby="titulo-inicio" class="relative overflow-hidden lg:flex lg:min-h-[min(46rem,calc(100dvh-4.5rem))] lg:items-center">
-            <div class="relative aspect-[4/3] sm:aspect-[16/9] lg:absolute lg:inset-y-0 lg:left-[44%] lg:right-0 lg:aspect-auto">
+            {{-- 26/11/2026: en celular 2:1 (antes 4:3); en un 360×640 el botón "Agendar mi cita" quedaba abajo del borde. --}}
+            <div class="relative aspect-[2/1] sm:aspect-[16/9] lg:absolute lg:inset-y-0 lg:left-[44%] lg:right-0 lg:aspect-auto">
                 {{-- 25/11/2026: la de fábrica es de catálogo; la doctora sube la real en Contenido → Galería. --}}
                 <img src="{{ ($fotoInicio ?? null) ? asset('storage/'.$fotoInicio) : asset('images/dentissa/hero-inicio.jpg') }}"
                      alt="{{ ($fotoInicio ?? null) ? 'El consultorio de la Dra. Melissa López' : 'Una dentista conversa con su paciente en el sillón dental' }}"
@@ -185,7 +186,7 @@
                 <div aria-hidden="true" class="absolute inset-0 hidden bg-[linear-gradient(90deg,rgb(var(--c-cream))_0%,rgb(var(--c-cream)/0.7)_12%,rgb(var(--c-cream)/0)_32%)] lg:block"></div>
             </div>
 
-            <div class="relative mx-auto w-full max-w-7xl px-4 pb-14 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:py-20">
+            <div class="relative mx-auto w-full max-w-7xl px-4 pb-14 pt-6 sm:px-6 sm:pt-10 lg:px-8 lg:py-20">
                 <div class="max-w-xl lg:max-w-[min(34rem,40%)]">
                     <p class="hero-entra eyebrow">Odontología integral y estética</p>
 
@@ -198,7 +199,7 @@
                     </p>
                 </div>
 
-                <div class="hero-entra mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 [animation-delay:150ms]">
+                <div class="hero-entra mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 [animation-delay:150ms] sm:mt-8">
                     <a href="{{ route('citas.publica.create') }}" class="btn-brand group px-7 py-3.5 text-callout">
                         {{-- Mismo destino que "Agendar Cita" de arriba (24/11/2026, antes "Agendar mi valoración"). --}}
                         <span>Agendar mi cita</span>

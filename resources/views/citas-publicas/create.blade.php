@@ -488,7 +488,9 @@
                     </section>
 
                     <!-- Resumen lateral (ticket) -->
-                    <aside class="w-full self-start rounded-4xl border border-line bg-white p-5 shadow-soft sm:p-7 lg:max-h-full lg:overflow-y-auto lg:p-6">
+                    {{-- 26/11/2026: en celular repetía lo que el paso ya muestra y alargaba la página;
+                         ahí solo sale en el último paso, para revisar precio y oferta antes de confirmar. --}}
+                    <aside :class="paso < pasos.length - 1 && 'hidden sm:block'" data-resumen-agenda class="w-full self-start rounded-4xl border border-line bg-white p-5 shadow-soft sm:p-7 lg:max-h-full lg:overflow-y-auto lg:p-6">
                         <div class="flex items-start justify-between gap-4">
                             <div>
                                 <p class="eyebrow">Agenda en línea</p>
