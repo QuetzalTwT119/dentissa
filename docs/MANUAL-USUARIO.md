@@ -422,9 +422,6 @@ un carrusel de tarjetas con fotografía:
   aprobadas (por ejemplo «4.8 de 5 · promedio de 6 opiniones»).
 - **Tu visita** (columna del pie): Agendar cita, Promociones, Preguntas frecuentes, Cómo llegar
   y Aviso de privacidad.
-- **Datos sanitarios del pie**: «Responsable sanitario» con la cédula capturada en
-  **Configuración → Cédulas profesionales** y la **clave de COFEPRIS**; cada línea sale solo si
-  el dato está capturado.
 - **Redes sociales del pie**: íconos de Instagram, Facebook y TikTok; solo los que tengan enlace en
   **Configuración → Datos del consultorio**.
 - **Pie de página**: teléfono, correo (de **Configuración → Datos del consultorio**), horario semanal (por ejemplo, «Lunes a viernes de 8:00 a
@@ -1000,8 +997,7 @@ independientes, cada uno con su botón de guardado.
 
 Teléfono, WhatsApp de contacto («Es el mismo número que el teléfono» o uno distinto),
 correo, dirección, nombre del negocio en Google Maps (opcional, tal como aparece en Maps),
-misión y visión. Opcionales desde el 27/11/2026: **clave de COFEPRIS** (sale en el pie con el
-responsable sanitario) y enlaces de **Instagram, Facebook y TikTok** (deben ser el enlace completo
+misión y visión. Opcionales desde el 27/11/2026: enlaces de **Instagram, Facebook y TikTok** (deben ser el enlace completo
 del perfil, por ejemplo `https://www.instagram.com/tu_consultorio`). Los cambios se reflejan de inmediato en la portada, el
 pie de página, **¿Prefieres llamar?**, la página del recordatorio y la respuesta automática
 de WhatsApp. Si el correo queda vacío, el pie de página no lo muestra. El guardado

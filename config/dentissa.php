@@ -112,8 +112,7 @@ return [
         // Portada, bloque "La clínica" (24/11/2026). Se cambian en Configuración → Datos del consultorio.
         'mision' => 'Cuidar y transformar sonrisas con atención odontológica confiable, ética y accesible, explicando cada paso con calma para que decidas informado y sin presión.',
         'vision' => 'Ser el consultorio dental de confianza de las familias de la región, reconocido por su trato humano, su puntualidad y resultados que duran.',
-        // 27/11/2026: pie de la portada; se llenan en Configuración → Datos del consultorio.
-        'cofepris' => null,
+        // 27/11/2026: redes del pie de la portada; se llenan en Configuración → Datos del consultorio.
         'instagram' => null,
         'facebook' => null,
         'tiktok' => null,

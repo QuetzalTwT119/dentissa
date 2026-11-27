@@ -636,17 +636,8 @@
             @endphp
 
             <div class="flex flex-col items-center justify-between gap-4 pt-6 text-center text-xs text-white/60 lg:flex-row lg:items-start lg:text-left">
-                <div class="space-y-1.5">
-                    <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
-                    {{-- 27/11/2026: datos sanitarios (como en sitios de clínicas de referencia); cada línea
-                         sale solo si el dato está capturado en Configuración. --}}
-                    @if ($responsableSanitario ?? null)
-                        <p data-pie-responsable>Responsable sanitario: {{ trim($responsableSanitario->nombre.' '.$responsableSanitario->apellido) }} · Cédula profesional {{ $responsableSanitario->cedula_profesional }}</p>
-                    @endif
-                    @if (filled($contacto['cofepris'] ?? null))
-                        <p data-pie-cofepris>Clave COFEPRIS: {{ $contacto['cofepris'] }}</p>
-                    @endif
-                </div>
+                {{-- 27/11/2026: sin responsable sanitario ni clave COFEPRIS (decisión del usuario). --}}
+                <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
                 <div class="flex flex-col items-center gap-2 sm:flex-row sm:gap-5">
                     @if ($redes)
                         <ul class="flex items-center gap-1" data-pie-redes>
