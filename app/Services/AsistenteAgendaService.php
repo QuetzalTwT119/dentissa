@@ -164,7 +164,7 @@ class AsistenteAgendaService
             return false;
         }
 
-        return Str::contains($texto, [
+        if (Str::contains($texto, [
             'horario de atencion',
             'horarios de atencion',
             'a que hora abren',
@@ -173,7 +173,21 @@ class AsistenteAgendaService
             'que dias abren',
             'que dias atienden',
             'estan abiertos',
-        ]);
+        ])) {
+            return true;
+        }
+
+        // 27/11/2026: "¿cuál es su horario?" o "¿qué horario tienen?" también piden el
+        // horario del consultorio; antes empezaban una búsqueda de citas. Solo
+        // "horarios libres/para el lunes" o con "cita" siguen siendo búsqueda.
+        return Str::contains($texto, 'horario')
+            && ! Str::contains($texto, ['libre', 'hay horario', 'horarios para', 'horario para', 'manana', 'hoy', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado']);
+    }
+
+    /** Cierra la búsqueda de horarios abierta en esta conversación (si había). */
+    public function cancelar(int|string $conversacion): void
+    {
+        Cache::forget($this->clave($conversacion));
     }
 
     private function interpretarFecha(string $texto): ?Carbon

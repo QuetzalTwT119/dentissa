@@ -6,10 +6,13 @@
 --}}
 @php
     $direccion = trim((string) ($contacto['direccion'] ?? ''));
-    // 25/11/2026: con el nombre del negocio, Maps abre su ficha (foto, horario,
-    // teléfono); solo con la dirección marcaba un punto en la calle.
+    // 27/11/2026: el mapa y «Cómo llegar» usan SOLO la dirección. Con el nombre
+    // (25/11) Google buscaba "Dentissa, …"; como el consultorio aún no está dado
+    // de alta en Google, el mapa caía en el mar (todo azul). El nombre queda para
+    // un enlace aparte a la ficha, útil cuando el negocio exista en Google.
     $nombreMaps = trim((string) ($contacto['nombre_maps'] ?? ''));
-    $direccionUrl = urlencode($nombreMaps !== '' ? "{$nombreMaps}, {$direccion}" : $direccion);
+    $direccionUrl = urlencode($direccion);
+    $fichaUrl = urlencode("{$nombreMaps}, {$direccion}");
 @endphp
 @if ($direccion !== '')
     <section id="ubicacion" aria-labelledby="titulo-ubicacion" class="mx-auto max-w-7xl px-4 pt-20 sm:px-6 lg:px-8 lg:pt-28" data-ubicacion>
@@ -34,6 +37,13 @@
                         Escribir por WhatsApp
                     </a>
                 </div>
+                @if ($nombreMaps !== '')
+                    <a href="https://www.google.com/maps/search/?api=1&amp;query={{ $fichaUrl }}" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex min-h-11 items-center self-start text-sm font-semibold text-brand-700 underline-offset-4 hover:underline" data-ficha-maps>
+                        Ver {{ $nombreMaps }} en Google Maps
+                        <span class="sr-only">(se abre en otra pestaña)</span>
+                    </a>
+                @endif
             </div>
             <iframe src="https://maps.google.com/maps?q={{ $direccionUrl }}&amp;z=16&amp;output=embed"
                     title="Mapa: {{ $direccion }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
