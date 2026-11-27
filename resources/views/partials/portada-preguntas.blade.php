@@ -5,7 +5,7 @@
     JavaScript y con teclado.
 --}}
 @if (($faqs ?? collect())->isNotEmpty())
-    <section id="preguntas" aria-labelledby="titulo-preguntas" class="mx-auto max-w-7xl px-4 pt-20 sm:px-6 lg:px-8 lg:pt-28" data-preguntas>
+    <section id="preguntas" aria-labelledby="titulo-preguntas" class="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 pt-20 sm:px-6 lg:px-8 lg:pt-28" data-preguntas>
         <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
             {{-- 27/11/2026: en escritorio el título se queda a la vista mientras bajan las
                  preguntas (antes quedaba un hueco grande a la izquierda) y lleva los dos

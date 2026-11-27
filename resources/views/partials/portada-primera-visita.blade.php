@@ -23,7 +23,7 @@
     ];
 @endphp
 <section id="primera-visita" aria-labelledby="titulo-primera-visita" class="border-b border-line/80 bg-white" data-primera-visita>
-<div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+<div class="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
     <div class="max-w-2xl">
         <p class="eyebrow">Tu primera visita</p>
         <h2 id="titulo-primera-visita" class="mt-4 text-title-1 text-ink">Un proceso claro desde el primer clic</h2>

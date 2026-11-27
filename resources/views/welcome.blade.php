@@ -98,7 +98,7 @@
 
     <!-- ============ Navegación ============ -->
     <header x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-40 pt-[env(safe-area-inset-top)] border-b border-line/70 bg-cream/90 backdrop-blur-md supports-[backdrop-filter]:bg-cream/75">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 sm:px-6 lg:px-8">
             <nav class="flex h-[4.5rem] items-center justify-between gap-2 sm:gap-4" aria-label="Navegación principal">
 
                 <!-- Marca global (x-marca) -->
@@ -113,6 +113,14 @@
 
                 <!-- Acciones -->
                 <div class="flex shrink-0 items-center gap-1.5 sm:gap-2">
+                    {{-- 27/11/2026: en pantallas grandes (desde 1536 px) el teléfono a la vista, para
+                         aprovechar el espacio que sobraba; en menos no cabe sin apretar el menú. --}}
+                    <a href="{{ $contacto['telefono_enlace'] }}" data-telefono-encabezado
+                       aria-label="Llamar al consultorio: {{ $contacto['telefono'] }}"
+                       class="hidden min-h-11 items-center gap-2 rounded-full px-3 text-sm font-semibold tabular-nums text-ink-soft transition-colors hover:text-brand-700 2xl:inline-flex">
+                        <svg class="h-4 w-4 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 5.5A2.5 2.5 0 0 1 5.5 3h1.6a1 1 0 0 1 .95.68l1.2 3.6a1 1 0 0 1-.5 1.2l-1.8.9a11 11 0 0 0 5.6 5.6l.9-1.8a1 1 0 0 1 1.2-.5l3.6 1.2a1 1 0 0 1 .68.95v1.6A2.5 2.5 0 0 1 18.5 21h-.5C9.7 21 3 14.3 3 6v-.5z"/></svg>
+                        {{ $contacto['telefono'] }}
+                    </a>
                     <a href="{{ $urlPortal }}" class="hidden min-h-11 items-center rounded-full px-4 text-sm font-semibold text-ink-soft transition-colors hover:text-brand-700 sm:inline-flex">{{ $textoPortal }}</a>
 
                     <a href="{{ route('citas.publica.create') }}" class="btn-brand !hidden sm:!inline-flex">
@@ -207,7 +215,7 @@
                 <div aria-hidden="true" class="absolute inset-0 hidden bg-[linear-gradient(90deg,rgb(var(--c-cream))_0%,rgb(var(--c-cream)/0.7)_12%,rgb(var(--c-cream)/0)_32%)] lg:block"></div>
             </div>
 
-            <div class="relative mx-auto w-full max-w-7xl px-4 pb-14 pt-6 sm:px-6 sm:pt-10 lg:px-8 lg:py-20">
+            <div class="relative mx-auto w-full max-w-7xl 2xl:max-w-[88rem] px-4 pb-14 pt-6 sm:px-6 sm:pt-10 lg:px-8 lg:py-20">
                 <div class="max-w-xl lg:max-w-[min(34rem,40%)]">
                     <p class="hero-entra eyebrow">Odontología integral y estética</p>
 
@@ -244,7 +252,7 @@
 
         <!-- ============ Beneficios ============ -->
         <section aria-label="Beneficios" class="border-y border-line/80 bg-white">
-            <div class="mx-auto grid max-w-7xl gap-px overflow-hidden px-4 sm:px-6 md:grid-cols-3 lg:px-8">
+            <div class="mx-auto grid max-w-7xl 2xl:max-w-[88rem] gap-px overflow-hidden px-4 sm:px-6 md:grid-cols-3 lg:px-8">
                 @foreach ($beneficios as $beneficio)
                     <div class="flex items-start gap-4 py-7 md:px-6 md:py-10 md:first:pl-0 md:[&:not(:first-child)]:border-l md:[&:not(:first-child)]:border-line/80 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-line/80 md:[&:not(:first-child)]:border-t-0">
                         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl {{ $loop->last ? 'bg-sage-50 text-sage-600' : 'bg-peach-50 text-brand-600' }}">
@@ -260,7 +268,7 @@
         </section>
 
         <!-- ============ Tratamientos ============ -->
-        <section id="servicios" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <section id="servicios" class="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
             <div class="max-w-2xl">
                 <p class="eyebrow">Cuidado Especializado</p>
                 <h2 class="mt-4 text-title-1 text-ink">
@@ -392,7 +400,7 @@
 
         <!-- ============ La clínica ============ -->
         <section id="nosotros" class="overflow-x-clip border-y border-line/80 bg-white">
-            <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8 lg:py-28">
+            <div class="mx-auto grid max-w-7xl 2xl:max-w-[88rem] items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-8 lg:py-28">
 
                 <figure class="relative mx-auto w-full max-w-md lg:col-span-5 lg:max-w-none">
                     <div aria-hidden="true" class="absolute -inset-3 -z-0 rotate-[-2.5deg] rounded-[2.5rem] bg-peach-100"></div>
@@ -446,7 +454,7 @@
         </section>
 
         <!-- ============ Galería ============ -->
-        <section id="galeria" class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <section id="galeria" class="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div class="max-w-2xl">
                     <p class="eyebrow">El consultorio</p>
@@ -549,7 +557,7 @@
     <!-- ============ Pie de página ============ -->
     {{-- 27/11/2026: 6.5rem abajo para que el único botón flotante (ayuda) no tape el texto final. --}}
     <footer id="contacto" class="bg-[#2b2224] pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-16 text-white">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl 2xl:max-w-[88rem] px-4 sm:px-6 lg:px-8">
             {{-- 27/11/2026: cinco columnas con "Tu visita" (antes cuatro). --}}
             <div class="grid grid-cols-2 gap-x-6 gap-y-10 border-b border-white/10 pb-12 lg:grid-cols-5 lg:gap-8">
 
