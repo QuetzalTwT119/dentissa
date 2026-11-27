@@ -93,7 +93,8 @@
                     <span aria-hidden="true" class="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-sage-500"></span>
                 </span>
                 <div class="min-w-0">
-                    <h2 class="text-title-3 leading-tight text-ink">Dentissa Asistente</h2>
+                    {{-- 26/11/2026: <p> y no <h2>: el panel va antes del <main> y quedaba como primer título de la página. --}}
+                    <p class="font-serif text-title-3 font-medium leading-tight tracking-[-0.015em] text-ink">Dentissa Asistente</p>
                     <p class="mt-0.5 text-xs text-muted">Aquí para orientarte</p>
                 </div>
             </div>
