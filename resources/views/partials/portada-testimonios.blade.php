@@ -103,8 +103,9 @@
                     </div>
 
                     <div>
-                        <x-input-label :required="true" for="contacto" value="Teléfono o correo con el que agendaste" />
-                        <x-text-input id="contacto" name="contacto" class="mt-1.5 block w-full" :value="old('contacto')" autocomplete="email" required />
+                        {{-- 26/11/2026: id propio; "contacto" ya es el pie de página y el menú "Contacto" caía aquí. --}}
+                        <x-input-label :required="true" for="contacto-opinion" value="Teléfono o correo con el que agendaste" />
+                        <x-text-input id="contacto-opinion" name="contacto" class="mt-1.5 block w-full" :value="old('contacto')" autocomplete="email" required />
                         <p class="mt-1 text-xs text-muted">Solo sirve para confirmar que eres paciente; no se publica.</p>
                         <x-input-error :messages="$errors->testimonio->get('contacto')" class="mt-2" />
                     </div>

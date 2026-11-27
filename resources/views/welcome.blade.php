@@ -525,7 +525,8 @@
     </main>
 
     <!-- ============ Pie de página ============ -->
-    <footer id="contacto" class="bg-[#2b2224] pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-16 text-white">
+    {{-- 26/11/2026: 10rem abajo para que WhatsApp y el asistente flotantes no tapen el texto final. --}}
+    <footer id="contacto" class="bg-[#2b2224] pb-[calc(10rem+env(safe-area-inset-bottom))] pt-16 text-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 gap-10 border-b border-white/10 pb-12 sm:grid-cols-2 lg:grid-cols-4">
 
@@ -574,18 +575,21 @@
                         @if (filled($contacto['direccion'] ?? null))
                             <li><a href="#ubicacion" class="inline-flex min-h-11 items-center transition-colors hover:text-white">{{ $contacto['direccion'] }}</a></li>
                         @endif
-                        <li><a href="mailto:trabajout745@gmail.com" class="inline-flex min-h-11 items-center break-all transition-colors hover:text-white">trabajout745@gmail.com</a></li>
+                        {{-- 26/11/2026: el correo sale de Configuración → Datos del consultorio (antes estaba fijo aquí). --}}
+                        @if (filled($contacto['correo'] ?? null))
+                            <li><a href="mailto:{{ $contacto['correo'] }}" class="inline-flex min-h-11 items-center break-all transition-colors hover:text-white">{{ $contacto['correo'] }}</a></li>
+                        @endif
                     </ul>
                     <div class="mt-4 flex flex-wrap gap-2">
                         <a href="https://wa.me/{{ preg_replace('/\D/', '', $contacto['whatsapp']) }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center rounded-full bg-sage-500 px-5 text-sm font-semibold text-white transition-colors hover:bg-sage-600">WhatsApp</a>
-                        <a href="{{ url('/login') }}" class="inline-flex min-h-11 items-center rounded-full bg-white/10 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/20">Portal →</a>
+                        <a href="{{ $urlPortal }}" class="inline-flex min-h-11 items-center rounded-full bg-white/10 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/20">{{ $textoPortal }}</a>
                     </div>
                 </div>
             </div>
 
             <div class="flex flex-col items-center justify-between gap-3 pt-6 text-center text-xs text-white/60 sm:flex-row sm:text-left">
                 <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
-                <p>Atención con previa cita · <a href="{{ route('privacidad.aviso') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-white">Aviso de privacidad</a></p>
+                <p><a href="{{ route('privacidad.aviso') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-white">Aviso de privacidad</a></p>
             </div>
         </div>
     </footer>

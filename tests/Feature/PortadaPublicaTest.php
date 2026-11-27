@@ -168,4 +168,30 @@ class PortadaPublicaTest extends TestCase
             ->assertDontSee('Bloqueo dinámico')
             ->assertDontSee('dentro del sistema de la clínica');
     }
+
+    /** 26/11/2026: el menú "Contacto" caía en el formulario de opiniones porque dos elementos se llamaban "contacto". */
+    public function test_cada_id_de_la_portada_es_unico_y_contacto_es_el_pie(): void
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+
+        preg_match_all('/\sid="([^"]+)"/', $html, $coincidencias);
+        $repetidos = array_keys(array_filter(array_count_values($coincidencias[1]), fn ($veces) => $veces > 1));
+
+        $this->assertSame([], $repetidos, 'IDs repetidos en la portada: '.implode(', ', $repetidos));
+        $this->assertMatchesRegularExpression('/<footer id="contacto"/', $html);
+    }
+
+    /** 26/11/2026: el pie toma el correo de Configuración y el acceso del personal se llama igual que en el encabezado. */
+    public function test_el_pie_usa_el_correo_configurado_y_el_mismo_acceso_del_personal(): void
+    {
+        config(['dentissa.contacto.correo' => 'citas@consultorio-prueba.mx']);
+
+        $pie = str($this->get('/')->assertOk()->getContent())->after('<footer id="contacto"')->toString();
+
+        $this->assertStringContainsString('mailto:citas@consultorio-prueba.mx', $pie);
+        $this->assertStringNotContainsString('trabajout745@gmail.com', $pie);
+        $this->assertStringContainsString('Acceso del personal', $pie);
+        $this->assertStringNotContainsString('Portal →', $pie);
+        $this->assertSame(1, substr_count($pie, 'Atención con previa cita'));
+    }
 }
