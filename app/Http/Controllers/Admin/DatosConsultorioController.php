@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Redirect;
  */
 class DatosConsultorioController extends Controller
 {
-    private const CAMPOS = ['telefono', 'whatsapp', 'correo', 'direccion', 'nombre_maps', 'mision', 'vision', 'cofepris', 'instagram', 'facebook', 'tiktok'];
+    private const CAMPOS = ['telefono', 'whatsapp', 'correo', 'direccion', 'nombre_maps', 'mision', 'vision', 'instagram', 'facebook', 'tiktok'];
 
     // La pantalla vive en Configuración (ConfiguracionController); aquí solo se guarda.
 
@@ -40,8 +40,7 @@ class DatosConsultorioController extends Controller
             'nombre_maps' => ['nullable', 'string', 'max:100'],
             'mision' => ['nullable', 'string', 'max:400'],
             'vision' => ['nullable', 'string', 'max:400'],
-            // 27/11/2026: pie de la portada (datos sanitarios y redes).
-            'cofepris' => ['nullable', 'string', 'max:60'],
+            // 27/11/2026: redes sociales del pie de la portada.
             'instagram' => ['nullable', 'url:https', 'max:200', 'regex:#^https://(www\.)?instagram\.com/#i'],
             'facebook' => ['nullable', 'url:https', 'max:200', 'regex:#^https://(www\.|m\.)?facebook\.com/#i'],
             'tiktok' => ['nullable', 'url:https', 'max:200', 'regex:#^https://(www\.)?tiktok\.com/#i'],
@@ -59,7 +58,6 @@ class DatosConsultorioController extends Controller
             'nombre_maps' => 'nombre en Google Maps',
             'mision' => 'misión',
             'vision' => 'visión',
-            'cofepris' => 'clave de COFEPRIS',
             'instagram' => 'Instagram',
             'facebook' => 'Facebook',
             'tiktok' => 'TikTok',
@@ -74,7 +72,6 @@ class DatosConsultorioController extends Controller
             'nombre_maps' => filled($datos['nombre_maps'] ?? null) ? trim($datos['nombre_maps']) : null,
             'mision' => filled($datos['mision'] ?? null) ? trim($datos['mision']) : null,
             'vision' => filled($datos['vision'] ?? null) ? trim($datos['vision']) : null,
-            'cofepris' => filled($datos['cofepris'] ?? null) ? trim($datos['cofepris']) : null,
             'instagram' => $datos['instagram'] ?? null,
             'facebook' => $datos['facebook'] ?? null,
             'tiktok' => $datos['tiktok'] ?? null,

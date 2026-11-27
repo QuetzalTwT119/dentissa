@@ -547,8 +547,8 @@
     </main>
 
     <!-- ============ Pie de página ============ -->
-    {{-- 26/11/2026: 10rem abajo para que WhatsApp y el asistente flotantes no tapen el texto final. --}}
-    <footer id="contacto" class="bg-[#2b2224] pb-[calc(10rem+env(safe-area-inset-bottom))] pt-16 text-white">
+    {{-- 27/11/2026: 6.5rem abajo para que el único botón flotante (ayuda) no tape el texto final. --}}
+    <footer id="contacto" class="bg-[#2b2224] pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-16 text-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             {{-- 27/11/2026: cinco columnas con "Tu visita" (antes cuatro). --}}
             <div class="grid grid-cols-2 gap-x-6 gap-y-10 border-b border-white/10 pb-12 lg:grid-cols-5 lg:gap-8">
@@ -618,11 +618,10 @@
                         @if (filled($contacto['correo'] ?? null))
                             <li><a href="mailto:{{ $contacto['correo'] }}" class="inline-flex min-h-11 items-center break-all transition-colors hover:text-white">{{ $contacto['correo'] }}</a></li>
                         @endif
+                        {{-- 27/11/2026: WhatsApp como enlace de la lista; se quitaron los botones
+                             «WhatsApp» y «Acceso del personal» (este sigue en el encabezado). --}}
+                        <li><a href="https://wa.me/{{ preg_replace('/\D/', '', $contacto['whatsapp']) }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center transition-colors hover:text-white" data-pie-whatsapp>Escribir por WhatsApp<span class="sr-only"> (se abre en otra pestaña)</span></a></li>
                     </ul>
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        <a href="https://wa.me/{{ preg_replace('/\D/', '', $contacto['whatsapp']) }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center rounded-full bg-sage-500 px-5 text-sm font-semibold text-white transition-colors hover:bg-sage-600">WhatsApp</a>
-                        <a href="{{ $urlPortal }}" class="inline-flex min-h-11 items-center rounded-full bg-white/10 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/20">{{ $textoPortal }}</a>
-                    </div>
                 </div>
             </div>
 
@@ -635,33 +634,23 @@
                 ], fn ($red) => filled($red['url']));
             @endphp
 
-            <div class="flex flex-col items-center justify-between gap-4 pt-6 text-center text-xs text-white/60 lg:flex-row lg:items-start lg:text-left">
-                <div class="space-y-1.5">
-                    <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
-                    {{-- 27/11/2026: datos sanitarios (como en sitios de clínicas de referencia); cada línea
-                         sale solo si el dato está capturado en Configuración. --}}
-                    @if ($responsableSanitario ?? null)
-                        <p data-pie-responsable>Responsable sanitario: {{ trim($responsableSanitario->nombre.' '.$responsableSanitario->apellido) }} · Cédula profesional {{ $responsableSanitario->cedula_profesional }}</p>
-                    @endif
-                    @if (filled($contacto['cofepris'] ?? null))
-                        <p data-pie-cofepris>Clave COFEPRIS: {{ $contacto['cofepris'] }}</p>
-                    @endif
-                </div>
-                <div class="flex flex-col items-center gap-2 sm:flex-row sm:gap-5">
-                    @if ($redes)
-                        <ul class="flex items-center gap-1" data-pie-redes>
-                            @foreach ($redes as $nombre => $red)
-                                <li>
-                                    <a href="{{ $red['url'] }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $nombre }} (se abre en otra pestaña)"
-                                       class="inline-flex h-11 w-11 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white">
-                                        <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">{!! $red['icono'] !!}</svg>
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endif
-                    <a href="{{ route('privacidad.aviso') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-white">Aviso de privacidad</a>
-                </div>
+            {{-- 27/11/2026: sin responsable sanitario ni clave COFEPRIS (decisión del usuario).
+                 Fila final alineada al centro y sin repetir «Aviso de privacidad» (ya está
+                 en «Tu visita»). --}}
+            <div class="flex min-h-11 flex-col items-center justify-between gap-3 pt-6 text-center text-xs text-white/60 sm:flex-row sm:text-left">
+                <p>© {{ date('Y') }} Dentissa &bull; Dra. Melissa López N. Todos los derechos reservados.</p>
+                @if ($redes)
+                    <ul class="flex items-center gap-1" data-pie-redes>
+                        @foreach ($redes as $nombre => $red)
+                            <li>
+                                <a href="{{ $red['url'] }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $nombre }} (se abre en otra pestaña)"
+                                   class="inline-flex h-11 w-11 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white">
+                                    <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">{!! $red['icono'] !!}</svg>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
         </div>
     </footer>

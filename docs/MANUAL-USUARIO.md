@@ -418,20 +418,23 @@ un carrusel de tarjetas con fotografía:
   la que termina primero con su cuenta regresiva y lleva a **Promociones**. El paciente puede
   cerrarla y no vuelve a salir en esa visita.
 - **Llamar** (ícono de teléfono junto al menú, solo en el celular): abre la llamada al consultorio.
+- **Preguntas frecuentes**: en computadora el título se queda a la vista mientras se recorren
+  las preguntas, con los botones **Escribir por WhatsApp** y **Preguntar al asistente**.
+- **Asistente virtual**: responde con las preguntas frecuentes aprobadas (no usa inteligencia
+  artificial en producción) y busca horarios libres. «¿Cuál es su horario?» da el horario;
+  si el paciente menciona dolor, inflamación o un golpe, recibe la respuesta de urgencias; y
+  una pregunta frecuente cierra una búsqueda de horarios abierta.
 - **Opiniones**: arriba del carrusel se ve la calificación promedio de todas las opiniones
   aprobadas (por ejemplo «4.8 de 5 · promedio de 6 opiniones»).
 - **Tu visita** (columna del pie): Agendar cita, Promociones, Preguntas frecuentes, Cómo llegar
   y Aviso de privacidad.
-- **Datos sanitarios del pie**: «Responsable sanitario» con la cédula capturada en
-  **Configuración → Cédulas profesionales** y la **clave de COFEPRIS**; cada línea sale solo si
-  el dato está capturado.
 - **Redes sociales del pie**: íconos de Instagram, Facebook y TikTok; solo los que tengan enlace en
   **Configuración → Datos del consultorio**.
 - **Pie de página**: teléfono, correo (de **Configuración → Datos del consultorio**), horario semanal (por ejemplo, «Lunes a viernes de 8:00 a
   18:00 hrs»; los días cerrados se omiten) y enlace al aviso de privacidad.
-- Un botón verde de WhatsApp permanece fijo en la esquina inferior derecha, encima del
-  asistente virtual. En el celular ambos se ocultan al bajar por la página, para no tapar
-  el contenido, y vuelven a aparecer al subir.
+- Un solo botón flotante, **¿Necesitas ayuda?**, en la esquina inferior derecha. Al tocarlo
+  muestra **Escribir por WhatsApp**, **Llamar** y **Preguntar al asistente**. En el celular se
+  oculta al bajar por la página y vuelve a aparecer al subir.
 
 ### 5.6 Navegación del portal
 
@@ -1000,8 +1003,7 @@ independientes, cada uno con su botón de guardado.
 
 Teléfono, WhatsApp de contacto («Es el mismo número que el teléfono» o uno distinto),
 correo, dirección, nombre del negocio en Google Maps (opcional, tal como aparece en Maps),
-misión y visión. Opcionales desde el 27/11/2026: **clave de COFEPRIS** (sale en el pie con el
-responsable sanitario) y enlaces de **Instagram, Facebook y TikTok** (deben ser el enlace completo
+misión y visión. Opcionales desde el 27/11/2026: enlaces de **Instagram, Facebook y TikTok** (deben ser el enlace completo
 del perfil, por ejemplo `https://www.instagram.com/tu_consultorio`). Los cambios se reflejan de inmediato en la portada, el
 pie de página, **¿Prefieres llamar?**, la página del recordatorio y la respuesta automática
 de WhatsApp. Si el correo queda vacío, el pie de página no lo muestra. El guardado

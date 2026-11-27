@@ -72,7 +72,9 @@ class PortadaPublicaTest extends TestCase
     {
         // Sin casos con foto, no hay sección vacía.
         $this->get('/')->assertOk()->assertDontSee('data-casos', false)
-            ->assertSee('data-whatsapp-flotante', false)
+            // 27/11/2026: WhatsApp ya no es botón flotante aparte; va en el menú de ayuda.
+            ->assertDontSee('data-whatsapp-flotante', false)
+            ->assertSee('data-menu-ayuda', false)
             ->assertSee('data-mision-vision', false)
             ->assertSee(config('dentissa.contacto.mision'))
             ->assertSee(config('dentissa.contacto.vision'))
@@ -190,7 +192,12 @@ class PortadaPublicaTest extends TestCase
 
         $this->assertStringContainsString('mailto:citas@consultorio-prueba.mx', $pie);
         $this->assertStringNotContainsString('trabajout745@gmail.com', $pie);
-        $this->assertStringContainsString('Acceso del personal', $pie);
+        // 27/11/2026: sin los botones «WhatsApp» y «Acceso del personal» (este sigue en el
+        // encabezado); WhatsApp queda como enlace de la lista y el aviso no se repite.
+        $this->assertStringNotContainsString('Acceso del personal', $pie);
+        $this->assertStringNotContainsString('rounded-full bg-sage-500 px-5', $pie);
+        $this->assertStringContainsString('data-pie-whatsapp', $pie);
+        $this->assertSame(1, substr_count($pie, '>Aviso de privacidad<'));
         $this->assertStringNotContainsString('Portal →', $pie);
         $this->assertSame(1, substr_count($pie, 'Atención con previa cita'));
     }
@@ -243,14 +250,24 @@ class PortadaPublicaTest extends TestCase
         $this->assertDoesNotMatchRegularExpression('/<form id="formulario-testimonio" x-show="abierto"\s+x-cloak/', $conErrores, 'Con errores no lleva x-cloak');
     }
 
-    /** 26/11/2026: en celular WhatsApp se esconde al bajar, como el asistente, para no tapar contenido. */
-    public function test_whatsapp_flotante_se_esconde_al_bajar_en_celular(): void
+    /**
+     * 26/11/2026: en celular WhatsApp se escondía al bajar.
+     * 27/11/2026: un solo botón flotante («¿Necesitas ayuda?») con WhatsApp, llamar y el
+     * asistente en su menú; se sigue escondiendo al bajar en celular.
+     */
+    public function test_un_solo_boton_flotante_con_whatsapp_llamar_y_asistente(): void
     {
-        $boton = str($this->get('/')->assertOk()->getContent())
-            ->after('data-whatsapp-flotante')->before('</a>')->toString();
+        $html = $this->get('/')->assertOk()->getContent();
 
-        $this->assertStringContainsString('@scroll.window.passive', $boton);
-        $this->assertStringContainsString('window.innerWidth >= 640', $boton);
-        $this->assertStringContainsString(':data-oculto="oculto.toString()"', $boton);
+        $this->assertSame(1, substr_count($html, 'data-boton-ayuda'));
+        $this->assertStringNotContainsString('data-whatsapp-flotante', $html);
+
+        $menu = str($html)->after('data-menu-ayuda')->before('data-boton-ayuda')->toString();
+        $this->assertStringContainsString('https://wa.me/', $menu);
+        $this->assertStringContainsString('href="'.config('dentissa.contacto.telefono_enlace').'"', $menu);
+        $this->assertStringContainsString('Preguntar al asistente', $menu);
+
+        $this->assertStringContainsString('@abrir-asistente.window', $html);
+        $this->assertStringContainsString('window.innerWidth >= 640', $html);
     }
 }
