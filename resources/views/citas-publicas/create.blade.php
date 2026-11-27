@@ -305,7 +305,7 @@
                                         </template>
 
                                         <p x-show="!idTratamiento && servicioSeleccionado.tratamientos.length > 0" class="mt-5 text-footnote text-muted sm:text-right" aria-live="polite">Elige un procedimiento para continuar.</p>
-                                        <div class="{{ $claseBarra }} mt-3">
+                                        <div data-evitar-asistente class="{{ $claseBarra }} mt-3">
                                             <button type="button" :disabled="!idTratamiento" @click="siguiente()" class="btn-brand w-full py-3 sm:ml-auto sm:w-auto sm:px-8">
                                                 <span>Continuar a fecha y horario</span>
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
@@ -330,7 +330,7 @@
                                     </div>
                                 </div>
 
-                                <div class="{{ $claseBarra }}">
+                                <div data-evitar-asistente class="{{ $claseBarra }}">
                                     {{-- Al reagendar no se regresa a elegir tratamiento: solo cambian día y hora. --}}
                                     @unless ($reagendar ?? null)
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
@@ -347,7 +347,7 @@
                             <div class="paso-anim space-y-6 p-5 sm:p-8 lg:min-h-0 lg:flex-1 lg:space-y-5 lg:overflow-y-auto lg:p-6">
                                 @include('partials.disponibilidad-picker', ['vista' => 'horas'])
 
-                                <div class="{{ $claseBarra }}">
+                                <div data-evitar-asistente class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Cambiar día</button>
                                     <p x-show="!hora" class="hidden self-center text-footnote text-muted sm:ml-auto sm:block" aria-live="polite">Elige un horario para continuar.</p>
                                     <button type="button" :disabled="!hora" @click="siguiente()" class="{{ $claseSiguiente }}">{{ ($reagendar ?? null) ? 'Continuar' : 'Continuar a mis datos' }}</button>
@@ -479,7 +479,7 @@
                                     <x-alert type="warning" :message="$message" />
                                 @enderror
 
-                                <div class="{{ $claseBarra }}">
+                                <div data-evitar-asistente class="{{ $claseBarra }}">
                                     <button type="button" @click="anterior()" class="{{ $claseAtras }}">Atrás</button>
                                     <button type="submit" class="{{ $claseSiguiente }}" data-loading-text="Agendando…"><span data-loading-label>{{ ($reagendar['sin_datos'] ?? false) ? 'Confirmar cambio de cita' : 'Agendar cita' }}</span></button>
                                 </div>

@@ -122,10 +122,11 @@
         </div>
         <div><span class="code">Error 404</span></div>
         <h1>Página no encontrada</h1>
-        <p>La dirección solicitada no existe o fue trasladada. Puedes volver al inicio o consultar la agenda.</p>
+        <p>La dirección solicitada no existe o fue trasladada. Puedes volver al inicio o agendar tu cita en línea.</p>
+        {{-- 26/11/2026: el texto mencionaba la agenda pero no había cómo llegar a ella; el navegador ya tiene "atrás". --}}
         <div class="actions">
             <a href="/" class="btn-primary">Volver al inicio</a>
-            <button type="button" onclick="history.back()" class="btn-secondary">Regresar</button>
+            <a href="/agendar-cita" class="btn-secondary" data-agendar-404>Agendar cita</a>
         </div>
     </main>
 </body>

@@ -745,9 +745,15 @@ contraseña válida ──> ¿2FA activa? ── no ──> panel
 ### 12.5 Protección de datos personales
 
 - Página `/aviso-de-privacidad` (`privacidad.aviso`) parametrizada por
-  `config('dentissa.privacidad')`; muestra «[Por completar: …]» y «Borrador pendiente de
-  revisión legal» hasta que `DENTISSA_AVISO_REVISADO` sea verdadero. `privacidad.version`
-  debe actualizarse con cada cambio de texto.
+  `config('dentissa.privacidad')`. Si faltan `DENTISSA_PRIVACIDAD_*`, toma el responsable
+  («Dra. Melissa López N.»), la dirección y el correo de **Datos del consultorio**; solo
+  muestra «[Por completar: …]» si tampoco existen ahí (26/11/2026). «Borrador pendiente de
+  revisión legal» se ve hasta que `DENTISSA_AVISO_REVISADO` sea verdadero.
+  `privacidad.version` debe actualizarse con cada cambio de texto.
+- SEO de las páginas públicas: `/sitemap.xml` (ruta `sitemap`) lista inicio, agenda,
+  promociones y aviso con `url()`, así sigue correcto si cambia `APP_URL`. El layout de
+  acceso (`layouts/guest`: inicio de sesión, recuperar contraseña, dos pasos) lleva
+  `<meta name="robots" content="noindex, nofollow">`.
 - Consentimiento obligatorio en todos los canales y evidencia en `pacientes` (fecha y
   versión) escrita solo con `forceFill`.
 - Las citas capturadas por el personal recaban el consentimiento de manera presencial.

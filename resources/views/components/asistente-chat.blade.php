@@ -18,6 +18,26 @@
                 this.oculto = y > this.ultimoY && y > 80;
                 this.ultimoY = y;
             },
+            // 26/11/2026: en celular, si una barra de botones marcada con
+            // [data-evitar-asistente] (la de Agendar cita) pasa por debajo de la
+            // burbuja, la burbuja se esconde mientras estorba.
+            tapaBotones: false,
+            revisarBotones() {
+                if (this.abierto || window.innerWidth >= 640) { this.tapaBotones = false; return; }
+                const zona = this.$el.getBoundingClientRect();
+                this.tapaBotones = [...document.querySelectorAll('[data-evitar-asistente]')].some((barra) => {
+                    const r = barra.getBoundingClientRect();
+                    return r.height > 0 && r.top < zona.bottom && r.bottom > zona.top;
+                });
+            },
+            // El desplazamiento suave sigue moviendo la página después del último
+            // evento: se revisa otra vez cuando termina.
+            esperaRevision: null,
+            revisarAlDesplazar() {
+                this.revisarBotones();
+                clearTimeout(this.esperaRevision);
+                this.esperaRevision = setTimeout(() => this.revisarBotones(), 180);
+            },
             consulta: '',
             conversacionId: '',
             mensajes: [{ autor: 'bot', texto: 'Hola, soy Dentissa Asistente. Puedo orientarte con información del consultorio o ayudarte a buscar horarios. No doy diagnósticos. ¿Qué necesitas saber?' }],
@@ -78,7 +98,10 @@
                 }
             },
          }"
-     @scroll.window.passive="alDesplazar()">
+     x-init="revisarBotones()"
+     @scroll.window.passive="alDesplazar(); revisarAlDesplazar()"
+     @resize.window.passive="revisarBotones()"
+     @click.window="setTimeout(() => revisarBotones(), 320)">
     <div x-show="abierto" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2 scale-[0.97]" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-out duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 translate-y-1" x-cloak class="w-[calc(100vw-2rem)] max-w-sm origin-bottom-right overflow-hidden rounded-3xl border border-line bg-white p-4 shadow-lift sm:w-[calc(100vw-2.5rem)]">
         <div class="flex items-start justify-between gap-4">
             <div class="flex min-w-0 items-center gap-3">
@@ -128,7 +151,7 @@
             aria-label="Abrir o cerrar Dentissa Asistente"
             title="Dentissa Asistente"
             :data-oculto="oculto.toString()"
-            :class="[(hover || enfocado || abierto) ? 'w-56 gap-3 px-3.5' : 'w-14 sm:w-16 justify-center p-0', oculto ? 'translate-y-24 opacity-0 pointer-events-none' : '']"
+            :class="[(hover || enfocado || abierto) ? 'w-56 gap-3 px-3.5' : 'w-14 sm:w-16 justify-center p-0', (oculto || tapaBotones) ? 'translate-y-24 opacity-0 pointer-events-none' : '']"
             class="group relative inline-flex h-14 sm:h-16 shrink-0 items-center overflow-hidden rounded-full border-2 border-white bg-brand-600 text-white shadow-lg shadow-black/15 transition-[background-color,transform,opacity] duration-200 ease-out motion-reduce:transition-none hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
         <span class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center">
             <svg aria-hidden="true" class="h-9 w-9 sm:h-10 sm:w-10" viewBox="0 0 24 24" fill="none">
