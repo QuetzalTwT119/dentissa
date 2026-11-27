@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
         <meta name="theme-color" content="#fbf7f3">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        {{-- 26/11/2026: acceso del personal; que Google no lo muestre en sus resultados. --}}
+        <meta name="robots" content="noindex, nofollow">
         @include('partials.favicon')
 
         <title>Acceso · Melissa López N. — Odontología Integral</title>

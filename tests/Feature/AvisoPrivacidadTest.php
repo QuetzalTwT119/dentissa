@@ -51,13 +51,28 @@ class AvisoPrivacidadTest extends TestCase
     public function test_mientras_falten_datos_o_revision_el_aviso_lo_dice_claramente(): void
     {
         config(['dentissa.privacidad' => ['version' => '2026-11-16', 'revisado' => false, 'responsable' => null, 'domicilio' => null, 'correo' => null]]);
+        config(['dentissa.contacto.direccion' => null, 'dentissa.contacto.correo' => null]);
 
         $this->get(route('privacidad.aviso'))
             ->assertOk()
             ->assertSee('Borrador pendiente de revisión legal.')
-            ->assertSee('[Por completar: nombre del responsable]')
             ->assertSee('[Por completar: domicilio]')
             ->assertSee('[Por completar: correo para solicitudes]');
+    }
+
+    /** 26/11/2026: sin datos propios del aviso toma los del consultorio y no muestra "[Por completar]". */
+    public function test_sin_datos_propios_el_aviso_usa_los_del_consultorio(): void
+    {
+        config(['dentissa.privacidad' => ['version' => '2026-11-16', 'revisado' => false, 'responsable' => null, 'domicilio' => null, 'correo' => null]]);
+        config(['dentissa.contacto.direccion' => 'Av. Prueba 10, Lázaro Cárdenas, Mich.', 'dentissa.contacto.correo' => 'citas@consultorio-prueba.mx']);
+
+        $this->get(route('privacidad.aviso'))
+            ->assertOk()
+            ->assertSee('Dra. Melissa López N.')
+            ->assertSee('Av. Prueba 10, Lázaro Cárdenas, Mich.')
+            ->assertSee('href="mailto:citas@consultorio-prueba.mx"', false)
+            ->assertDontSee('Por completar')
+            ->assertSee('Borrador pendiente de revisión legal.');
     }
 
     public function test_con_los_datos_de_la_clinica_y_revisado_el_aviso_queda_limpio(): void

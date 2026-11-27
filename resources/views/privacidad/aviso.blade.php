@@ -16,6 +16,12 @@
     <body class="min-h-[100dvh] bg-cream pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] font-sans text-ink antialiased">
         @php
             $privacidad = config('dentissa.privacidad');
+            // 26/11/2026: sin datos propios del aviso (variables DENTISSA_PRIVACIDAD_*),
+            // se usan los del consultorio (Configuración → Datos del consultorio), para
+            // que el paciente no vea "[Por completar]" al aceptar el aviso.
+            $privacidad['responsable'] = $privacidad['responsable'] ?: 'Dra. Melissa López N.';
+            $privacidad['domicilio'] = $privacidad['domicilio'] ?: config('dentissa.contacto.direccion');
+            $privacidad['correo'] = $privacidad['correo'] ?: config('dentissa.contacto.correo');
             // Un dato que la clínica aún no llena se ve resaltado, para que nadie
             // publique el aviso creyendo que está completo.
             $dato = fn (?string $valor, string $falta) => $valor

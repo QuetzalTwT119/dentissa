@@ -34,7 +34,9 @@
                         <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                         <span class="hidden sm:inline">Inicio</span>
                     </a>
-                    <a href="{{ route('citas.publica.create') }}" class="btn-brand inline-flex min-h-11 items-center px-4 text-sm sm:px-5">Agendar cita</a>
+                    {{-- 26/11/2026: en celular no cabía junto a la marca (428 px en pantallas de 375);
+                         ahí cada promoción y el aviso sin promociones ya traen su propio "Agendar". --}}
+                    <a href="{{ route('citas.publica.create') }}" class="btn-brand hidden min-h-11 items-center px-5 text-sm sm:inline-flex" data-agendar-encabezado>Agendar cita</a>
                 </div>
             </div>
         </header>
@@ -69,7 +71,7 @@
             @if ($ofertas->isEmpty())
                 <div class="mt-6 rounded-2xl border border-line bg-white p-8 text-center shadow-soft" data-sin-promociones>
                     <p class="font-semibold text-ink">Por ahora no hay promociones vigentes.</p>
-                    <p class="mt-2 text-callout text-muted">Puedes agendar tu valoración en línea o escribirnos por WhatsApp.</p>
+                    <p class="mt-2 text-callout text-muted">Puedes agendar tu cita en línea o escribirnos por WhatsApp.</p>
                     <a href="{{ route('citas.publica.create') }}" class="btn-brand mt-6 inline-flex min-h-11 items-center px-6">Agendar cita</a>
                 </div>
             @else

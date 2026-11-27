@@ -53,9 +53,10 @@ class AsistenteVistasPublicasTest extends TestCase
 
         // No cambia de posición: solo se oculta al bajar y vuelve al subir,
         // y únicamente en pantallas menores a 640 px (breakpoint sm).
-        $this->assertStringContainsString('@scroll.window.passive="alDesplazar()"', $contenido);
+        // 26/11/2026: además se esconde mientras la barra de botones pasa por debajo (revisarBotones).
+        $this->assertStringContainsString('@scroll.window.passive="alDesplazar(); revisarAlDesplazar()"', $contenido);
         $this->assertStringContainsString('window.innerWidth >= 640', $contenido);
-        $this->assertStringContainsString("oculto ? 'translate-y-24 opacity-0 pointer-events-none' : ''", $contenido);
+        $this->assertStringContainsString("(oculto || tapaBotones) ? 'translate-y-24 opacity-0 pointer-events-none' : ''", $contenido);
         $this->assertStringContainsString('motion-reduce:transition-none', $contenido);
         // Con teclado nunca queda oculto: al enfocarlo reaparece.
         $this->assertStringContainsString('@focus="enfocado = true; oculto = false"', $contenido);

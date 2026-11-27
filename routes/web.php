@@ -59,6 +59,16 @@ Route::post('/contacto', [MensajeContactoController::class, 'store'])->name('con
 // Testimonio del paciente: entra pendiente; máximo 5 envíos por hora por visitante.
 Route::post('/testimonios', [TestimonioPublicoController::class, 'store'])->middleware('throttle:5,60')->name('testimonios.publico.store');
 
+// 26/11/2026: índice de páginas públicas para Google. Usa url(), así sigue
+// siendo correcto aunque cambie el dominio (APP_URL).
+Route::get('/sitemap.xml', function () {
+    $paginas = [url('/'), route('citas.publica.create'), route('promociones.index'), route('privacidad.aviso')];
+
+    return response()
+        ->view('sitemap', ['paginas' => $paginas])
+        ->header('Content-Type', 'application/xml; charset=UTF-8');
+})->name('sitemap');
+
 Route::get('/version', function () {
     $railwayCommit = env('RAILWAY_GIT_COMMIT_SHA');
 
