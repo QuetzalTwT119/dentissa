@@ -15,7 +15,10 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    // 27/11/2026: además de 5 intentos por correo (LoginRequest), 20 por minuto por IP:
+    // frena a quien prueba una contraseña común contra muchos correos.
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('throttle:20,1');
 
     // Segundo paso del inicio de sesión (verificación en dos pasos).
     Route::get('dos-pasos', [RetoDosPasosController::class, 'create'])->name('dos-pasos.reto');
@@ -26,13 +29,16 @@ Route::middleware('guest')->group(function () {
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
+    // 27/11/2026: sin límite se podían mandar muchos correos y gastar la cuota de Gmail.
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
         ->name('password.reset');
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('password.store');
 });
 

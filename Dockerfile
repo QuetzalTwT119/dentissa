@@ -28,6 +28,9 @@ RUN apt-get update \
     && docker-php-ext-install -j"$(nproc)" bcmath gd intl mbstring pdo_mysql pdo_sqlite xml zip \
     && rm -rf /var/lib/apt/lists/*
 
+# 27/11/2026: que PHP no anuncie su versión en el encabezado X-Powered-By.
+RUN echo "expose_php = Off" > /usr/local/etc/php/conf.d/zz-seguridad.ini
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
