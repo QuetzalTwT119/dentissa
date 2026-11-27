@@ -414,6 +414,19 @@ un carrusel de tarjetas con fotografía:
   **Nombre del negocio en Google Maps**, el mapa y **Cómo llegar** abren la ficha del
   consultorio (con su fotografía, horario y teléfono) en lugar de un punto en la calle. Si
   la dirección se deja vacía en la configuración, el mapa no se muestra.
+- **Barra de promoción** (arriba de todo): aparece solo cuando hay una promoción vigente; muestra
+  la que termina primero con su cuenta regresiva y lleva a **Promociones**. El paciente puede
+  cerrarla y no vuelve a salir en esa visita.
+- **Llamar** (ícono de teléfono junto al menú, solo en el celular): abre la llamada al consultorio.
+- **Opiniones**: arriba del carrusel se ve la calificación promedio de todas las opiniones
+  aprobadas (por ejemplo «4.8 de 5 · promedio de 6 opiniones»).
+- **Tu visita** (columna del pie): Agendar cita, Promociones, Preguntas frecuentes, Cómo llegar
+  y Aviso de privacidad.
+- **Datos sanitarios del pie**: «Responsable sanitario» con la cédula capturada en
+  **Configuración → Cédulas profesionales** y la **clave de COFEPRIS**; cada línea sale solo si
+  el dato está capturado.
+- **Redes sociales del pie**: íconos de Instagram, Facebook y TikTok; solo los que tengan enlace en
+  **Configuración → Datos del consultorio**.
 - **Pie de página**: teléfono, correo (de **Configuración → Datos del consultorio**), horario semanal (por ejemplo, «Lunes a viernes de 8:00 a
   18:00 hrs»; los días cerrados se omiten) y enlace al aviso de privacidad.
 - Un botón verde de WhatsApp permanece fijo en la esquina inferior derecha, encima del
@@ -987,7 +1000,9 @@ independientes, cada uno con su botón de guardado.
 
 Teléfono, WhatsApp de contacto («Es el mismo número que el teléfono» o uno distinto),
 correo, dirección, nombre del negocio en Google Maps (opcional, tal como aparece en Maps),
-misión y visión. Los cambios se reflejan de inmediato en la portada, el
+misión y visión. Opcionales desde el 27/11/2026: **clave de COFEPRIS** (sale en el pie con el
+responsable sanitario) y enlaces de **Instagram, Facebook y TikTok** (deben ser el enlace completo
+del perfil, por ejemplo `https://www.instagram.com/tu_consultorio`). Los cambios se reflejan de inmediato en la portada, el
 pie de página, **¿Prefieres llamar?**, la página del recordatorio y la respuesta automática
 de WhatsApp. Si el correo queda vacío, el pie de página no lo muestra. El guardado
 solicita confirmación y queda registrado en el Control de actividades.

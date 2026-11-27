@@ -82,6 +82,28 @@
                     </div>
                 </div>
 
+                {{-- 27/11/2026: pie de la portada. Vacíos, el pie no muestra esa línea ni ese ícono. --}}
+                <div>
+                    <x-input-label for="cofepris" value="Clave de COFEPRIS (opcional)" />
+                    <x-text-input id="cofepris" name="cofepris" class="mt-1.5 block w-full" :value="old('cofepris', $cofepris ?? '')" maxlength="60" aria-describedby="cofepris-ayuda" />
+                    <p id="cofepris-ayuda" class="mt-1 text-xs text-muted">Si el consultorio tiene aviso o permiso de publicidad, la clave sale en el pie de la portada junto al responsable sanitario.</p>
+                    <x-input-error :messages="$errors->get('cofepris')" class="mt-2" />
+                </div>
+
+                <fieldset>
+                    <legend class="text-sm font-semibold text-ink">Redes sociales (opcional)</legend>
+                    <p class="mt-1 text-xs text-muted">Pega el enlace completo del perfil. Solo salen en el pie de la portada las que tengan enlace.</p>
+                    <div class="mt-3 grid gap-4 md:grid-cols-3">
+                        @foreach (['instagram' => 'Instagram', 'facebook' => 'Facebook', 'tiktok' => 'TikTok'] as $red => $etiqueta)
+                            <div>
+                                <x-input-label :for="$red" :value="$etiqueta" />
+                                <x-text-input :id="$red" :name="$red" type="url" inputmode="url" class="mt-1.5 block w-full" :value="old($red, $redes[$red] ?? '')" maxlength="200" placeholder="https://" />
+                                <x-input-error :messages="$errors->get($red)" class="mt-2" />
+                            </div>
+                        @endforeach
+                    </div>
+                </fieldset>
+
                 <div class="flex justify-end border-t border-line pt-4">
                     <x-primary-button>Guardar cambios</x-primary-button>
                 </div>

@@ -20,8 +20,19 @@ class UxPortadaMovilTest extends TestCase
     {
         $html = $this->get('/')->assertOk()->getContent();
 
-        $this->assertStringContainsString('class="relative aspect-[2/1] sm:aspect-[16/9]', $html);
-        $this->assertStringNotContainsString('aspect-[4/3] sm:aspect-[16/9]', $html);
+        $this->assertMatchesRegularExpression('/class="relative sm:aspect-\[16\/9\][^"]*aspect-\[2\/1\]"/', $html);
+        $this->assertStringNotContainsString('aspect-[4/3]', $html);
+    }
+
+    /** 27/11/2026: con la barra de promoción arriba, la foto baja a 5:2 en celular. */
+    public function test_con_barra_de_promocion_la_foto_es_mas_baja_en_celular(): void
+    {
+        \App\Models\Oferta::create(['titulo' => 'Limpieza', 'tipo' => 'descuento', 'tipo_valor' => 'porcentaje', 'valor_descuento' => 15,
+            'fecha_inicio' => now()->subDay()->toDateString(), 'fecha_fin' => now()->addDays(3)->toDateString(), 'cupo_total' => 10, 'estado' => 'activa']);
+
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression('/class="relative sm:aspect-\[16\/9\][^"]*aspect-\[5\/2\]"/', $html);
     }
 
     /** "Leer completo" se medía una sola vez y salía en opiniones cortas. */

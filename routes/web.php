@@ -174,6 +174,15 @@ Route::get('/', function () {
             ->orderByDesc('fecha_publicacion')
             ->take(6)
             ->get(),
+        // 27/11/2026 (ideas de sitios de referencia): calificación promedio de TODAS las
+        // opiniones aprobadas, la promoción que termina primero para la barra superior
+        // y el responsable sanitario (con cédula) para el pie.
+        'calificacion' => Testimonio::where('estado', 'aprobado')
+            ->selectRaw('AVG(calificacion) as promedio, COUNT(*) as total')
+            ->first(),
+        'ofertaBarra' => $ofertasVigentes->first(),
+        'responsableSanitario' => CedulaProfesionalController::doctores()
+            ->first(fn ($doctor) => filled($doctor->cedula_profesional)),
         'galeria' => Imagen::where('tipo', TipoImagen::Galeria)
             ->where('activa', true)
             ->orderBy('orden')

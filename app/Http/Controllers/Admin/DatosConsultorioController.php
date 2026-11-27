@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Redirect;
  */
 class DatosConsultorioController extends Controller
 {
-    private const CAMPOS = ['telefono', 'whatsapp', 'correo', 'direccion', 'nombre_maps', 'mision', 'vision'];
+    private const CAMPOS = ['telefono', 'whatsapp', 'correo', 'direccion', 'nombre_maps', 'mision', 'vision', 'cofepris', 'instagram', 'facebook', 'tiktok'];
 
     // La pantalla vive en Configuración (ConfiguracionController); aquí solo se guarda.
 
@@ -40,9 +40,17 @@ class DatosConsultorioController extends Controller
             'nombre_maps' => ['nullable', 'string', 'max:100'],
             'mision' => ['nullable', 'string', 'max:400'],
             'vision' => ['nullable', 'string', 'max:400'],
+            // 27/11/2026: pie de la portada (datos sanitarios y redes).
+            'cofepris' => ['nullable', 'string', 'max:60'],
+            'instagram' => ['nullable', 'url:https', 'max:200', 'regex:#^https://(www\.)?instagram\.com/#i'],
+            'facebook' => ['nullable', 'url:https', 'max:200', 'regex:#^https://(www\.|m\.)?facebook\.com/#i'],
+            'tiktok' => ['nullable', 'url:https', 'max:200', 'regex:#^https://(www\.)?tiktok\.com/#i'],
         ], [
             'telefono.digits' => 'Escribe los 10 dígitos del celular, por ejemplo 755 113 1833.',
             'whatsapp.digits' => 'Escribe los 10 dígitos del WhatsApp, por ejemplo 755 113 1833.',
+            'instagram.regex' => 'Pega el enlace de tu perfil, por ejemplo https://www.instagram.com/tu_consultorio.',
+            'facebook.regex' => 'Pega el enlace de tu página, por ejemplo https://www.facebook.com/tu_consultorio.',
+            'tiktok.regex' => 'Pega el enlace de tu perfil, por ejemplo https://www.tiktok.com/@tu_consultorio.',
         ], [
             'telefono' => 'teléfono',
             'whatsapp' => 'WhatsApp',
@@ -51,6 +59,10 @@ class DatosConsultorioController extends Controller
             'nombre_maps' => 'nombre en Google Maps',
             'mision' => 'misión',
             'vision' => 'visión',
+            'cofepris' => 'clave de COFEPRIS',
+            'instagram' => 'Instagram',
+            'facebook' => 'Facebook',
+            'tiktok' => 'TikTok',
         ]);
 
         $nuevos = [
@@ -62,6 +74,10 @@ class DatosConsultorioController extends Controller
             'nombre_maps' => filled($datos['nombre_maps'] ?? null) ? trim($datos['nombre_maps']) : null,
             'mision' => filled($datos['mision'] ?? null) ? trim($datos['mision']) : null,
             'vision' => filled($datos['vision'] ?? null) ? trim($datos['vision']) : null,
+            'cofepris' => filled($datos['cofepris'] ?? null) ? trim($datos['cofepris']) : null,
+            'instagram' => $datos['instagram'] ?? null,
+            'facebook' => $datos['facebook'] ?? null,
+            'tiktok' => $datos['tiktok'] ?? null,
         ];
 
         $fila = DatosConsultorio::fila();

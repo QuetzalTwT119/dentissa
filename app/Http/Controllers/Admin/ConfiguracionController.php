@@ -38,6 +38,8 @@ class ConfiguracionController extends Controller
             'nombreMaps' => $contacto['nombre_maps'] ?? '',
             'mision' => $contacto['mision'] ?? '',
             'vision' => $contacto['vision'] ?? '',
+            'cofepris' => $contacto['cofepris'] ?? '',
+            'redes' => ['instagram' => $contacto['instagram'] ?? '', 'facebook' => $contacto['facebook'] ?? '', 'tiktok' => $contacto['tiktok'] ?? ''],
             // 26/11/2026: cédulas profesionales (antes en Mi perfil).
             'doctores' => CedulaProfesionalController::doctores(),
             'horarios' => collect(self::ORDEN_SEMANA)->map(fn (int $dia) => $horarios->get($dia))->values(),
