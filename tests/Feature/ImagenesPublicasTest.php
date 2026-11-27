@@ -51,7 +51,8 @@ class ImagenesPublicasTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
-            ->assertSeeInOrder(['Blanqueamiento Dental', 'Retiro de Caries &amp; Resinas', '1 hora', 'Extracción Cuidadosa'], false)
+            // 26/11/2026: títulos en español ("y" en vez de "&", sin mayúsculas a la inglesa).
+            ->assertSeeInOrder(['Blanqueamiento dental', 'Retiro de caries y resinas', '1 hora', 'Extracción cuidadosa'], false)
             ->assertDontSee('Hasta 2 horas')
             ->assertDontSee('Información por confirmar</h3>', false);
 

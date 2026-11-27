@@ -401,8 +401,9 @@ un carrusel de tarjetas con fotografía:
 - **Casos antes y después**: casos activos con fotografía de **Sitio web → Casos**. La
   primera imagen se presenta como «Antes» y la segunda como «Después».
 - **Testimonios**: opiniones aprobadas por la clínica. El paciente puede enviar la suya
-  desde **Comparte tu experiencia**, identificándose con el teléfono o el correo con el que
-  agendó.
+  desde **Comparte tu experiencia**: el formulario aparece al pulsar **Escribir mi opinión**
+  y el paciente se identifica con el teléfono o el correo con el que agendó. Si el envío
+  tiene errores, la página regresa con el formulario ya abierto y los errores marcados.
 
 ### 5.5 Preguntas frecuentes, ubicación y contacto
 
@@ -413,14 +414,15 @@ un carrusel de tarjetas con fotografía:
   **Nombre del negocio en Google Maps**, el mapa y **Cómo llegar** abren la ficha del
   consultorio (con su fotografía, horario y teléfono) en lugar de un punto en la calle. Si
   la dirección se deja vacía en la configuración, el mapa no se muestra.
-- **Pie de página**: teléfono, horario semanal (por ejemplo, «Lunes a viernes de 8:00 a
+- **Pie de página**: teléfono, correo (de **Configuración → Datos del consultorio**), horario semanal (por ejemplo, «Lunes a viernes de 8:00 a
   18:00 hrs»; los días cerrados se omiten) y enlace al aviso de privacidad.
 - Un botón verde de WhatsApp permanece fijo en la esquina inferior derecha, encima del
-  asistente virtual.
+  asistente virtual. En el celular ambos se ocultan al bajar por la página, para no tapar
+  el contenido, y vuelven a aparecer al subir.
 
 ### 5.6 Navegación del portal
 
-Los enlaces **Inicio**, **Tratamientos**, **La Clínica**, **El consultorio**,
+Los enlaces **Inicio**, **Tratamientos**, **La doctora**, **El consultorio**,
 **Testimonios** y **Contacto** desplazan la página hasta la sección correspondiente sin
 recargarla, y el enlace de la sección visible se resalta automáticamente.
 

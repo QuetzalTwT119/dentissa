@@ -65,14 +65,21 @@
         @endif
 
         {{-- Formulario: el testimonio entra PENDIENTE hasta que la clínica lo aprueba. --}}
-        <div class="mx-auto mt-14 max-w-2xl rounded-3xl border border-line bg-white p-6 shadow-soft sm:p-8" x-data="{ estrellas: {{ (int) old('calificacion', 0) }} }">
+        {{-- 26/11/2026: el formulario va plegado tras un botón; abierto solo si regresó con errores. --}}
+        <div class="mx-auto mt-14 max-w-2xl rounded-3xl border border-line bg-white p-6 shadow-soft sm:p-8"
+             x-data="{ estrellas: {{ (int) old('calificacion', 0) }}, abierto: {{ $errors->testimonio->any() ? 'true' : 'false' }} }">
             <h3 class="font-serif text-title-3 text-ink">Comparte tu experiencia</h3>
             <p class="mt-1 text-sm text-muted">Si ya te atendimos, cuéntanos cómo te fue. Lo publicaremos después de revisarlo.</p>
 
             @if (session('testimonio_enviado'))
                 <x-alert type="success" :message="session('testimonio_enviado')" class="mt-5" />
             @else
-                <form method="POST" action="{{ route('testimonios.publico.store') }}" class="mt-5 space-y-5" data-formulario-testimonio>
+                <button type="button" x-show="!abierto" @click="abierto = true; $nextTick(() => $refs.primeraEstrella?.focus())"
+                        aria-controls="formulario-testimonio" :aria-expanded="abierto.toString()"
+                        class="btn-secondary mt-5 w-full py-3 sm:w-auto sm:px-8" data-abrir-testimonio>
+                    Escribir mi opinión
+                </button>
+                <form id="formulario-testimonio" x-show="abierto" @unless ($errors->testimonio->any()) x-cloak @endunless method="POST" action="{{ route('testimonios.publico.store') }}" class="mt-5 space-y-5" data-formulario-testimonio>
                     @csrf
                     {{-- Trampa para robots: invisible para personas. --}}
                     <div class="absolute -left-[9999px]" aria-hidden="true">
@@ -85,7 +92,7 @@
                         <div class="mt-1.5 flex gap-1" role="radiogroup">
                             @foreach (range(1, 5) as $n)
                                 <label class="cursor-pointer">
-                                    <input type="radio" name="calificacion" value="{{ $n }}" class="peer sr-only" x-model.number="estrellas" required @checked((int) old('calificacion') === $n)>
+                                    <input type="radio" name="calificacion" value="{{ $n }}" class="peer sr-only" x-model.number="estrellas" required @if ($n === 1) x-ref="primeraEstrella" @endif @checked((int) old('calificacion') === $n)>
                                     <span class="grid h-11 w-11 place-items-center rounded-full text-2xl transition peer-focus-visible:ring-2 peer-focus-visible:ring-brand-300"
                                           :class="estrellas >= {{ $n }} ? 'text-amber-500' : 'text-line hover:text-amber-300'" aria-hidden="true">★</span>
                                     <span class="sr-only">{{ $n }} {{ $n === 1 ? 'estrella' : 'estrellas' }}</span>

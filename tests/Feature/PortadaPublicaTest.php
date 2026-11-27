@@ -194,4 +194,63 @@ class PortadaPublicaTest extends TestCase
         $this->assertStringNotContainsString('Portal →', $pie);
         $this->assertSame(1, substr_count($pie, 'Atención con previa cita'));
     }
+
+    /** 26/11/2026: textos en español (sin "&" ni mayúsculas a la inglesa), menú "La doctora" y "cita" en vez de "valoración". */
+    public function test_los_textos_de_la_portada_siguen_el_estilo_del_espanol(): void
+    {
+        $html = $this->get('/')->assertOk()
+            ->assertSee('Atención humana y sin prisas')
+            ->assertSee('Instrumental estéril y preciso')
+            ->assertSee('Reserva fácil y rápida')
+            ->assertSee('para tu cita en Dentissa')
+            ->assertDontSee('para tu valoración en Dentissa')
+            ->assertDontSee('La Clínica')
+            ->getContent();
+
+        $this->assertStringContainsString('href="#nosotros"', $html);
+        $this->assertMatchesRegularExpression('/href="#nosotros"[^>]*>\s*La doctora/', $html);
+
+        // Ningún "&" suelto en el texto visible (los de URLs van como &amp;).
+        $texto = strip_tags(preg_replace('#<(script|style)\b.*?</\1>#s', '', $html));
+        $this->assertDoesNotMatchRegularExpression('/\s&\s/', $texto);
+    }
+
+    /** 26/11/2026: el primer título de la página es el <h1> de la portada, no el del asistente. */
+    public function test_el_primer_titulo_de_la_pagina_es_el_h1(): void
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+
+        preg_match('/<h[1-6]\b/', $html, $primero);
+        $this->assertSame('<h1', $primero[0] ?? null);
+        $this->assertStringContainsString('Dentissa Asistente', $html);
+    }
+
+    /** 26/11/2026: el formulario de opiniones va plegado y se abre solo si regresa con errores. */
+    public function test_el_formulario_de_opiniones_va_plegado_salvo_con_errores(): void
+    {
+        $plegado = $this->get('/')->assertOk()
+            ->assertSee('data-abrir-testimonio', false)
+            ->assertSee('Escribir mi opinión')
+            ->getContent();
+        $this->assertMatchesRegularExpression('/<form id="formulario-testimonio" x-show="abierto"\s+x-cloak/', $plegado, 'Sin errores el formulario debe ir plegado');
+        $this->assertStringContainsString('estrellas: 0, abierto: false', $plegado);
+
+        // Envío real con datos incompletos: regresa a la portada con los errores en la sesión.
+        $conErrores = $this->followingRedirects()
+            ->post(route('testimonios.publico.store'), ['comentario' => 'corto'])
+            ->assertOk()->getContent();
+        $this->assertStringContainsString('estrellas: 0, abierto: true', $conErrores, 'Con errores el formulario debe abrirse');
+        $this->assertDoesNotMatchRegularExpression('/<form id="formulario-testimonio" x-show="abierto"\s+x-cloak/', $conErrores, 'Con errores no lleva x-cloak');
+    }
+
+    /** 26/11/2026: en celular WhatsApp se esconde al bajar, como el asistente, para no tapar contenido. */
+    public function test_whatsapp_flotante_se_esconde_al_bajar_en_celular(): void
+    {
+        $boton = str($this->get('/')->assertOk()->getContent())
+            ->after('data-whatsapp-flotante')->before('</a>')->toString();
+
+        $this->assertStringContainsString('@scroll.window.passive', $boton);
+        $this->assertStringContainsString('window.innerWidth >= 640', $boton);
+        $this->assertStringContainsString(':data-oculto="oculto.toString()"', $boton);
+    }
 }

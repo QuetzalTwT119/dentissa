@@ -50,7 +50,7 @@
         $enlacesSecciones = [
             ['#inicio', 'Inicio'],
             ['#servicios', 'Tratamientos'],
-            ['#nosotros', 'La Clínica'],
+            ['#nosotros', 'La doctora'],
             ['#galeria', 'El consultorio'],
             ['#testimonios', 'Testimonios'],
             ['#contacto', 'Contacto'],
@@ -62,28 +62,28 @@
 
         $beneficios = [
             [
-                'titulo' => 'Atención Humana y Sin Prisas',
+                'titulo' => 'Atención humana y sin prisas',
                 'texto' => 'Cada consulta está programada con el tiempo exacto para escucharte, resolver dudas y atenderte con calma.',
                 'icono' => 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z',
             ],
             [
-                'titulo' => 'Instrumental Estéril & Preciso',
+                'titulo' => 'Instrumental estéril y preciso',
                 'texto' => 'Bioseguridad de nivel clínico con instrumental empaquetado y tecnología para procedimientos cómodos.',
                 'icono' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
             ],
             [
-                'titulo' => 'Diagnóstico Transparente',
+                'titulo' => 'Diagnóstico transparente',
                 'texto' => 'Explicación clara con tu expediente clínico digital, sin tratamientos innecesarios ni costos ocultos.',
                 'icono' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
             ],
         ];
 
         $tratamientos = [
-            ['01', 'Valoración Integral', 'Revisión clínica completa, exploración intraoral y diagnóstico personalizado con un enfoque preventivo y cuidadoso.', '30 min', 'Enfoque', 'Diagnóstico claro', false],
-            ['02', 'Limpieza Dental Profunda', 'Eliminación de sarro y placa mediante ultrasonido suave, profilaxis y pulido para encías sanas y aliento fresco.', '1 hora', 'Frecuencia', 'Cada 6 meses', false],
-            ['03', 'Blanqueamiento Dental', 'Tecnología aclarante de alta eficacia para devolver la luminosidad natural a tus dientes sin desgastar el esmalte.', '1.5 horas', 'Resultados', 'Desde 1 sesión', true],
-            ['04', 'Retiro de Caries & Resinas', 'Restauraciones estéticas y biocompatibles del color exacto de tu diente, devolviendo forma y funcionalidad.', '1 hora', 'Materiales', 'Resina estética', false],
-            ['05', 'Extracción Cuidadosa', 'Procedimiento mínimamente invasivo con anestesia precisa para una recuperación rápida, cómoda y segura.', '1 hora', 'Enfoque', 'Sin dolor', false],
+            ['01', 'Valoración integral', 'Revisión clínica completa, exploración intraoral y diagnóstico personalizado con un enfoque preventivo y cuidadoso.', '30 min', 'Enfoque', 'Diagnóstico claro', false],
+            ['02', 'Limpieza dental profunda', 'Eliminación de sarro y placa mediante ultrasonido suave, profilaxis y pulido para encías sanas y aliento fresco.', '1 hora', 'Frecuencia', 'Cada 6 meses', false],
+            ['03', 'Blanqueamiento dental', 'Tecnología aclarante de alta eficacia para devolver la luminosidad natural a tus dientes sin desgastar el esmalte.', '1.5 horas', 'Resultados', 'Desde 1 sesión', true],
+            ['04', 'Retiro de caries y resinas', 'Restauraciones estéticas y biocompatibles del color exacto de tu diente, devolviendo forma y funcionalidad.', '1 hora', 'Materiales', 'Resina estética', false],
+            ['05', 'Extracción cuidadosa', 'Procedimiento mínimamente invasivo con anestesia precisa para una recuperación rápida, cómoda y segura.', '1 hora', 'Enfoque', 'Sin dolor', false],
         ];
 
         $compromisos = [
@@ -356,8 +356,8 @@
                     <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-[#2b1a20]/90 via-[#2b1a20]/40 to-transparent"></div>
 
                     <div class="relative">
-                        <span class="text-caption font-semibold uppercase tracking-label text-peach-200">Bioseguridad de Grado Clínico</span>
-                        <h3 class="mt-2 font-serif text-title-3 font-medium">Instrumental Estéril Garantizado</h3>
+                        <span class="text-caption font-semibold uppercase tracking-label text-peach-200">Bioseguridad de grado clínico</span>
+                        <h3 class="mt-2 font-serif text-title-3 font-medium">Instrumental estéril garantizado</h3>
                         <p class="mt-2 text-callout text-white/80">Cada set de instrumental es sellado y esterilizado individualmente para tu máxima protección.</p>
                         <a href="{{ route('citas.publica.create') }}" class="mt-4 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-peach-200 transition-colors hover:text-white">
                             Agendar consulta {!! $iconoFlecha !!}
@@ -381,7 +381,7 @@
                         <figcaption class="absolute inset-x-0 bottom-0 p-6 text-white">
                             <span class="text-caption font-semibold uppercase tracking-label text-peach-200">Directora Médica</span>
                             <span class="mt-1 block firma text-[1.75rem] leading-tight">Dra. Melissa López N.</span>
-                            <span class="mt-1.5 block text-sm text-white/80">Odontología Integral & Armonización</span>
+                            <span class="mt-1.5 block text-sm text-white/80">Odontología integral y armonización</span>
                         </figcaption>
                     </div>
                 </figure>
@@ -507,12 +507,12 @@
                 <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-peach-300/30 blur-3xl"></div>
 
                 <div class="relative">
-                    <p class="text-xs font-semibold uppercase tracking-label text-peach-200">Reserva Fácil & Rápida</p>
+                    <p class="text-xs font-semibold uppercase tracking-label text-peach-200">Reserva fácil y rápida</p>
                     <h2 class="mx-auto mt-4 max-w-2xl text-title-1">
                         Comienza tu camino hacia una mejor sonrisa
                     </h2>
                     <p class="mx-auto mt-4 max-w-lg text-body text-white/80">
-                        Elige el tratamiento, la fecha y el horario que mejor se adapten a tu día para tu valoración en Dentissa.
+                        Elige el tratamiento, la fecha y el horario que mejor se adapten a tu día para tu cita en Dentissa.
                     </p>
 
                     <a href="{{ route('citas.publica.create') }}" class="mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-8 text-callout font-semibold text-brand-700 shadow-lg transition-[background-color,transform] duration-150 ease-out hover:bg-peach-50 active:scale-[0.97] sm:w-auto">
