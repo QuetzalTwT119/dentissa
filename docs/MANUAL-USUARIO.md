@@ -435,7 +435,7 @@ recargarla, y el enlace de la sección visible se resalta automáticamente.
 
 El proceso consta de cuatro pasos; la parte superior indica en todo momento «Paso X de 4».
 
-1. Abrir `/agendar-cita` o pulsar **Agendar mi valoración**.
+1. Abrir `/agendar-cita` o pulsar **Agendar mi cita**.
 2. **Selección clínica:** elegir la especialidad y, a continuación, el tratamiento. Cada
    tratamiento muestra su duración aproximada y su precio. Para cambiar de especialidad,
    se pulsa el recuadro de la especialidad elegida. Solo se muestran las especialidades
@@ -449,6 +449,11 @@ El proceso consta de cuatro pasos; la parte superior indica en todo momento «Pa
    1000 caracteres. Marcar **He leído y acepto el aviso de privacidad**. El enlace
    **Cambiar** permite regresar a la selección de fecha y hora.
 6. Pulsar **Agendar cita**. El botón cambia a «Agendando…» y se bloquea mientras se guarda.
+
+En computadora y tableta, el recuadro **Tu cita, paso a paso** acompaña todo el proceso con
+el servicio, el tratamiento, el precio, la oferta aplicada, la fecha y la hora. En el celular
+aparece solo en el último paso, para revisar todo antes de confirmar sin alargar los pasos
+anteriores.
 
 **Resultado esperado:** aparece la pantalla **«¡Listo! Tu cita quedó confirmada»** con el
 resumen de la cita. La cita queda en estado **Confirmada**, sin que el personal tenga que
